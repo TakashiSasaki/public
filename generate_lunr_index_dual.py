@@ -3,6 +3,7 @@
 # applies dual tokenization (using Janome for Japanese and a simple whitespace-based tokenizer for English),
 # builds a unified Lunr index that supports mixed-language documents,
 # and writes the index and document lookup to lunr_index.js.
+# The output JSON is minified to reduce file size.
 #
 # Required packages: pip install lunr janome
 
@@ -98,10 +99,10 @@ def main():
     print(f"  Number of terms: {num_terms}")
     print(f"  Indexed fields: {fields_indexed}")
 
-    # Convert the index and lookup dictionary to JSON.
-    index_json = json.dumps(index_data)
-    lookup_json = json.dumps(lookup)
-    js_content = f"var prebuiltIndexData = {index_json};\nvar prebuiltDocuments = {lookup_json};\n"
+    # Minify JSON output to reduce file size.
+    index_json = json.dumps(index_data, separators=(',', ':'), ensure_ascii=False)
+    lookup_json = json.dumps(lookup, separators=(',', ':'), ensure_ascii=False)
+    js_content = f"var prebuiltIndexData={index_json};\nvar prebuiltDocuments={lookup_json};\n"
 
     # Write the output to lunr_index.js.
     with open('lunr_index.js', 'w', encoding='utf-8') as f:
