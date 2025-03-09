@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Static Full-Text Search with Lunr.js</title>
+  <!-- Load Lunr.js from CDN -->
+  <script src="https://unpkg.com/lunr/lunr.js"></script>
+  <!-- Load the pre-built index file -->
+  <script src="lunr_index.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    #search-form {
+      margin-bottom: 20px;
+    }
+    #results {
+      margin-top: 20px;
+    }
+    .result-item {
+      margin-bottom: 15px;
+    }
+    .result-item a {
+      font-size: 1.2em;
+      text-decoration: none;
+      color: #007acc;
+    }
+    .result-item a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>Static Full-Text Search</h1>
+  <!-- Search form -->
+  <form id="search-form">
+    <input type="text" id="search-input" placeholder="Enter search term" required>
+    <button type="submit">Search</button>
+  </form>
+  <!-- Container for search results -->
+  <div id="results"></div>
+
+  <script>
+    console.log("Script started.");
+
+    // Verify that prebuilt index variables are available
+    if (typeof prebuiltIndexData === "undefined" || typeof prebuiltDocuments === "undefined") {
+      console.error("prebuiltIndexData or prebuiltDocuments is not defined. Check that lunr_index.js is in the same directory and is loaded correctly.");
+    } else {
+      console.log("prebuiltIndexData and prebuiltDocuments loaded.");
+    }
+
+    // Load the Lunr index
+    var idx;
+    try {
+      idx = lunr.Index.load(prebuiltIndexData);
+      console.log("Lunr index loaded.");
+    } catch (e) {
+      console.error("Error loading Lunr index:", e);
+    }
+
+    /**
+     * Perform a search on the index and render results.
+     * @param {string} query - The search query.
+     */
+    function performSearch(query) {
+      var results = idx.search(query);
+      var resultsDiv = document.getElementById("results");
+      resultsDiv.innerHTML = ""; // Clear previous results
+
+      if (results.length === 0) {
+        resultsDiv.innerHTML = "<p>No results found.</p>";
+        return;
+      }
+
+      var ul = document.createElement("ul");
+      results.forEach(function(result) {
+        // Look up document details using the document reference
+        var doc = prebuiltDocuments[result.ref];
+        var li = document.createElement("li");
+        li.className = "result-item";
+        li.innerHTML = "<a href='" + doc.url + "'>" + doc.title + "</a><br>" +
+                       "<span>" + doc.summary + "</span>";
+        ul.appendChild(li);
+      });
+      resultsDiv.appendChild(ul);
+    }
+
+    // Attach the search form submission event
+    document.getElementById("search-form").addEventListener("submit", function(e) {
+      e.preventDefault(); // Prevent form submission
+      var query = document.getElementById("search-input").value;
+      console.log("Searching for:", query);
+      performSearch(query);
+    });
+  </script>
+</body>
+</html>
