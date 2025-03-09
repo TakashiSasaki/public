@@ -1,0 +1,34 @@
+# Documentation on the Origin of the Japanese Name "サボテン"
+
+## Introduction
+This document summarizes the investigation conducted during this session on the etymological origin of the Japanese name "サボテン" (cactus). The focus is on understanding how European languages—especially Spanish and Portuguese—contributed to the term used in Japan.
+
+## Background
+- The original query questioned why the word "cactus" was adapted as "サボテン" in Japanese.
+- Historical records indicate that the name did not directly derive from the Latin "cactus" but rather evolved through a process of transliteration influenced by Iberian languages during early cultural exchanges.
+
+## Investigation Details
+
+### 1. Early Etymology of "Cactus"
+- The term "cactus" originates from the Greek word "κάκτος (kaktos)" and was later adopted into Latin.
+- In classical usage, the word referred to various spiny or prickly plants.
+
+### 2. European (Spanish/Portuguese) Influence
+- During the 16th century, missionaries and traders from Spain and Portugal introduced many new plants to Japan.
+- **Portuguese Influence:**  
+  - A widely supported theory suggests that the Japanese name "サボテン" derives from the Portuguese word **sabão** (meaning "soap").  
+  - It is believed that the sap of the cactus was used as a substitute for soap, which led to the association.
+- **Spanish Influence:**  
+  - Another theory points to the Spanish word **jabon** (also meaning "soap") as a possible source.
+- These connections with soap likely emerged because the cactus sap was utilized to clean oil stains, reinforcing the association with cleaning agents.
+
+### 3. Alternative Theories
+- Some alternative hypotheses have considered links to the Spanish word **sábila** (referring to aloe) due to similarities in appearance, though this is less supported.
+- Other explanations involve phonetic changes during transliteration in Japan, but the soap-related etymology remains the predominant view.
+
+## Conclusion
+The investigation indicates that the Japanese name "サボテン" most likely originates from a term meaning "soap"—either from the Portuguese **sabão** or the Spanish **jabon**. This naming likely reflects the practical use of cactus sap as a cleaning agent when the plant was introduced to Japan in the 16th century. Although various theories exist, the evidence points to the soap-related etymology as the most plausible explanation.
+
+## References
+- YTV article on the etymology of "サボテン":  https://www.ytv.co.jp/michiura_time/contents/202008/j4burt7moil41s7s.html 
+- Note article discussing possible origins:  https://note.com/nonaru/n/n50c9fe20d924
