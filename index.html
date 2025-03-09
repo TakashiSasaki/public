@@ -11,15 +11,23 @@
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
+      line-height: 1.6;
     }
     #search-form {
       margin-bottom: 20px;
+    }
+    #search-input {
+      width: 300px;
+      padding: 8px;
+      font-size: 1em;
     }
     #results {
       margin-top: 20px;
     }
     .result-item {
       margin-bottom: 15px;
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
     }
     .result-item a {
       font-size: 1.2em;
@@ -29,29 +37,38 @@
     .result-item a:hover {
       text-decoration: underline;
     }
+    mark {
+      background-color: yellow;
+      color: black;
+    }
+    #loading {
+      font-style: italic;
+      color: #555;
+    }
   </style>
 </head>
 <body>
   <h1>Static Full-Text Search</h1>
   <!-- Search form -->
-  <form id="search-form">
-    <input type="text" id="search-input" placeholder="Enter search term" required>
+  <form id="search-form" role="search">
+    <input type="text" id="search-input" placeholder="Enter search term" required aria-label="Search">
     <button type="submit">Search</button>
   </form>
-  <!-- Container for search results -->
-  <div id="results"></div>
+  
+  <!-- Results section with ARIA live region -->
+  <section id="results" aria-live="polite"></section>
 
   <script>
     console.log("Script started.");
 
-    // Verify that prebuilt index variables are available
+    // Verify that prebuilt index variables are available.
     if (typeof prebuiltIndexData === "undefined" || typeof prebuiltDocuments === "undefined") {
-      console.error("prebuiltIndexData or prebuiltDocuments is not defined. Check that lunr_index.js is in the same directory and is loaded correctly.");
+      console.error("prebuiltIndexData or prebuiltDocuments is not defined. Ensure lunr_index.js is in the same directory.");
     } else {
       console.log("prebuiltIndexData and prebuiltDocuments loaded.");
     }
 
-    // Load the Lunr index
+    // Load the Lunr index.
     var idx;
     try {
       idx = lunr.Index.load(prebuiltIndexData);
@@ -61,38 +78,79 @@
     }
 
     /**
-     * Perform a search on the index and render results.
+     * Highlight all occurrences of tokens in the given text.
+     * @param {string} text - The text to highlight.
+     * @param {Array} tokens - Array of tokens (strings) to highlight.
+     * @returns {string} - The text with tokens wrapped in <mark> tags.
+     */
+    function highlight(text, tokens) {
+      // For each token, perform a global case-insensitive replace.
+      tokens.forEach(function(token) {
+        // Escape special regex characters in token.
+        var escapedToken = token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        var regex = new RegExp(escapedToken, 'gi');
+        text = text.replace(regex, function(match) {
+          return '<mark>' + match + '</mark>';
+        });
+      });
+      return text;
+    }
+
+    /**
+     * Perform a search on the index and render results with highlighted snippets.
      * @param {string} query - The search query.
      */
     function performSearch(query) {
+      var resultsSection = document.getElementById("results");
+      resultsSection.innerHTML = "<p id='loading'>Searching...</p>"; // Show loading indicator
+
+      // Execute the search.
       var results = idx.search(query);
-      var resultsDiv = document.getElementById("results");
-      resultsDiv.innerHTML = ""; // Clear previous results
+      
+      // Clear loading message.
+      resultsSection.innerHTML = "";
 
       if (results.length === 0) {
-        resultsDiv.innerHTML = "<p>No results found.</p>";
+        resultsSection.innerHTML = "<p>No results found.</p>";
         return;
       }
 
+      // Split the query into tokens (split on whitespace)
+      var queryTokens = query.split(/\s+/).filter(Boolean);
+      
+      // Create an unordered list for results.
       var ul = document.createElement("ul");
       results.forEach(function(result) {
-        // Look up document details using the document reference
         var doc = prebuiltDocuments[result.ref];
         var li = document.createElement("li");
         li.className = "result-item";
+
+        // Highlight matching tokens in the summary.
+        var highlightedSummary = highlight(doc.summary, queryTokens);
+
         li.innerHTML = "<a href='" + doc.url + "'>" + doc.title + "</a><br>" +
-                       "<span>" + doc.summary + "</span>";
+                       "<span>" + highlightedSummary + "</span>";
         ul.appendChild(li);
       });
-      resultsDiv.appendChild(ul);
+      resultsSection.appendChild(ul);
     }
 
-    // Attach the search form submission event
+    // Attach event listener to the search form.
     document.getElementById("search-form").addEventListener("submit", function(e) {
       e.preventDefault(); // Prevent form submission
-      var query = document.getElementById("search-input").value;
-      console.log("Searching for:", query);
-      performSearch(query);
+      var query = document.getElementById("search-input").value.trim();
+      if (query.length > 0) {
+        console.log("Searching for:", query);
+        performSearch(query);
+      }
+    });
+
+    // Optional: Real-time search as the user types.
+    document.getElementById("search-input").addEventListener("keyup", function(e) {
+      var query = this.value.trim();
+      if (query.length > 2) {  // Trigger search after 3 characters for performance
+        performSearch(query);
+      }
     });
   </script>
 </body>
