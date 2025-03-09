@@ -84,7 +84,6 @@
      * @returns {string} - The text with tokens wrapped in <mark> tags.
      */
     function highlight(text, tokens) {
-      // For each token, perform a global case-insensitive replace.
       tokens.forEach(function(token) {
         // Escape special regex characters in token.
         var escapedToken = token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -97,15 +96,33 @@
     }
 
     /**
+     * Process query tokens to enable prefix (front-matching) search.
+     * Appends a trailing "*" to each token if not already present.
+     * @param {string} query - The raw query.
+     * @returns {string} - The modified query with wildcards.
+     */
+    function processQueryForPrefix(query) {
+      var tokens = query.split(/\s+/).filter(Boolean);
+      // Append trailing '*' to each token if not already present.
+      var processedTokens = tokens.map(function(token) {
+        return token.endsWith("*") ? token : token + "*";
+      });
+      return processedTokens.join(" ");
+    }
+
+    /**
      * Perform a search on the index and render results with highlighted snippets.
-     * @param {string} query - The search query.
+     * @param {string} query - The raw search query.
      */
     function performSearch(query) {
       var resultsSection = document.getElementById("results");
       resultsSection.innerHTML = "<p id='loading'>Searching...</p>"; // Show loading indicator
 
-      // Execute the search.
-      var results = idx.search(query);
+      // Modify the query for prefix matching.
+      var processedQuery = processQueryForPrefix(query);
+
+      // Execute the search using the processed query.
+      var results = idx.search(processedQuery);
       
       // Clear loading message.
       resultsSection.innerHTML = "";
@@ -115,7 +132,7 @@
         return;
       }
 
-      // Split the query into tokens (split on whitespace)
+      // Split the raw query into tokens for highlighting.
       var queryTokens = query.split(/\s+/).filter(Boolean);
       
       // Create an unordered list for results.
