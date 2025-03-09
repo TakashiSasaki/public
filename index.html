@@ -78,6 +78,21 @@
     }
 
     /**
+     * Simple debounce function.
+     * Returns a debounced version of the function that delays invocation until after wait ms have elapsed since the last invocation.
+     * @param {Function} func - The function to debounce.
+     * @param {number} wait - The debounce delay in milliseconds.
+     * @returns {Function} - The debounced function.
+     */
+    function debounce(func, wait) {
+      let timeout;
+      return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+      };
+    }
+
+    /**
      * Highlight all occurrences of tokens in the given text.
      * @param {string} text - The text to highlight.
      * @param {Array} tokens - Array of tokens (strings) to highlight.
@@ -85,7 +100,6 @@
      */
     function highlight(text, tokens) {
       tokens.forEach(function(token) {
-        // Escape special regex characters in token.
         var escapedToken = token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         var regex = new RegExp(escapedToken, 'gi');
         text = text.replace(regex, function(match) {
@@ -96,14 +110,13 @@
     }
 
     /**
-     * Process query tokens to enable prefix (front-matching) search.
+     * Process query tokens to enable prefix matching.
      * Appends a trailing "*" to each token if not already present.
      * @param {string} query - The raw query.
      * @returns {string} - The modified query with wildcards.
      */
     function processQueryForPrefix(query) {
       var tokens = query.split(/\s+/).filter(Boolean);
-      // Append trailing '*' to each token if not already present.
       var processedTokens = tokens.map(function(token) {
         return token.endsWith("*") ? token : token + "*";
       });
@@ -116,15 +129,10 @@
      */
     function performSearch(query) {
       var resultsSection = document.getElementById("results");
-      resultsSection.innerHTML = "<p id='loading'>Searching...</p>"; // Show loading indicator
+      resultsSection.innerHTML = "<p id='loading'>Searching...</p>";
 
-      // Modify the query for prefix matching.
       var processedQuery = processQueryForPrefix(query);
-
-      // Execute the search using the processed query.
       var results = idx.search(processedQuery);
-      
-      // Clear loading message.
       resultsSection.innerHTML = "";
 
       if (results.length === 0) {
@@ -132,19 +140,13 @@
         return;
       }
 
-      // Split the raw query into tokens for highlighting.
       var queryTokens = query.split(/\s+/).filter(Boolean);
-      
-      // Create an unordered list for results.
       var ul = document.createElement("ul");
       results.forEach(function(result) {
         var doc = prebuiltDocuments[result.ref];
         var li = document.createElement("li");
         li.className = "result-item";
-
-        // Highlight matching tokens in the summary.
         var highlightedSummary = highlight(doc.summary, queryTokens);
-
         li.innerHTML = "<a href='" + doc.url + "'>" + doc.title + "</a><br>" +
                        "<span>" + highlightedSummary + "</span>";
         ul.appendChild(li);
@@ -152,9 +154,9 @@
       resultsSection.appendChild(ul);
     }
 
-    // Attach event listener to the search form.
+    // Attach event listener to the search form (on submit).
     document.getElementById("search-form").addEventListener("submit", function(e) {
-      e.preventDefault(); // Prevent form submission
+      e.preventDefault();
       var query = document.getElementById("search-input").value.trim();
       if (query.length > 0) {
         console.log("Searching for:", query);
@@ -162,13 +164,13 @@
       }
     });
 
-    // Optional: Real-time search as the user types.
-    document.getElementById("search-input").addEventListener("keyup", function(e) {
+    // Attach debounced real-time search on keyup.
+    document.getElementById("search-input").addEventListener("keyup", debounce(function(e) {
       var query = this.value.trim();
-      if (query.length > 2) {  // Trigger search after 3 characters for performance
+      if (query.length > 2) {
         performSearch(query);
       }
-    });
+    }, 300));
   </script>
 </body>
 </html>
