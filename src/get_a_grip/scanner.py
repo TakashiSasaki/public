@@ -28,7 +28,7 @@ def scan_directory(root_path: str) -> List[dict]:
                 attributes = getattr(stat, "st_file_attributes", 0)
                 
                 file_info = {
-                    "FullPath": str(path),
+                    "Filename": str(path),
                     "Size": stat.st_size,
                     "Date Modified": unix_to_filetime(stat.st_mtime),
                     "Date Created": unix_to_filetime(stat.st_ctime),
