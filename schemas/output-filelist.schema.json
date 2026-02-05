@@ -1,0 +1,75 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://purl.org/get-a-grip/schemas/output-filelist.schema.json",
+    "title": "File List Output (JSON-LD)",
+    "description": "Standard output format for get-a-grip directory scanner containing a list of files with Windows-specific metadata.",
+    "type": "object",
+    "required": [
+        "@context",
+        "@type",
+        "files"
+    ],
+    "properties": {
+        "@context": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "minItems": 1,
+            "description": "JSON-LD context identifiers and/or file paths."
+        },
+        "@id": {
+            "type": "string",
+            "format": "uri",
+            "description": "Optional identifier for the result set."
+        },
+        "@type": {
+            "const": "ItemList",
+            "description": "JSON-LD type for a list of items."
+        },
+        "files": {
+            "type": "array",
+            "description": "List of scanned file objects.",
+            "items": {
+                "type": "object",
+                "required": [
+                    "Filename",
+                    "Size",
+                    "Date Modified",
+                    "Date Created",
+                    "Attributes"
+                ],
+                "properties": {
+                    "Filename": {
+                        "type": "string",
+                        "description": "Full absolute path of the file."
+                    },
+                    "Size": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "File size in bytes."
+                    },
+                    "Date Modified": {
+                        "type": "string",
+                        "pattern": "^\\d+$",
+                        "description": "Windows FILETIME (64-bit) as a decimal string."
+                    },
+                    "Date Created": {
+                        "type": "string",
+                        "pattern": "^\\d+$",
+                        "description": "Windows FILETIME (64-bit) as a decimal string."
+                    },
+                    "Attributes": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "Windows file attribute flags (unsigned integer)."
+                    },
+                    "@type": {
+                        "const": "File",
+                        "description": "JSON-LD type for an individual file (usually omitted if defined in context)."
+                    }
+                }
+            }
+        }
+    }
+}

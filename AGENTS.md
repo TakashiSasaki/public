@@ -16,6 +16,13 @@ Follow the standard Python src-layout:
 - `tests/`: Test suite.
 - `pyproject.toml`: Project configuration and dependencies.
 
+## Schema Management
+To ensure interoperability and clear specifications:
+- **Directory:** All input/output schemas must be placed in the `/schemas` directory at the repository root.
+- **Format:** Use [JSON Schema](https://json-schema.org/) for defining data structures.
+- **Usage:** Developers and agents should refer to these schemas instead of implementation details for interoperability.
+- **Versioning:** Any change to the output format must be reflected in the corresponding schema.
+
 ## Coding Standards & Patterns
 - **Type Hinting:** Use PEP 484 type hints for all functions and classes.
 - **Docstrings:** Use Google-style docstrings for non-trivial functions.
