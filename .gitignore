@@ -135,6 +135,7 @@ dmypy.json
 # pytype static type analyzer
 .pytype/
 
-# Cython debug symbols
-cython_debug/
+# Local test outputs
+test_*.json
+fbd0009d-e91b-414f-9f4f-db3fbd3a16ee.json
 commit_message.txt
