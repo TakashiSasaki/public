@@ -1,40 +1,31 @@
 {
-    "@context": {
-        "@vocab": "https://schema.org/",
-        "get-a-grip": "https://purl.org/get-a-grip/vocab#",
-        "files": "urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee",
-        "FullPath": "contentUrl",
-        "Size": "contentSize",
-        "Date Modified": "dateModified",
-        "Date Created": "dateCreated",
-        "Attributes": "get-a-grip:attributes"
+  "@context": "../src/get_a_grip/context.json",
+  "@id": "urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee",
+  "@type": "ItemList",
+  "files": [
+    {
+      "@type": "File",
+      "FullPath": "C:\\path\\to\\example.txt",
+      "Size": 1024,
+      "Date Modified": "132894565291065139",
+      "Date Created": "132894565291065139",
+      "Attributes": 9232
     },
-    "@id": "urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee",
-    "@type": "ItemList",
-    "files": [
-        {
-            "@type": "File",
-            "FullPath": "C:\\path\\to\\example.txt",
-            "Size": 1024,
-            "Date Modified": "132894565291065139",
-            "Date Created": "132894565291065139",
-            "Attributes": 9232
-        },
-        {
-            "@type": "File",
-            "FullPath": "C:\\path\\to\\example2.txt",
-            "Size": 1024,
-            "Date Modified": "132894565291065139",
-            "Date Created": "132894565291065139",
-            "Attributes": 9232
-        },
-        {
-            "@type": "File",
-            "FullPath": "C:\\path\\to\\example3.txt",
-            "Size": 1024,
-            "Date Modified": "132894565291065139",
-            "Date Created": "132894565291065139",
-            "Attributes": 9232
-        }
-    ]
+    {
+      "@type": "File",
+      "FullPath": "C:\\path\\to\\example2.txt",
+      "Size": 1024,
+      "Date Modified": "132894565291065139",
+      "Date Created": "132894565291065139",
+      "Attributes": 9232
+    },
+    {
+      "@type": "File",
+      "FullPath": "C:\\path\\to\\example3.txt",
+      "Size": 1024,
+      "Date Modified": "132894565291065139",
+      "Date Created": "132894565291065139",
+      "Attributes": 9232
+    }
+  ]
 }

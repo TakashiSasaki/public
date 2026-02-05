@@ -1,0 +1,12 @@
+{
+    "@context": {
+        "@vocab": "https://schema.org/",
+        "get-a-grip": "https://purl.org/get-a-grip/vocab#",
+        "files": "urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee",
+        "FullPath": "contentUrl",
+        "Size": "contentSize",
+        "Date Modified": "dateModified",
+        "Date Created": "dateCreated",
+        "Attributes": "get-a-grip:attributes"
+    }
+}

@@ -42,7 +42,7 @@ def scan_directory(root_path: str) -> List[dict]:
 
 def save_to_json(data: List[dict], output_path: str) -> None:
     """
-    Saves the scanned data to a JSON-LD file.
+    Saves the scanned data to a JSON-LD file with an external context.
     """
     uuid_urn = "urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee"
     
@@ -51,16 +51,7 @@ def save_to_json(data: List[dict], output_path: str) -> None:
         entry["@type"] = "File"
 
     output_data = {
-        "@context": {
-            "@vocab": "https://schema.org/",
-            "get-a-grip": "https://purl.org/get-a-grip/vocab#",
-            "files": uuid_urn,
-            "FullPath": "contentUrl",
-            "Size": "contentSize",
-            "Date Modified": "dateModified",
-            "Date Created": "dateCreated",
-            "Attributes": "get-a-grip:attributes"
-        },
+        "@context": "src/get_a_grip/context.json",
         "@id": uuid_urn,
         "@type": "ItemList",
         "files": data
