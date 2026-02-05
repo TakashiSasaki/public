@@ -4,7 +4,6 @@
     "@type": "ItemList",
     "files": [
         {
-            "@type": "File",
             "Filename": "C:\\path\\to\\example.txt",
             "Size": 1024,
             "Date Modified": "132894565291065139",
@@ -12,7 +11,6 @@
             "Attributes": 9232
         },
         {
-            "@type": "File",
             "Filename": "C:\\path\\to\\example2.txt",
             "Size": 1024,
             "Date Modified": "132894565291065139",
@@ -20,7 +18,6 @@
             "Attributes": 9232
         },
         {
-            "@type": "File",
             "Filename": "C:\\path\\to\\example3.txt",
             "Size": 1024,
             "Date Modified": "132894565291065139",

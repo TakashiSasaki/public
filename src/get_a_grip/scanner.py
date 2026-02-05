@@ -46,10 +46,6 @@ def save_to_json(data: List[dict], output_path: str) -> None:
     """
     uuid_urn = "urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee"
     
-    # Add @type to each file entry
-    for entry in data:
-        entry["@type"] = "File"
-
     output_data = {
         "@context": "src/get_a_grip/context.json",
         "@id": uuid_urn,
