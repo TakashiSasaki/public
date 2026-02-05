@@ -1,0 +1,39 @@
+{
+  "urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee": [
+    {
+      "FullPath": "C:\\Users\\takas\\Desktop\\directory-sercher\\src\\get_a_grip\\main.py",
+      "Size": 709,
+      "Date Modified": "134147486582588144",
+      "Date Created": "134147481960946144",
+      "Attributes": 32
+    },
+    {
+      "FullPath": "C:\\Users\\takas\\Desktop\\directory-sercher\\src\\get_a_grip\\scanner.py",
+      "Size": 2446,
+      "Date Modified": "134147494598595232",
+      "Date Created": "134147486523996256",
+      "Attributes": 32
+    },
+    {
+      "FullPath": "C:\\Users\\takas\\Desktop\\directory-sercher\\src\\get_a_grip\\__init__.py",
+      "Size": 0,
+      "Date Modified": "134147482065736144",
+      "Date Created": "134147482065736144",
+      "Attributes": 32
+    },
+    {
+      "FullPath": "C:\\Users\\takas\\Desktop\\directory-sercher\\src\\get_a_grip\\__pycache__\\scanner.cpython-312.pyc",
+      "Size": 3237,
+      "Date Modified": "134147494710164000",
+      "Date Created": "134147494710154000",
+      "Attributes": 32
+    },
+    {
+      "FullPath": "C:\\Users\\takas\\Desktop\\directory-sercher\\src\\get_a_grip\\__pycache__\\__init__.cpython-312.pyc",
+      "Size": 164,
+      "Date Modified": "134147490475326688",
+      "Date Created": "134147490475312960",
+      "Attributes": 32
+    }
+  ]
+}

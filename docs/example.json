@@ -1,0 +1,25 @@
+{
+    "urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee": [
+        {
+            "Filename": "example.txt",
+            "Size": 1024,
+            "Date Modified": "132894565291065139",
+            "Date Created": "132894565291065139",
+            "Attributes": 9232
+        },
+        {
+            "Filename": "example2.txt",
+            "Size": 1024,
+            "Date Modified": "132894565291065139",
+            "Date Created": "132894565291065139",
+            "Attributes": 9232
+        },
+        {
+            "Filename": "example3.txt",
+            "Size": 1024,
+            "Date Modified": "2026-02-05T16:13:39+09:00",
+            "Date Created": "2026-02-05T16:13:39+09:00",
+            "Attributes": 9232
+        }
+    ]
+}
