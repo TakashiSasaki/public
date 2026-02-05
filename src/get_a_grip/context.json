@@ -1,9 +1,10 @@
 {
+    "@id": "urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee",
     "@context": {
         "@vocab": "https://schema.org/",
         "get-a-grip": "https://purl.org/get-a-grip/vocab#",
         "files": {
-            "@id": "urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee",
+            "@id": "get-a-grip:files",
             "@context": {
                 "@type": "File"
             }

@@ -1,6 +1,8 @@
 {
-    "@context": "../src/get_a_grip/context.json",
-    "@id": "urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee",
+    "@context": [
+        "urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee",
+        "../src/get_a_grip/context.json"
+    ],
     "@type": "ItemList",
     "files": [
         {
