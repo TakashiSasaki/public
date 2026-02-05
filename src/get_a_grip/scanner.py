@@ -49,7 +49,7 @@ def save_to_json(data: List[dict], output_path: str) -> None:
     output_data = {
         "@context": [
             uuid_urn,
-            "src/get_a_grip/context.json"
+            "schemas/context.json"
         ],
         "@type": "ItemList",
         "files": data
