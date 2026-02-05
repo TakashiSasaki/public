@@ -2,6 +2,7 @@ import argparse
 import sys
 from get_a_grip.tools.scanner import scan_directory, save_to_json
 from get_a_grip.tools.efu_converter import json_to_efu, efu_to_json
+from get_a_grip.tools.whoami import print_whoami
 
 def main():
     parser = argparse.ArgumentParser(description="get-a-grip: A collection of tools.")
@@ -21,6 +22,9 @@ def main():
     e2j_parser = subparsers.add_parser("efu2jsonld", help="Convert EFU to JSON-LD")
     e2j_parser.add_argument("input", help="Input EFU file")
     e2j_parser.add_argument("output", help="Output JSON-LD file")
+
+    # whoami subcommand
+    subparsers.add_parser("whoami", help="Print effective user")
 
     args = parser.parse_args()
 
@@ -50,6 +54,13 @@ def main():
         try:
             efu_to_json(args.input, args.output)
             print(f"Converted {args.input} to {args.output}")
+        except Exception as e:
+            print(f"Error: {e}", file=sys.stderr)
+            sys.exit(1)
+
+    elif args.command == "whoami":
+        try:
+            print_whoami()
         except Exception as e:
             print(f"Error: {e}", file=sys.stderr)
             sys.exit(1)
