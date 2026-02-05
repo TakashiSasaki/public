@@ -1,0 +1,56 @@
+{
+  "@context": {
+    "@vocab": "https://schema.org/",
+    "get-a-grip": "https://purl.org/get-a-grip/vocab#",
+    "files": "urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee",
+    "FullPath": "contentUrl",
+    "Size": "contentSize",
+    "Date Modified": "dateModified",
+    "Date Created": "dateCreated",
+    "Attributes": "get-a-grip:attributes"
+  },
+  "@id": "urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee",
+  "@type": "ItemList",
+  "files": [
+    {
+      "FullPath": "C:\\Users\\takas\\Desktop\\directory-sercher\\src\\get_a_grip\\main.py",
+      "Size": 709,
+      "Date Modified": "134147486582588144",
+      "Date Created": "134147481960946144",
+      "Attributes": 32,
+      "@type": "File"
+    },
+    {
+      "FullPath": "C:\\Users\\takas\\Desktop\\directory-sercher\\src\\get_a_grip\\scanner.py",
+      "Size": 2968,
+      "Date Modified": "134147495767164464",
+      "Date Created": "134147486523996256",
+      "Attributes": 32,
+      "@type": "File"
+    },
+    {
+      "FullPath": "C:\\Users\\takas\\Desktop\\directory-sercher\\src\\get_a_grip\\__init__.py",
+      "Size": 0,
+      "Date Modified": "134147482065736144",
+      "Date Created": "134147482065736144",
+      "Attributes": 32,
+      "@type": "File"
+    },
+    {
+      "FullPath": "C:\\Users\\takas\\Desktop\\directory-sercher\\src\\get_a_grip\\__pycache__\\scanner.cpython-312.pyc",
+      "Size": 3561,
+      "Date Modified": "134147496023884976",
+      "Date Created": "134147496023879808",
+      "Attributes": 32,
+      "@type": "File"
+    },
+    {
+      "FullPath": "C:\\Users\\takas\\Desktop\\directory-sercher\\src\\get_a_grip\\__pycache__\\__init__.cpython-312.pyc",
+      "Size": 164,
+      "Date Modified": "134147490475326688",
+      "Date Created": "134147490475312960",
+      "Attributes": 32,
+      "@type": "File"
+    }
+  ]
+}

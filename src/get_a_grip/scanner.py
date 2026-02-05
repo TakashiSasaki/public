@@ -42,11 +42,28 @@ def scan_directory(root_path: str) -> List[dict]:
 
 def save_to_json(data: List[dict], output_path: str) -> None:
     """
-    Saves the scanned data to a JSON file with the required UUID wrapper.
+    Saves the scanned data to a JSON-LD file.
     """
-    uuid_key = "urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee"
+    uuid_urn = "urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee"
+    
+    # Add @type to each file entry
+    for entry in data:
+        entry["@type"] = "File"
+
     output_data = {
-        uuid_key: data
+        "@context": {
+            "@vocab": "https://schema.org/",
+            "get-a-grip": "https://purl.org/get-a-grip/vocab#",
+            "files": uuid_urn,
+            "FullPath": "contentUrl",
+            "Size": "contentSize",
+            "Date Modified": "dateModified",
+            "Date Created": "dateCreated",
+            "Attributes": "get-a-grip:attributes"
+        },
+        "@id": uuid_urn,
+        "@type": "ItemList",
+        "files": data
     }
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(output_data, f, ensure_ascii=False, indent=2)

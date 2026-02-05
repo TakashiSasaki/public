@@ -1,24 +1,39 @@
 {
-    "urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee": [
+    "@context": {
+        "@vocab": "https://schema.org/",
+        "get-a-grip": "https://purl.org/get-a-grip/vocab#",
+        "files": "urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee",
+        "FullPath": "contentUrl",
+        "Size": "contentSize",
+        "Date Modified": "dateModified",
+        "Date Created": "dateCreated",
+        "Attributes": "get-a-grip:attributes"
+    },
+    "@id": "urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee",
+    "@type": "ItemList",
+    "files": [
         {
-            "Filename": "example.txt",
+            "@type": "File",
+            "FullPath": "C:\\path\\to\\example.txt",
             "Size": 1024,
             "Date Modified": "132894565291065139",
             "Date Created": "132894565291065139",
             "Attributes": 9232
         },
         {
-            "Filename": "example2.txt",
+            "@type": "File",
+            "FullPath": "C:\\path\\to\\example2.txt",
             "Size": 1024,
             "Date Modified": "132894565291065139",
             "Date Created": "132894565291065139",
             "Attributes": 9232
         },
         {
-            "Filename": "example3.txt",
+            "@type": "File",
+            "FullPath": "C:\\path\\to\\example3.txt",
             "Size": 1024,
-            "Date Modified": "2026-02-05T16:13:39+09:00",
-            "Date Created": "2026-02-05T16:13:39+09:00",
+            "Date Modified": "132894565291065139",
+            "Date Created": "132894565291065139",
             "Attributes": 9232
         }
     ]
