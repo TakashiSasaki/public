@@ -1,7 +1,7 @@
 {
     "@context": [
         "urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee",
-        "../schemas/context.json"
+        "context.json"
     ],
     "@type": "ItemList",
     "files": [

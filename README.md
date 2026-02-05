@@ -23,8 +23,8 @@
 ## 📂 Directory Structure
 
 - `src/get_a_grip/`: Core application logic and context definitions.
-- `schemas/`: Official JSON Schema specifications for interoperability.
-- `docs/`: Documentation and example output files.
+- `schemas/`: Official JSON Schema specifications, JSON-LD contexts, and data examples.
+- `docs/`: Human-readable documentation.
 - `tests/`: Project test suite.
 - `AGENTS.md`: Technical guidance for coding agents and developers.
 
