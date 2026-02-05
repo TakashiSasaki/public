@@ -29,6 +29,19 @@ cargo build --release
 
 The output will be a `.dll` file located in `target/release/`. This DLL needs to be registered with the Windows operating system for the Shell Namespace Extension to function.
 
+## Git Hooks Setup
+
+This repository keeps hook scripts under `scripts/`. To enable them locally, copy them into `.git/hooks/` and ensure they are executable.
+
+```bash
+cp scripts/post-commit .git/hooks/post-commit
+cp scripts/pre-push .git/hooks/pre-push
+```
+
+What they do:
+- `post-commit`: Adds a git note under `refs/notes/README` using the first existing file in this priority order: `README.md`, `README.txt`, `README.html`, `README`.
+- `pre-push`: Automatically pushes all notes with `git push origin refs/notes/*` (recursion-guarded).
+
 ## Current Implementation Status
 
 -   The project provides a functional skeleton for a Windows Shell Namespace Extension.

@@ -1,0 +1,23 @@
+#!/bin/sh
+set -eu
+
+# Avoid recursion when this hook invokes git push itself
+if [ -n "${SKIP_NOTES_PUSH:-}" ]; then
+  exit 0
+fi
+
+# If the user is already pushing notes, don't double-push
+notes_in_push=0
+while read -r local_ref local_sha remote_ref remote_sha; do
+  case "$remote_ref" in
+    refs/notes/*) notes_in_push=1 ;;
+  esac
+done || true
+
+if [ "$notes_in_push" -eq 1 ]; then
+  exit 0
+fi
+
+remote="${1:-origin}"
+
+SKIP_NOTES_PUSH=1 git push "$remote" refs/notes/*

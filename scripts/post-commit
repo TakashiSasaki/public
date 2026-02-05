@@ -1,0 +1,15 @@
+#!/bin/sh
+set -eu
+
+# Pick README content in priority order
+note_file=""
+for f in README.md README.txt README.html README; do
+  if [ -f "$f" ]; then
+    note_file="$f"
+    break
+  fi
+done
+
+if [ -n "$note_file" ]; then
+  git notes --ref notes/README add -f -F "$note_file" HEAD
+fi
