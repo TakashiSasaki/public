@@ -3,4 +3,15 @@ name = "my_uuid_folder"
 version = "0.1.0"
 edition = "2024"
 
+[lib]
+# Windows がロード可能な C 言語互換の DLL を出力する指定
+crate-type = ["cdylib"]
+
 [dependencies]
+# Windows API を扱うためのライブラリ
+windows = { version = "0.58", features = [
+    "implement",
+    "Win32_Foundation",
+    "Win32_System_Com",
+    "Win32_UI_Shell",
+] }
