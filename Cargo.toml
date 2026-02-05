@@ -7,13 +7,14 @@ edition = "2024"
 # Windows がロード可能な C 言語互換の DLL を出力する指定
 crate-type = ["cdylib"]
 
+
 [dependencies]
+windows-core = "0.58" # これがマクロの動作に必須です
 windows = { version = "0.58", features = [
     "implement",
     "Win32_Foundation",
     "Win32_System_Com",
-    "Win32_System_SystemServices", # これが DLL_PROCESS_ATTACH に必要
+    "Win32_System_SystemServices",
     "Win32_UI_Shell",
-    "Win32_UI_Shell_Common",       # これが ITEMIDLIST や SHCONTF に必要
-    "Win32_System_Registry",
+    "Win32_UI_Shell_Common",
 ] }
