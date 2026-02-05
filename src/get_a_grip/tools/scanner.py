@@ -57,17 +57,4 @@ def save_to_json(data: List[dict], output_path: str) -> None:
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(output_data, f, ensure_ascii=False, indent=2)
 
-def run_scanner(directory: str, output: Optional[str] = None) -> str:
-    """
-    Main execution logic for scanning a directory and saving the results in the new format.
-    """
-    if not output:
-        output = "fbd0009d-e91b-414f-9f4f-db3fbd3a16ee.json"
 
-    print(f"Scanning directory: {directory}...")
-    file_data = scan_directory(directory)
-    
-    print(f"Found {len(file_data)} files. Saving to {output} in detailed format...")
-    save_to_json(file_data, output)
-    
-    return output

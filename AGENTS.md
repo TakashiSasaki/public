@@ -13,6 +13,11 @@ This document provides instructions and context for AI coding agents and human d
 ## Directory Structure
 Follow the standard Python src-layout:
 - `src/get_a_grip/`: Main package source code.
+- `src/get_a_grip/`: Main package source code.
+    - `cli.py`: CLI interface layer. Orchestrates tools and handles user interaction (print/input).
+    - `tools/`: **Pure Logic Layer**. Contains core implementations of tools (e.g., `scanner.py`).
+      - Code here must be pure: **NO print()**, **NO sys.exit()**, **NO user prompts**.
+      - Should return raw data (dicts, objects) to be consumed by interfaces (CLI, TUI, MCP).
 - `tests/`: Test suite.
 - `pyproject.toml`: Project configuration and dependencies.
 
@@ -29,11 +34,13 @@ To ensure interoperability and clear specifications:
 - **Type Hinting:** Use PEP 484 type hints for all functions and classes.
 - **Docstrings:** Use Google-style docstrings for non-trivial functions.
 - **Async:** Use `asyncio` where appropriate for directory I/O if performance is critical.
-- **Modularity:** Keep functions small and focused on a single task.
+- **Separation of Concerns (Core vs Interface):**
+  - **Tools (`src/get_a_grip/tools/`)**: Pure business logic only. Returns data structures.
+  - **Interfaces (`cli.py`, `tui.py`, `mcp.py`)**: Handles presentation, user I/O, and orchestration.
 
 ## Development Workflow
 1. **Adding Dependencies:** Use `poetry add <package>`.
-2. **Running Locally:** Use `poetry run python src/get_a_grip/main.py`.
+2. **Running Locally:** Use `poetry run python src/get_a_grip/cli.py scanner <args>`, or install locally and run `get-a-grip scanner`.
 3. **Testing:** Run tests with `poetry run pytest`. Ensure new features have corresponding tests in `tests/`.
 
 ## Repository Rules
