@@ -40,7 +40,10 @@ To ensure interoperability and clear specifications:
 
 ## Development Workflow
 1. **Adding Dependencies:** Use `poetry add <package>`.
-2. **Running Locally:** Use `poetry run python src/get_a_grip/cli.py scanner <args>`, or install locally and run `get-a-grip scanner`.
+2. **Running Locally:**
+   - **Standard:** `poetry run get-a-grip scanner <args>`
+   - **Alias:** `poetry run gag scanner <args>` (Short for "get-a-grip")
+   - **Module:** `poetry run python -m get_a_grip scanner <args>`
 3. **Testing:** Run tests with `poetry run pytest`. Ensure new features have corresponding tests in `tests/`.
 
 ## Repository Rules

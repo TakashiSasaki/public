@@ -12,6 +12,7 @@ dependencies = [
 
 [project.scripts]
 get-a-grip = "get_a_grip.cli:main"
+gag = "get_a_grip.cli:main"
 
 
 [build-system]
