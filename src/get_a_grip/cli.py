@@ -1,6 +1,7 @@
 import argparse
 import sys
 from get_a_grip.tools.scanner import scan_directory, save_to_json
+from get_a_grip.tools.efu_converter import json_to_efu, efu_to_json
 
 def main():
     parser = argparse.ArgumentParser(description="get-a-grip: A collection of tools.")
@@ -10,6 +11,16 @@ def main():
     scanner_parser = subparsers.add_parser("scanner", help="Scan directory structures")
     scanner_parser.add_argument("directory", help="The directory path to scan.")
     scanner_parser.add_argument("-o", "--output", help="The output JSON file path. Defaults to fbd0009d-e91b-414f-9f4f-db3fbd3a16ee.json")
+
+    # jsonld2efu subcommand
+    j2e_parser = subparsers.add_parser("jsonld2efu", help="Convert JSON-LD to EFU")
+    j2e_parser.add_argument("input", help="Input JSON-LD file")
+    j2e_parser.add_argument("output", help="Output EFU file")
+
+    # efu2jsonld subcommand
+    e2j_parser = subparsers.add_parser("efu2jsonld", help="Convert EFU to JSON-LD")
+    e2j_parser.add_argument("input", help="Input EFU file")
+    e2j_parser.add_argument("output", help="Output JSON-LD file")
 
     args = parser.parse_args()
 
@@ -26,6 +37,23 @@ def main():
         except Exception as e:
             print(f"Error: {e}", file=sys.stderr)
             sys.exit(1)
+            
+    elif args.command == "jsonld2efu":
+        try:
+            json_to_efu(args.input, args.output)
+            print(f"Converted {args.input} to {args.output}")
+        except Exception as e:
+            print(f"Error: {e}", file=sys.stderr)
+            sys.exit(1)
+
+    elif args.command == "efu2jsonld":
+        try:
+            efu_to_json(args.input, args.output)
+            print(f"Converted {args.input} to {args.output}")
+        except Exception as e:
+            print(f"Error: {e}", file=sys.stderr)
+            sys.exit(1)
+
     else:
         parser.print_help()
 
