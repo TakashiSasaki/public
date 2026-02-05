@@ -71,5 +71,23 @@
                 }
             }
         }
-    }
+    },
+    "examples": [
+        {
+            "@context": [
+                "urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee",
+                "schemas/context.json"
+            ],
+            "@type": "ItemList",
+            "files": [
+                {
+                    "Filename": "C:\\path\\to\\file.txt",
+                    "Size": 1234,
+                    "Date Modified": "132894565291065139",
+                    "Date Created": "132894565291065139",
+                    "Attributes": 32
+                }
+            ]
+        }
+    ]
 }
