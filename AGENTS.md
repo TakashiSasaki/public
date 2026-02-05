@@ -1,0 +1,38 @@
+# AGENTS.md
+
+This document provides instructions and context for AI coding agents and human developers working on the `get-a-grip` project.
+
+## Project Overview
+`get-a-grip` is a Python application designed to search through directory structures.
+
+## Tech Stack
+- **Language:** Python 3.10+
+- **Dependency Management:** [Poetry](https://python-poetry.org/)
+- **Testing:** [pytest](https://docs.pytest.org/)
+
+## Directory Structure
+Follow the standard Python src-layout:
+- `src/get_a_grip/`: Main package source code.
+- `tests/`: Test suite.
+- `pyproject.toml`: Project configuration and dependencies.
+
+## Coding Standards & Patterns
+- **Type Hinting:** Use PEP 484 type hints for all functions and classes.
+- **Docstrings:** Use Google-style docstrings for non-trivial functions.
+- **Async:** Use `asyncio` where appropriate for directory I/O if performance is critical.
+- **Modularity:** Keep functions small and focused on a single task.
+
+## Development Workflow
+1. **Adding Dependencies:** Use `poetry add <package>`.
+2. **Running Locally:** Use `poetry run python src/get_a_grip/main.py`.
+3. **Testing:** Run tests with `poetry run pytest`. Ensure new features have corresponding tests in `tests/`.
+
+## Repository Rules
+- **Versioning:**
+    - Start from version `0.1.0`.
+    - Always increment the patch level (e.g., `0.1.0` -> `0.1.1`) whenever ANY change, however small, is made to the source code.
+- **Commit Messages:**
+    - Use detailed commit messages.
+    - Prefer `git commit -F commit_message.txt` for multi-line messages.
+- **OS Environment:** Be aware that this project is primarily developed in a Windows environment (Powershell). Use appropriate commands (e.g., `dir`, `move`).
+- **File Lists:** Use `es.exe -export-efu filelist.efu -path .` (C:\bin\es.exe) to generate file lists if needed.

@@ -1,5 +1,5 @@
 def main():
-    print("Hello, directory-sercher!")
+    print("Hello, get-a-grip!")
 
 if __name__ == "__main__":
     main()

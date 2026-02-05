@@ -1,4 +1,4 @@
-# directory-sercher
+# get-a-grip
 
 A Python application to search directories.
 
@@ -14,7 +14,7 @@ poetry install
 ## Running the application
 
 ```bash
-poetry run python src/directory_sercher/main.py
+poetry run python src/get_a_grip/main.py
 ```
 
 ## Running tests
