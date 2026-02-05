@@ -66,3 +66,55 @@ impl IPersistFolder_Impl for MyVirtualFolder {
         Ok(())
     }
 }
+
+use std::sync::Once;
+use windows::Win32::System::SystemServices::DLL_PROCESS_ATTACH;
+
+// --- クラスファクトリの実装 ---
+// Windowsが「MyVirtualFolderのインスタンスを作ってくれ」と頼むための仲介役です
+#[implement(IClassFactory)]
+struct MyClassFactory;
+
+impl IClassFactory_Impl for MyClassFactory {
+    fn CreateInstance(&self, punkouter: Option<&IUnknown>, riid: *const GUID, ppvobject: *mut *mut std::ffi::c_void) -> Result<()> {
+        if punkouter.is_some() {
+            return Err(CLASS_E_NOAGGREGATION.into());
+        }
+        let folder = MyVirtualFolder;
+        unsafe { folder.cast(riid, ppvobject) }
+    }
+
+    fn LockServer(&self, _flock: BOOL) -> Result<()> {
+        Ok(())
+    }
+}
+
+// --- Windows OS から直接呼ばれる公開関数 ---
+
+// DLLがロードされた時の処理（必要に応じて）
+#[no_mangle]
+extern "system" fn DllMain(_: HINSTANCE, dw_reason: u32, _: *const std::ffi::c_void) -> bool {
+    if dw_reason == DLL_PROCESS_ATTACH {
+        // 初期化が必要ならここに書く
+    }
+    true
+}
+
+// WindowsがこのDLLに「CLSIDに対応するオブジェクトをくれ」と頼む関数
+#[no_mangle]
+extern "system" fn DllGetClassObject(rclsid: *const GUID, riid: *const GUID, ppv: *mut *mut std::ffi::c_void) -> HRESULT {
+    unsafe {
+        if *rclsid == CLSID_MY_FOLDER {
+            let factory = MyClassFactory;
+            factory.cast(riid, ppv)
+        } else {
+            CLASS_E_CLASSNOTAVAILABLE.into()
+        }
+    }
+}
+
+// DLLをメモリから解放していいか確認する関数
+#[no_mangle]
+extern "system" fn DllCanUnloadNow() -> HRESULT {
+    S_FALSE // 簡略化のため常にロード状態を維持（デバッグ中はS_OKにするのが一般的）
+}
