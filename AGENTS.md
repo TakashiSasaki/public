@@ -18,6 +18,8 @@ Follow the standard Python src-layout:
     - `tui.py`: Textual-based TUI interface. Wraps tools with a rich terminal UI.
     - `tools/`: **Pure Logic Layer**. Contains core implementations of tools (e.g., `filelist.py`).
       - `filelist.py`: Local directory traversal.
+      - `dirtree.py`: Recursive directory tree traversal (hierarchical output).
+      - `filelist2dirtree.py`: Converter tool from flat `filelist.json` to hierarchical `dirtree.json`.
       - `efu_converter.py`: Conversions between JSON-LD and Everything EFU files.
       - `filelist_http.py`: Remote scanning via Everything HTTP server.
       - `filelist_ipc.py`: IPC-based scanning using Everything64.dll.
@@ -36,9 +38,16 @@ To ensure interoperability and clear specifications:
 - **Formats:** 
   - Use [JSON Schema](https://json-schema.org/) for defining data structures.
   - Use JSON-LD Contexts for defining semantic mappings.
+- **Vocabulary Source of Truth:**
+  - `schema/vocab.jsonld` is the ultimate source of truth for the `gag` namespace. 
+  - All proprietary terms must be defined here as `rdfs:Class` or `Property` before being used in contexts.
 - **PURL Namespace Ownership:**
   - The developer owns the `https://purl.org/gag` namespace. 
   - Authoritative terms (e.g., `gag:winAttributes`) must be mapped to this prefix in JSON-LD contexts.
+- **Metadata Structure (Observer/Target Pattern):**
+  - For consistency across tools (e.g., `probe`, `dirtree`), metadata should follow a hierarchical structure:
+    - `observer`: Identity information of the agent/user performing the action (e.g., `uid`, `userPrincipalName`).
+    - `target`: Information about the system or resource being observed (e.g., OS info, hostname).
 - **Federated Vocabularies:**
   - Prioritize standard vocabularies for mapping:
     - **General Concepts:** [Schema.org](https://schema.org/)
@@ -55,7 +64,8 @@ To ensure interoperability and clear specifications:
 - **Separation of Concerns (Core vs Interface):**
   - **Tools (`src/get_a_grip/tools/`)**: Pure business logic only. Returns data structures.
     - **MUST NOT** depend on `cli.py` or `tui.py`.
-    - **MUST NOT** use `input()`, `print()`, or `sys.exit()`. Raise exceptions instead.
+    - **MUST NOT** use `input()` or `sys.exit()`. Raise exceptions instead.
+    - **UI Feedback:** If a tool requires progress reporting, use an optional, injectable callback or a dedicated tracker class that defaults to no-op. Avoid direct `print()` calls in core logic.
   - **Interfaces (`cli.py`, `tui.py`, `mcp.py`)**: Handles presentation, user I/O, and orchestration.
     - Responsible for catching exceptions from tools and presenting them to the user.
 - **Round-Trip Verification:** When building data conversion tools, ALWAYS perform round-trip verification (Format A -> Format B -> Format A) to ensure data integrity and losslessness.
@@ -70,6 +80,13 @@ To ensure interoperability and clear specifications:
    - Run tests with `poetry run pytest`.
    - Ensure new features have corresponding tests in `tests/`.
    - **URL Verification:** Run `pytest tests/test_url_accessibility.py` after modifying schemas to ensure all external references are stable.
+   - **Schema Validation:** Use `python validate_filelist.py <data_file> <schema_file>` to verify output against JSON Schema definitions.
+
+### `src/get_a_grip/tools/dirtree.py`
+A recursive directory scanner that outputs a hierarchical JSON structure conforming to `schema/dirtree.json`. It captures the filesystem structure as a nested tree where keys are path segments.
+
+### `src/get_a_grip/tools/filelist2dirtree.py`
+A converter tool that takes the flat list output from Everything-based scanners (which conform to `schema/filelist.json`) and transforms them into a hierarchical structure (`schema/dirtree.json`). This is the preferred way to generate trees from IPC/HTTP scans.
 
 ### `src/get_a_grip/tools/filelist_http.py`
 A module that interfaces with the "Everything" search engine's HTTP server to perform file system scans. It fetches search results in JSON format and converts them into the project's standard schema. It supports raw response inspection and customizing the number of results.
