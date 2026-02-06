@@ -1,6 +1,6 @@
 URL AVAILABILITY REPORT
 =======================
-Generated: 2026-02-06T21:24:25.962044
+Generated: 2026-02-06T21:37:06.716732
 Scanned Directory: D:\github\get-a-grip\schema
 
 [OK] Accessible URLs (16):
