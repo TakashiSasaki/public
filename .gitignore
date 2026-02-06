@@ -144,3 +144,6 @@ commit_message.txt
 whoami.json
 src/test-scan-src.json
 src/test-scan.json
+res_efu.json
+res_ipc.json
+res_scanner.json
