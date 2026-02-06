@@ -80,7 +80,7 @@ To ensure interoperability and clear specifications:
    - Run tests with `poetry run pytest`.
    - Ensure new features have corresponding tests in `tests/`.
    - **URL Verification:** Run `pytest tests/test_url_accessibility.py` after modifying schemas to ensure all external references are stable.
-   - **Schema Validation:** Use `python validate_filelist.py <data_file> <schema_file>` to verify output against JSON Schema definitions.
+   - **Schema Validation:** Use `python scripts/validate_schema.py <data_file> <schema_file>` to verify output against JSON Schema definitions.
 
 ### `src/get_a_grip/tools/dirtree.py`
 A recursive directory scanner that outputs a hierarchical JSON structure conforming to `schema/dirtree.json`. It captures the filesystem structure as a nested tree where keys are path segments.
