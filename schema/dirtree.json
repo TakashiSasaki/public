@@ -6,7 +6,8 @@
     "type": "object",
     "required": [
         "@context",
-        "dirtree"
+        "dirtree",
+        "observer"
     ],
     "properties": {
         "@context": {
