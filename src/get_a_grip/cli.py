@@ -5,6 +5,7 @@ from get_a_grip.tools.scanner import scan_directory, save_to_json
 from get_a_grip.tools.efu_converter import json_to_efu, efu_to_json
 from get_a_grip.tools.whoami import print_whoami
 from get_a_grip.tools.probe import print_probe_data, save_probe_data
+from get_a_grip.tools.scan_by_efu import scan_by_efu
 
 def main():
     parser = argparse.ArgumentParser(description="get-a-grip: A collection of tools.")
@@ -32,6 +33,14 @@ def main():
     # probe subcommand
     probe_parser = subparsers.add_parser("probe", help="Collect environmental data")
     probe_parser.add_argument("-o", "--output", help="The output JSON file path.")
+    
+    # scan-by-efu subcommand
+    sbe_parser = subparsers.add_parser("scan-by-efu", help="Scan using Everything HTTP server")
+    sbe_parser.add_argument("--ip", default="127.160.164.78", help="Everything HTTP server IP")
+    sbe_parser.add_argument("--port", type=int, default=8000, help="Everything HTTP server port")
+    sbe_parser.add_argument("-q", "--query", default="", help="Search query")
+    sbe_parser.add_argument("-o", "--output", help="The output JSON file path.")
+    sbe_parser.add_argument("-f", "--force", action="store_true", help="Overwrite output if exists")
 
     args = parser.parse_args()
 
@@ -88,6 +97,29 @@ def main():
                 print(f"Environmental data saved to {args.output}")
             else:
                 print_probe_data()
+        except Exception as e:
+            print(f"Error: {e}", file=sys.stderr)
+            sys.exit(1)
+
+    elif args.command == "scan-by-efu":
+        try:
+            output_file = args.output if args.output else "everything-scan.json"
+            
+            if not args.force and os.path.exists(output_file):
+                response = input(f"File '{output_file}' already exists. Overwrite? [y/N]: ")
+                if response.lower() != 'y':
+                    print("Aborted.")
+                    return
+
+            print(f"Scanning via Everything HTTP: {args.ip}:{args.port} (Query: '{args.query}')...")
+            scan_data = scan_by_efu(args.ip, args.port, args.query)
+            
+            num_files = len(scan_data.get("files", []))
+            num_dirs = len(scan_data.get("dirs", []))
+            print(f"Found {num_files} files and {num_dirs} directories. Saving to {output_file}...")
+            
+            save_to_json(scan_data, output_file)
+            print(f"Scan complete. Results saved in {output_file}")
         except Exception as e:
             print(f"Error: {e}", file=sys.stderr)
             sys.exit(1)

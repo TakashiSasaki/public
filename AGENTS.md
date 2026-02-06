@@ -16,6 +16,11 @@ Follow the standard Python src-layout:
 
     - `cli.py`: CLI interface layer. Orchestrates tools and handles user interaction (print/input).
     - `tools/`: **Pure Logic Layer**. Contains core implementations of tools (e.g., `scanner.py`).
+      - `scanner.py`: Local directory traversal.
+      - `efu_converter.py`: Conversions between JSON-LD and Everything EFU files.
+      - `scan_by_efu.py`: Remote scanning via Everything HTTP server.
+      - `whoami.py`: User identity retrieval.
+      - `probe.py`: Environment data collection.
       - Code here must be pure: **NO print()**, **NO sys.exit()**, **NO user prompts**.
       - Should return raw data (dicts, objects) to be consumed by interfaces (CLI, TUI, MCP).
 - `tests/`: Test suite for automated verification.
