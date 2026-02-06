@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://purl.org/get-a-grip/schemas/output-probe.schema.json",
+    "$id": "https://purl.org/domains/gag/output-probe.schema.json",
     "title": "Probe Output (JSON-LD)",
     "description": "Standard output format for get-a-grip probe containing identity and system information.",
     "type": "object",
