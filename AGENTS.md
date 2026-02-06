@@ -19,6 +19,7 @@ Follow the standard Python src-layout:
       - Code here must be pure: **NO print()**, **NO sys.exit()**, **NO user prompts**.
       - Should return raw data (dicts, objects) to be consumed by interfaces (CLI, TUI, MCP).
 - `tests/`: Test suite.
+- `scripts/`: Development utilities and troubleshooting scripts.
 - `pyproject.toml`: Project configuration and dependencies.
 
 ## Schema Management

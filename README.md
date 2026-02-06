@@ -24,6 +24,7 @@
 
 - `src/get_a_grip/`: Core application logic and context definitions.
 - `schema/`: Official JSON Schema specifications, JSON-LD contexts, and data examples.
+- `scripts/`: Development utilities and troubleshooting scripts.
 - `docs/`: Human-readable documentation.
 - `tests/`: Project test suite.
 - `AGENTS.md`: Technical guidance for coding agents and developers.
