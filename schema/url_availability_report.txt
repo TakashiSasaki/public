@@ -11,7 +11,7 @@ Scanned Directory: C:\Users\takas\Documents\GitHub\get-a-grip\schema
 [XX] Inaccessible / Error URLs (6):
   404   http://www.w3.org/ns/snmp#  <-- External standard vocabulary (Known to be possibly offline)
   404   https://purl.org/gag#  <-- Project specific PURL (Expected 404 if not registered)
-  404   https://purl.org/gag/schema/output-filelist.schema.json  <-- Project specific PURL (Expected 404 if not registered)
-  404   https://purl.org/gag/schema/output-probe.schema.json  <-- Project specific PURL (Expected 404 if not registered)
+  404   https://purl.org/gag/schema/filelist.json  <-- Project specific PURL (Expected 404 if not registered)
+  404   https://purl.org/gag/schema/probe.json  <-- Project specific PURL (Expected 404 if not registered)
   404   https://purl.org/identity/ad/  <-- External standard vocabulary (Known to be possibly offline)
   timed out https://purl.org/net/ldap#  <-- External standard vocabulary (Known to be possibly offline)

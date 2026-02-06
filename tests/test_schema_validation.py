@@ -7,7 +7,7 @@ from get_a_grip.tools.scanner import scan_directory, save_to_json
 def test_scanner_output_schema():
     # 1. Setup paths
     root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    schema_path = os.path.join(root_dir, "schema", "output-filelist.schema.json")
+    schema_path = os.path.join(root_dir, "schema", "filelist.json")
     output_path = os.path.join(root_dir, "test_scanner_output.json")
     
     # 2. Run scanner on a small known directory (the schemas directory itself)

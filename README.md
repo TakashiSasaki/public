@@ -36,7 +36,7 @@
 
 This project adheres to a "Schema-First" philosophy. The `schema/` directory contains:
 - **JSON Schemas (`*.schema.json`)**: Define the structural requirements for inputs and outputs.
-- **JSON-LD Contexts (`context.json`)**: Map local property names to global semantic vocabularies like Schema.org and CIM.
+- **JSON-LD Contexts (`filelist.jsonld`)**: Map local property names to global semantic vocabularies like Schema.org and CIM.
 - **Examples**: Reference implementations showing the schemas in action.
 
 ### Namespace Ownership

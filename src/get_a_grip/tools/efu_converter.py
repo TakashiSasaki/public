@@ -66,7 +66,7 @@ def efu_to_json(input_path: str, output_path: str) -> None:
     # Wrap in JSON-LD structure
     output_data = {
         "@context": [
-            "https://purl.org/gag/schema/context.json"
+            "https://purl.org/gag/schema/filelist.jsonld"
         ],
         "@type": "ItemList",
         "files": files_list

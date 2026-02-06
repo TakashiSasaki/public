@@ -50,7 +50,7 @@ def save_to_json(data: Dict[str, List[dict]], output_path: str) -> None:
     """
     output_data = {
         "@context": [
-            "https://purl.org/gag/schema/context.json"
+            "https://purl.org/gag/schema/filelist.jsonld"
         ],
         "@type": "ItemList",
         "files": data.get("files", []),
