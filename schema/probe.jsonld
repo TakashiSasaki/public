@@ -23,6 +23,8 @@
         "logicalDisks": "cim:LogicalDisk",
         "deviceId": "schema:identifier",
         "size": "schema:contentSize",
-        "freeSpace": "cim:FreeSpace"
+        "freeSpace": "cim:FreeSpace",
+        "observer": "gag:observer",
+        "target": "gag:target"
     }
 }

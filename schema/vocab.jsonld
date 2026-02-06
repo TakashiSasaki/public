@@ -134,6 +134,18 @@
             "rdfs:range": {
                 "@id": "gag:DirectoryTree"
             }
+        },
+        {
+            "@id": "gag:observer",
+            "@type": "owl:ObjectProperty",
+            "rdfs:label": "observer",
+            "rdfs:comment": "The person or agent performing the observation (probe)."
+        },
+        {
+            "@id": "gag:target",
+            "@type": "owl:ObjectProperty",
+            "rdfs:label": "target",
+            "rdfs:comment": "The system or device being observed (probed)."
         }
     ]
 }

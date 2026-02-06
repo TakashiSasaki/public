@@ -18,55 +18,19 @@
         "@type": {
             "const": "ProbeResult"
         },
-        "uid": {
-            "type": [
-                "string",
-                "null"
-            ]
-        },
-        "userPrincipalName": {
-            "type": [
-                "string",
-                "null"
-            ]
-        },
-        "sysName": {
-            "type": "string"
-        },
-        "platform": {
-            "type": "string"
-        },
-        "osName": {
-            "type": "string"
-        },
-        "osVersion": {
-            "type": "string"
-        },
-        "osBuild": {
-            "type": "string"
-        },
-        "osArchitecture": {
-            "type": "string"
-        },
-        "kernelVersion": {
-            "type": [
-                "string",
-                "null"
-            ]
-        },
-        "baseboard": {
-            "type": [
-                "object",
-                "null"
+        "observer": {
+            "type": "object",
+            "required": [
+                "uid"
             ],
             "properties": {
-                "manufacturer": {
+                "uid": {
                     "type": [
                         "string",
                         "null"
                     ]
                 },
-                "product": {
+                "userPrincipalName": {
                     "type": [
                         "string",
                         "null"
@@ -74,32 +38,83 @@
                 }
             }
         },
-        "totalPhysicalMemory": {
-            "type": [
-                "integer",
-                "null"
-            ]
-        },
-        "logicalDisks": {
-            "type": "array",
-            "items": {
-                "object": {
-                    "type": "object",
+        "target": {
+            "type": "object",
+            "required": [
+                "sysName",
+                "osName"
+            ],
+            "properties": {
+                "sysName": {
+                    "type": "string"
+                },
+                "platform": {
+                    "type": "string"
+                },
+                "osName": {
+                    "type": "string"
+                },
+                "osVersion": {
+                    "type": "string"
+                },
+                "osBuild": {
+                    "type": "string"
+                },
+                "osArchitecture": {
+                    "type": "string"
+                },
+                "kernelVersion": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "baseboard": {
+                    "type": [
+                        "object",
+                        "null"
+                    ],
                     "properties": {
-                        "deviceId": {
-                            "type": "string"
-                        },
-                        "size": {
+                        "manufacturer": {
                             "type": [
-                                "integer",
+                                "string",
                                 "null"
                             ]
                         },
-                        "freeSpace": {
+                        "product": {
                             "type": [
-                                "integer",
+                                "string",
                                 "null"
                             ]
+                        }
+                    }
+                },
+                "totalPhysicalMemory": {
+                    "type": [
+                        "integer",
+                        "null"
+                    ]
+                },
+                "logicalDisks": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "deviceId": {
+                                "type": "string"
+                            },
+                            "size": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "freeSpace": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            }
                         }
                     }
                 }
