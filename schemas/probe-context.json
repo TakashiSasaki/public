@@ -1,18 +1,14 @@
 {
     "@context": {
-        "gag": "https://purl.org/get-a-grip/vocab#",
         "schema": "https://schema.org/",
         "ldap": "https://purl.org/net/ldap#",
         "ad": "https://purl.org/identity/ad/",
         "snmp": "http://www.w3.org/ns/snmp#",
         "cim": "http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/",
-        "identity": "gag:identity",
         "uid": "ldap:uid",
         "userPrincipalName": "ad:userPrincipalName",
-        "system": "gag:system",
         "sysName": "snmp:sysName",
         "platform": "cim:OSType",
-        "os": "schema:operatingSystem",
         "osName": "schema:name",
         "osVersion": "schema:softwareVersion",
         "osBuild": "cim:BuildNumber",

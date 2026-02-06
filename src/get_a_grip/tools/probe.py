@@ -114,19 +114,18 @@ def get_probe_data() -> dict:
             "https://purl.org/get-a-grip/schemas/probe-context.json"
         ],
         "@type": "ProbeResult",
-        "identity": {
-            "uid": get_effective_user(),
-            "userPrincipalName": get_user_principal_name(),
-        },
-        "system": {
-            "sysName": socket.gethostname(),
-            "platform": sys.platform,
-            "os": os_info,
-            "kernelVersion": platform.version() if sys.platform != "win32" else None,
-            "baseboard": win.get("baseboard"),
-            "totalPhysicalMemory": win.get("totalPhysicalMemory"),
-            "logicalDisks": get_storage_info()
-        }
+        "uid": get_effective_user(),
+        "userPrincipalName": get_user_principal_name(),
+        "sysName": socket.gethostname(),
+        "platform": sys.platform,
+        "osName": os_info.get("osName"),
+        "osVersion": os_info.get("osVersion"),
+        "osBuild": os_info.get("osBuild"),
+        "osArchitecture": os_info.get("osArchitecture"),
+        "kernelVersion": platform.version() if sys.platform != "win32" else None,
+        "baseboard": win.get("baseboard"),
+        "totalPhysicalMemory": win.get("totalPhysicalMemory"),
+        "logicalDisks": get_storage_info()
     }
 
 def print_probe_data() -> None:
