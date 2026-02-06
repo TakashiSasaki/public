@@ -2,7 +2,7 @@ import os
 import json
 import jsonschema
 from jsonschema import validate
-from get_a_grip.tools.scanner import scan_directory, save_to_json
+from get_a_grip.tools.filelist import scan_directory, save_to_json
 
 def test_scanner_output_schema():
     # 1. Setup paths

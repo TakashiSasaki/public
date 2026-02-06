@@ -1,6 +1,8 @@
 import json
 import os
+from datetime import datetime
 from typing import List, Optional, Dict
+from get_a_grip.tools.whoami import get_effective_user, get_user_principal_name
 
 def unix_to_filetime(unix_timestamp: float) -> str:
     """
@@ -80,6 +82,11 @@ def save_to_json(data: Dict[str, List[dict]], output_path: str) -> None:
             "https://purl.org/gag/schema/filelist.jsonld"
         ],
         "@type": "ItemList",
+        "observedAt": datetime.now().isoformat(),
+        "observer": {
+            "uid": get_effective_user(),
+            "userPrincipalName": get_user_principal_name()
+        },
         "files": data.get("files", []),
         "dirs": data.get("dirs", [])
     }

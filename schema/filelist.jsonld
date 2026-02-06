@@ -15,6 +15,12 @@
         "Size": "contentSize",
         "Date Modified": "dateModified",
         "Date Created": "dateCreated",
-        "Attributes": "gag:winAttributes"
+        "Attributes": "gag:winAttributes",
+        "ldap": "https://purl.org/net/ldap#",
+        "ad": "https://purl.org/identity/ad/",
+        "uid": "ldap:uid",
+        "userPrincipalName": "ad:userPrincipalName",
+        "observer": "gag:observer",
+        "observedAt": "gag:observedAt"
     }
 }
