@@ -1,0 +1,22 @@
+{
+    "@id": "https://purl.org/gag/schema/dirlist.jsonld",
+    "@context": {
+        "@vocab": "https://schema.org/",
+        "gag": "https://purl.org/gag/schema/vocab#",
+        "dirs": {
+            "@id": "gag:directories",
+            "@container": "@set"
+        },
+        "Filename": "gag:fullPath",
+        "IsReparsePoint": "gag:isReparsePoint",
+        "ReparseTag": "gag:reparseTag",
+        "IsSymlink": "gag:isSymlink",
+        "IsMountPoint": "gag:isMountPoint",
+        "Target": "gag:linkTarget",
+        "VolumeSerial": "gag:volumeSerialNumber",
+        "IsEncrypted": "gag:isEncrypted",
+        "IsRemovable": "gag:isRemovable",
+        "IsGitRoot": "gag:isGitRoot",
+        "IsWorkTree": "gag:isWorkTree"
+    }
+}
