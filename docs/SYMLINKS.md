@@ -17,9 +17,9 @@ Windows NTFS supports several types of "reparse points," leading to different, o
 *   **Limitation:** Requires "Developer Mode" or Administrative privileges on Windows.
 
 ### B. WSL Symlinks (Reparse Point Type)
-*   **Created by:** `ln -s` inside WSL or some versions of Git Bash.
+*   **Created by:** `ln -s` inside WSL, and critically, **`ln -s` inside Git for Windows' Bash** (depending on the `MSYS` environment variable configuration).
 *   **Reparse Tag:** `IO_REPARSE_TAG_LX_SYMLINK` (`0xA000001D`).
-*   **Behavior:** Works perfectly inside WSL. However, to native Win32 APIs, it looks like a 0-byte file with an unknown reparse tag. Windows Git cannot open these files.
+*   **Behavior:** Works correctly inside WSL and Git Bash sessions. However, to native Win32 APIs (PowerShell, CMD, Explorer, VS Code, Python), it appears as a **0-byte file with an unknown reparse tag**. Native Windows Git (`git.exe`) cannot open these files and will fail to commit them.
 
 ### C. Git Bash / MSYS2 Emulated Symlinks
 *   **Created by:** `ln -s` in Git Bash when `MSYS=winsymlinks` is not set.
