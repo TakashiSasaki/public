@@ -1,0 +1,23 @@
+{
+    "@context": {
+        "schema": "https://schema.org/",
+        "prov": "http://www.w3.org/ns/prov#",
+        "gag": "https://purl.org/gag/schema/vocab#"
+    },
+    "@graph": [
+        {
+            "@id": "urn:uuid:2e985654-ccc3-4141-979b-58d014133d56",
+            "@type": "schema:Dataset",
+            "schema:name": "Everything Scan Result",
+            "prov:wasGeneratedBy": {
+                "@type": "prov:Activity",
+                "schema:name": "Execution of scan_by_efu.py",
+                "prov:wasAssociatedWith": {
+                    "@id": "https://github.com/TakashiSasaki/get-a-grip/blob/main/src/get_a_grip/tools/scan_by_efu.py",
+                    "@type": "prov:SoftwareAgent",
+                    "schema:name": "scan_by_efu.py"
+                }
+            }
+        }
+    ]
+}
