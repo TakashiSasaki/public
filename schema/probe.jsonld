@@ -1,5 +1,5 @@
 {
-    "@id": "https://purl.org/gag/schema/probe-context.jsonld",
+    "@id": "https://purl.org/gag/schema/probe.jsonld",
     "@context": {
         "gag": "https://purl.org/gag/schema/vocab#",
         "schema": "https://schema.org/",
