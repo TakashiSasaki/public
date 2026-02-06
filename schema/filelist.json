@@ -51,14 +51,30 @@
                         "description": "File size in bytes."
                     },
                     "Date Modified": {
-                        "type": "string",
-                        "pattern": "^\\d+$",
-                        "description": "Windows FILETIME (64-bit) as a decimal string."
+                        "oneOf": [
+                            {
+                                "type": "string",
+                                "pattern": "^\\d+$"
+                            },
+                            {
+                                "type": "integer",
+                                "minimum": 0
+                            }
+                        ],
+                        "description": "Windows FILETIME (64-bit) as a decimal string or integer."
                     },
                     "Date Created": {
-                        "type": "string",
-                        "pattern": "^\\d+$",
-                        "description": "Windows FILETIME (64-bit) as a decimal string."
+                        "oneOf": [
+                            {
+                                "type": "string",
+                                "pattern": "^\\d+$"
+                            },
+                            {
+                                "type": "integer",
+                                "minimum": 0
+                            }
+                        ],
+                        "description": "Windows FILETIME (64-bit) as a decimal string or integer."
                     },
                     "Attributes": {
                         "type": "integer",
@@ -95,14 +111,30 @@
                         "description": "Directory size in bytes (system dependent)."
                     },
                     "Date Modified": {
-                        "type": "string",
-                        "pattern": "^\\d+$",
-                        "description": "Windows FILETIME (64-bit) as a decimal string."
+                        "oneOf": [
+                            {
+                                "type": "string",
+                                "pattern": "^\\d+$"
+                            },
+                            {
+                                "type": "integer",
+                                "minimum": 0
+                            }
+                        ],
+                        "description": "Windows FILETIME (64-bit) as a decimal string or integer."
                     },
                     "Date Created": {
-                        "type": "string",
-                        "pattern": "^\\d+$",
-                        "description": "Windows FILETIME (64-bit) as a decimal string."
+                        "oneOf": [
+                            {
+                                "type": "string",
+                                "pattern": "^\\d+$"
+                            },
+                            {
+                                "type": "integer",
+                                "minimum": 0
+                            }
+                        ],
+                        "description": "Windows FILETIME (64-bit) as a decimal string or integer."
                     },
                     "Attributes": {
                         "type": "integer",
