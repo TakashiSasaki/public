@@ -2,9 +2,9 @@
     "@id": "urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee",
     "@context": {
         "@vocab": "https://schema.org/",
-        "get-a-grip": "https://purl.org/get-a-grip/vocab#",
+        "gag": "https://purl.org/domain/gag#",
         "files": {
-            "@id": "get-a-grip:files",
+            "@id": "gag:files",
             "@context": {
                 "@type": "File"
             }
@@ -13,6 +13,6 @@
         "Size": "contentSize",
         "Date Modified": "dateModified",
         "Date Created": "dateCreated",
-        "Attributes": "get-a-grip:attributes"
+        "Attributes": "gag:attributes"
     }
 }
