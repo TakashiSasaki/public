@@ -15,7 +15,8 @@ def main():
     # filelist subcommand
     fl_parser = subparsers.add_parser("filelist", help="Scan directory structures")
     fl_parser.add_argument("directory", help="The directory path to scan.")
-    fl_parser.add_argument("-o", "--output", help="The output JSON file path. Defaults to fbd0009d-e91b-414f-9f4f-db3fbd3a16ee.json")
+    fl_parser.add_argument("-o", "--output", help="The output JSON file path.")
+    fl_parser.add_argument("--uuid", default="2e985654-ccc3-4141-979b-58d014133d56", help="The UUID for the output file (default: from schema/uuid.jsonld)")
     fl_parser.add_argument("-f", "--force", action="store_true", help="Overwrite the output file if it exists without asking.")
 
     # jsonld2efu subcommand
@@ -42,6 +43,7 @@ def main():
     flh_parser.add_argument("--port", type=int, default=8000, help="Everything HTTP server port")
     flh_parser.add_argument("-q", "--query", default="", help="Search query")
     flh_parser.add_argument("-o", "--output", help="The output JSON file path.")
+    flh_parser.add_argument("--uuid", default="2e985654-ccc3-4141-979b-58d014133d56", help="The UUID for the output file")
     flh_parser.add_argument("-f", "--force", action="store_true", help="Overwrite output if exists")
     flh_parser.add_argument("--raw", action="store_true", help="Show raw response from Everything server")
     flh_parser.add_argument("-c", "--count", type=int, default=10, help="Maximum number of results to fetch (default: 10)")
@@ -51,6 +53,7 @@ def main():
     fli_parser.add_argument("directory", nargs="?", default=".", help="The directory path to scan (default: current directory)")
     fli_parser.add_argument("-q", "--query", default="", help="Search query")
     fli_parser.add_argument("-o", "--output", help="The output JSON file path.")
+    fli_parser.add_argument("--uuid", default="2e985654-ccc3-4141-979b-58d014133d56", help="The UUID for the output file")
     fli_parser.add_argument("-f", "--force", action="store_true", help="Overwrite output if exists")
     fli_parser.add_argument("-c", "--count", type=int, default=10, help="Maximum number of results to fetch (default: 10)")
 
@@ -58,7 +61,7 @@ def main():
 
     if args.command == "filelist":
         try:
-            output_file = args.output if args.output else "fbd0009d-e91b-414f-9f4f-db3fbd3a16ee.json"
+            output_file = args.output if args.output else f"{args.uuid}.json"
             
             if not args.force and os.path.exists(output_file):
                 response = input(f"File '{output_file}' already exists. Overwrite? [y/N]: ")
@@ -129,7 +132,7 @@ def main():
                 print("-" * 40)
                 return
 
-            output_file = args.output if args.output else "everything-scan.json"
+            output_file = args.output if args.output else f"{args.uuid}.json"
             
             if not args.force and os.path.exists(output_file):
                 response = input(f"File '{output_file}' already exists. Overwrite? [y/N]: ")
@@ -158,7 +161,7 @@ def main():
             if args.query:
                 combined_query += f" {args.query}"
 
-            output_file = args.output if args.output else "ipc-scan.json"
+            output_file = args.output if args.output else f"{args.uuid}.json"
             
             if not args.force and os.path.exists(output_file):
                 response = input(f"File '{output_file}' already exists. Overwrite? [y/N]: ")
