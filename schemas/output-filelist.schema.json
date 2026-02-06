@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://purl.org/domains/gag/output-filelist.schema.json",
+    "$id": "https://purl.org/domain/gag/output-filelist.schema.json",
     "title": "File List Output (JSON-LD)",
     "description": "Standard output format for get-a-grip directory scanner containing a list of files with Windows-specific metadata.",
     "type": "object",
