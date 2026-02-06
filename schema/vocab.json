@@ -1,0 +1,51 @@
+{
+    "@id": "https://purl.org/gag/vocab#",
+    "@context": {
+        "gag": "https://purl.org/gag/vocab#",
+        "schema": "https://schema.org/",
+        "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+        "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+        "owl": "http://www.w3.org/2002/07/owl#"
+    },
+    "@graph": [
+        {
+            "@id": "https://purl.org/gag/vocab#",
+            "@type": "owl:Ontology",
+            "rdfs:label": "GAG Vocabulary",
+            "rdfs:comment": "get-a-grip プロジェクトその他のための語彙定義。"
+        },
+        {
+            "@id": "gag:files",
+            "@type": "owl:ObjectProperty",
+            "rdfs:label": "files",
+            "rdfs:comment": "A collection of file objects (mapped to schema:MediaObject).",
+            "rdfs:range": {
+                "@id": "schema:MediaObject"
+            }
+        },
+        {
+            "@id": "gag:directories",
+            "@type": "owl:ObjectProperty",
+            "rdfs:label": "directories",
+            "rdfs:comment": "A collection of directory structures (mapped to schema:ItemList).",
+            "rdfs:range": {
+                "@id": "schema:ItemList"
+            }
+        },
+        {
+            "@id": "gag:fullPath",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "fullPath",
+            "rdfs:comment": "The absolute file system path of the resource.",
+            "rdfs:subPropertyOf": {
+                "@id": "schema:contentUrl"
+            }
+        },
+        {
+            "@id": "gag:winAttributes",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "winAttributes",
+            "rdfs:comment": "Windows file attribute flags represented as an unsigned integer."
+        }
+    ]
+}
