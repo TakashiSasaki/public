@@ -36,6 +36,7 @@ def main():
     
     # scan-by-efu subcommand
     sbe_parser = subparsers.add_parser("scan-by-efu", help="Scan using Everything HTTP server")
+    sbe_parser.add_argument("directory", nargs="?", default=".", help="The directory path to scan (default: current directory)")
     sbe_parser.add_argument("--ip", default="127.160.164.78", help="Everything HTTP server IP")
     sbe_parser.add_argument("--port", type=int, default=8000, help="Everything HTTP server port")
     sbe_parser.add_argument("-q", "--query", default="", help="Search query")
@@ -105,9 +106,15 @@ def main():
 
     elif args.command == "scan-by-efu":
         try:
+            # Resolve directory and combine it into Everything search query
+            target_dir = os.path.abspath(args.directory)
+            combined_query = f'"{target_dir}"'
+            if args.query:
+                combined_query += f" {args.query}"
+
             if args.raw:
-                print(f"Fetching {args.count} raw results from {args.ip}:{args.port}...")
-                raw_response = fetch_raw_from_everything(args.ip, args.port, args.query, count=args.count)
+                print(f"Fetching {args.count} raw results from {args.ip}:{args.port} (Query: '{combined_query}')...")
+                raw_response = fetch_raw_from_everything(args.ip, args.port, combined_query, count=args.count)
                 print("-" * 40)
                 print(raw_response)
                 print("-" * 40)
@@ -121,8 +128,8 @@ def main():
                     print("Aborted.")
                     return
 
-            print(f"Scanning via Everything HTTP: {args.ip}:{args.port} (Query: '{args.query}', Count: {args.count})...")
-            scan_data = scan_by_efu(args.ip, args.port, args.query, count=args.count)
+            print(f"Scanning via Everything HTTP: {args.ip}:{args.port} (Path: '{target_dir}', Query: '{args.query}', Count: {args.count})...")
+            scan_data = scan_by_efu(args.ip, args.port, combined_query, count=args.count)
             
             num_files = len(scan_data.get("files", []))
             num_dirs = len(scan_data.get("dirs", []))
