@@ -15,6 +15,7 @@ Follow the standard Python src-layout:
 - `src/get_a_grip/`: Main package source code.
 
     - `cli.py`: CLI interface layer. Orchestrates tools and handles user interaction (print/input).
+    - `tui.py`: Textual-based TUI interface. Wraps tools with a rich terminal UI.
     - `tools/`: **Pure Logic Layer**. Contains core implementations of tools (e.g., `filelist.py`).
       - `filelist.py`: Local directory traversal.
       - `efu_converter.py`: Conversions between JSON-LD and Everything EFU files.

@@ -57,9 +57,23 @@ def main():
     fli_parser.add_argument("-f", "--force", action="store_true", help="Overwrite output if exists")
     fli_parser.add_argument("-c", "--count", type=int, default=10, help="Maximum number of results to fetch (default: 10)")
 
+    # tui subcommand
+    subparsers.add_parser("tui", help="Launch the Textual User Interface")
+
     args = parser.parse_args()
 
-    if args.command == "filelist":
+    if args.command == "tui":
+        try:
+            from get_a_grip.tui import main as tui_main
+            tui_main()
+        except ImportError:
+            print("Error: 'textual' library not found. Please install it with 'poetry add textual'.", file=sys.stderr)
+            sys.exit(1)
+        except Exception as e:
+            print(f"Error: {e}", file=sys.stderr)
+            sys.exit(1)
+
+    elif args.command == "filelist":
         try:
             output_file = args.output if args.output else f"{args.uuid}.json"
             
