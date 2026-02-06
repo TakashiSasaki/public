@@ -11,7 +11,7 @@
   - **Attribute Flags:** Records Windows file attribute bits (e.g., Read-only, Hidden, System).
 - **Interoperability-First Design:**
   - **Context Identification:** Uses a stable URN (`urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee`) for semantic context identification.
-  - **Schema-Driven:** All input/output formats are strictly defined in `schemas/` using JSON Schema.
+  - **Schema-Driven:** All input/output formats are strictly defined in `schema/` using JSON Schema.
   - **Compatible Naming:** Uses compatible property names (e.g., `Filename` for full paths) to integrate with existing ecosystems.
 
 ## 🛠 Tech Stack
@@ -23,7 +23,7 @@
 ## 📂 Directory Structure
 
 - `src/get_a_grip/`: Core application logic and context definitions.
-- `schemas/`: Official JSON Schema specifications, JSON-LD contexts, and data examples.
+- `schema/`: Official JSON Schema specifications, JSON-LD contexts, and data examples.
 - `docs/`: Human-readable documentation.
 - `tests/`: Project test suite.
 - `AGENTS.md`: Technical guidance for coding agents and developers.
@@ -47,7 +47,7 @@ To scan a directory and output a JSON-LD file:
 
 ```powershell
 $env:PYTHONPATH="src"
-poetry run python src/get_a_grip/main.py <target_directory> [-o output_file.json]
+poetry run python src/get_a_grip/cli.py scanner <target_directory> [-o output_file.json]
 ```
 
 If no output filename is specified, it defaults to `fbd0009d-e91b-414f-9f4f-db3fbd3a16ee.json`.

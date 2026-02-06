@@ -23,7 +23,7 @@ Follow the standard Python src-layout:
 
 ## Schema Management
 To ensure interoperability and clear specifications:
-- **Directory:** All input/output specifications, including **JSON Schema**, **JSON-LD Contexts**, and **Example Data files**, must be placed in the `/schemas` directory at the repository root.
+- **Directory:** All input/output specifications, including **JSON Schema**, **JSON-LD Contexts**, and **Example Data files**, must be placed in the `/schema` directory at the repository root.
 - **Formats:** 
   - Use [JSON Schema](https://json-schema.org/) for defining data structures.
   - Use JSON-LD Contexts for defining semantic mappings.

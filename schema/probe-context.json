@@ -1,6 +1,6 @@
 {
     "@context": {
-        "gag": "https://purl.org/domain/gag#",
+        "gag": "https://purl.org/gag#",
         "schema": "https://schema.org/",
         "ldap": "https://purl.org/net/ldap#",
         "ad": "https://purl.org/identity/ad/",

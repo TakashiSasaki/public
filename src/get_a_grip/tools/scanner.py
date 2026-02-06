@@ -48,7 +48,7 @@ def save_to_json(data: List[dict], output_path: str) -> None:
     
     output_data = {
         "@context": [
-            "https://purl.org/domain/gag/context.json"
+            "https://purl.org/gag/schema/context.json"
         ],
         "@type": "ItemList",
         "files": data
