@@ -10,8 +10,10 @@
             "schema:name": "2e985654-ccc3-4141-979b-58d014133d56",
             "schema:description": "A file stem (filename without extension) for a scan result artifact.",
             "schema:subjectOf": {
+                "@id": "2e985654-ccc3-4141-979b-58d014133d56.jsonld",
                 "@type": "schema:CreativeWork",
-                "schema:name": "Scan Result Artifact",
+                "schema:name": "2e985654-ccc3-4141-979b-58d014133d56.jsonld",
+                "schema:description": "Standard filename for the scan result artifact conforming to GAG filelist specifications.",
                 "schema:encodingFormat": "application/ld+json",
                 "schema:conformsTo": [
                     {
