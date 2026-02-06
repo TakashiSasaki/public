@@ -10,8 +10,11 @@
   - **FILETIME Timestamps:** Captures creation and modification dates as 64-bit FILETIME values.
   - **Attribute Flags:** Records Windows file attribute bits (e.g., Read-only, Hidden, System).
 - **Interoperability-First Design:**
-  - **Context Identification:** Uses a stable URN (`urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee`) for semantic context identification.
   - **Schema-Driven:** All input/output formats are strictly defined in `schema/` using JSON Schema.
+- **Linked Data & Namespace Ownership:**
+  - **Owned Namespace:** The project uses the authoritative namespace `https://purl.org/gag`, which is owned and managed by the developer of this repository.
+  - **Interoperable Metadata:** By using Persistent URLs (PURLs), the project ensures that metadata terms remain stable and unambiguous across different systems.
+  - **Context Identification:** Uses a stable URN (`urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee`) for persistent semantic context identification.
   - **Compatible Naming:** Uses compatible property names (e.g., `Filename` for full paths) to integrate with existing ecosystems.
 
 ## 🛠 Tech Stack
@@ -29,7 +32,19 @@
 - `tests/`: Project test suite.
 - `AGENTS.md`: Technical guidance for coding agents and developers.
 
-## 🚀 Getting Started
+## � Schemas and Metadata
+
+This project adheres to a "Schema-First" philosophy. The `schema/` directory contains:
+- **JSON Schemas (`*.schema.json`)**: Define the structural requirements for inputs and outputs.
+- **JSON-LD Contexts (`context.json`)**: Map local property names to global semantic vocabularies like Schema.org and CIM.
+- **Examples**: Reference implementations showing the schemas in action.
+
+### Namespace Ownership
+The developer of this project owns and maintains the `https://purl.org/gag` namespace. This ensures:
+- **Stability**: Vocabulary terms like `gag:winAttributes` will not change unexpectedly.
+- **Discovery**: Metadata reflects the specific semantics of the `get-a-grip` ecosystem while remaining compatible with the wider Semantic Web.
+
+## �🚀 Getting Started
 
 ### Prerequisites
 
