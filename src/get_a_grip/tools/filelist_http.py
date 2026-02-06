@@ -11,9 +11,11 @@ def fetch_raw_from_everything(ip: str, port: int, query: str = "", count: int = 
     Fetches the raw response from Everything HTTP server as a string.
     Uses exact parameter names from Everything documentation.
     """
+    # If count is 0, set to a very large number (effectively unlimited)
+    max_count = count if count > 0 else 999999999
     params = {
         'search': query,
-        'count': count,
+        'count': max_count,
         'encoding': 'UTF-8'
     }
     

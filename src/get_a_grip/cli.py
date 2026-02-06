@@ -46,7 +46,7 @@ def main():
     flh_parser.add_argument("--uuid", default="2e985654-ccc3-4141-979b-58d014133d56", help="The UUID for the output file")
     flh_parser.add_argument("-f", "--force", action="store_true", help="Overwrite output if exists")
     flh_parser.add_argument("--raw", action="store_true", help="Show raw response from Everything server")
-    flh_parser.add_argument("-c", "--count", type=int, default=10, help="Maximum number of results to fetch (default: 10)")
+    flh_parser.add_argument("-c", "--count", type=int, default=0, help="Maximum number of results to fetch (default: unlimited, 0 = no limit)")
 
     # filelist-ipc subcommand
     fli_parser = subparsers.add_parser("filelist-ipc", help="Scan using Everything IPC (DLL)")
@@ -55,7 +55,7 @@ def main():
     fli_parser.add_argument("-o", "--output", help="The output JSON file path.")
     fli_parser.add_argument("--uuid", default="2e985654-ccc3-4141-979b-58d014133d56", help="The UUID for the output file")
     fli_parser.add_argument("-f", "--force", action="store_true", help="Overwrite output if exists")
-    fli_parser.add_argument("-c", "--count", type=int, default=10, help="Maximum number of results to fetch (default: 10)")
+    fli_parser.add_argument("-c", "--count", type=int, default=0, help="Maximum number of results to fetch (default: unlimited, 0 = no limit)")
 
     # tui subcommand
     subparsers.add_parser("tui", help="Launch the Textual User Interface")

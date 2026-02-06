@@ -59,7 +59,9 @@ def scan_by_ipc(query: str = "", count: int = 10) -> Dict[str, List[Dict[str, An
 
     # Setup search
     everything_dll.Everything_SetSearchW(query)
-    everything_dll.Everything_SetMax(count)
+    # If count is 0, set to a very large number (effectively unlimited)
+    max_results = count if count > 0 else 0xFFFFFFFF
+    everything_dll.Everything_SetMax(max_results)
     
     request_flags = (
         EVERYTHING_REQUEST_FULL_PATH_AND_FILE_NAME |
