@@ -1,0 +1,28 @@
+Scanning directory: c:\Users\takas\Documents\GitHub\get-a-grip\schema
+Found 9 unique URLs.
+Checking http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/ ... [200]
+Checking http://www.w3.org/ns/snmp# ... [404]
+Checking https://json-schema.org/draft/2020-12/schema ... [200]
+Checking https://purl.org/gag# ... [404]
+Checking https://purl.org/gag/schema/output-filelist.schema.json ... [404]
+Checking https://purl.org/gag/schema/output-probe.schema.json ... [404]
+Checking https://purl.org/identity/ad/ ... [404]
+Checking https://purl.org/net/ldap# ... [timed out]
+Checking https://schema.org/ ... [200]
+
+============================================================
+REPORT: URL ACCESSIBILITY
+============================================================
+
+[OK] Accessible URLs (3):
+  200   http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/
+  200   https://json-schema.org/draft/2020-12/schema
+  200   https://schema.org/
+
+[XX] Inaccessible / Error URLs (6):
+  404   http://www.w3.org/ns/snmp#
+  404   https://purl.org/gag#  <-- Project specific PURL (Expected to fail if not registered)
+  404   https://purl.org/gag/schema/output-filelist.schema.json  <-- Project specific PURL (Expected to fail if not registered)
+  404   https://purl.org/gag/schema/output-probe.schema.json  <-- Project specific PURL (Expected to fail if not registered)
+  404   https://purl.org/identity/ad/
+  timed out https://purl.org/net/ldap#
