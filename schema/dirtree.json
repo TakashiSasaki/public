@@ -5,13 +5,13 @@
     "description": "A recursive tree structure representing filesystem directories and files, where object keys are path segments and values are either null (leaf nodes) or nested tree objects (directories with contents).",
     "type": "object",
     "required": [
+        "@context",
         "dirtree"
     ],
     "properties": {
         "@context": {
-            "type": "string",
-            "format": "uri",
-            "description": "JSON-LD context URI"
+            "const": "https://purl.org/gag/schema/dirtree.jsonld",
+            "description": "Fixed JSON-LD context URI for GAG Directory Tree"
         },
         "dirtree": {
             "$ref": "#/definitions/treeNode"
