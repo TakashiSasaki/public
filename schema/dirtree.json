@@ -8,6 +8,11 @@
         "dirtree"
     ],
     "properties": {
+        "@context": {
+            "type": "string",
+            "format": "uri",
+            "description": "JSON-LD context URI"
+        },
         "dirtree": {
             "$ref": "#/definitions/treeNode"
         }

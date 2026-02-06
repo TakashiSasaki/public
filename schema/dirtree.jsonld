@@ -4,6 +4,10 @@
         "@vocab": "https://purl.org/gag/schema/vocab#",
         "gag": "https://purl.org/gag/schema/vocab#",
         "schema": "https://schema.org/",
-        "@type": "gag:DirectoryTree"
+        "dirtree": {
+            "@id": "gag:dirtree",
+            "@type": "gag:DirectoryTree",
+            "@container": "@index"
+        }
     }
 }

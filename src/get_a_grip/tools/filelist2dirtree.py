@@ -99,7 +99,10 @@ def build_tree_from_paths(paths: List[str]) -> Dict[str, TreeNode]:
     for root_key in roots:
         roots[root_key] = simplify_tree(roots[root_key])
     
-    return {"dirtree": roots}
+    return {
+        "@context": "https://purl.org/gag/schema/dirtree.jsonld",
+        "dirtree": roots
+    }
 
 
 def convert_filelist_to_dirtree(filelist_path: str, output_path: Optional[str] = None) -> Dict[str, TreeNode]:

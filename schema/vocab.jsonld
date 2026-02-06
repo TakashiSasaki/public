@@ -125,6 +125,12 @@
             "@type": "owl:DatatypeProperty",
             "rdfs:label": "Validation Schema",
             "rdfs:comment": "URI of a JSON Schema document that can be used to validate this data. This is a convention for associating JSON-LD data with a JSON Schema, as there is no standard mechanism for this in either specification."
+        },
+        {
+            "@id": "gag:dirtree",
+            "@type": "owl:ObjectProperty",
+            "rdfs:label": "Directory Tree",
+            "rdfs:comment": "A recursive tree structure representing filesystem directories, where object keys are path segments and values are either null (leaf nodes) or nested tree objects (directories with contents)."
         }
     ]
 }
