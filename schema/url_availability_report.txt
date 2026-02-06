@@ -1,17 +1,13 @@
 URL AVAILABILITY REPORT
 =======================
-Generated: 2026-02-06T12:47:01.449756
-Scanned Directory: C:\Users\takas\Documents\GitHub\get-a-grip\schema
+Generated: 2026-02-06T16:45:56.011628
+Project Root: D:\github\get-a-grip
 
-[OK] Accessible URLs (3):
-  200   http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/
-  200   https://json-schema.org/draft/2020-12/schema
-  200   https://schema.org/
+[OK] Accessible URLs (5):
+  200   https://purl.org/gag/schema/filelist.json
+  200   https://purl.org/gag/schema/filelist.jsonld
+  200   https://purl.org/gag/schema/probe.json
+  200   https://purl.org/gag/schema/probe.jsonld
+  200   https://purl.org/gag/schema/vocab
 
-[XX] Inaccessible / Error URLs (6):
-  404   http://www.w3.org/ns/snmp#  <-- External standard vocabulary (Known to be possibly offline)
-  404   https://purl.org/gag#  <-- Project specific PURL (Expected 404 if not registered)
-  404   https://purl.org/gag/schema/filelist.json  <-- Project specific PURL (Expected 404 if not registered)
-  404   https://purl.org/gag/schema/probe.json  <-- Project specific PURL (Expected 404 if not registered)
-  404   https://purl.org/identity/ad/  <-- External standard vocabulary (Known to be possibly offline)
-  timed out https://purl.org/net/ldap#  <-- External standard vocabulary (Known to be possibly offline)
+[XX] Inaccessible / Error URLs (0):
