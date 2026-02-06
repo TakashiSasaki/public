@@ -1,4 +1,5 @@
 {
+    "@id": "https://purl.org/gag/schema/probe-context.jsonld",
     "@context": {
         "gag": "https://purl.org/gag/schema/vocab#",
         "schema": "https://schema.org/",

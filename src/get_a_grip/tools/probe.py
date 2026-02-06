@@ -111,7 +111,7 @@ def get_probe_data() -> dict:
 
     return {
         "@context": [
-            "https://purl.org/gag/schema/probe-context.json"
+            "https://purl.org/gag/schema/probe-context.jsonld"
         ],
         "@type": "ProbeResult",
         "uid": get_effective_user(),
