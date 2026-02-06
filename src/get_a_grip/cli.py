@@ -4,7 +4,7 @@ import os
 from get_a_grip.tools.scanner import scan_directory, save_to_json
 from get_a_grip.tools.efu_converter import json_to_efu, efu_to_json
 from get_a_grip.tools.whoami import print_whoami
-from get_a_grip.tools.probe import print_probe_data
+from get_a_grip.tools.probe import print_probe_data, save_probe_data
 
 def main():
     parser = argparse.ArgumentParser(description="get-a-grip: A collection of tools.")
@@ -30,7 +30,8 @@ def main():
     subparsers.add_parser("whoami", help="Print effective user")
 
     # probe subcommand
-    subparsers.add_parser("probe", help="Collect environmental data")
+    probe_parser = subparsers.add_parser("probe", help="Collect environmental data")
+    probe_parser.add_argument("-o", "--output", help="The output JSON file path.")
 
     args = parser.parse_args()
 
@@ -80,7 +81,11 @@ def main():
 
     elif args.command == "probe":
         try:
-            print_probe_data()
+            if args.output:
+                save_probe_data(args.output)
+                print(f"Environmental data saved to {args.output}")
+            else:
+                print_probe_data()
         except Exception as e:
             print(f"Error: {e}", file=sys.stderr)
             sys.exit(1)

@@ -17,3 +17,11 @@ def print_probe_data() -> None:
     """
     data = get_probe_data()
     print(json.dumps(data, indent=2))
+
+def save_probe_data(output_file: str) -> None:
+    """
+    Saves the collected environmental data to a JSON file.
+    """
+    data = get_probe_data()
+    with open(output_file, 'w', encoding='utf-8') as f:
+        json.dump(data, f, indent=2)
