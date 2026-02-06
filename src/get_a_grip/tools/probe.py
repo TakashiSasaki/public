@@ -1,6 +1,6 @@
 import socket
 import json
-from get_a_grip.tools.whoami import get_effective_user
+from get_a_grip.tools.whoami import get_effective_user, get_user_principal_name
 
 def get_probe_data() -> dict:
     """
@@ -8,6 +8,7 @@ def get_probe_data() -> dict:
     """
     return {
         "uid": get_effective_user(),
+        "mail": get_user_principal_name(),
         "sysName": socket.gethostname()
     }
 
