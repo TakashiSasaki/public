@@ -2,6 +2,18 @@ import getpass
 import os
 import sys
 
+# Cache for Windows-specific modules to avoid repeated imports and ease mocking
+try:
+    if sys.platform == "win32":
+        import ctypes
+        from ctypes import wintypes
+    else:
+        ctypes = None
+        wintypes = None
+except ImportError:
+    ctypes = None
+    wintypes = None
+
 def get_effective_user() -> str | None:
     """
     Returns the effective user. On Windows, it attempts to get the sAMAccountName
@@ -9,11 +21,8 @@ def get_effective_user() -> str | None:
     Returns None if the name cannot be retrieved.
     """
     # Attempt Windows-specific API first
-    if sys.platform == "win32":
+    if sys.platform == "win32" and ctypes:
         try:
-            import ctypes
-            from ctypes import wintypes
-            
             # NameSamCompatible = 2 (DOMAIN\\UserName)
             GetUserNameEx = ctypes.windll.secur32.GetUserNameExW
             size = wintypes.ULONG(255)
@@ -21,8 +30,12 @@ def get_effective_user() -> str | None:
             
             if GetUserNameEx(2, buf, ctypes.byref(size)):
                 return buf.value
-        except Exception:
-            pass # Fallback to environment variables
+        except (AttributeError, OSError, Exception) as e:
+            if os.environ.get("GET_A_GRIP_DEBUG"):
+                import traceback
+                print(f"Windows API Error (UID): {e}", file=sys.stderr)
+                traceback.print_exc(file=sys.stderr)
+            pass
 
     # Fallback/Linux implementation
     try:
@@ -41,11 +54,8 @@ def get_user_principal_name() -> str | None:
     using the GetUserNameEx API (NameUserPrincipal=1).
     Returns None if not on Windows or if the name cannot be retrieved.
     """
-    if sys.platform == "win32":
+    if sys.platform == "win32" and ctypes:
         try:
-            import ctypes
-            from ctypes import wintypes
-            
             # NameUserPrincipal = 1 (user@domain.com)
             GetUserNameEx = ctypes.windll.secur32.GetUserNameExW
             size = wintypes.ULONG(255)
@@ -53,7 +63,11 @@ def get_user_principal_name() -> str | None:
             
             if GetUserNameEx(1, buf, ctypes.byref(size)):
                 return buf.value
-        except Exception:
+        except (AttributeError, OSError, Exception) as e:
+            if os.environ.get("GET_A_GRIP_DEBUG"):
+                import traceback
+                print(f"Windows API Error (UPN): {e}", file=sys.stderr)
+                traceback.print_exc(file=sys.stderr)
             pass
     return None
 
