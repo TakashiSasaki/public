@@ -83,7 +83,7 @@ def scan_directory_tree(root_path: str, progress: bool = False) -> Dict[str, Tre
     
     _progress.finish()
     
-    return {root_name: tree}
+    return {"dirtree": {root_name: tree}}
 
 
 def _build_tree(path: str) -> TreeNode:

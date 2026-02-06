@@ -3,6 +3,15 @@
     "$id": "https://purl.org/gag/schema/dirtree.json",
     "title": "Directory Tree Schema",
     "description": "A recursive tree structure representing filesystem directories and files, where object keys are path segments and values are either null (leaf nodes) or nested tree objects (directories with contents).",
+    "type": "object",
+    "required": [
+        "dirtree"
+    ],
+    "properties": {
+        "dirtree": {
+            "$ref": "#/definitions/treeNode"
+        }
+    },
     "definitions": {
         "treeNode": {
             "anyOf": [
@@ -14,7 +23,7 @@
                     "type": "object",
                     "description": "A directory node containing child nodes",
                     "patternProperties": {
-                        "^[^/\\\\:*?\"<>|]+$": {
+                        "^[^/\\:*?\"<>|]+$": {
                             "$ref": "#/definitions/treeNode"
                         }
                     },
@@ -22,6 +31,5 @@
                 }
             ]
         }
-    },
-    "$ref": "#/definitions/treeNode"
+    }
 }
