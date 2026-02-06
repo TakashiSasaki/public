@@ -3,19 +3,21 @@ import json
 import sys
 import subprocess
 import shutil
+import platform
 from get_a_grip.tools.whoami import get_effective_user, get_user_principal_name
 
-def get_windows_hw_info() -> dict:
+def get_windows_info() -> dict:
     """
-    Retrieves hardware info on Windows using PowerShell.
+    Retrieves detailed OS and hardware info on Windows using PowerShell.
     """
-    hw_info = {}
+    info = {}
     if sys.platform != "win32":
-        return hw_info
+        return info
 
     try:
-        # Get Baseboard and Total Memory
+        # Get OS, Baseboard and Total Memory
         ps_cmd = (
+            "Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object -Property Caption, Version, BuildNumber, OSArchitecture | ConvertTo-Json; "
             "Get-CimInstance -ClassName Win32_BaseBoard | Select-Object -Property Manufacturer, Product | ConvertTo-Json; "
             "Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object -Property TotalPhysicalMemory | ConvertTo-Json"
         )
@@ -27,21 +29,29 @@ def get_windows_hw_info() -> dict:
         )
         
         if process.returncode == 0:
-            # PowerShell might return multiple JSON objects concatenated
+            # PowerShell returns multiple JSON objects concatenated
             parts = process.stdout.strip().split('\n}\n')
             if len(parts) >= 1:
-                baseboard = json.loads(parts[0] + '}')
-                hw_info["baseboard"] = {
+                os_data = json.loads(parts[0] + '}')
+                info["os"] = {
+                    "osName": os_data.get("Caption"),
+                    "osVersion": os_data.get("Version"),
+                    "osBuild": os_data.get("BuildNumber"),
+                    "osArchitecture": os_data.get("OSArchitecture")
+                }
+            if len(parts) >= 2:
+                baseboard = json.loads(parts[1] + '}')
+                info["baseboard"] = {
                     "manufacturer": baseboard.get("Manufacturer"),
                     "product": baseboard.get("Product")
                 }
-            if len(parts) >= 2:
-                system = json.loads(parts[1])
-                hw_info["totalPhysicalMemory"] = system.get("TotalPhysicalMemory")
+            if len(parts) >= 3:
+                system = json.loads(parts[2])
+                info["totalPhysicalMemory"] = system.get("TotalPhysicalMemory")
     except Exception:
         pass
     
-    return hw_info
+    return info
 
 def get_storage_info() -> list:
     """
@@ -88,8 +98,16 @@ def get_probe_data() -> dict:
     """
     Collects environmental and hardware data using standard vocabulary (LDAP/SNMP/AD/CIM).
     """
-    hw = get_windows_hw_info()
+    win = get_windows_info()
     
+    # Base OS info using standard platform module
+    os_info = win.get("os", {
+        "osName": platform.system(),
+        "osVersion": platform.release(),
+        "osBuild": platform.version(),
+        "osArchitecture": platform.machine()
+    })
+
     return {
         "identity": {
             "uid": get_effective_user(),
@@ -98,8 +116,10 @@ def get_probe_data() -> dict:
         "system": {
             "sysName": socket.gethostname(),
             "platform": sys.platform,
-            "baseboard": hw.get("baseboard"),
-            "totalPhysicalMemory": hw.get("totalPhysicalMemory"),
+            "os": os_info,
+            "kernelVersion": platform.version() if sys.platform != "win32" else None,
+            "baseboard": win.get("baseboard"),
+            "totalPhysicalMemory": win.get("totalPhysicalMemory"),
             "logicalDisks": get_storage_info()
         }
     }
