@@ -9,21 +9,31 @@ from typing import Dict, Any, List
 def fetch_raw_from_everything(ip: str, port: int, query: str = "", count: int = 10, format: str = "json") -> str:
     """
     Fetches the raw response from Everything HTTP server as a string.
+    Uses exact parameter names from Everything documentation.
     """
     params = {
-        's': query,
+        'search': query,
         'count': count,
         'encoding': 'UTF-8'
     }
     
     if format == "json":
         params.update({
-            'j': 1,
+            'json': 1,
             'path_column': 1,
             'size_column': 1,
             'date_modified_column': 1,
             'date_created_column': 1,
             'attributes_column': 1,
+            # Alternative forms just in case
+            'dc': 1,
+            'dm': 1,
+            'at': 1,
+            'sz': 1,
+            'datecreated': 1,
+            'datemodified': 1,
+            'sort': 'name',
+            'ascending': 1
         })
     elif format == "csv":
         params['csv'] = 1
@@ -57,7 +67,7 @@ def safe_int(value: Any, default: int = 0) -> int:
         return default
 
 def safe_filetime(value: Any) -> str:
-    """
+    r"""
     Ensures the value is a string consisting only of digits, matching the schema pattern ^\d+$.
     If Everything returns a formatted date string, this strips separators.
     """
