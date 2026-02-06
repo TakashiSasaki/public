@@ -49,7 +49,7 @@ def main():
             scan_data = scan_directory(args.directory)
             
             num_files = len(scan_data.get("files", []))
-            num_dirs = len(scan_data.get("directories", []))
+            num_dirs = len(scan_data.get("dirs", []))
             print(f"Found {num_files} files and {num_dirs} directories. Saving to {output_file} in detailed format...")
             
             save_to_json(scan_data, output_file)

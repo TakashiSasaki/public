@@ -5,11 +5,15 @@
         "gag": "https://purl.org/gag#",
         "files": {
             "@id": "gag:files",
-            "@context": {
-                "@type": "MediaObject"
-            }
+            "@type": "MediaObject",
+            "@container": "@set"
         },
-        "Filename": "contentUrl",
+        "dirs": {
+            "@id": "gag:directories",
+            "@type": "ItemList",
+            "@container": "@set"
+        },
+        "Filename": "gag:fullPath",
         "Size": "contentSize",
         "Date Modified": "dateModified",
         "Date Created": "dateCreated",

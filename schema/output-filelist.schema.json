@@ -8,7 +8,7 @@
         "@context",
         "@type",
         "files",
-        "directories"
+        "dirs"
     ],
     "properties": {
         "@context": {
@@ -72,7 +72,7 @@
                 }
             }
         },
-        "directories": {
+        "dirs": {
             "type": "array",
             "description": "List of scanned directory objects.",
             "items": {

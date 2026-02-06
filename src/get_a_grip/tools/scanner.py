@@ -42,7 +42,7 @@ def scan_directory(root_path: str) -> Dict[str, List[dict]]:
         except (OSError, PermissionError) as e:
             print(f"Warning: Could not access {path}: {e}")
 
-    return {"files": files, "directories": directories}
+    return {"files": files, "dirs": directories}
 
 def save_to_json(data: Dict[str, List[dict]], output_path: str) -> None:
     """
@@ -54,7 +54,7 @@ def save_to_json(data: Dict[str, List[dict]], output_path: str) -> None:
         ],
         "@type": "ItemList",
         "files": data.get("files", []),
-        "directories": data.get("directories", [])
+        "dirs": data.get("dirs", [])
     }
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(output_data, f, ensure_ascii=False, indent=2)
