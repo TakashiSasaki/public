@@ -54,7 +54,10 @@ To ensure interoperability and clear specifications:
 - **Async:** Use `asyncio` where appropriate for directory I/O if performance is critical.
 - **Separation of Concerns (Core vs Interface):**
   - **Tools (`src/get_a_grip/tools/`)**: Pure business logic only. Returns data structures.
+    - **MUST NOT** depend on `cli.py` or `tui.py`.
+    - **MUST NOT** use `input()`, `print()`, or `sys.exit()`. Raise exceptions instead.
   - **Interfaces (`cli.py`, `tui.py`, `mcp.py`)**: Handles presentation, user I/O, and orchestration.
+    - Responsible for catching exceptions from tools and presenting them to the user.
 - **Round-Trip Verification:** When building data conversion tools, ALWAYS perform round-trip verification (Format A -> Format B -> Format A) to ensure data integrity and losslessness.
 
 ## Development Workflow
