@@ -3,7 +3,7 @@ import tempfile
 import pytest
 import os
 from pathlib import Path
-from get_a_grip.tools import filelist, filelist_scandir
+from get_a_grip.tools import filelist_rglob, filelist_scandir
 
 # Helper to normalize list of files/dirs for comparison
 def normalize_entries(entries):
@@ -53,7 +53,7 @@ def test_filelist_implementations_match(tmp_path):
     # We scan the tmp_path to ensure a controlled environment
     root_dir = str(tmp_path)
     
-    data_legacy = filelist.scan_directory(root_dir)
+    data_legacy = filelist_rglob.scan_directory(root_dir)
     data_scandir = filelist_scandir.scan_directory(root_dir)
 
     # Compare results
@@ -67,7 +67,7 @@ if __name__ == "__main__":
     cwd = os.getcwd()
     
     try:
-        data_legacy = filelist.scan_directory(cwd)
+        data_legacy = filelist_rglob.scan_directory(cwd)
         data_scandir = filelist_scandir.scan_directory(cwd)
         compare_file_lists(data_legacy, data_scandir)
         print("SUCCESS: Both implementations match on current directory.")
