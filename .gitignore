@@ -137,6 +137,8 @@ dmypy.json
 
 # Local test outputs
 test_*.json
+test_*.jsonld
+url_report.txt
 fbd0009d-e91b-414f-9f4f-db3fbd3a16ee.json
 commit_message.txt
 whoami.json
