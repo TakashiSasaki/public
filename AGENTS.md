@@ -65,9 +65,14 @@ To ensure interoperability and clear specifications:
    - Run tests with `poetry run pytest`.
    - Ensure new features have corresponding tests in `tests/`.
    - **URL Verification:** Run `pytest tests/test_url_accessibility.py` after modifying schemas to ensure all external references are stable.
-4. **Using Scripts:** Scripts in `scripts/` should resolve paths relative to their location to remain portable.
 
-## Repository Rules
+### `src/get_a_grip/tools/scan_by_efu.py`
+A module that interfaces with the "Everything" search engine's HTTP server to perform file system scans. It fetches search results in JSON format and converts them into the project's standard schema. It supports raw response inspection and customizing the number of results.
+
+### `src/get_a_grip/tools/scan_by_ipc.py`
+A module that interfaces directly with the "Everything" search engine via IPC (Inter-Process Communication) using the `Everything64.dll`. This method allows for retrieving metadata that might be restricted or unavailable via the HTTP API, such as "Date Created". It requires the DLL to be present in the `bin/` directory.
+
+### `src/get_a_grip/tools/efu_converter.py`
 - **Versioning:**
     - Start from version `0.1.0`.
     - Always increment the patch level (e.g., `0.1.0` -> `0.1.1`) whenever ANY change, however small, is made to the source code.
