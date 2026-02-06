@@ -4,11 +4,11 @@ from get_a_grip.tools.whoami import get_effective_user, get_user_principal_name
 
 def get_probe_data() -> dict:
     """
-    Collects environmental data using standard vocabulary (LDAP/SNMP).
+    Collects environmental data using standard vocabulary (LDAP/SNMP/AD).
     """
     return {
         "uid": get_effective_user(),
-        "mail": get_user_principal_name(),
+        "userPrincipalName": get_user_principal_name(),
         "sysName": socket.gethostname()
     }
 
