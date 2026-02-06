@@ -56,6 +56,15 @@ def safe_int(value: Any, default: int = 0) -> int:
     except (ValueError, TypeError):
         return default
 
+def safe_filetime(value: Any) -> str:
+    """
+    Ensures the value is a string consisting only of digits, matching the schema pattern ^\d+$.
+    If Everything returns a formatted date string, this strips separators.
+    """
+    s = str(value) if value is not None else "0"
+    digits = "".join(filter(str.isdigit, s))
+    return digits if digits else "0"
+
 def scan_by_efu(ip: str = "127.160.164.78", port: int = 8000, query: str = "", count: int = 10) -> Dict[str, List[Dict[str, Any]]]:
     """
     Scans by fetching JSON data from Everything and returns get-a-grip data structure.
@@ -75,8 +84,8 @@ def scan_by_efu(ip: str = "127.160.164.78", port: int = 8000, query: str = "", c
         info = {
             "Filename": filename,
             "Size": safe_int(item.get("size")),
-            "Date Modified": str(item.get("date_modified", "0")),
-            "Date Created": str(item.get("date_created", "0")),
+            "Date Modified": safe_filetime(item.get("date_modified")),
+            "Date Created": safe_filetime(item.get("date_created")),
             "Attributes": safe_int(item.get("attributes"))
         }
         
