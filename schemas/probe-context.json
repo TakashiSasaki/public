@@ -17,7 +17,7 @@
         "osVersion": "schema:softwareVersion",
         "osBuild": "cim:BuildNumber",
         "osArchitecture": "cim:OSArchitecture",
-        "kernelVersion": "gag:kernelVersion",
+        "kernelVersion": "cim:Version",
         "baseboard": "cim:BaseBoard",
         "manufacturer": "schema:manufacturer",
         "product": "schema:productID",
