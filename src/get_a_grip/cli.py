@@ -5,7 +5,7 @@ from get_a_grip.tools.scanner import scan_directory, save_to_json
 from get_a_grip.tools.efu_converter import json_to_efu, efu_to_json
 from get_a_grip.tools.whoami import print_whoami
 from get_a_grip.tools.probe import print_probe_data, save_probe_data
-from get_a_grip.tools.scan_by_efu import scan_by_efu
+from get_a_grip.tools.scan_by_efu import scan_by_efu, fetch_raw_from_everything
 
 def main():
     parser = argparse.ArgumentParser(description="get-a-grip: A collection of tools.")
@@ -41,6 +41,7 @@ def main():
     sbe_parser.add_argument("-q", "--query", default="", help="Search query")
     sbe_parser.add_argument("-o", "--output", help="The output JSON file path.")
     sbe_parser.add_argument("-f", "--force", action="store_true", help="Overwrite output if exists")
+    sbe_parser.add_argument("--raw", action="store_true", help="Show raw response from Everything server")
 
     args = parser.parse_args()
 
@@ -103,6 +104,14 @@ def main():
 
     elif args.command == "scan-by-efu":
         try:
+            if args.raw:
+                print(f"Fetching raw response from {args.ip}:{args.port}...")
+                raw_response = fetch_raw_from_everything(args.ip, args.port, args.query)
+                print("-" * 40)
+                print(raw_response)
+                print("-" * 40)
+                return
+
             output_file = args.output if args.output else "everything-scan.json"
             
             if not args.force and os.path.exists(output_file):
