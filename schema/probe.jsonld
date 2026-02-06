@@ -25,6 +25,7 @@
         "size": "schema:contentSize",
         "freeSpace": "cim:FreeSpace",
         "observer": "gag:observer",
-        "target": "gag:target"
+        "target": "gag:target",
+        "observedAt": "gag:observedAt"
     }
 }

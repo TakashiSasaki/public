@@ -10,6 +10,7 @@ import json
 import os
 import sys
 import time
+from datetime import datetime
 from typing import Dict, Optional, Union
 from get_a_grip.tools.whoami import get_effective_user, get_user_principal_name
 
@@ -86,6 +87,7 @@ def scan_directory_tree(root_path: str, progress: bool = False) -> Dict[str, Tre
     
     return {
         "@context": "https://purl.org/gag/schema/dirtree.jsonld",
+        "observedAt": datetime.now().isoformat(),
         "observer": {
             "uid": get_effective_user(),
             "userPrincipalName": get_user_principal_name()

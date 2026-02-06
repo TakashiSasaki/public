@@ -146,6 +146,15 @@
             "@type": "owl:ObjectProperty",
             "rdfs:label": "target",
             "rdfs:comment": "The system or device being observed (probed)."
+        },
+        {
+            "@id": "gag:observedAt",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "Observed At",
+            "rdfs:comment": "The ISO 8601 timestamp when the observation or scan was performed.",
+            "rdfs:subPropertyOf": {
+                "@id": "schema:dateCreated"
+            }
         }
     ]
 }

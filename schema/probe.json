@@ -6,7 +6,10 @@
     "type": "object",
     "required": [
         "@context",
-        "@type"
+        "@type",
+        "observer",
+        "target",
+        "observedAt"
     ],
     "properties": {
         "@context": {
@@ -14,6 +17,11 @@
             "items": {
                 "type": "string"
             }
+        },
+        "observedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp of the probe"
         },
         "@type": {
             "const": "ProbeResult"

@@ -4,6 +4,7 @@ import sys
 import subprocess
 import shutil
 import platform
+from datetime import datetime
 from get_a_grip.tools.whoami import get_effective_user, get_user_principal_name
 
 def get_windows_info() -> dict:
@@ -114,6 +115,7 @@ def get_probe_data() -> dict:
             "https://purl.org/gag/schema/probe.jsonld"
         ],
         "@type": "ProbeResult",
+        "observedAt": datetime.now().isoformat(),
         "observer": {
             "uid": get_effective_user(),
             "userPrincipalName": get_user_principal_name()

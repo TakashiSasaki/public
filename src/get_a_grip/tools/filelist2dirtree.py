@@ -10,6 +10,7 @@ import argparse
 import json
 import os
 import sys
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Union, Optional
 from get_a_grip.tools.whoami import get_effective_user, get_user_principal_name
@@ -102,6 +103,7 @@ def build_tree_from_paths(paths: List[str]) -> Dict[str, TreeNode]:
     
     return {
         "@context": "https://purl.org/gag/schema/dirtree.jsonld",
+        "observedAt": datetime.now().isoformat(),
         "observer": {
             "uid": get_effective_user(),
             "userPrincipalName": get_user_principal_name()
