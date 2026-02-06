@@ -18,8 +18,9 @@ Follow the standard Python src-layout:
     - `tools/`: **Pure Logic Layer**. Contains core implementations of tools (e.g., `scanner.py`).
       - Code here must be pure: **NO print()**, **NO sys.exit()**, **NO user prompts**.
       - Should return raw data (dicts, objects) to be consumed by interfaces (CLI, TUI, MCP).
-- `tests/`: Test suite.
-- `scripts/`: Development utilities and troubleshooting scripts.
+- `tests/`: Test suite for automated verification.
+- `scripts/`: Development utilities and troubleshooting scripts (not for production logic).
+- `schema/`: Single source of truth for semantic and structural specifications.
 - `pyproject.toml`: Project configuration and dependencies.
 
 ## Schema Management
@@ -28,6 +29,15 @@ To ensure interoperability and clear specifications:
 - **Formats:** 
   - Use [JSON Schema](https://json-schema.org/) for defining data structures.
   - Use JSON-LD Contexts for defining semantic mappings.
+- **PURL Namespace Ownership:**
+  - The developer owns the `https://purl.org/gag` namespace. 
+  - Authoritative terms (e.g., `gag:winAttributes`) must be mapped to this prefix in JSON-LD contexts.
+- **Federated Vocabularies:**
+  - Prioritize standard vocabularies for mapping:
+    - **General Concepts:** [Schema.org](https://schema.org/)
+    - **Systems Management:** [DMTF CIM](http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/)
+    - **Directory Services:** [LDAP](https://purl.org/net/ldap#) / [Active Directory](https://purl.org/identity/ad/)
+    - **Network Management:** [SNMP](http://www.w3.org/ns/snmp#)
 - **Usage:** Developers and agents should refer to these schemas instead of implementation details for interoperability.
 - **Versioning:** Any change to the output format must be reflected in the corresponding schema.
 
@@ -46,7 +56,11 @@ To ensure interoperability and clear specifications:
    - **Standard:** `poetry run get-a-grip scanner <args>`
    - **Alias:** `poetry run gag scanner <args>` (Short for "get-a-grip")
    - **Module:** `poetry run python -m get_a_grip scanner <args>`
-3. **Testing:** Run tests with `poetry run pytest`. Ensure new features have corresponding tests in `tests/`.
+3. **Testing:** 
+   - Run tests with `poetry run pytest`.
+   - Ensure new features have corresponding tests in `tests/`.
+   - **URL Verification:** Run `pytest tests/test_url_accessibility.py` after modifying schemas to ensure all external references are stable.
+4. **Using Scripts:** Scripts in `scripts/` should resolve paths relative to their location to remain portable.
 
 ## Repository Rules
 - **Versioning:**
