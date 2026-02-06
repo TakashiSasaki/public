@@ -15,6 +15,23 @@
         },
         "dirtree": {
             "$ref": "#/definitions/treeNode"
+        },
+        "observer": {
+            "type": "object",
+            "properties": {
+                "uid": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "userPrincipalName": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            }
         }
     },
     "definitions": {

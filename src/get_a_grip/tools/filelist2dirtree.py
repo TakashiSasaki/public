@@ -12,6 +12,7 @@ import os
 import sys
 from pathlib import Path
 from typing import Dict, List, Union, Optional
+from get_a_grip.tools.whoami import get_effective_user, get_user_principal_name
 
 # Type alias for the tree structure
 TreeNode = Union[None, Dict[str, "TreeNode"]]
@@ -101,6 +102,10 @@ def build_tree_from_paths(paths: List[str]) -> Dict[str, TreeNode]:
     
     return {
         "@context": "https://purl.org/gag/schema/dirtree.jsonld",
+        "observer": {
+            "uid": get_effective_user(),
+            "userPrincipalName": get_user_principal_name()
+        },
         "dirtree": roots
     }
 

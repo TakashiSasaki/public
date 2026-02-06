@@ -11,6 +11,7 @@ import os
 import sys
 import time
 from typing import Dict, Optional, Union
+from get_a_grip.tools.whoami import get_effective_user, get_user_principal_name
 
 # Type alias for the tree structure
 TreeNode = Union[None, Dict[str, "TreeNode"]]
@@ -85,6 +86,10 @@ def scan_directory_tree(root_path: str, progress: bool = False) -> Dict[str, Tre
     
     return {
         "@context": "https://purl.org/gag/schema/dirtree.jsonld",
+        "observer": {
+            "uid": get_effective_user(),
+            "userPrincipalName": get_user_principal_name()
+        },
         "dirtree": {root_name: tree}
     }
 
