@@ -46,11 +46,13 @@ def main():
                     return
 
             print(f"Scanning directory: {args.directory}...")
-            file_data = scan_directory(args.directory)
+            scan_data = scan_directory(args.directory)
             
-            print(f"Found {len(file_data)} files. Saving to {output_file} in detailed format...")
+            num_files = len(scan_data.get("files", []))
+            num_dirs = len(scan_data.get("directories", []))
+            print(f"Found {num_files} files and {num_dirs} directories. Saving to {output_file} in detailed format...")
             
-            save_to_json(file_data, output_file)
+            save_to_json(scan_data, output_file)
             print(f"Scan complete. Results saved in {output_file}")
         except Exception as e:
             print(f"Error: {e}", file=sys.stderr)

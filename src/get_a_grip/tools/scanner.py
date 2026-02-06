@@ -1,7 +1,7 @@
 import json
 import os
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 def unix_to_filetime(unix_timestamp: float) -> str:
     """
@@ -13,45 +13,48 @@ def unix_to_filetime(unix_timestamp: float) -> str:
     filetime = int((unix_timestamp + 11644473600) * 10_000_000)
     return str(filetime)
 
-def scan_directory(root_path: str) -> List[dict]:
+def scan_directory(root_path: str) -> Dict[str, List[dict]]:
     """
-    Recursively scans a directory and returns detailed information for all files.
+    Recursively scans a directory and returns detailed information for all files and directories.
     """
     root = Path(root_path).resolve()
-    file_info_list = []
+    files = []
+    directories = []
 
     for path in root.rglob("*"):
-        if path.is_file():
-            try:
-                stat = path.stat()
-                # On Windows, st_file_attributes is available in Python 3.12+
-                attributes = getattr(stat, "st_file_attributes", 0)
-                
-                file_info = {
-                    "Filename": str(path),
-                    "Size": stat.st_size,
-                    "Date Modified": unix_to_filetime(stat.st_mtime),
-                    "Date Created": unix_to_filetime(stat.st_ctime),
-                    "Attributes": attributes
-                }
-                file_info_list.append(file_info)
-            except (OSError, PermissionError) as e:
-                print(f"Warning: Could not access {path}: {e}")
+        try:
+            stat = path.stat()
+            # On Windows, st_file_attributes is available in Python 3.12+
+            attributes = getattr(stat, "st_file_attributes", 0)
+            
+            item_info = {
+                "Filename": str(path),
+                "Size": stat.st_size,
+                "Date Modified": unix_to_filetime(stat.st_mtime),
+                "Date Created": unix_to_filetime(stat.st_ctime),
+                "Attributes": attributes
+            }
 
-    return file_info_list
+            if path.is_file():
+                files.append(item_info)
+            elif path.is_dir():
+                directories.append(item_info)
+        except (OSError, PermissionError) as e:
+            print(f"Warning: Could not access {path}: {e}")
 
-def save_to_json(data: List[dict], output_path: str) -> None:
+    return {"files": files, "directories": directories}
+
+def save_to_json(data: Dict[str, List[dict]], output_path: str) -> None:
     """
     Saves the scanned data to a JSON-LD file with an external context.
     """
-    uuid_urn = "urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee"
-    
     output_data = {
         "@context": [
             "https://purl.org/gag/schema/context.json"
         ],
         "@type": "ItemList",
-        "files": data
+        "files": data.get("files", []),
+        "directories": data.get("directories", [])
     }
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(output_data, f, ensure_ascii=False, indent=2)

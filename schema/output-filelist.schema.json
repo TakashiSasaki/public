@@ -7,7 +7,8 @@
     "required": [
         "@context",
         "@type",
-        "files"
+        "files",
+        "directories"
     ],
     "properties": {
         "@context": {
@@ -67,6 +68,50 @@
                     "@type": {
                         "const": "MediaObject",
                         "description": "JSON-LD type for an individual file (usually omitted if defined in context)."
+                    }
+                }
+            }
+        },
+        "directories": {
+            "type": "array",
+            "description": "List of scanned directory objects.",
+            "items": {
+                "type": "object",
+                "required": [
+                    "Filename",
+                    "Size",
+                    "Date Modified",
+                    "Date Created",
+                    "Attributes"
+                ],
+                "properties": {
+                    "Filename": {
+                        "type": "string",
+                        "description": "Full absolute path of the directory."
+                    },
+                    "Size": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "Directory size in bytes (system dependent)."
+                    },
+                    "Date Modified": {
+                        "type": "string",
+                        "pattern": "^\\d+$",
+                        "description": "Windows FILETIME (64-bit) as a decimal string."
+                    },
+                    "Date Created": {
+                        "type": "string",
+                        "pattern": "^\\d+$",
+                        "description": "Windows FILETIME (64-bit) as a decimal string."
+                    },
+                    "Attributes": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "Windows file attribute flags (unsigned integer)."
+                    },
+                    "@type": {
+                        "const": "ItemList",
+                        "description": "JSON-LD type for a directory."
                     }
                 }
             }
