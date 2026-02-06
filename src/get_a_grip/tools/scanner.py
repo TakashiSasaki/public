@@ -16,10 +16,25 @@ def unix_to_filetime(unix_timestamp: float) -> str:
 def scan_directory(root_path: str) -> Dict[str, List[dict]]:
     """
     Recursively scans a directory and returns detailed information for all files and directories.
+    Includes the root directory itself in the output.
     """
     root = Path(root_path).resolve()
     files = []
     directories = []
+
+    # Include the root directory itself
+    try:
+        stat = root.stat()
+        attributes = getattr(stat, "st_file_attributes", 0)
+        directories.append({
+            "Filename": str(root),
+            "Size": stat.st_size,
+            "Date Modified": unix_to_filetime(stat.st_mtime),
+            "Date Created": unix_to_filetime(stat.st_ctime),
+            "Attributes": attributes
+        })
+    except (OSError, PermissionError) as e:
+        print(f"Warning: Could not access root directory {root}: {e}")
 
     for path in root.rglob("*"):
         try:
