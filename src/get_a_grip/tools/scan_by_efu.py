@@ -1,6 +1,7 @@
 import csv
 import io
 import json
+import os
 import urllib.request
 import urllib.parse
 from typing import Dict, Any, List
@@ -16,6 +17,7 @@ def fetch_json_from_everything(ip: str, port: int, query: str = "") -> Dict[str,
         'size_column': 1,     # Include size
         'date_modified_column': 1,
         'date_created_column': 1,
+        'attributes_column': 1,
         'encoding': 'UTF-8'
     }
     url = f"http://{ip}:{port}/?{urllib.parse.urlencode(params)}"
