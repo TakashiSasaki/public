@@ -97,6 +97,7 @@ def get_storage_info() -> list:
 def get_probe_data() -> dict:
     """
     Collects environmental and hardware data using standard vocabulary (LDAP/SNMP/AD/CIM).
+    Returns data in JSON-LD compatible format.
     """
     win = get_windows_info()
     
@@ -109,6 +110,10 @@ def get_probe_data() -> dict:
     })
 
     return {
+        "@context": [
+            "https://purl.org/get-a-grip/schemas/probe-context.json"
+        ],
+        "@type": "ProbeResult",
         "identity": {
             "uid": get_effective_user(),
             "userPrincipalName": get_user_principal_name(),

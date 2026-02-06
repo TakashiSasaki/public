@@ -1,0 +1,23 @@
+{
+    "@context": {
+        "gag": "https://purl.org/get-a-grip/vocab#",
+        "schema": "https://schema.org/",
+        "identity": "gag:identity",
+        "uid": "gag:uid",
+        "userPrincipalName": "gag:userPrincipalName",
+        "system": "gag:system",
+        "sysName": "gag:sysName",
+        "platform": "gag:platform",
+        "os": "schema:operatingSystem",
+        "osName": "schema:name",
+        "osVersion": "schema:version",
+        "osBuild": "gag:osBuild",
+        "osArchitecture": "gag:osArchitecture",
+        "baseboard": "gag:baseboard",
+        "totalPhysicalMemory": "gag:totalPhysicalMemory",
+        "logicalDisks": "gag:logicalDisks",
+        "deviceId": "gag:deviceId",
+        "size": "gag:size",
+        "freeSpace": "gag:freeSpace"
+    }
+}

@@ -1,0 +1,124 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://purl.org/get-a-grip/schemas/output-probe.schema.json",
+    "title": "Probe Output (JSON-LD)",
+    "description": "Standard output format for get-a-grip probe containing identity and system information.",
+    "type": "object",
+    "required": [
+        "@context",
+        "@type",
+        "identity",
+        "system"
+    ],
+    "properties": {
+        "@context": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "@type": {
+            "const": "ProbeResult"
+        },
+        "identity": {
+            "type": "object",
+            "properties": {
+                "uid": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "userPrincipalName": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            }
+        },
+        "system": {
+            "type": "object",
+            "properties": {
+                "sysName": {
+                    "type": "string"
+                },
+                "platform": {
+                    "type": "string"
+                },
+                "os": {
+                    "type": "object",
+                    "properties": {
+                        "osName": {
+                            "type": "string"
+                        },
+                        "osVersion": {
+                            "type": "string"
+                        },
+                        "osBuild": {
+                            "type": "string"
+                        },
+                        "osArchitecture": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "kernelVersion": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "baseboard": {
+                    "type": [
+                        "object",
+                        "null"
+                    ],
+                    "properties": {
+                        "manufacturer": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        },
+                        "product": {
+                            "type": [
+                                "string",
+                                "null"
+                            ]
+                        }
+                    }
+                },
+                "totalPhysicalMemory": {
+                    "type": [
+                        "integer",
+                        "null"
+                    ]
+                },
+                "logicalDisks": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "deviceId": {
+                                "type": "string"
+                            },
+                            "size": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "freeSpace": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
