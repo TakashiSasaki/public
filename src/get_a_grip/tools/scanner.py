@@ -32,7 +32,7 @@ def scan_directory(root_path: str) -> List[dict]:
                     "Size": stat.st_size,
                     "Date Modified": unix_to_filetime(stat.st_mtime),
                     "Date Created": unix_to_filetime(stat.st_ctime),
-                    "winAttributes": attributes
+                    "Attributes": attributes
                 }
                 file_info_list.append(file_info)
             except (OSError, PermissionError) as e:

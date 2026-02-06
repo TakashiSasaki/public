@@ -37,7 +37,7 @@
                     "Size",
                     "Date Modified",
                     "Date Created",
-                    "winAttributes"
+                    "Attributes"
                 ],
                 "properties": {
                     "Filename": {
@@ -59,7 +59,7 @@
                         "pattern": "^\\d+$",
                         "description": "Windows FILETIME (64-bit) as a decimal string."
                     },
-                    "winAttributes": {
+                    "Attributes": {
                         "type": "integer",
                         "minimum": 0,
                         "description": "Windows file attribute flags (unsigned integer)."

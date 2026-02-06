@@ -13,6 +13,6 @@
         "Size": "contentSize",
         "Date Modified": "dateModified",
         "Date Created": "dateCreated",
-        "winAttributes": "gag:winAttributes"
+        "Attributes": "gag:winAttributes"
     }
 }
