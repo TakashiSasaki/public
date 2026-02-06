@@ -15,10 +15,11 @@ Follow the standard Python src-layout:
 - `src/get_a_grip/`: Main package source code.
 
     - `cli.py`: CLI interface layer. Orchestrates tools and handles user interaction (print/input).
-    - `tools/`: **Pure Logic Layer**. Contains core implementations of tools (e.g., `scanner.py`).
-      - `scanner.py`: Local directory traversal.
+    - `tools/`: **Pure Logic Layer**. Contains core implementations of tools (e.g., `filelist.py`).
+      - `filelist.py`: Local directory traversal.
       - `efu_converter.py`: Conversions between JSON-LD and Everything EFU files.
-      - `scan_by_efu.py`: Remote scanning via Everything HTTP server.
+      - `filelist_http.py`: Remote scanning via Everything HTTP server.
+      - `filelist_ipc.py`: IPC-based scanning using Everything64.dll.
       - `whoami.py`: User identity retrieval.
       - `probe.py`: Environment data collection.
       - Code here must be pure: **NO print()**, **NO sys.exit()**, **NO user prompts**.
@@ -58,18 +59,18 @@ To ensure interoperability and clear specifications:
 ## Development Workflow
 1. **Adding Dependencies:** Use `poetry add <package>`.
 2. **Running Locally:**
-   - **Standard:** `poetry run get-a-grip scanner <args>`
-   - **Alias:** `poetry run gag scanner <args>` (Short for "get-a-grip")
-   - **Module:** `poetry run python -m get_a_grip scanner <args>`
+   - **Standard:** `poetry run get-a-grip filelist <args>`
+   - **Alias:** `poetry run gag filelist <args>` (Short for "get-a-grip")
+   - **Module:** `poetry run python -m get_a_grip filelist <args>`
 3. **Testing:** 
    - Run tests with `poetry run pytest`.
    - Ensure new features have corresponding tests in `tests/`.
    - **URL Verification:** Run `pytest tests/test_url_accessibility.py` after modifying schemas to ensure all external references are stable.
 
-### `src/get_a_grip/tools/scan_by_efu.py`
+### `src/get_a_grip/tools/filelist_http.py`
 A module that interfaces with the "Everything" search engine's HTTP server to perform file system scans. It fetches search results in JSON format and converts them into the project's standard schema. It supports raw response inspection and customizing the number of results.
 
-### `src/get_a_grip/tools/scan_by_ipc.py`
+### `src/get_a_grip/tools/filelist_ipc.py`
 A module that interfaces directly with the "Everything" search engine via IPC (Inter-Process Communication) using the `Everything64.dll`. This method allows for retrieving metadata that might be restricted or unavailable via the HTTP API, such as "Date Created". It requires the DLL to be present in the `bin/` directory.
 
 ### `src/get_a_grip/tools/efu_converter.py`

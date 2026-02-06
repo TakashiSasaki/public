@@ -45,13 +45,13 @@ def scan_results(tmp_path_factory):
     # and use a large count to ensure full coverage.
     
     # Run Scanner
-    run_scan(["scanner", base_dir], out_scanner)
+    run_scan(["filelist", base_dir], out_scanner)
     
     # Run Scan-by-EFU
-    run_scan(["scan-by-efu", base_dir, "-c", "10000"], out_efu)
+    run_scan(["filelist-http", base_dir, "-c", "10000"], out_efu)
     
     # Run Scan-by-IPC
-    run_scan(["scan-by-ipc", base_dir, "-c", "10000"], out_ipc)
+    run_scan(["filelist-ipc", base_dir, "-c", "10000"], out_ipc)
 
     return {
         "scanner": load_json(out_scanner),

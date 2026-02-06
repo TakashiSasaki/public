@@ -1,22 +1,22 @@
 import argparse
 import sys
 import os
-from get_a_grip.tools.scanner import scan_directory, save_to_json
+from get_a_grip.tools.filelist import scan_directory, save_to_json
 from get_a_grip.tools.efu_converter import json_to_efu, efu_to_json
 from get_a_grip.tools.whoami import print_whoami
 from get_a_grip.tools.probe import print_probe_data, save_probe_data
-from get_a_grip.tools.scan_by_efu import scan_by_efu, fetch_raw_from_everything
-from get_a_grip.tools.scan_by_ipc import scan_by_ipc
+from get_a_grip.tools.filelist_http import scan_by_efu, fetch_raw_from_everything
+from get_a_grip.tools.filelist_ipc import scan_by_ipc
 
 def main():
     parser = argparse.ArgumentParser(description="get-a-grip: A collection of tools.")
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
-    # Scanner subcommand
-    scanner_parser = subparsers.add_parser("scanner", help="Scan directory structures")
-    scanner_parser.add_argument("directory", help="The directory path to scan.")
-    scanner_parser.add_argument("-o", "--output", help="The output JSON file path. Defaults to fbd0009d-e91b-414f-9f4f-db3fbd3a16ee.json")
-    scanner_parser.add_argument("-f", "--force", action="store_true", help="Overwrite the output file if it exists without asking.")
+    # filelist subcommand
+    fl_parser = subparsers.add_parser("filelist", help="Scan directory structures")
+    fl_parser.add_argument("directory", help="The directory path to scan.")
+    fl_parser.add_argument("-o", "--output", help="The output JSON file path. Defaults to fbd0009d-e91b-414f-9f4f-db3fbd3a16ee.json")
+    fl_parser.add_argument("-f", "--force", action="store_true", help="Overwrite the output file if it exists without asking.")
 
     # jsonld2efu subcommand
     j2e_parser = subparsers.add_parser("jsonld2efu", help="Convert JSON-LD to EFU")
@@ -35,28 +35,28 @@ def main():
     probe_parser = subparsers.add_parser("probe", help="Collect environmental data")
     probe_parser.add_argument("-o", "--output", help="The output JSON file path.")
     
-    # scan-by-efu subcommand
-    sbe_parser = subparsers.add_parser("scan-by-efu", help="Scan using Everything HTTP server")
-    sbe_parser.add_argument("directory", nargs="?", default=".", help="The directory path to scan (default: current directory)")
-    sbe_parser.add_argument("--ip", default="127.160.164.78", help="Everything HTTP server IP")
-    sbe_parser.add_argument("--port", type=int, default=8000, help="Everything HTTP server port")
-    sbe_parser.add_argument("-q", "--query", default="", help="Search query")
-    sbe_parser.add_argument("-o", "--output", help="The output JSON file path.")
-    sbe_parser.add_argument("-f", "--force", action="store_true", help="Overwrite output if exists")
-    sbe_parser.add_argument("--raw", action="store_true", help="Show raw response from Everything server")
-    sbe_parser.add_argument("-c", "--count", type=int, default=10, help="Maximum number of results to fetch (default: 10)")
+    # filelist-http subcommand
+    flh_parser = subparsers.add_parser("filelist-http", help="Scan using Everything HTTP server")
+    flh_parser.add_argument("directory", nargs="?", default=".", help="The directory path to scan (default: current directory)")
+    flh_parser.add_argument("--ip", default="127.160.164.78", help="Everything HTTP server IP")
+    flh_parser.add_argument("--port", type=int, default=8000, help="Everything HTTP server port")
+    flh_parser.add_argument("-q", "--query", default="", help="Search query")
+    flh_parser.add_argument("-o", "--output", help="The output JSON file path.")
+    flh_parser.add_argument("-f", "--force", action="store_true", help="Overwrite output if exists")
+    flh_parser.add_argument("--raw", action="store_true", help="Show raw response from Everything server")
+    flh_parser.add_argument("-c", "--count", type=int, default=10, help="Maximum number of results to fetch (default: 10)")
 
-    # scan-by-ipc subcommand
-    sbi_parser = subparsers.add_parser("scan-by-ipc", help="Scan using Everything IPC (DLL)")
-    sbi_parser.add_argument("directory", nargs="?", default=".", help="The directory path to scan (default: current directory)")
-    sbi_parser.add_argument("-q", "--query", default="", help="Search query")
-    sbi_parser.add_argument("-o", "--output", help="The output JSON file path.")
-    sbi_parser.add_argument("-f", "--force", action="store_true", help="Overwrite output if exists")
-    sbi_parser.add_argument("-c", "--count", type=int, default=10, help="Maximum number of results to fetch (default: 10)")
+    # filelist-ipc subcommand
+    fli_parser = subparsers.add_parser("filelist-ipc", help="Scan using Everything IPC (DLL)")
+    fli_parser.add_argument("directory", nargs="?", default=".", help="The directory path to scan (default: current directory)")
+    fli_parser.add_argument("-q", "--query", default="", help="Search query")
+    fli_parser.add_argument("-o", "--output", help="The output JSON file path.")
+    fli_parser.add_argument("-f", "--force", action="store_true", help="Overwrite output if exists")
+    fli_parser.add_argument("-c", "--count", type=int, default=10, help="Maximum number of results to fetch (default: 10)")
 
     args = parser.parse_args()
 
-    if args.command == "scanner":
+    if args.command == "filelist":
         try:
             output_file = args.output if args.output else "fbd0009d-e91b-414f-9f4f-db3fbd3a16ee.json"
             
@@ -113,7 +113,7 @@ def main():
             print(f"Error: {e}", file=sys.stderr)
             sys.exit(1)
 
-    elif args.command == "scan-by-efu":
+    elif args.command == "filelist-http":
         try:
             # Resolve directory and combine it into Everything search query
             target_dir = os.path.abspath(args.directory)
@@ -150,7 +150,7 @@ def main():
             print(f"Error: {e}", file=sys.stderr)
             sys.exit(1)
 
-    elif args.command == "scan-by-ipc":
+    elif args.command == "filelist-ipc":
         try:
             # Resolve directory and combine it into Everything search query
             target_dir = os.path.abspath(args.directory)
