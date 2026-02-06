@@ -37,7 +37,7 @@
                     "Size",
                     "Date Modified",
                     "Date Created",
-                    "Attributes"
+                    "winAttributes"
                 ],
                 "properties": {
                     "Filename": {
@@ -59,13 +59,13 @@
                         "pattern": "^\\d+$",
                         "description": "Windows FILETIME (64-bit) as a decimal string."
                     },
-                    "Attributes": {
+                    "winAttributes": {
                         "type": "integer",
                         "minimum": 0,
                         "description": "Windows file attribute flags (unsigned integer)."
                     },
                     "@type": {
-                        "const": "File",
+                        "const": "MediaObject",
                         "description": "JSON-LD type for an individual file (usually omitted if defined in context)."
                     }
                 }

@@ -30,7 +30,7 @@ def json_to_efu(input_path: str, output_path: str) -> None:
             # JSON-LD uses strings for large integers usually, but we convert to int for EFU writing validation
             date_modified = int(item.get("Date Modified", "0"))
             date_created = int(item.get("Date Created", "0"))
-            attributes = int(item.get("Attributes", 0))
+            attributes = int(item.get("winAttributes", 0))
 
             row = [filename, size, date_modified, date_created, attributes]
             
@@ -59,16 +59,14 @@ def efu_to_json(input_path: str, output_path: str) -> None:
                 "Size": int(row.get("Size", 0)),
                 "Date Modified": row.get("Date Modified"),
                 "Date Created": row.get("Date Created"),
-                "Attributes": int(row.get("Attributes", 0))
+                "winAttributes": int(row.get("Attributes", 0))
             }
             files_list.append(file_info)
 
     # Wrap in JSON-LD structure
-    uuid_urn = "urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee"
     output_data = {
         "@context": [
-            uuid_urn,
-            "schemas/context.json"
+            "https://purl.org/domain/gag/context.json"
         ],
         "@type": "ItemList",
         "files": files_list

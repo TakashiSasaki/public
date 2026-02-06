@@ -6,13 +6,13 @@
         "files": {
             "@id": "gag:files",
             "@context": {
-                "@type": "File"
+                "@type": "MediaObject"
             }
         },
         "Filename": "contentUrl",
         "Size": "contentSize",
         "Date Modified": "dateModified",
         "Date Created": "dateCreated",
-        "Attributes": "gag:attributes"
+        "winAttributes": "gag:winAttributes"
     }
 }
