@@ -6,12 +6,13 @@ import urllib.request
 import urllib.parse
 from typing import Dict, Any, List
 
-def fetch_raw_from_everything(ip: str, port: int, query: str = "", format: str = "json") -> str:
+def fetch_raw_from_everything(ip: str, port: int, query: str = "", count: int = 10, format: str = "json") -> str:
     """
     Fetches the raw response from Everything HTTP server as a string.
     """
     params = {
         's': query,
+        'count': count,
         'encoding': 'UTF-8'
     }
     
@@ -37,11 +38,11 @@ def fetch_raw_from_everything(ip: str, port: int, query: str = "", format: str =
     except Exception as e:
         raise Exception(f"Connection error to Everything server at {ip}:{port}: {e}")
 
-def fetch_json_from_everything(ip: str, port: int, query: str = "") -> Dict[str, Any]:
+def fetch_json_from_everything(ip: str, port: int, query: str = "", count: int = 10) -> Dict[str, Any]:
     """
     Fetches JSON data from Everything HTTP server.
     """
-    raw_data = fetch_raw_from_everything(ip, port, query, format="json")
+    raw_data = fetch_raw_from_everything(ip, port, query, count=count, format="json")
     return json.loads(raw_data)
 
 def safe_int(value: Any, default: int = 0) -> int:
@@ -55,11 +56,11 @@ def safe_int(value: Any, default: int = 0) -> int:
     except (ValueError, TypeError):
         return default
 
-def scan_by_efu(ip: str = "127.160.164.78", port: int = 8000, query: str = "") -> Dict[str, List[Dict[str, Any]]]:
+def scan_by_efu(ip: str = "127.160.164.78", port: int = 8000, query: str = "", count: int = 10) -> Dict[str, List[Dict[str, Any]]]:
     """
     Scans by fetching JSON data from Everything and returns get-a-grip data structure.
     """
-    data = fetch_json_from_everything(ip, port, query)
+    data = fetch_json_from_everything(ip, port, query, count=count)
     
     files = []
     dirs = []

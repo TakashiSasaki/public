@@ -42,6 +42,7 @@ def main():
     sbe_parser.add_argument("-o", "--output", help="The output JSON file path.")
     sbe_parser.add_argument("-f", "--force", action="store_true", help="Overwrite output if exists")
     sbe_parser.add_argument("--raw", action="store_true", help="Show raw response from Everything server")
+    sbe_parser.add_argument("-c", "--count", type=int, default=10, help="Maximum number of results to fetch (default: 10)")
 
     args = parser.parse_args()
 
@@ -105,8 +106,8 @@ def main():
     elif args.command == "scan-by-efu":
         try:
             if args.raw:
-                print(f"Fetching raw response from {args.ip}:{args.port}...")
-                raw_response = fetch_raw_from_everything(args.ip, args.port, args.query)
+                print(f"Fetching {args.count} raw results from {args.ip}:{args.port}...")
+                raw_response = fetch_raw_from_everything(args.ip, args.port, args.query, count=args.count)
                 print("-" * 40)
                 print(raw_response)
                 print("-" * 40)
@@ -120,8 +121,8 @@ def main():
                     print("Aborted.")
                     return
 
-            print(f"Scanning via Everything HTTP: {args.ip}:{args.port} (Query: '{args.query}')...")
-            scan_data = scan_by_efu(args.ip, args.port, args.query)
+            print(f"Scanning via Everything HTTP: {args.ip}:{args.port} (Query: '{args.query}', Count: {args.count})...")
+            scan_data = scan_by_efu(args.ip, args.port, args.query, count=args.count)
             
             num_files = len(scan_data.get("files", []))
             num_dirs = len(scan_data.get("dirs", []))
