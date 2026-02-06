@@ -5,55 +5,63 @@ import urllib.request
 import urllib.parse
 from typing import Dict, Any, List
 
-def fetch_efu_from_everything(ip: str, port: int, query: str = "") -> str:
+def fetch_json_from_everything(ip: str, port: int, query: str = "") -> Dict[str, Any]:
     """
-    Fetches EFU (CSV) data from Everything HTTP server.
+    Fetches JSON data from Everything HTTP server using query parameters.
     """
     params = {
         's': query,
-        'csv': 1,
+        'j': 1,               # JSON output
+        'path_column': 1,     # Include full path
+        'size_column': 1,     # Include size
+        'date_modified_column': 1,
+        'date_created_column': 1,
         'encoding': 'UTF-8'
     }
     url = f"http://{ip}:{port}/?{urllib.parse.urlencode(params)}"
     
-    with urllib.request.urlopen(url) as response:
-        if response.status != 200:
-            raise Exception(f"Failed to fetch data from Everything: HTTP {response.status}")
-        return response.read().decode('utf-8')
+    try:
+        with urllib.request.urlopen(url) as response:
+            if response.status != 200:
+                raise Exception(f"Failed to fetch data from Everything: HTTP {response.status}")
+            return json.loads(response.read().decode('utf-8'))
+    except Exception as e:
+        raise Exception(f"Connection error to Everything server at {ip}:{port}: {e}")
 
-def parse_efu_data(efu_content: str) -> Dict[str, List[Dict[str, Any]]]:
+def scan_by_efu(ip: str = "127.160.164.78", port: int = 8000, query: str = "") -> Dict[str, List[Dict[str, Any]]]:
     """
-    Parses EFU content (CSV) into a dictionary with 'files' and 'dirs' lists.
+    Scans by fetching JSON data from Everything and returns get-a-grip data structure.
     """
+    data = fetch_json_from_everything(ip, port, query)
+    
     files = []
     dirs = []
-    # Use io.StringIO to treat the string as a file for csv.DictReader
-    f = io.StringIO(efu_content)
-    reader = csv.DictReader(f)
     
-    for row in reader:
-        # Expected keys: Filename,Size,Date Modified,Date Created,Attributes
-        attributes = int(row.get("Attributes", 0)) if row.get("Attributes") else 0
+    # Everything returns results in the 'results' key
+    results = data.get("results", [])
+    
+    for item in results:
+        # Construct the filename: Everything usually returns 'name' and 'path'
+        name = item.get("name", "")
+        path = item.get("path", "")
+        # Combine path and name if they are separate
+        filename = os.path.join(path, name) if path else name
         
-        file_info = {
-            "Filename": row.get("Filename"),
-            "Size": int(row.get("Size", 0)) if row.get("Size") else 0,
-            "Date Modified": row.get("Date Modified"),
-            "Date Created": row.get("Date Created"),
-            "Attributes": attributes
+        # Everything HTTP API returns dates in various formats or as strings.
+        # We'll keep them as they are or convert if needed to match scanner.py (FILETIME)
+        # Note: If the user needs exact FILETIME matching, we might need further conversion.
+        
+        info = {
+            "Filename": filename,
+            "Size": int(item.get("size", 0)) if item.get("size") is not None else 0,
+            "Date Modified": str(item.get("date_modified", "0")),
+            "Date Created": str(item.get("date_created", "0")),
+            "Attributes": int(item.get("attributes", 0)) if item.get("attributes") is not None else 0
         }
         
-        # 0x10 is FILE_ATTRIBUTE_DIRECTORY
-        if attributes & 0x10:
-            dirs.append(file_info)
+        if item.get("type") == "folder":
+            dirs.append(info)
         else:
-            files.append(file_info)
-    
+            files.append(info)
+            
     return {"files": files, "dirs": dirs}
-
-def scan_by_efu(ip: str = "127.160.164.78", port: int = 8000, query: str = "") -> Dict[str, Any]:
-    """
-    Scans by fetching EFU data from Everything and returns get-a-grip data structure.
-    """
-    efu_content = fetch_efu_from_everything(ip, port, query)
-    return parse_efu_data(efu_content)
