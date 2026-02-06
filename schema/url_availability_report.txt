@@ -1,13 +1,27 @@
 URL AVAILABILITY REPORT
 =======================
-Generated: 2026-02-06T16:45:56.011628
-Project Root: D:\github\get-a-grip
+Generated: 2026-02-06T21:24:25.962044
+Scanned Directory: D:\github\get-a-grip\schema
 
-[OK] Accessible URLs (5):
+[OK] Accessible URLs (16):
+  200   http://json-schema.org/draft-07/schema#
+  200   http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/
+  200   http://www.w3.org/1999/02/22-rdf-syntax-ns#
+  200   http://www.w3.org/2000/01/rdf-schema#
+  200   http://www.w3.org/2002/07/owl#
+  200   https://json-schema.org/draft/2020-12/schema
+  200   https://purl.org/gag/schema/dirlist.jsonld
+  200   https://purl.org/gag/schema/dirtree.json
+  200   https://purl.org/gag/schema/dirtree.jsonld
   200   https://purl.org/gag/schema/filelist.json
   200   https://purl.org/gag/schema/filelist.jsonld
   200   https://purl.org/gag/schema/probe.json
   200   https://purl.org/gag/schema/probe.jsonld
   200   https://purl.org/gag/schema/vocab
+  200   https://purl.org/gag/schema/vocab#
+  200   https://schema.org/
 
-[XX] Inaccessible / Error URLs (0):
+[XX] Inaccessible / Error URLs (3):
+  404   http://www.w3.org/ns/snmp#  <-- External standard vocabulary (Known to be possibly offline)
+  404   https://purl.org/identity/ad/  <-- External standard vocabulary (Known to be possibly offline)
+  timed out https://purl.org/net/ldap#  <-- External standard vocabulary (Known to be possibly offline)
