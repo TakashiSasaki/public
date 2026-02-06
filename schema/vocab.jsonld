@@ -46,6 +46,85 @@
             "@type": "owl:DatatypeProperty",
             "rdfs:label": "winAttributes",
             "rdfs:comment": "Windows file attribute flags represented as an unsigned integer."
+        },
+        {
+            "@id": "gag:DirectoryTree",
+            "@type": "rdfs:Class",
+            "rdfs:label": "Directory Tree",
+            "rdfs:comment": "A recursive tree structure where object keys represent path segments (directory or file names) and values are either null (leaf nodes) or nested DirectoryTree objects (directories with contents)."
+        },
+        {
+            "@id": "gag:pathSegment",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "Path Segment",
+            "rdfs:comment": "A single component of a file system path, representing a directory or file name. Must not contain path separators or invalid filesystem characters.",
+            "rdfs:domain": "gag:DirectoryTree"
+        },
+        {
+            "@id": "gag:isReparsePoint",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "Is Reparse Point",
+            "rdfs:comment": "Boolean indicating whether this directory is a Windows reparse point (junction, symlink, or mount point)."
+        },
+        {
+            "@id": "gag:reparseTag",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "Reparse Tag",
+            "rdfs:comment": "Windows reparse point tag value identifying the type of reparse point."
+        },
+        {
+            "@id": "gag:isSymlink",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "Is Symlink",
+            "rdfs:comment": "Boolean indicating whether this is a symbolic link."
+        },
+        {
+            "@id": "gag:isMountPoint",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "Is Mount Point",
+            "rdfs:comment": "Boolean indicating whether this directory is a mount point for another filesystem."
+        },
+        {
+            "@id": "gag:linkTarget",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "Link Target",
+            "rdfs:comment": "The target path of a symbolic link or junction."
+        },
+        {
+            "@id": "gag:volumeSerialNumber",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "Volume Serial Number",
+            "rdfs:comment": "The volume serial number of the filesystem containing this directory."
+        },
+        {
+            "@id": "gag:isEncrypted",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "Is Encrypted",
+            "rdfs:comment": "Boolean indicating whether this directory or its contents are encrypted."
+        },
+        {
+            "@id": "gag:isRemovable",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "Is Removable",
+            "rdfs:comment": "Boolean indicating whether this directory is on removable media."
+        },
+        {
+            "@id": "gag:isGitRoot",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "Is Git Root",
+            "rdfs:comment": "Boolean indicating whether this directory contains a .git directory."
+        },
+        {
+            "@id": "gag:isWorkTree",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "Is Work Tree",
+            "rdfs:comment": "Boolean indicating whether this directory is a Git worktree."
+        },
+        {
+            "@id": "gag:validationSchema",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "Validation Schema",
+            "rdfs:comment": "URI of a JSON Schema document that can be used to validate this data. This is a convention for associating JSON-LD data with a JSON Schema, as there is no standard mechanism for this in either specification."
         }
     ]
 }

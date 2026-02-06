@@ -1,0 +1,9 @@
+{
+    "@id": "https://purl.org/gag/schema/dirtree.jsonld",
+    "@context": {
+        "@vocab": "https://purl.org/gag/schema/vocab#",
+        "gag": "https://purl.org/gag/schema/vocab#",
+        "schema": "https://schema.org/",
+        "@type": "gag:DirectoryTree"
+    }
+}
