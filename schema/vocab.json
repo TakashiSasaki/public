@@ -1,7 +1,7 @@
 {
-    "@id": "https://purl.org/gag/vocab#",
+    "@id": "https://purl.org/gag/schema/vocab#",
     "@context": {
-        "gag": "https://purl.org/gag/vocab#",
+        "gag": "https://purl.org/gag/schema/vocab#",
         "schema": "https://schema.org/",
         "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
         "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
@@ -9,7 +9,7 @@
     },
     "@graph": [
         {
-            "@id": "https://purl.org/gag/vocab#",
+            "@id": "https://purl.org/gag/schema/vocab#",
             "@type": "owl:Ontology",
             "rdfs:label": "GAG Vocabulary",
             "rdfs:comment": "get-a-grip プロジェクトその他のための語彙定義。"
