@@ -12,6 +12,7 @@ def main():
     scanner_parser = subparsers.add_parser("scanner", help="Scan directory structures")
     scanner_parser.add_argument("directory", help="The directory path to scan.")
     scanner_parser.add_argument("-o", "--output", help="The output JSON file path. Defaults to fbd0009d-e91b-414f-9f4f-db3fbd3a16ee.json")
+    scanner_parser.add_argument("-f", "--force", action="store_true", help="Overwrite the output file if it exists without asking.")
 
     # jsonld2efu subcommand
     j2e_parser = subparsers.add_parser("jsonld2efu", help="Convert JSON-LD to EFU")
@@ -30,10 +31,17 @@ def main():
 
     if args.command == "scanner":
         try:
+            output_file = args.output if args.output else "fbd0009d-e91b-414f-9f4f-db3fbd3a16ee.json"
+            
+            if not args.force and os.path.exists(output_file):
+                response = input(f"File '{output_file}' already exists. Overwrite? [y/N]: ")
+                if response.lower() != 'y':
+                    print("Aborted.")
+                    return
+
             print(f"Scanning directory: {args.directory}...")
             file_data = scan_directory(args.directory)
             
-            output_file = args.output if args.output else "fbd0009d-e91b-414f-9f4f-db3fbd3a16ee.json"
             print(f"Found {len(file_data)} files. Saving to {output_file} in detailed format...")
             
             save_to_json(file_data, output_file)
