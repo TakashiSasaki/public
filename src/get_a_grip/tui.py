@@ -47,15 +47,20 @@ class FilelistTab(Container):
         log.write(f"[yellow]Scanning:[/yellow] {path} ...")
         
         def _do_work():
-            # Call the tool logic directly
-            data = scan_directory(path)
-            
-            # Output file is saved INSIDE the target directory
-            output_filename = f"{uuid}.json"
-            output_path = os.path.join(path, output_filename)
-            
-            save_to_json(data, output_path)
-            return output_path, len(data.get("files", [])), len(data.get("dirs", []))
+            # NOTE: Do NOT update UI from here. Just do the heavy lifting.
+            try:
+                # Call the tool logic directly
+                data = scan_directory(path)
+                
+                # Output file is saved INSIDE the target directory
+                output_filename = f"{uuid}.json"
+                output_path = os.path.join(path, output_filename)
+                
+                save_to_json(data, output_path)
+                return output_path, len(data.get("files", [])), len(data.get("dirs", []))
+            except Exception as e:
+                # Raise it so on_worker_state_changed catches it
+                raise RuntimeError(f"Scan failed: {e}")
 
         # Launch worker
         self.app.run_worker(_do_work, exclusive=True, thread=True)
