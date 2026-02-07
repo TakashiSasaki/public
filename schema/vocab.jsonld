@@ -168,6 +168,24 @@
             "rdfs:comment": "Boolean indicating whether this directory is the root of a Git working tree (typically containing a .git file or directory)."
         },
         {
+            "@id": "gag:hasGitDirectory",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "hasGitDirectory",
+            "rdfs:comment": "Boolean indicating whether this directory contains a .git directory (typical for main working trees or bare repositories).",
+            "rdfs:subPropertyOf": {
+                "@id": "gag:isGitWorktree"
+            }
+        },
+        {
+            "@id": "gag:hasGitFile",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "hasGitFile",
+            "rdfs:comment": "Boolean indicating whether this directory contains a .git file (typical for linked working trees or submodules).",
+            "rdfs:subPropertyOf": {
+                "@id": "gag:isGitWorktree"
+            }
+        },
+        {
             "@id": "gag:validationSchema",
             "@type": "owl:DatatypeProperty",
             "rdfs:label": "Validation Schema",
