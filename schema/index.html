@@ -247,9 +247,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
     <script>
         const files = [
-            "availability.jsonld",
             "dirtree.json", "dirtree.jsonld", "example.efu", "example.jsonld",
-            "filelist.json", "filelist.jsonld", "probe.json", "probe.jsonld",
+            "filelist.json", "filelist.jsonld",
+            "http_availability.json", "http_availability.jsonld",
+            "probe.json", "probe.jsonld",
             "url_availability_report.txt", "uuid", "uuid.jsonld", "vocab", "vocab.jsonld"
         ];
 
@@ -322,7 +323,7 @@
 
         async function loadAvailabilityReport() {
             try {
-                const response = await fetch('availability.jsonld');
+                const response = await fetch('../reports/purl-availability/latest.jsonld');
                 if (!response.ok) return;
                 const report = await response.json();
 

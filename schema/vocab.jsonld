@@ -155,6 +155,42 @@
             "rdfs:subPropertyOf": {
                 "@id": "schema:dateCreated"
             }
+        },
+        {
+            "@id": "gag:AvailabilityReport",
+            "@type": "rdfs:Class",
+            "rdfs:label": "Availability Report",
+            "rdfs:comment": "A report detailing the accessibility of a set of URLs."
+        },
+        {
+            "@id": "gag:AvailabilitySummary",
+            "@type": "rdfs:Class",
+            "rdfs:label": "Availability Summary",
+            "rdfs:comment": "A summary of the results of an availability check."
+        },
+        {
+            "@id": "gag:AvailabilityResult",
+            "@type": "rdfs:Class",
+            "rdfs:label": "Availability Result",
+            "rdfs:comment": "The result of checking a single URL's accessibility."
+        },
+        {
+            "@id": "gag:statusCode",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "Status Code",
+            "rdfs:comment": "The HTTP status code returned by the server."
+        },
+        {
+            "@id": "gag:isAccessible",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "Is Accessible",
+            "rdfs:comment": "Whether the URL was deemed accessible (e.g., status 200)."
+        },
+        {
+            "@id": "gag:redirectHistory",
+            "@type": "owl:ObjectProperty",
+            "rdfs:label": "Redirect History",
+            "rdfs:comment": "A list of URLs followed during redirects."
         }
     ]
 }

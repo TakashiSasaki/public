@@ -1,0 +1,15 @@
+{
+    "@id": "https://purl.org/gag/schema/http_availability.jsonld",
+    "@context": {
+        "gag": "https://purl.org/gag/schema/vocab#",
+        "schema": "https://schema.org/",
+        "generated_at": "gag:observedAt",
+        "summary": "gag:summary",
+        "results": "gag:results",
+        "url": "schema:url",
+        "status_code": "gag:statusCode",
+        "message": "schema:message",
+        "ok": "gag:isAccessible",
+        "redirect_history": "gag:redirectHistory"
+    }
+}
