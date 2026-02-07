@@ -162,10 +162,10 @@
             "rdfs:comment": "Boolean indicating whether this directory is on removable media."
         },
         {
-            "@id": "gag:isGitRoot",
+            "@id": "gag:isGitWorktree",
             "@type": "owl:DatatypeProperty",
-            "rdfs:label": "Is Git Root",
-            "rdfs:comment": "Boolean indicating whether this directory contains a .git directory."
+            "rdfs:label": "isGitWorktree",
+            "rdfs:comment": "Boolean indicating whether this directory is the root of a Git working tree (typically containing a .git file or directory)."
         },
         {
             "@id": "gag:isWorkTree",
