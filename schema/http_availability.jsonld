@@ -5,11 +5,18 @@
         "gag": "https://purl.org/gag/schema/vocab#",
         "xsd": "http://www.w3.org/2001/XMLSchema#",
         "http": "http://www.w3.org/2011/http#",
+        "prov": "http://www.w3.org/ns/prov#",
+        "earl": "http://www.w3.org/ns/earl#",
         "timestamp": {
-            "@id": "dateCreated",
+            "@id": "prov:generatedAtTime",
             "@type": "xsd:dateTime"
         },
-        "status": "gag:availabilityStatus",
+        "status": {
+            "@id": "earl:outcome",
+            "@type": "@vocab"
+        },
+        "passed": "earl:passed",
+        "failed": "earl:failed",
         "summary": "gag:availabilitySummary",
         "total": "gag:totalChecks",
         "accessible": "gag:accessibleCount",
@@ -24,7 +31,7 @@
         },
         "status_code": "http:statusCode",
         "message": "description",
-        "ok": "gag:isAccessible",
+        "ok": "earl:outcome",
         "redirect_history": {
             "@id": "gag:redirectHistory",
             "@container": "@list",
