@@ -68,16 +68,28 @@
             }
         },
         {
+            "@id": "gag:winFileTime",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "winFileTime",
+            "rdfs:comment": "A 64-bit unsigned integer representing the number of 100-nanosecond intervals since January 1, 1601 (UTC). This corresponds to the Windows FILETIME structure used since the early days of Windows NT. Although defined in C as a struct containing two 32-bit values (DWORD dwLowDateTime, DWORD dwHighDateTime), it represents a single 64-bit time value."
+        },
+        {
             "@id": "gag:winFileTimeModified",
             "@type": "owl:DatatypeProperty",
             "rdfs:label": "winFileTimeModified",
-            "rdfs:comment": "The last modification time represented as a 64-bit Windows FILETIME integer."
+            "rdfs:comment": "The last modification time of the file.",
+            "rdfs:subPropertyOf": {
+                "@id": "gag:winFileTime"
+            }
         },
         {
             "@id": "gag:winFileTimeCreated",
             "@type": "owl:DatatypeProperty",
             "rdfs:label": "winFileTimeCreated",
-            "rdfs:comment": "The creation time represented as a 64-bit Windows FILETIME integer."
+            "rdfs:comment": "The creation time of the file.",
+            "rdfs:subPropertyOf": {
+                "@id": "gag:winFileTime"
+            }
         },
         {
             "@id": "gag:gitTreeMode",
