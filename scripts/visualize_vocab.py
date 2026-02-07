@@ -16,10 +16,14 @@ def main():
     
     try:
         g = Graph()
-        # Parse JSON-LD file
+        # JSON-LDファイルをパース
         # Note: top-level @id in flattened JSON-LD can cause triples to be loaded into a Named Graph,
         # leaving the default graph empty. Ensure the file structure is compatible.
         g.parse(str(file_path), format="json-ld")
+        
+        # Remove rdfs:comment triples to make the graph more compact
+        from rdflib.namespace import RDFS
+        g.remove((None, RDFS.comment, None))
         
         # Warn if no triples found
         if len(g) == 0:
