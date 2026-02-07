@@ -44,22 +44,37 @@
             }
         },
         {
+            "@id": "gag:fileAttributes",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "fileAttributes",
+            "rdfs:comment": "Platform-specific file attribute flags or modes represented as an integer."
+        },
+        {
             "@id": "gag:winFileAttributes",
             "@type": "owl:DatatypeProperty",
             "rdfs:label": "winFileAttributes",
-            "rdfs:comment": "Windows file attribute flags represented as a 32-bit unsigned integer. This corresponds to the FileAttributes field of the FILE_BASIC_INFORMATION structure as defined in winnt.h."
+            "rdfs:comment": "Windows file attribute flags represented as a 32-bit unsigned integer. This corresponds to the FileAttributes field of the FILE_BASIC_INFORMATION structure as defined in winnt.h.",
+            "rdfs:subPropertyOf": {
+                "@id": "gag:fileAttributes"
+            }
         },
         {
             "@id": "gag:posixFileAttributes",
             "@type": "owl:DatatypeProperty",
             "rdfs:label": "posixFileAttributes",
-            "rdfs:comment": "POSIX file mode and permissions represented as an integer. This corresponds to the st_mode field of the struct stat as defined in POSIX standards (e.g., sys/stat.h)."
+            "rdfs:comment": "POSIX file mode and permissions represented as an unsigned integer. This corresponds to the st_mode field of the struct stat as defined in POSIX standards (e.g., sys/stat.h).",
+            "rdfs:subPropertyOf": {
+                "@id": "gag:fileAttributes"
+            }
         },
         {
             "@id": "gag:gitTreeMode",
             "@type": "owl:DatatypeProperty",
             "rdfs:label": "gitTreeMode",
-            "rdfs:comment": "Git tree object entry mode represented as an unsigned integer. While Git stores this as an octal ASCII string in tree objects, this property represents the value as an integer (currently utilizing up to 17 bits)."
+            "rdfs:comment": "Git tree object entry mode represented as an unsigned integer. While Git stores this as an octal ASCII string in tree objects, this property represents the value as an integer (currently utilizing up to 17 bits).",
+            "rdfs:subPropertyOf": {
+                "@id": "gag:fileAttributes"
+            }
         },
         {
             "@id": "gag:DirectoryTree",
