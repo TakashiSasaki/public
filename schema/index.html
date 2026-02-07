@@ -328,7 +328,8 @@
                     d3.select("#graph-container").graphviz()
                         .width(graphContainer.offsetWidth)
                         .height(graphContainer.offsetHeight)
-                        .fit(true)
+                        .fit(false) // Don't shrink to fit, maintain readable size
+                        .zoom(true)
                         .renderDot(content);
                 } else {
                     // Show Code
