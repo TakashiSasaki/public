@@ -148,8 +148,8 @@ def main():
 
     # Generate JSON-LD Report (for schema browser)
     jsonld_report = {
-        "@context": "https://purl.org/gag/schema/availability.jsonld",
-        "@id": "https://purl.org/gag/schema/availability",
+        "@context": "https://purl.org/gag/schema/http_availability.jsonld",
+        "@id": "https://purl.org/gag/schema/http_availability",
         "@type": "gag:AvailabilityReport",
         "generated_at": datetime.now().isoformat(),
         "summary": {
