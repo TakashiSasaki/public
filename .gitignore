@@ -161,14 +161,12 @@ dirtree_test.json
 /reports/**/2*.xml
 /reports/**/2*.html
 
-# Keep latest reports
+# Keep latest reports (including HTML for GitHub Pages)
 !/reports/*/latest.*
+!/reports/coverage/html/
 !/reports/status.json
 !/reports/test-status.json
 !/reports/*/README.md
 !/reports/README.md
 
-# Ignore large HTML reports
-/reports/coverage/html/
-/reports/tests/*.html
 
