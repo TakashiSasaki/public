@@ -1,10 +1,11 @@
 {
-  "timestamp": "2026-02-07T13:20:46.031582",
-  "status": "failed",
+  "@context": "https://purl.org/gag/schema/http_availability.jsonld",
+  "timestamp": "2026-02-07T16:09:53.963070",
+  "status": "passed",
   "summary": {
-    "total": 9,
-    "accessible": 8,
-    "inaccessible": 1
+    "total": 10,
+    "accessible": 10,
+    "inaccessible": 0
   },
   "results": [
     {
@@ -49,12 +50,22 @@
     },
     {
       "url": "https://purl.org/gag/schema/http_availability.json",
-      "status_code": 404,
-      "message": "HTTP Error 404: Not Found",
-      "ok": false,
+      "status_code": 200,
+      "message": "OK",
+      "ok": true,
       "redirect_history": [
         "https://purl.org/gag/schema/http_availability.json",
         "https://purl.archive.org/gag/schema/http_availability.json"
+      ]
+    },
+    {
+      "url": "https://purl.org/gag/schema/http_availability.jsonld",
+      "status_code": 200,
+      "message": "OK",
+      "ok": true,
+      "redirect_history": [
+        "https://purl.org/gag/schema/http_availability.jsonld",
+        "https://purl.archive.org/gag/schema/http_availability.jsonld"
       ]
     },
     {
