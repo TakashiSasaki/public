@@ -64,11 +64,11 @@ def check_url(url):
                 continue
             return e.code, str(e), history
         except urllib.error.URLError as e:
-            return "Error", str(e.reason), history
+            return None, f"URLError: {e.reason}", history
         except Exception as e:
-            return "Exception", str(e), history
+            return None, f"Exception: {e}", history
             
-    return "Error", "Too many redirects", history
+    return None, "Too many redirects", history
 
 def main():
     print(f"Scanning for URLs in: {SCHEMA_DIR}")
@@ -120,8 +120,9 @@ def main():
                 for step in r["history"]:
                     f.write(f"        -> redirected via: {step}\n")
 
-    # Generate JSON Report (for status integration)
+    # Generate JSON Report (Schema Compliant + JSON-LD)
     json_report = {
+        "@context": "https://purl.org/gag/schema/http_availability.jsonld",
         "timestamp": datetime.now().isoformat(),
         "status": "passed" if len(err_list) == 0 else "failed",
         "summary": {
@@ -146,39 +147,9 @@ def main():
     with json_path.open('w', encoding='utf-8') as f:
         json.dump(json_report, f, indent=2)
 
-    # Generate JSON-LD Report (for schema browser)
-    jsonld_report = {
-        "@context": "https://purl.org/gag/schema/http_availability.jsonld",
-        "@id": "https://purl.org/gag/schema/http_availability",
-        "@type": "gag:AvailabilityReport",
-        "generated_at": datetime.now().isoformat(),
-        "summary": {
-            "@type": "gag:AvailabilitySummary",
-            "total": len(urls),
-            "accessible": len(ok_list),
-            "inaccessible": len(err_list)
-        },
-        "results": [
-            {
-                "@type": "gag:AvailabilityResult",
-                "url": r["url"], 
-                "status_code": r["code"], 
-                "message": r["message"], 
-                "ok": r["code"] == 200,
-                "redirect_history": r["history"]
-            }
-            for r in results
-        ]
-    }
-    
-    jsonld_path = REPORTS_DIR / "latest.jsonld"
-    with jsonld_path.open('w', encoding='utf-8') as f:
-        json.dump(jsonld_report, f, indent=2)
-
     print(f"\nReports generated in: {REPORTS_DIR}")
-    print(f"  - Text report:    {txt_path.name}")
-    print(f"  - JSON report:    {json_path.name}")
-    print(f"  - JSON-LD report: {jsonld_path.name}")
+    print(f"  - Text report: {txt_path.name}")
+    print(f"  - JSON report: {json_path.name}")
 
 if __name__ == "__main__":
     main()
