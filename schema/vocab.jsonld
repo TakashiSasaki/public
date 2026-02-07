@@ -56,6 +56,12 @@
             "rdfs:comment": "POSIX file mode and permissions represented as an integer. This corresponds to the st_mode field of the struct stat as defined in POSIX standards (e.g., sys/stat.h)."
         },
         {
+            "@id": "gag:gitTreeMode",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "gitTreeMode",
+            "rdfs:comment": "Git tree object entry mode represented as an unsigned integer. While Git stores this as an octal ASCII string in tree objects, this property represents the value as an integer (currently utilizing up to 17 bits)."
+        },
+        {
             "@id": "gag:DirectoryTree",
             "@type": "rdfs:Class",
             "rdfs:label": "Directory Tree",
