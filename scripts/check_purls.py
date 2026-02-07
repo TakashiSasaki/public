@@ -78,22 +78,32 @@ def main():
         for url, code, msg in err_list:
             f.write(f"  {code}   {url}  <-- {msg}\n")
 
-    # Generate JSON Report for Schema Browser
+    # Generate JSON-LD Report for Schema Browser
     json_report = {
+        "@context": "https://purl.org/gag/schema/availability.jsonld",
+        "@id": "https://purl.org/gag/schema/availability",
+        "@type": "gag:AvailabilityReport",
         "generated_at": datetime.now().isoformat(),
         "summary": {
+            "@type": "gag:AvailabilitySummary",
             "total": len(urls),
             "accessible": len(ok_list),
             "inaccessible": len(err_list)
         },
         "results": [
-            {"url": url, "status_code": code, "message": msg, "ok": code == 200}
+            {
+                "@type": "gag:AvailabilityResult",
+                "url": url, 
+                "status_code": code, 
+                "message": msg, 
+                "ok": code == 200
+            }
             for url, code, msg in results
         ]
     }
     
     import json
-    json_path = SCHEMA_DIR / "url_availability_report.json"
+    json_path = SCHEMA_DIR / "availability.jsonld"
     with json_path.open('w', encoding='utf-8') as f:
         json.dump(json_report, f, indent=2)
 
