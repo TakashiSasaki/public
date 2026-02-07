@@ -50,6 +50,12 @@
             "rdfs:comment": "Windows file attribute flags represented as a 32-bit unsigned integer. This corresponds to the FileAttributes field of the FILE_BASIC_INFORMATION structure as defined in winnt.h."
         },
         {
+            "@id": "gag:posixFileAttributes",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "posixFileAttributes",
+            "rdfs:comment": "POSIX file mode and permissions represented as an integer. This corresponds to the st_mode field of the struct stat as defined in POSIX standards (e.g., sys/stat.h)."
+        },
+        {
             "@id": "gag:DirectoryTree",
             "@type": "rdfs:Class",
             "rdfs:label": "Directory Tree",
