@@ -14,9 +14,9 @@
     <!-- Prism.js for Syntax Highlighting -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
     <!-- D3 & Graphviz -->
-    <script src="https://d3js.org/d3.v5.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@hpcc-js/wasm@0.3.11/dist/index.min.js"></script>
-    <script src="https://unpkg.com/d3-graphviz@3.0.5/build/d3-graphviz.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/@hpcc-js/wasm@2.20.0/dist/graphviz.umd.js"></script>
+    <script src="https://unpkg.com/d3-graphviz@5.6.0/build/d3-graphviz.js"></script>
     <style>
         :root {
             --primary: #6366f1;
@@ -275,10 +275,12 @@
         const loader = document.getElementById('loader');
 
         // Configure hpcc-js/wasm manually to avoid CORS issues with default path resolution
+        // Note: New versions of d3-graphviz + hpcc-js handle this better, but we might need
+        // to re-enable configuration if issues persist. For now, let's try defaults.
         /* global hpccWasm */
-        if (typeof hpccWasm !== 'undefined') {
-            hpccWasm.wasmFolder("https://cdn.jsdelivr.net/npm/@hpcc-js/wasm@0.3.11/dist");
-        }
+        // if (typeof hpccWasm !== 'undefined') {
+        //     hpccWasm.wasmFolder("https://cdn.jsdelivr.net/npm/@hpcc-js/wasm@2.20.0/dist");
+        // }
 
         function init() {
             files.forEach(file => {
