@@ -135,19 +135,19 @@ dmypy.json
 # pytype static type analyzer
 .pytype/
 
-# Local test outputs
+# Local test outputs and temporary directory
+work/
+!work/.gitkeep
+commit_message.txt
+# Ignore results in root to keep it clean
+*-results.json
+*-test.json
+res_*.json
 test_*.json
 test_*.jsonld
+whoami.json
 url_report.txt
 fbd0009d-e91b-414f-9f4f-db3fbd3a16ee.json
-commit_message.txt
-whoami.json
-src/test-scan-src.json
-src/test-scan.json
-res_efu.json
-res_ipc.json
-res_scanner.json
-res_legacy.json
 src/get_a_grip/2e985654-ccc3-4141-979b-58d014133d56.json
 res_scandir.json
 dirtree_test.json

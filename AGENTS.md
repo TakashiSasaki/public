@@ -29,6 +29,7 @@ Follow the standard Python src-layout:
       - Should return raw data (dicts, objects) to be consumed by interfaces (CLI, TUI, MCP).
 - `tests/`: Test suite for automated verification.
 - `scripts/`: Development utilities and troubleshooting scripts (not for production logic).
+- `work/`: **Local Work Directory**. Use this for all temporary files, test outputs, and diagnostic results. Contents are ignored by Git.
 - `schema/`: Single source of truth for semantic and structural specifications.
 - `pyproject.toml`: Project configuration and dependencies.
 
@@ -102,4 +103,5 @@ A module that interfaces directly with the "Everything" search engine via IPC (I
     - Use detailed commit messages.
     - Prefer `git commit -F commit_message.txt` for multi-line messages.
 - **OS Environment:** Be aware that this project is primarily developed in a Windows environment (Powershell). Use appropriate commands (e.g., `dir`, `move`).
+- **Temporary Files:** Always use the `work/` directory for temporary scan results, debugging logs, or any other intermediate files to keep the project root clean.
 - **File Lists:** Use `es.exe -export-efu filelist.efu -path .` (C:\bin\es.exe) to generate file lists if needed.
