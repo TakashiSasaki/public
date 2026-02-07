@@ -1,15 +1,34 @@
 {
     "@id": "https://purl.org/gag/schema/http_availability.jsonld",
     "@context": {
+        "@vocab": "https://schema.org/",
         "gag": "https://purl.org/gag/schema/vocab#",
-        "schema": "https://schema.org/",
-        "generated_at": "gag:observedAt",
-        "summary": "gag:summary",
-        "results": "gag:results",
-        "url": "schema:url",
-        "status_code": "gag:statusCode",
-        "message": "schema:message",
+        "xsd": "http://www.w3.org/2001/XMLSchema#",
+        "http": "http://www.w3.org/2011/http#",
+        "timestamp": {
+            "@id": "dateCreated",
+            "@type": "xsd:dateTime"
+        },
+        "status": "gag:availabilityStatus",
+        "summary": "gag:availabilitySummary",
+        "total": "gag:totalChecks",
+        "accessible": "gag:accessibleCount",
+        "inaccessible": "gag:inaccessibleCount",
+        "results": {
+            "@id": "gag:availabilityResults",
+            "@container": "@list"
+        },
+        "url": {
+            "@id": "url",
+            "@type": "@id"
+        },
+        "status_code": "http:statusCode",
+        "message": "description",
         "ok": "gag:isAccessible",
-        "redirect_history": "gag:redirectHistory"
+        "redirect_history": {
+            "@id": "gag:redirectHistory",
+            "@container": "@list",
+            "@type": "@id"
+        }
     }
 }
