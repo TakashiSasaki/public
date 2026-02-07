@@ -1,0 +1,58 @@
+{
+  "generated_at": "2026-02-07T11:14:33.797616",
+  "summary": {
+    "total": 8,
+    "accessible": 8,
+    "inaccessible": 0
+  },
+  "results": [
+    {
+      "url": "https://purl.org/gag/schema/dirtree.json",
+      "status_code": 200,
+      "message": "OK",
+      "ok": true
+    },
+    {
+      "url": "https://purl.org/gag/schema/dirtree.jsonld",
+      "status_code": 200,
+      "message": "OK",
+      "ok": true
+    },
+    {
+      "url": "https://purl.org/gag/schema/filelist.json",
+      "status_code": 200,
+      "message": "OK",
+      "ok": true
+    },
+    {
+      "url": "https://purl.org/gag/schema/filelist.jsonld",
+      "status_code": 200,
+      "message": "OK",
+      "ok": true
+    },
+    {
+      "url": "https://purl.org/gag/schema/probe.json",
+      "status_code": 200,
+      "message": "OK",
+      "ok": true
+    },
+    {
+      "url": "https://purl.org/gag/schema/probe.jsonld",
+      "status_code": 200,
+      "message": "OK",
+      "ok": true
+    },
+    {
+      "url": "https://purl.org/gag/schema/uuid",
+      "status_code": 200,
+      "message": "OK",
+      "ok": true
+    },
+    {
+      "url": "https://purl.org/gag/schema/vocab",
+      "status_code": 200,
+      "message": "OK",
+      "ok": true
+    }
+  ]
+}
