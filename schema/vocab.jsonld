@@ -171,7 +171,7 @@
             "@id": "gag:hasGitDirectory",
             "@type": "owl:DatatypeProperty",
             "rdfs:label": "hasGitDirectory",
-            "rdfs:comment": "Boolean indicating whether this directory contains a .git directory (typical for main working trees or bare repositories).",
+            "rdfs:comment": "Boolean indicating whether this directory contains a .git directory (typical for main working trees).",
             "rdfs:subPropertyOf": {
                 "@id": "gag:isGitWorktree"
             }
@@ -183,6 +183,21 @@
             "rdfs:comment": "Boolean indicating whether this directory contains a .git file (typical for linked working trees or submodules).",
             "rdfs:subPropertyOf": {
                 "@id": "gag:isGitWorktree"
+            }
+        },
+        {
+            "@id": "gag:isGitRepositoryDir",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "isGitRepositoryDir",
+            "rdfs:comment": "Boolean indicating whether this directory is a Git repository directory containing metadata (e.g., HEAD, objects, refs). This applies to .git directories inside worktrees, bare repositories, and submodule storage directories."
+        },
+        {
+            "@id": "gag:isBareRepository",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "isBareRepository",
+            "rdfs:comment": "Boolean indicating whether this directory is a bare Git repository (a repository without a working tree).",
+            "rdfs:subPropertyOf": {
+                "@id": "gag:isGitRepositoryDir"
             }
         },
         {
