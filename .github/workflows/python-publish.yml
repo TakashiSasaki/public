@@ -39,8 +39,8 @@ jobs:
     - build
     runs-on: ubuntu-latest
     environment:
-      name: pypi
-      url: https://pypi.org/p/get-a-grip
+      name: "pypi"
+      url: "https://pypi.org/project/get-a-grip/"
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
 
