@@ -79,6 +79,14 @@
                     "ok": {
                         "type": "boolean",
                         "description": "Indicates if the URL is accessible (usually status 200)"
+                    },
+                    "redirect_history": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "format": "uri"
+                        },
+                        "description": "List of URLs encountered during redirect following"
                     }
                 }
             }

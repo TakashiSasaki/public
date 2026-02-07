@@ -1,18 +1,35 @@
 URL AVAILABILITY REPORT
 =======================
-Generated: 2026-02-07T12:32:22.917831
+Generated: 2026-02-07T13:20:46.030568
 Project Root: C:\Users\takas\Documents\GitHub\get-a-grip
 
 [OK] Accessible URLs (8):
   200   https://purl.org/gag/schema/dirtree.json
+        -> redistributed from: https://purl.org/gag/schema/dirtree.json
+        -> redistributed from: https://purl.archive.org/gag/schema/dirtree.json
   200   https://purl.org/gag/schema/dirtree.jsonld
+        -> redistributed from: https://purl.org/gag/schema/dirtree.jsonld
+        -> redistributed from: https://purl.archive.org/gag/schema/dirtree.jsonld
   200   https://purl.org/gag/schema/filelist.json
+        -> redistributed from: https://purl.org/gag/schema/filelist.json
+        -> redistributed from: https://purl.archive.org/gag/schema/filelist.json
   200   https://purl.org/gag/schema/filelist.jsonld
+        -> redistributed from: https://purl.org/gag/schema/filelist.jsonld
+        -> redistributed from: https://purl.archive.org/gag/schema/filelist.jsonld
   200   https://purl.org/gag/schema/probe.json
+        -> redistributed from: https://purl.org/gag/schema/probe.json
+        -> redistributed from: https://purl.archive.org/gag/schema/probe.json
   200   https://purl.org/gag/schema/probe.jsonld
+        -> redistributed from: https://purl.org/gag/schema/probe.jsonld
+        -> redistributed from: https://purl.archive.org/gag/schema/probe.jsonld
   200   https://purl.org/gag/schema/uuid
+        -> redistributed from: https://purl.org/gag/schema/uuid
+        -> redistributed from: https://purl.archive.org/gag/schema/uuid
   200   https://purl.org/gag/schema/vocab
+        -> redistributed from: https://purl.org/gag/schema/vocab
+        -> redistributed from: https://purl.archive.org/gag/schema/vocab
 
-[XX] Inaccessible / Error URLs (2):
-  404   https://purl.org/gag/schema/availability  <-- HTTP Error 404: Not Found
-  404   https://purl.org/gag/schema/availability.jsonld  <-- HTTP Error 404: Not Found
+[XX] Inaccessible / Error URLs (1):
+  404   https://purl.org/gag/schema/http_availability.json  <-- HTTP Error 404: Not Found
+        -> redirected via: https://purl.org/gag/schema/http_availability.json
+        -> redirected via: https://purl.archive.org/gag/schema/http_availability.json

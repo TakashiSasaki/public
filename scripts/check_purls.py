@@ -2,6 +2,7 @@ import os
 import re
 import urllib.request
 import urllib.error
+import urllib.parse
 from datetime import datetime
 from pathlib import Path
 
@@ -30,19 +31,44 @@ def find_urls(directory):
             print(f"Warning: Could not read {path}: {e}")
     return sorted(list(urls))
 
+class NoRedirectHandler(urllib.request.HTTPRedirectHandler):
+    """Custom handler to stop automatic redirects and allow manual tracking."""
+    def http_error_301(self, req, fp, code, msg, hdrs): raise urllib.error.HTTPError(req.get_full_url(), code, msg, hdrs, fp)
+    def http_error_302(self, req, fp, code, msg, hdrs): raise urllib.error.HTTPError(req.get_full_url(), code, msg, hdrs, fp)
+    def http_error_303(self, req, fp, code, msg, hdrs): raise urllib.error.HTTPError(req.get_full_url(), code, msg, hdrs, fp)
+    def http_error_307(self, req, fp, code, msg, hdrs): raise urllib.error.HTTPError(req.get_full_url(), code, msg, hdrs, fp)
+    def http_error_308(self, req, fp, code, msg, hdrs): raise urllib.error.HTTPError(req.get_full_url(), code, msg, hdrs, fp)
+
 def check_url(url):
-    """Checks the reachability of a single URL."""
-    try:
-        # Use a standard User-Agent to avoid generic bot blocks
-        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
-        with urllib.request.urlopen(req, timeout=10) as response:
-            return response.getcode(), "OK"
-    except urllib.error.HTTPError as e:
-        return e.code, str(e)
-    except urllib.error.URLError as e:
-        return "Error", str(e.reason)
-    except Exception as e:
-        return "Exception", str(e)
+    """Checks the reachability of a single URL and records redirect history."""
+    history = []
+    current_url = url
+    max_redirects = 10
+    
+    # Configure opener with custom redirect handler
+    opener = urllib.request.build_opener(NoRedirectHandler())
+    
+    for _ in range(max_redirects):
+        try:
+            req = urllib.request.Request(current_url, headers={'User-Agent': 'Mozilla/5.0'})
+            with opener.open(req, timeout=10) as response:
+                return response.getcode(), "OK", history
+        except urllib.error.HTTPError as e:
+            if e.code in (301, 302, 303, 307, 308):
+                location = e.headers.get('Location')
+                if not location:
+                    return e.code, f"Redirect without Location: {e}", history
+                
+                history.append(current_url)
+                current_url = urllib.parse.urljoin(current_url, location)
+                continue
+            return e.code, str(e), history
+        except urllib.error.URLError as e:
+            return "Error", str(e.reason), history
+        except Exception as e:
+            return "Exception", str(e), history
+            
+    return "Error", "Too many redirects", history
 
 def main():
     print(f"Scanning for URLs in: {SCHEMA_DIR}")
@@ -56,16 +82,21 @@ def main():
     results = []
     for url in urls:
         print(f"Checking {url: <50} ... ", end="", flush=True)
-        code, msg = check_url(url)
-        results.append((url, code, msg))
-        print(f"[{code}]")
+        code, msg, history = check_url(url)
+        results.append({
+            "url": url,
+            "code": code,
+            "message": msg,
+            "history": history
+        })
+        print(f"[{code}]" + (f" -> {len(history)} redirects" if history else ""))
 
     # Create reports directory
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     
     # Prepare data
-    ok_list = [r for r in results if r[1] == 200]
-    err_list = [r for r in results if r[1] != 200]
+    ok_list = [r for r in results if r["code"] == 200]
+    err_list = [r for r in results if r["code"] != 200]
     
     # Generate Text Report (human-readable)
     txt_path = REPORTS_DIR / "latest.txt"
@@ -76,12 +107,18 @@ def main():
         f.write(f"Project Root: {PROJECT_ROOT}\n\n")
         
         f.write(f"[OK] Accessible URLs ({len(ok_list)}):\n")
-        for url, code, msg in ok_list:
-            f.write(f"  {code}   {url}\n")
+        for r in ok_list:
+            f.write(f"  {r['code']}   {r['url']}\n")
+            if r["history"]:
+                for step in r["history"]:
+                    f.write(f"        -> redistributed from: {step}\n")
             
         f.write(f"\n[XX] Inaccessible / Error URLs ({len(err_list)}):\n")
-        for url, code, msg in err_list:
-            f.write(f"  {code}   {url}  <-- {msg}\n")
+        for r in err_list:
+            f.write(f"  {r['code']}   {r['url']}  <-- {r['message']}\n")
+            if r["history"]:
+                for step in r["history"]:
+                    f.write(f"        -> redirected via: {step}\n")
 
     # Generate JSON Report (for status integration)
     json_report = {
@@ -94,12 +131,13 @@ def main():
         },
         "results": [
             {
-                "url": url, 
-                "status_code": code, 
-                "message": msg, 
-                "ok": code == 200
+                "url": r["url"], 
+                "status_code": r["code"], 
+                "message": r["message"], 
+                "ok": r["code"] == 200,
+                "redirect_history": r["history"]
             }
-            for url, code, msg in results
+            for r in results
         ]
     }
     
@@ -123,12 +161,13 @@ def main():
         "results": [
             {
                 "@type": "gag:AvailabilityResult",
-                "url": url, 
-                "status_code": code, 
-                "message": msg, 
-                "ok": code == 200
+                "url": r["url"], 
+                "status_code": r["code"], 
+                "message": r["message"], 
+                "ok": r["code"] == 200,
+                "redirect_history": r["history"]
             }
-            for url, code, msg in results
+            for r in results
         ]
     }
     

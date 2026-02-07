@@ -2,83 +2,112 @@
   "@context": "https://purl.org/gag/schema/availability.jsonld",
   "@id": "https://purl.org/gag/schema/availability",
   "@type": "gag:AvailabilityReport",
-  "generated_at": "2026-02-07T12:32:22.933749",
+  "generated_at": "2026-02-07T13:20:46.039431",
   "summary": {
     "@type": "gag:AvailabilitySummary",
-    "total": 10,
+    "total": 9,
     "accessible": 8,
-    "inaccessible": 2
+    "inaccessible": 1
   },
   "results": [
-    {
-      "@type": "gag:AvailabilityResult",
-      "url": "https://purl.org/gag/schema/availability",
-      "status_code": 404,
-      "message": "HTTP Error 404: Not Found",
-      "ok": false
-    },
-    {
-      "@type": "gag:AvailabilityResult",
-      "url": "https://purl.org/gag/schema/availability.jsonld",
-      "status_code": 404,
-      "message": "HTTP Error 404: Not Found",
-      "ok": false
-    },
     {
       "@type": "gag:AvailabilityResult",
       "url": "https://purl.org/gag/schema/dirtree.json",
       "status_code": 200,
       "message": "OK",
-      "ok": true
+      "ok": true,
+      "redirect_history": [
+        "https://purl.org/gag/schema/dirtree.json",
+        "https://purl.archive.org/gag/schema/dirtree.json"
+      ]
     },
     {
       "@type": "gag:AvailabilityResult",
       "url": "https://purl.org/gag/schema/dirtree.jsonld",
       "status_code": 200,
       "message": "OK",
-      "ok": true
+      "ok": true,
+      "redirect_history": [
+        "https://purl.org/gag/schema/dirtree.jsonld",
+        "https://purl.archive.org/gag/schema/dirtree.jsonld"
+      ]
     },
     {
       "@type": "gag:AvailabilityResult",
       "url": "https://purl.org/gag/schema/filelist.json",
       "status_code": 200,
       "message": "OK",
-      "ok": true
+      "ok": true,
+      "redirect_history": [
+        "https://purl.org/gag/schema/filelist.json",
+        "https://purl.archive.org/gag/schema/filelist.json"
+      ]
     },
     {
       "@type": "gag:AvailabilityResult",
       "url": "https://purl.org/gag/schema/filelist.jsonld",
       "status_code": 200,
       "message": "OK",
-      "ok": true
+      "ok": true,
+      "redirect_history": [
+        "https://purl.org/gag/schema/filelist.jsonld",
+        "https://purl.archive.org/gag/schema/filelist.jsonld"
+      ]
+    },
+    {
+      "@type": "gag:AvailabilityResult",
+      "url": "https://purl.org/gag/schema/http_availability.json",
+      "status_code": 404,
+      "message": "HTTP Error 404: Not Found",
+      "ok": false,
+      "redirect_history": [
+        "https://purl.org/gag/schema/http_availability.json",
+        "https://purl.archive.org/gag/schema/http_availability.json"
+      ]
     },
     {
       "@type": "gag:AvailabilityResult",
       "url": "https://purl.org/gag/schema/probe.json",
       "status_code": 200,
       "message": "OK",
-      "ok": true
+      "ok": true,
+      "redirect_history": [
+        "https://purl.org/gag/schema/probe.json",
+        "https://purl.archive.org/gag/schema/probe.json"
+      ]
     },
     {
       "@type": "gag:AvailabilityResult",
       "url": "https://purl.org/gag/schema/probe.jsonld",
       "status_code": 200,
       "message": "OK",
-      "ok": true
+      "ok": true,
+      "redirect_history": [
+        "https://purl.org/gag/schema/probe.jsonld",
+        "https://purl.archive.org/gag/schema/probe.jsonld"
+      ]
     },
     {
       "@type": "gag:AvailabilityResult",
       "url": "https://purl.org/gag/schema/uuid",
       "status_code": 200,
       "message": "OK",
-      "ok": true
+      "ok": true,
+      "redirect_history": [
+        "https://purl.org/gag/schema/uuid",
+        "https://purl.archive.org/gag/schema/uuid"
+      ]
     },
     {
       "@type": "gag:AvailabilityResult",
       "url": "https://purl.org/gag/schema/vocab",
       "status_code": 200,
       "message": "OK",
-      "ok": true
+      "ok": true,
+      "redirect_history": [
+        "https://purl.org/gag/schema/vocab",
+        "https://purl.archive.org/gag/schema/vocab"
+      ]
     }
   ]
 }
