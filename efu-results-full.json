@@ -1,8 +1,0 @@
-{
-  "@context": [
-    "https://purl.org/gag/schema/filelist.jsonld"
-  ],
-  "@type": "ItemList",
-  "files": [],
-  "dirs": []
-}
