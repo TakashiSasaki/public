@@ -175,10 +175,46 @@
             "rdfs:comment": "The result of checking a single URL's accessibility."
         },
         {
-            "@id": "gag:statusCode",
+            "@id": "gag:availabilityStatus",
             "@type": "owl:DatatypeProperty",
-            "rdfs:label": "Status Code",
-            "rdfs:comment": "The HTTP status code returned by the server."
+            "rdfs:label": "Availability Status",
+            "rdfs:comment": "The overall status of an availability check (e.g. 'passed', 'failed')."
+        },
+        {
+            "@id": "gag:availabilitySummary",
+            "@type": "owl:ObjectProperty",
+            "rdfs:label": "Availability Summary",
+            "rdfs:comment": "The summary object containing aggregate metrics of an availability check.",
+            "rdfs:range": {
+                "@id": "gag:AvailabilitySummary"
+            }
+        },
+        {
+            "@id": "gag:availabilityResults",
+            "@type": "owl:ObjectProperty",
+            "rdfs:label": "Availability Results",
+            "rdfs:comment": "A list of individual availability check results.",
+            "rdfs:range": {
+                "@id": "gag:AvailabilityResult"
+            }
+        },
+        {
+            "@id": "gag:totalChecks",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "Total Checks",
+            "rdfs:comment": "The total number of URLs checked."
+        },
+        {
+            "@id": "gag:accessibleCount",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "Accessible Count",
+            "rdfs:comment": "The number of URLs that were accessible."
+        },
+        {
+            "@id": "gag:inaccessibleCount",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "Inaccessible Count",
+            "rdfs:comment": "The number of URLs that were inaccessible."
         },
         {
             "@id": "gag:isAccessible",
