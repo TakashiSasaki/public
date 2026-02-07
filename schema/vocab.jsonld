@@ -168,12 +168,6 @@
             "rdfs:comment": "Boolean indicating whether this directory is the root of a Git working tree (typically containing a .git file or directory)."
         },
         {
-            "@id": "gag:isWorkTree",
-            "@type": "owl:DatatypeProperty",
-            "rdfs:label": "Is Work Tree",
-            "rdfs:comment": "Boolean indicating whether this directory is a Git worktree."
-        },
-        {
             "@id": "gag:validationSchema",
             "@type": "owl:DatatypeProperty",
             "rdfs:label": "Validation Schema",
