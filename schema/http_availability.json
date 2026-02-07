@@ -5,12 +5,17 @@
     "description": "Validation schema for PURL/URL accessibility check results",
     "type": "object",
     "required": [
+        "@context",
         "timestamp",
         "status",
         "summary",
         "results"
     ],
     "properties": {
+        "@context": {
+            "const": "https://purl.org/gag/schema/http_availability.jsonld",
+            "description": "The JSON-LD context URI for this document"
+        },
         "timestamp": {
             "type": "string",
             "format": "date-time",
