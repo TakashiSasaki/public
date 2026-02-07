@@ -1,6 +1,6 @@
 URL AVAILABILITY REPORT
 =======================
-Generated: 2026-02-07T11:14:33.797616
+Generated: 2026-02-07T12:32:22.917831
 Project Root: C:\Users\takas\Documents\GitHub\get-a-grip
 
 [OK] Accessible URLs (8):
@@ -13,4 +13,6 @@ Project Root: C:\Users\takas\Documents\GitHub\get-a-grip
   200   https://purl.org/gag/schema/uuid
   200   https://purl.org/gag/schema/vocab
 
-[XX] Inaccessible / Error URLs (0):
+[XX] Inaccessible / Error URLs (2):
+  404   https://purl.org/gag/schema/availability  <-- HTTP Error 404: Not Found
+  404   https://purl.org/gag/schema/availability.jsonld  <-- HTTP Error 404: Not Found

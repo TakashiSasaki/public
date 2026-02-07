@@ -1,0 +1,71 @@
+{
+  "timestamp": "2026-02-07T12:32:22.917831",
+  "status": "failed",
+  "summary": {
+    "total": 10,
+    "accessible": 8,
+    "inaccessible": 2
+  },
+  "results": [
+    {
+      "url": "https://purl.org/gag/schema/availability",
+      "status_code": 404,
+      "message": "HTTP Error 404: Not Found",
+      "ok": false
+    },
+    {
+      "url": "https://purl.org/gag/schema/availability.jsonld",
+      "status_code": 404,
+      "message": "HTTP Error 404: Not Found",
+      "ok": false
+    },
+    {
+      "url": "https://purl.org/gag/schema/dirtree.json",
+      "status_code": 200,
+      "message": "OK",
+      "ok": true
+    },
+    {
+      "url": "https://purl.org/gag/schema/dirtree.jsonld",
+      "status_code": 200,
+      "message": "OK",
+      "ok": true
+    },
+    {
+      "url": "https://purl.org/gag/schema/filelist.json",
+      "status_code": 200,
+      "message": "OK",
+      "ok": true
+    },
+    {
+      "url": "https://purl.org/gag/schema/filelist.jsonld",
+      "status_code": 200,
+      "message": "OK",
+      "ok": true
+    },
+    {
+      "url": "https://purl.org/gag/schema/probe.json",
+      "status_code": 200,
+      "message": "OK",
+      "ok": true
+    },
+    {
+      "url": "https://purl.org/gag/schema/probe.jsonld",
+      "status_code": 200,
+      "message": "OK",
+      "ok": true
+    },
+    {
+      "url": "https://purl.org/gag/schema/uuid",
+      "status_code": 200,
+      "message": "OK",
+      "ok": true
+    },
+    {
+      "url": "https://purl.org/gag/schema/vocab",
+      "status_code": 200,
+      "message": "OK",
+      "ok": true
+    }
+  ]
+}

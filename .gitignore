@@ -151,3 +151,24 @@ fbd0009d-e91b-414f-9f4f-db3fbd3a16ee.json
 src/get_a_grip/2e985654-ccc3-4141-979b-58d014133d56.json
 res_scandir.json
 dirtree_test.json
+
+# Reports directory
+# Keep latest reports and README files, ignore historical data
+/reports/*/history/
+/reports/**/2*.json
+/reports/**/2*.jsonld
+/reports/**/2*.txt
+/reports/**/2*.xml
+/reports/**/2*.html
+
+# Keep latest reports
+!/reports/*/latest.*
+!/reports/status.json
+!/reports/test-status.json
+!/reports/*/README.md
+!/reports/README.md
+
+# Ignore large HTML reports
+/reports/coverage/html/
+/reports/tests/*.html
+
