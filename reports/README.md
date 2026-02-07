@@ -6,6 +6,15 @@ This directory contains various test results, validation reports, and status inf
 
 ```
 reports/
+├── tests/                  # pytest test execution results
+│   ├── latest.json         # JSON format (for automation)
+│   ├── latest.xml          # JUnit XML (for CI/CD)
+│   ├── latest.html         # HTML format (human-readable)
+│   └── README.md
+├── coverage/               # Code coverage reports
+│   ├── latest.json         # JSON format coverage data
+│   ├── html/               # Interactive HTML report
+│   └── README.md
 ├── purl-availability/      # PURL accessibility check results
 │   ├── latest.json         # JSON format (for automation)
 │   ├── latest.jsonld       # JSON-LD format (for schema browser)
@@ -16,57 +25,72 @@ reports/
 
 ## Available Reports
 
+### Test Results
+
+**Location**: `tests/`
+
+Pytest test execution results in multiple formats.
+
+- **Script**: `poetry run pytest` or `poetry run test`
+- **Formats**: JSON, XML (JUnit), HTML
+- **Status**: ✅ Passed / ❌ Failed (based on test results)
+
+### Code Coverage
+
+**Location**: `coverage/`
+
+Code coverage analysis showing which lines of code are tested.
+
+- **Script**: `poetry run pytest` (coverage is included automatically)
+- **Formats**: JSON, HTML
+- **Target**: 85% coverage
+
 ### PURL Availability
 
 **Location**: `purl-availability/`
 
 Checks the HTTP accessibility of all PURLs (Persistent URLs) used in the project's schema files.
 
-- **Script**: `scripts/check_purls.py`
+- **Script**: `python scripts/check_purls.py`
 - **Formats**: JSON, JSON-LD, TXT
 - **Status**: ✅ Passed / ❌ Failed (based on URL accessibility)
-
-## Planned Reports
-
-Future reports that may be added:
-
-- **`tests/`** - pytest test results
-- **`coverage/`** - Code coverage reports
-- **`schema-validation/`** - JSON Schema validation results
-- **`individual-tests/`** - Detailed results from individual test scripts
-
-## Git Management
-
-This directory follows these rules in `.gitignore`:
-
-- ✅ **Tracked**: `latest.*` files (current status)
-- ✅ **Tracked**: `README.md` files (documentation)
-- ❌ **Ignored**: Historical reports (timestamped files like `2026-*.json`)
-- ❌ **Ignored**: Large HTML reports
 
 ## Usage
 
 ### Generate Reports
 
 ```bash
+# Run all tests and generate reports
+poetry run pytest
+# or
+poetry run test
+
 # PURL availability check
 python scripts/check_purls.py
-
-# Run all tests (future)
-pytest --json-report --json-report-file=reports/tests/latest.json
 ```
 
 ### View Reports
 
 ```bash
-# Human-readable text report
+# Test results (JSON)
+cat reports/tests/latest.json
+
+# Test results (HTML)
+start reports/tests/latest.html  # Windows
+open reports/tests/latest.html   # Mac/Linux
+
+# Coverage (JSON)
+cat reports/coverage/latest.json
+
+# Coverage (HTML)
+start reports/coverage/html/index.html  # Windows
+open reports/coverage/html/index.html   # Mac/Linux
+
+# PURL availability (human-readable)
 cat reports/purl-availability/latest.txt
 
-# JSON report (for scripts)
+# PURL availability (JSON)
 cat reports/purl-availability/latest.json
-
-# JSON-LD report (for semantic web)
-cat reports/purl-availability/latest.jsonld
 ```
 
 ## Integration

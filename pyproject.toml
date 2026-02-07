@@ -20,6 +20,8 @@ test = "pytest:main"
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
+# Automatically generate reports when running pytest
+addopts = "--json-report --json-report-file=reports/tests/latest.json --junit-xml=reports/tests/latest.xml --html=reports/tests/latest.html --self-contained-html --cov=get_a_grip --cov-report=json:reports/coverage/latest.json --cov-report=html:reports/coverage/html --cov-report=term -v"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
@@ -28,5 +30,8 @@ build-backend = "poetry.core.masonry.api"
 [dependency-groups]
 dev = [
     "jsonschema (>=4.26.0,<5.0.0)",
-    "pytest (>=9.0.2,<10.0.0)"
+    "pytest (>=9.0.2,<10.0.0)",
+    "pytest-json-report (>=1.5.0,<2.0.0)",
+    "pytest-html (>=4.2.0,<5.0.0)",
+    "pytest-cov (>=7.0.0,<8.0.0)"
 ]
