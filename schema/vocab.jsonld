@@ -68,6 +68,18 @@
             }
         },
         {
+            "@id": "gag:winFileTimeModified",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "winFileTimeModified",
+            "rdfs:comment": "The last modification time represented as a 64-bit Windows FILETIME integer."
+        },
+        {
+            "@id": "gag:winFileTimeCreated",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "winFileTimeCreated",
+            "rdfs:comment": "The creation time represented as a 64-bit Windows FILETIME integer."
+        },
+        {
             "@id": "gag:gitTreeMode",
             "@type": "owl:DatatypeProperty",
             "rdfs:label": "gitTreeMode",
