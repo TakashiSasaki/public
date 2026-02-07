@@ -1,0 +1,87 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://purl.org/gag/schema/http_availability.json",
+    "title": "HTTP Availability Report Schema",
+    "description": "Validation schema for PURL/URL accessibility check results",
+    "type": "object",
+    "required": [
+        "timestamp",
+        "status",
+        "summary",
+        "results"
+    ],
+    "properties": {
+        "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp when the check was performed"
+        },
+        "status": {
+            "type": "string",
+            "enum": [
+                "passed",
+                "failed"
+            ],
+            "description": "Overall status of the availability check"
+        },
+        "summary": {
+            "type": "object",
+            "required": [
+                "total",
+                "accessible",
+                "inaccessible"
+            ],
+            "properties": {
+                "total": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Total number of URLs checked"
+                },
+                "accessible": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Number of accessible URLs"
+                },
+                "inaccessible": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Number of inaccessible URLs"
+                }
+            }
+        },
+        "results": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "url",
+                    "status_code",
+                    "message",
+                    "ok"
+                ],
+                "properties": {
+                    "url": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "The URL being checked"
+                    },
+                    "status_code": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "description": "HTTP status code returned, or null if a connection error occurred"
+                    },
+                    "message": {
+                        "type": "string",
+                        "description": "Status message or error description"
+                    },
+                    "ok": {
+                        "type": "boolean",
+                        "description": "Indicates if the URL is accessible (usually status 200)"
+                    }
+                }
+            }
+        }
+    }
+}
