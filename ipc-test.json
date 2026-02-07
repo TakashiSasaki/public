@@ -1,0 +1,44 @@
+{
+  "@context": [
+    "https://purl.org/gag/schema/filelist.jsonld"
+  ],
+  "@type": "ItemList",
+  "files": [],
+  "dirs": [
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git",
+      "Size": 834927,
+      "Date Modified": "134148410087644151",
+      "Date Created": "134148299254079372",
+      "Attributes": 10258
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.venv",
+      "Size": 15365419,
+      "Date Modified": "134148382810999124",
+      "Date Created": "134148381612704531",
+      "Attributes": 10256
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\00",
+      "Size": 1318,
+      "Date Modified": "134148392385536985",
+      "Date Created": "134148392385402339",
+      "Attributes": 10256
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\04",
+      "Size": 2458,
+      "Date Modified": "134148344183954584",
+      "Date Created": "134148317265872246",
+      "Attributes": 10256
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\05",
+      "Size": 256,
+      "Date Modified": "134148382606840257",
+      "Date Created": "134148382606792857",
+      "Attributes": 10256
+    }
+  ]
+}

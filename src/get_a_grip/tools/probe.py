@@ -4,6 +4,7 @@ import sys
 import subprocess
 import shutil
 import platform
+from datetime import datetime
 from get_a_grip.tools.whoami import get_effective_user, get_user_principal_name
 
 def get_windows_info() -> dict:
@@ -111,21 +112,26 @@ def get_probe_data() -> dict:
 
     return {
         "@context": [
-            "https://purl.org/gag/schema/probe-context.json"
+            "https://purl.org/gag/schema/probe.jsonld"
         ],
         "@type": "ProbeResult",
-        "uid": get_effective_user(),
-        "userPrincipalName": get_user_principal_name(),
-        "sysName": socket.gethostname(),
-        "platform": sys.platform,
-        "osName": os_info.get("osName"),
-        "osVersion": os_info.get("osVersion"),
-        "osBuild": os_info.get("osBuild"),
-        "osArchitecture": os_info.get("osArchitecture"),
-        "kernelVersion": platform.version() if sys.platform != "win32" else None,
-        "baseboard": win.get("baseboard"),
-        "totalPhysicalMemory": win.get("totalPhysicalMemory"),
-        "logicalDisks": get_storage_info()
+        "observedAt": datetime.now().isoformat(),
+        "observer": {
+            "uid": get_effective_user(),
+            "userPrincipalName": get_user_principal_name()
+        },
+        "target": {
+            "sysName": socket.gethostname(),
+            "platform": sys.platform,
+            "osName": os_info.get("osName"),
+            "osVersion": os_info.get("osVersion"),
+            "osBuild": os_info.get("osBuild"),
+            "osArchitecture": os_info.get("osArchitecture"),
+            "kernelVersion": platform.version() if sys.platform != "win32" else None,
+            "baseboard": win.get("baseboard"),
+            "totalPhysicalMemory": win.get("totalPhysicalMemory"),
+            "logicalDisks": get_storage_info()
+        }
     }
 
 def print_probe_data() -> None:

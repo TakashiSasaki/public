@@ -44,23 +44,23 @@ Git tracks symbolic links using a specific file mode: **`120000`**. By manually 
 
 ### Recovery/Manual Creation Steps (Windows)
 
-If you need to create or fix a symlink (e.g., `schema/filelist.schema.json` pointing to `output-filelist.schema.json`):
+If you need to create or fix a symlink (e.g., `schema/filelist` pointing to `filelist.jsonld`):
 
 1.  **Generate the Blob Hash:**
     ```powershell
     # Create a blob of the target path string (no newlines)
-    $hash = python -c "import subprocess; p=subprocess.Popen(['git', 'hash-object', '-w', '--stdin'], stdin=subprocess.PIPE, stdout=subprocess.PIPE); print(p.communicate(input=b'output-filelist.schema.json')[0].decode().strip())"
+    $hash = python -c "import subprocess; p=subprocess.Popen(['git', 'hash-object', '-w', '--stdin'], stdin=subprocess.PIPE, stdout=subprocess.PIPE); print(p.communicate(input=b'filelist.jsonld')[0].decode().strip())"
     ```
 
 2.  **Update the Git Index:**
     ```powershell
     # Manually add the entry with mode 120000
-    git update-index --add --cacheinfo 120000,$hash,schema/filelist.schema.json
+    git update-index --add --cacheinfo 120000,$hash,schema/filelist
     ```
 
 3.  **Checkout to Materialize:**
     ```powershell
-    git checkout schema/filelist.schema.json
+    git checkout schema/filelist
     ```
 
 ## 5. Summary for Developers

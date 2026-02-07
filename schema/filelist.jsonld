@@ -1,0 +1,26 @@
+{
+    "@id": "https://purl.org/gag/schema/filelist.jsonld",
+    "@context": {
+        "@vocab": "https://schema.org/",
+        "gag": "https://purl.org/gag/schema/vocab#",
+        "files": {
+            "@id": "gag:files",
+            "@container": "@set"
+        },
+        "dirs": {
+            "@id": "gag:directories",
+            "@container": "@set"
+        },
+        "Filename": "gag:fullPath",
+        "Size": "contentSize",
+        "Date Modified": "dateModified",
+        "Date Created": "dateCreated",
+        "Attributes": "gag:winAttributes",
+        "ldap": "https://purl.org/net/ldap#",
+        "ad": "https://purl.org/identity/ad/",
+        "uid": "ldap:uid",
+        "userPrincipalName": "ad:userPrincipalName",
+        "observer": "gag:observer",
+        "observedAt": "gag:observedAt"
+    }
+}

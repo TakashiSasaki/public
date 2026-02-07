@@ -1,0 +1,31 @@
+{
+    "@context": {
+        "schema": "https://schema.org/",
+        "gag": "https://purl.org/gag/schema/vocab#"
+    },
+    "@graph": [
+        {
+            "@id": "urn:uuid:2e985654-ccc3-4141-979b-58d014133d56",
+            "@type": "schema:Thing",
+            "schema:name": "2e985654-ccc3-4141-979b-58d014133d56",
+            "schema:description": "A file stem (filename without extension) for a scan result artifact.",
+            "schema:subjectOf": {
+                "@id": "2e985654-ccc3-4141-979b-58d014133d56.jsonld",
+                "@type": "schema:CreativeWork",
+                "schema:name": "2e985654-ccc3-4141-979b-58d014133d56.jsonld",
+                "schema:description": "Standard filename for the scan result artifact conforming to GAG filelist specifications.",
+                "schema:encodingFormat": "application/ld+json",
+                "schema:conformsTo": [
+                    {
+                        "@id": "https://purl.org/gag/schema/filelist.json",
+                        "schema:name": "File List Schema"
+                    },
+                    {
+                        "@id": "https://purl.org/gag/schema/filelist.jsonld",
+                        "schema:name": "File List Context"
+                    }
+                ]
+            }
+        }
+    ]
+}

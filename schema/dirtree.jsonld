@@ -1,0 +1,19 @@
+{
+    "@id": "https://purl.org/gag/schema/dirtree.jsonld",
+    "@context": {
+        "@vocab": "https://purl.org/gag/schema/vocab#",
+        "gag": "https://purl.org/gag/schema/vocab#",
+        "schema": "https://schema.org/",
+        "ldap": "https://purl.org/net/ldap#",
+        "ad": "https://purl.org/identity/ad/",
+        "uid": "ldap:uid",
+        "userPrincipalName": "ad:userPrincipalName",
+        "observer": "gag:observer",
+        "observedAt": "gag:observedAt",
+        "dirtree": {
+            "@id": "gag:dirtree",
+            "@type": "gag:DirectoryTree",
+            "@container": "@index"
+        }
+    }
+}

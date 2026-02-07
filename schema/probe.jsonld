@@ -1,7 +1,7 @@
 {
-    "@id": "urn:uuid:40b48377-caf4-4366-9fb4-115319814815",
+    "@id": "https://purl.org/gag/schema/probe.jsonld",
     "@context": {
-        "gag": "https://purl.org/gag#",
+        "gag": "https://purl.org/gag/schema/vocab#",
         "schema": "https://schema.org/",
         "ldap": "https://purl.org/net/ldap#",
         "ad": "https://purl.org/identity/ad/",
@@ -23,6 +23,9 @@
         "logicalDisks": "cim:LogicalDisk",
         "deviceId": "schema:identifier",
         "size": "schema:contentSize",
-        "freeSpace": "cim:FreeSpace"
+        "freeSpace": "cim:FreeSpace",
+        "observer": "gag:observer",
+        "target": "gag:target",
+        "observedAt": "gag:observedAt"
     }
 }

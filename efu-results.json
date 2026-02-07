@@ -1,0 +1,709 @@
+{
+  "@context": [
+    "https://purl.org/gag/schema/filelist.jsonld"
+  ],
+  "@type": "ItemList",
+  "files": [],
+  "dirs": [
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git",
+      "Size": 296018,
+      "Date Modified": "134148397276492469",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.venv",
+      "Size": 15365419,
+      "Date Modified": "134148382810999124",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\00",
+      "Size": 1318,
+      "Date Modified": "134148392385536985",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\04",
+      "Size": 2458,
+      "Date Modified": "134148344183954584",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\05",
+      "Size": 256,
+      "Date Modified": "134148382606840257",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\06",
+      "Size": 164,
+      "Date Modified": "134148336864574794",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\0c",
+      "Size": 377,
+      "Date Modified": "134148341481905937",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\0e",
+      "Size": 417,
+      "Date Modified": "134148376221104425",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\0f",
+      "Size": 214,
+      "Date Modified": "134148307856616147",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\10",
+      "Size": 391,
+      "Date Modified": "134148376220877118",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\11",
+      "Size": 2824,
+      "Date Modified": "134148386500465677",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\12",
+      "Size": 701,
+      "Date Modified": "134148380960903307",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\13",
+      "Size": 56,
+      "Date Modified": "134148305604427161",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\16",
+      "Size": 591,
+      "Date Modified": "134148382605296973",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\1a",
+      "Size": 907,
+      "Date Modified": "134148397274080455",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\1c",
+      "Size": 377,
+      "Date Modified": "134148339005102668",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\1f",
+      "Size": 1094,
+      "Date Modified": "134148390666452520",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\20",
+      "Size": 577,
+      "Date Modified": "134148386505109992",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\21",
+      "Size": 2081,
+      "Date Modified": "134148311763840342",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\22",
+      "Size": 968,
+      "Date Modified": "134148395891971046",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\23",
+      "Size": 1488,
+      "Date Modified": "134148383920848857",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\27",
+      "Size": 591,
+      "Date Modified": "134148386500403815",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\28",
+      "Size": 919,
+      "Date Modified": "134148380961128375",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\29",
+      "Size": 591,
+      "Date Modified": "134148380959222880",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\2a",
+      "Size": 164,
+      "Date Modified": "134148305604343456",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\2d",
+      "Size": 427,
+      "Date Modified": "134148344183656054",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\30",
+      "Size": 164,
+      "Date Modified": "134148385222818661",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\31",
+      "Size": 256,
+      "Date Modified": "134148386504830723",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\34",
+      "Size": 377,
+      "Date Modified": "134148376220967055",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\35",
+      "Size": 1287,
+      "Date Modified": "134148395893385343",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\37",
+      "Size": 467,
+      "Date Modified": "134148339005072138",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\3b",
+      "Size": 56,
+      "Date Modified": "134148336864612662",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\3e",
+      "Size": 5004,
+      "Date Modified": "134148334824630128",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\3f",
+      "Size": 1999,
+      "Date Modified": "134148380959312859",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\41",
+      "Size": 4734,
+      "Date Modified": "134148380959132766",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\44",
+      "Size": 582,
+      "Date Modified": "134148334824671920",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\46",
+      "Size": 1312,
+      "Date Modified": "134148376220907124",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\47",
+      "Size": 2107,
+      "Date Modified": "134148343650899878",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\49",
+      "Size": 377,
+      "Date Modified": "134148385222889218",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\50",
+      "Size": 377,
+      "Date Modified": "134148390667385455",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\51",
+      "Size": 606,
+      "Date Modified": "134148344183613949",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\52",
+      "Size": 164,
+      "Date Modified": "134148383920888824",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\54",
+      "Size": 56,
+      "Date Modified": "134148395060335924",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\55",
+      "Size": 115,
+      "Date Modified": "134148385222850141",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\57",
+      "Size": 6253,
+      "Date Modified": "134148386500432449",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\58",
+      "Size": 377,
+      "Date Modified": "134148342108463493",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\59",
+      "Size": 781,
+      "Date Modified": "134148347427991353",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\5a",
+      "Size": 164,
+      "Date Modified": "134148386504880984",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\5b",
+      "Size": 620,
+      "Date Modified": "134148385223053779",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\5d",
+      "Size": 2931,
+      "Date Modified": "134148343650872400",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\5e",
+      "Size": 3191,
+      "Date Modified": "134148395057921769",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\5f",
+      "Size": 499,
+      "Date Modified": "134148392387330705",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\64",
+      "Size": 256,
+      "Date Modified": "134148395060244192",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\68",
+      "Size": 397,
+      "Date Modified": "134148305604154865",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\6a",
+      "Size": 270,
+      "Date Modified": "134148341481868837",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\6b",
+      "Size": 377,
+      "Date Modified": "134148392387223096",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\6d",
+      "Size": 380,
+      "Date Modified": "134148342108719478",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\70",
+      "Size": 377,
+      "Date Modified": "134148336864659655",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\71",
+      "Size": 164,
+      "Date Modified": "134148307856648467",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\78",
+      "Size": 2555,
+      "Date Modified": "134148395060204252",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\79",
+      "Size": 7453,
+      "Date Modified": "134148397274140603",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\7b",
+      "Size": 4997,
+      "Date Modified": "134148343650765483",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\7c",
+      "Size": 397,
+      "Date Modified": "134148307856579278",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\7d",
+      "Size": 256,
+      "Date Modified": "134148385222773991",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\7f",
+      "Size": 164,
+      "Date Modified": "134148395060298060",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\80",
+      "Size": 802,
+      "Date Modified": "134148305604768059",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\81",
+      "Size": 56,
+      "Date Modified": "134148307856687775",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\82",
+      "Size": 56,
+      "Date Modified": "134148386504921904",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\85",
+      "Size": 369,
+      "Date Modified": "134148317266840947",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\86",
+      "Size": 377,
+      "Date Modified": "134148397276193357",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\8a",
+      "Size": 591,
+      "Date Modified": "134148385221666431",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\8d",
+      "Size": 8448,
+      "Date Modified": "134148390667344518",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\8f",
+      "Size": 377,
+      "Date Modified": "134148305604525721",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\90",
+      "Size": 3353,
+      "Date Modified": "134148390281449639",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\93",
+      "Size": 56,
+      "Date Modified": "134148382606940253",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\94",
+      "Size": 214,
+      "Date Modified": "134148336864533559",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\9a",
+      "Size": 2164,
+      "Date Modified": "134148383921068875",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\9c",
+      "Size": 829,
+      "Date Modified": "134148390280072522",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\9d",
+      "Size": 377,
+      "Date Modified": "134148395893266389",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.venv\\Lib\\site-packages\\__pycache__",
+      "Size": 4755,
+      "Date Modified": "134148381712320488",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\src\\get_a_grip\\__pycache__",
+      "Size": 9441,
+      "Date Modified": "134148397828343164",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\src\\get_a_grip\\tools\\__pycache__",
+      "Size": 21291,
+      "Date Modified": "134148397829358859",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.venv\\Lib\\site-packages\\_pytest\\_code",
+      "Size": 64129,
+      "Date Modified": "134148381997915332",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.venv\\Lib\\site-packages\\pip\\_vendor\\pyproject_hooks\\_in_process",
+      "Size": 12773,
+      "Date Modified": "134148381675879978",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.venv\\Lib\\site-packages\\pip\\_internal",
+      "Size": 1109835,
+      "Date Modified": "134148381639636089",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.venv\\Lib\\site-packages\\_pytest\\_io",
+      "Size": 34177,
+      "Date Modified": "134148381997978062",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.venv\\Lib\\site-packages\\_pytest\\_py",
+      "Size": 52695,
+      "Date Modified": "134148381998017888",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.venv\\Lib\\site-packages\\_pytest",
+      "Size": 1309777,
+      "Date Modified": "134148381997885314",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.venv\\Lib\\site-packages\\pip\\_vendor\\urllib3\\contrib\\_securetransport",
+      "Size": 31554,
+      "Date Modified": "134148381702960810",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.venv\\Lib\\site-packages\\pip\\_vendor",
+      "Size": 4182970,
+      "Date Modified": "134148381697941842",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.venv\\Lib\\site-packages\\pip-25.3.dist-info\\licenses\\src\\pip\\_vendor",
+      "Size": 63190,
+      "Date Modified": "134148381709899381",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\a0",
+      "Size": 3758,
+      "Date Modified": "134148380960951647",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\a1",
+      "Size": 1437,
+      "Date Modified": "134148390281292009",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\a4",
+      "Size": 377,
+      "Date Modified": "134148395060398183",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\a7",
+      "Size": 5610,
+      "Date Modified": "134148380959262859",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\a8",
+      "Size": 518,
+      "Date Modified": "134148390667503630",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.git\\objects\\ab",
+      "Size": 555,
+      "Date Modified": "134148397276001425",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.venv\\Lib\\site-packages\\_pytest\\assertion",
+      "Size": 81325,
+      "Date Modified": "134148381998067964",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.venv\\Lib\\site-packages\\attr",
+      "Size": 208081,
+      "Date Modified": "134148381933463720",
+      "Date Created": "0",
+      "Attributes": 0
+    },
+    {
+      "Filename": "D:\\github\\get-a-grip\\.venv\\Lib\\site-packages\\attrs",
+      "Size": 10973,
+      "Date Modified": "134148381933580612",
+      "Date Created": "0",
+      "Attributes": 0
+    }
+  ]
+}

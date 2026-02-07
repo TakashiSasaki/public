@@ -1,0 +1,197 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://purl.org/gag/schema/filelist.json",
+    "title": "File List Output (JSON-LD)",
+    "description": "Standard output format for get-a-grip directory scanner containing a list of files with Windows-specific metadata.",
+    "type": "object",
+    "required": [
+        "@context",
+        "@type",
+        "files",
+        "dirs",
+        "observer",
+        "observedAt"
+    ],
+    "properties": {
+        "@context": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "minItems": 1,
+            "description": "JSON-LD context identifiers and/or file paths."
+        },
+        "observedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp of the scan"
+        },
+        "observer": {
+            "type": "object",
+            "required": [
+                "uid"
+            ],
+            "properties": {
+                "uid": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "userPrincipalName": {
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            }
+        },
+        "@id": {
+            "type": "string",
+            "format": "uri",
+            "description": "Optional identifier for the result set."
+        },
+        "@type": {
+            "const": "ItemList",
+            "description": "JSON-LD type for a list of items."
+        },
+        "files": {
+            "type": "array",
+            "description": "List of scanned file objects.",
+            "items": {
+                "type": "object",
+                "required": [
+                    "Filename",
+                    "Size",
+                    "Date Modified",
+                    "Date Created",
+                    "Attributes"
+                ],
+                "properties": {
+                    "Filename": {
+                        "type": "string",
+                        "description": "Full absolute path of the file."
+                    },
+                    "Size": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "File size in bytes."
+                    },
+                    "Date Modified": {
+                        "oneOf": [
+                            {
+                                "type": "string",
+                                "pattern": "^\\d+$"
+                            },
+                            {
+                                "type": "integer",
+                                "minimum": 0
+                            }
+                        ],
+                        "description": "Windows FILETIME (64-bit) as a decimal string or integer."
+                    },
+                    "Date Created": {
+                        "oneOf": [
+                            {
+                                "type": "string",
+                                "pattern": "^\\d+$"
+                            },
+                            {
+                                "type": "integer",
+                                "minimum": 0
+                            }
+                        ],
+                        "description": "Windows FILETIME (64-bit) as a decimal string or integer."
+                    },
+                    "Attributes": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "Windows file attribute flags (unsigned integer)."
+                    },
+                    "@type": {
+                        "const": "MediaObject",
+                        "description": "JSON-LD type for an individual file (usually omitted if defined in context)."
+                    }
+                }
+            }
+        },
+        "dirs": {
+            "type": "array",
+            "description": "List of scanned directory objects.",
+            "items": {
+                "type": "object",
+                "required": [
+                    "Filename",
+                    "Size",
+                    "Date Modified",
+                    "Date Created",
+                    "Attributes"
+                ],
+                "properties": {
+                    "Filename": {
+                        "type": "string",
+                        "description": "Full absolute path of the directory."
+                    },
+                    "Size": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "Directory size in bytes (system dependent)."
+                    },
+                    "Date Modified": {
+                        "oneOf": [
+                            {
+                                "type": "string",
+                                "pattern": "^\\d+$"
+                            },
+                            {
+                                "type": "integer",
+                                "minimum": 0
+                            }
+                        ],
+                        "description": "Windows FILETIME (64-bit) as a decimal string or integer."
+                    },
+                    "Date Created": {
+                        "oneOf": [
+                            {
+                                "type": "string",
+                                "pattern": "^\\d+$"
+                            },
+                            {
+                                "type": "integer",
+                                "minimum": 0
+                            }
+                        ],
+                        "description": "Windows FILETIME (64-bit) as a decimal string or integer."
+                    },
+                    "Attributes": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "description": "Windows file attribute flags (unsigned integer)."
+                    },
+                    "@type": {
+                        "const": "ItemList",
+                        "description": "JSON-LD type for a directory."
+                    }
+                }
+            }
+        }
+    },
+    "examples": [
+        {
+            "@context": [
+                "urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee",
+                "schema/filelist.jsonld"
+            ],
+            "@type": "ItemList",
+            "files": [
+                {
+                    "Filename": "C:\\path\\to\\file.txt",
+                    "Size": 1234,
+                    "Date Modified": "132894565291065139",
+                    "Date Created": "132894565291065139",
+                    "Attributes": 32
+                }
+            ]
+        }
+    ]
+}
