@@ -15,7 +15,7 @@
         "Size": "contentSize",
         "Date Modified": "dateModified",
         "Date Created": "dateCreated",
-        "Attributes": "gag:winAttributes",
+        "Attributes": "gag:winFileAttributes",
         "ldap": "https://purl.org/net/ldap#",
         "ad": "https://purl.org/identity/ad/",
         "uid": "ldap:uid",

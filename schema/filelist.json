@@ -106,7 +106,7 @@
                     "Attributes": {
                         "type": "integer",
                         "minimum": 0,
-                        "description": "Windows file attribute flags (unsigned integer)."
+                        "description": "Windows file attribute flags (32-bit unsigned integer)."
                     },
                     "@type": {
                         "const": "MediaObject",
@@ -166,7 +166,7 @@
                     "Attributes": {
                         "type": "integer",
                         "minimum": 0,
-                        "description": "Windows file attribute flags (unsigned integer)."
+                        "description": "Windows file attribute flags (32-bit unsigned integer)."
                     },
                     "@type": {
                         "const": "ItemList",
