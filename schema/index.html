@@ -13,6 +13,10 @@
         rel="stylesheet">
     <!-- Prism.js for Syntax Highlighting -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <!-- D3 & Graphviz -->
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://unpkg.com/@hpcc-js/wasm@0.3.11/dist/index.min.js"></script>
+    <script src="https://unpkg.com/d3-graphviz@3.0.5/build/d3-graphviz.js"></script>
     <style>
         :root {
             --primary: #6366f1;
@@ -140,6 +144,15 @@
             position: relative;
         }
 
+        #graph-container {
+            width: 100%;
+            height: 100%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
         pre {
             margin: 0 !important;
             background: transparent !important;
@@ -237,6 +250,7 @@
                 <div class="loader-spinner"></div>
             </div>
             <div class="code-container">
+                <div id="graph-container"></div>
                 <pre><code id="codeBlock" class="language-json"></code></pre>
             </div>
         </div>
@@ -251,11 +265,12 @@
             "filelist.json", "filelist.jsonld",
             "http_availability.json", "http_availability.jsonld",
             "probe.json", "probe.jsonld",
-            "url_availability_report.txt", "uuid", "uuid.jsonld", "vocab", "vocab.jsonld"
+            "url_availability_report.txt", "uuid", "uuid.jsonld", "vocab", "vocab.jsonld", "vocab.dot"
         ];
 
         const fileListEl = document.getElementById('fileList');
         const codeBlock = document.getElementById('codeBlock');
+        const graphContainer = document.getElementById('graph-container');
         const currentFileLabel = document.getElementById('currentFile');
         const loader = document.getElementById('loader');
 
@@ -296,15 +311,35 @@
                 if (!response.ok) throw new Error('File not found');
                 const content = await response.text();
 
-                // Determine language
-                let lang = 'json';
-                if (filename.endsWith('.txt')) lang = 'text';
-                if (filename.endsWith('.efu')) lang = 'text';
+                if (filename.endsWith('.dot')) {
+                    // Show Graph
+                    codeBlock.parentElement.style.overflow = 'hidden'; // Hide scrollbars for graph
+                    codeBlock.style.display = 'none';
+                    graphContainer.style.display = 'block';
 
-                codeBlock.className = `language-${lang}`;
-                codeBlock.textContent = content;
-                Prism.highlightElement(codeBlock);
+                    d3.select("#graph-container").graphviz()
+                        .width(graphContainer.offsetWidth)
+                        .height(graphContainer.offsetHeight)
+                        .fit(true)
+                        .renderDot(content);
+                } else {
+                    // Show Code
+                    codeBlock.parentElement.style.overflow = 'auto';
+                    codeBlock.style.display = 'block';
+                    graphContainer.style.display = 'none';
+
+                    // Determine language
+                    let lang = 'json';
+                    if (filename.endsWith('.txt')) lang = 'text';
+                    if (filename.endsWith('.efu')) lang = 'text';
+
+                    codeBlock.className = `language-${lang}`;
+                    codeBlock.textContent = content;
+                    Prism.highlightElement(codeBlock);
+                }
             } catch (err) {
+                codeBlock.style.display = 'block';
+                graphContainer.style.display = 'none';
                 codeBlock.textContent = `Error loading file: ${err.message}`;
             } finally {
                 loader.style.display = 'none';
