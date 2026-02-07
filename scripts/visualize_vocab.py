@@ -27,8 +27,11 @@ def main():
         else:
             print(f"// Extracted {len(g)} triples from {file_path.name}", file=sys.stderr)
 
-        # Output DOT format to stdout
-        rdf2dot(g, sys.stdout)
+        # Output DOT format to file
+        output_path = file_path.with_suffix('.dot')
+        with open(output_path, 'w', encoding='utf-8') as f:
+            rdf2dot(g, f)
+        print(f"Graphviz DOT file saved to: {output_path}", file=sys.stderr)
 
     except Exception as e:
         print(f"Error: {e}", file=sys.stderr)
