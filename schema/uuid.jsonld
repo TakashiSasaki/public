@@ -5,6 +5,16 @@
     },
     "@graph": [
         {
+            "@id": "https://purl.org/gag/schema/uuid.jsonld",
+            "@type": [
+                "schema:Dataset",
+                "schema:DigitalDocument"
+            ],
+            "schema:name": "UUID Schema Document",
+            "schema:description": "JSON-LD document describing the UUID used for scan result artifacts in the get-a-grip project.",
+            "schema:encodingFormat": "application/ld+json"
+        },
+        {
             "@id": "urn:uuid:2e985654-ccc3-4141-979b-58d014133d56",
             "@type": "schema:Thing",
             "schema:name": "2e985654-ccc3-4141-979b-58d014133d56",
