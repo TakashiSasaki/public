@@ -78,3 +78,11 @@ If no output filename is specified, it defaults to `fbd0009d-e91b-414f-9f4f-db3f
 ## 📜 Principles
 
 This project follows a "Schema-First" approach. We believe that explicitly defined interfaces are more important than implementation details. For more details on development standards, refer to [AGENTS.md](./AGENTS.md).
+
+### Git Hooks
+
+This repository includes a pre-commit hook in `.githooks/` that automatically increments the patch version in `pyproject.toml` on every commit. To enable it locally, run:
+
+```bash
+git config core.hooksPath .githooks
+```
