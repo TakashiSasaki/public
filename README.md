@@ -53,8 +53,15 @@ The developer of this project owns and maintains the `https://purl.org/gag` name
 
 ### Installation
 
+**For developers (using Poetry):**
 ```bash
 poetry install
+```
+
+**For beta testers (direct from GitHub):**
+Install the latest version directly using `pip`:
+```bash
+pip install -U git+https://github.com/TakashiSasaki/get-a-grip.git
 ```
 
 ### Basic Usage
