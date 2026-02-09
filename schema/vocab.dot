@@ -1,159 +1,173 @@
 digraph { 
  node [ fontname="DejaVu Sans" ] ; 
+	node0 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
 	node2 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node4 -> node5 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:range</font> > ] ;
+	node7 -> node8 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:subPropertyOf</font> > ] ;
+	node9 -> node10 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node11 -> node8 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:subPropertyOf</font> > ] ;
+	node13 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node14 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node12 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node16 -> node17 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node6 -> node16 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:range</font> > ] ;
+	node20 -> node21 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:range</font> > ] ;
+	node22 -> node23 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:subPropertyOf</font> > ] ;
+	node24 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node20 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node7 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node26 -> node12 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:subPropertyOf</font> > ] ;
+	node25 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node28 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node2 -> node29 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:range</font> > ] ;
+	node28 -> node31 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:subPropertyOf</font> > ] ;
+	node33 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node26 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node34 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node27 -> node36 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:subPropertyOf</font> > ] ;
+	node37 -> node12 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:subPropertyOf</font> > ] ;
+	node40 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node35 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node41 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node0 -> node42 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:subPropertyOf</font> > ] ;
+	node43 -> node44 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:subPropertyOf</font> > ] ;
+	node45 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node37 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node6 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node43 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node39 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
 	node4 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node5 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node6 -> node7 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node8 -> node9 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:subPropertyOf</font> > ] ;
-	node0 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node13 -> node14 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:subPropertyOf</font> > ] ;
-	node5 -> node14 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:subPropertyOf</font> > ] ;
-	node10 -> node9 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:subPropertyOf</font> > ] ;
-	node15 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node17 -> node7 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node18 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node20 -> node7 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node21 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node22 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node23 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node9 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node25 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node28 -> node7 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node29 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node10 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node32 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node16 -> node33 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:range</font> > ] ;
-	node34 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node0 -> node23 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:subPropertyOf</font> > ] ;
-	node35 -> node37 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node38 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node18 -> node39 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:subPropertyOf</font> > ] ;
-	node40 -> node41 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:range</font> > ] ;
-	node1 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node6 -> node42 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:range</font> > ] ;
-	node36 -> node43 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node34 -> node23 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:subPropertyOf</font> > ] ;
+	node47 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node48 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node46 -> node17 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node44 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node49 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node8 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node27 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
 	node30 -> node44 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:subPropertyOf</font> > ] ;
-	node40 -> node7 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node13 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node16 -> node7 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node8 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node27 -> node7 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node29 -> node45 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:subPropertyOf</font> > ] ;
-	node26 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node24 -> node19 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:range</font> > ] ;
-	node42 -> node37 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node19 -> node37 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node46 -> node9 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:subPropertyOf</font> > ] ;
-	node12 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node24 -> node7 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node28 -> node47 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:subPropertyOf</font> > ] ;
-	node46 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node27 -> node48 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:subPropertyOf</font> > ] ;
-	node14 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node31 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node17 -> node49 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:range</font> > ] ;
-	node39 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node11 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-	node30 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
-# https://purl.org/gag/schema/vocab#winFileTimeCreated node0
-node0 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>winFileTimeCreated</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#winFileTimeCreated' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#winFileTimeCreated</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#accessibleCount node1
-node1 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Accessible Count</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#accessibleCount' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#accessibleCount</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#linkTarget node2
-node2 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Link Target</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#linkTarget' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#linkTarget</font></td></tr></table> > ] 
-# http://www.w3.org/2002/07/owl#DatatypeProperty node3
-node3 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>DatatypeProperty</B></td></tr><tr><td href='http://www.w3.org/2002/07/owl#DatatypeProperty' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>http://www.w3.org/2002/07/owl#DatatypeProperty</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#isRemovable node4
-node4 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Is Removable</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#isRemovable' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#isRemovable</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#hasGitFile node5
-node5 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>hasGitFile</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#hasGitFile' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#hasGitFile</font></td></tr></table> > ] 
+	node30 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node39 -> node51 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:subPropertyOf</font> > ] ;
+	node38 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node22 -> node3 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node11 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node52 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node15 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node50 -> node12 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:subPropertyOf</font> > ] ;
+	node50 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node41 -> node19 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:range</font> > ] ;
+	node25 -> node35 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:subPropertyOf</font> > ] ;
+	node33 -> node42 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:subPropertyOf</font> > ] ;
+	node42 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node18 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node19 -> node17 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+	node42 -> node53 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdfs:subPropertyOf</font> > ] ;
+	node32 -> node1 [ color=BLACK, label=< <font point-size='10' color='#336633'>rdf:type</font> > ] ;
+# https://purl.org/gag/schema/vocab#observedAtPhysicalLocation node0
+node0 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Observed At Physical Location</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#observedAtPhysicalLocation' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#observedAtPhysicalLocation</font></td></tr></table> > ] 
+# http://www.w3.org/2002/07/owl#DatatypeProperty node1
+node1 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>DatatypeProperty</B></td></tr><tr><td href='http://www.w3.org/2002/07/owl#DatatypeProperty' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>http://www.w3.org/2002/07/owl#DatatypeProperty</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#files node2
+node2 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>files</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#files' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#files</font></td></tr></table> > ] 
+# http://www.w3.org/2002/07/owl#ObjectProperty node3
+node3 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>ObjectProperty</B></td></tr><tr><td href='http://www.w3.org/2002/07/owl#ObjectProperty' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>http://www.w3.org/2002/07/owl#ObjectProperty</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#availabilityResults node4
+node4 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Availability Results</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#availabilityResults' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#availabilityResults</font></td></tr></table> > ] 
+# http://www.w3.org/ns/earl#TestResult node5
+node5 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>TestResult</B></td></tr><tr><td href='http://www.w3.org/ns/earl#TestResult' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>http://www.w3.org/ns/earl#TestResult</font></td></tr></table> > ] 
 # https://purl.org/gag/schema/vocab#availabilitySummary node6
 node6 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Availability Summary</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#availabilitySummary' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#availabilitySummary</font></td></tr></table> > ] 
-# http://www.w3.org/2002/07/owl#ObjectProperty node7
-node7 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>ObjectProperty</B></td></tr><tr><td href='http://www.w3.org/2002/07/owl#ObjectProperty' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>http://www.w3.org/2002/07/owl#ObjectProperty</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#winFileAttributes node8
-node8 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>winFileAttributes</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#winFileAttributes' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#winFileAttributes</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#fileAttributes node9
-node9 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>fileAttributes</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#fileAttributes' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#fileAttributes</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#gitTreeMode node10
-node10 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>gitTreeMode</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#gitTreeMode' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#gitTreeMode</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#inaccessibleCount node11
-node11 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Inaccessible Count</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#inaccessibleCount' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#inaccessibleCount</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#pathSegment node12
-node12 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Path Segment</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#pathSegment' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#pathSegment</font></td></tr><tr><td align='left'>rdfs:domain</td><td align='left'>&quot;gag:DirectoryTree&quot;</td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#hasGitDirectory node13
-node13 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>hasGitDirectory</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#hasGitDirectory' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#hasGitDirectory</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#isGitWorktree node14
-node14 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>isGitWorktree</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#isGitWorktree' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#isGitWorktree</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#hasGitFile node7
+node7 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>hasGitFile</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#hasGitFile' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#hasGitFile</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#isGitWorktree node8
+node8 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>isGitWorktree</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#isGitWorktree' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#isGitWorktree</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab# node9
+node9 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>GAG Vocabulary</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#</font></td></tr></table> > ] 
+# http://www.w3.org/2002/07/owl#Ontology node10
+node10 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Ontology</B></td></tr><tr><td href='http://www.w3.org/2002/07/owl#Ontology' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>http://www.w3.org/2002/07/owl#Ontology</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#hasGitDirectory node11
+node11 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>hasGitDirectory</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#hasGitDirectory' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#hasGitDirectory</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#fileAttributes node12
+node12 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>fileAttributes</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#fileAttributes' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#fileAttributes</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#isRemovable node13
+node13 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Is Removable</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#isRemovable' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#isRemovable</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#linkTarget node14
+node14 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Link Target</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#linkTarget' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#linkTarget</font></td></tr></table> > ] 
 # https://purl.org/gag/schema/vocab#isSymlink node15
 node15 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Is Symlink</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#isSymlink' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#isSymlink</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#files node16
-node16 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>files</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#files' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#files</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#directories node17
-node17 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>directories</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#directories' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#directories</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#isBareRepository node18
-node18 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>isBareRepository</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#isBareRepository' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#isBareRepository</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#AvailabilitySummary node16
+node16 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Availability Summary</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#AvailabilitySummary' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#AvailabilitySummary</font></td></tr></table> > ] 
+# http://www.w3.org/2000/01/rdf-schema#Class node17
+node17 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Class</B></td></tr><tr><td href='http://www.w3.org/2000/01/rdf-schema#Class' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>http://www.w3.org/2000/01/rdf-schema#Class</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#validationSchema node18
+node18 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Validation Schema</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#validationSchema' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#validationSchema</font></td></tr></table> > ] 
 # https://purl.org/gag/schema/vocab#DirectoryTree node19
 node19 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Directory Tree</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#DirectoryTree' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#DirectoryTree</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#redirectHistory node20
-node20 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Redirect History</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#redirectHistory' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#redirectHistory</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#reparseTag node21
-node21 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Reparse Tag</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#reparseTag' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#reparseTag</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#validationSchema node22
-node22 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Validation Schema</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#validationSchema' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#validationSchema</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#winFileTime node23
-node23 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>winFileTime</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#winFileTime' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#winFileTime</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#dirtree node24
-node24 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>dirtree</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#dirtree' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#dirtree</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#isEncrypted node25
-node25 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Is Encrypted</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#isEncrypted' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#isEncrypted</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#isMountPoint node26
-node26 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Is Mount Point</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#isMountPoint' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#isMountPoint</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#observer node27
-node27 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>observer</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#observer' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#observer</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#target node28
-node28 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>target</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#target' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#target</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#observedAt node29
-node29 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Observed At</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#observedAt' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#observedAt</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#fullPath node30
-node30 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>fullPath</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#fullPath' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#fullPath</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#totalChecks node31
-node31 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Total Checks</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#totalChecks' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#totalChecks</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#isReparsePoint node32
-node32 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Is Reparse Point</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#isReparsePoint' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#isReparsePoint</font></td></tr></table> > ] 
-# https://schema.org/MediaObject node33
-node33 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>MediaObject</B></td></tr><tr><td href='https://schema.org/MediaObject' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://schema.org/MediaObject</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#winFileTimeModified node34
-node34 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>winFileTimeModified</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#winFileTimeModified' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#winFileTimeModified</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#AvailabilityReport node35
-node35 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Availability Report</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#AvailabilityReport' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#AvailabilityReport</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab# node36
-node36 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>GAG Vocabulary</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#</font></td></tr></table> > ] 
-# http://www.w3.org/2000/01/rdf-schema#Class node37
-node37 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Class</B></td></tr><tr><td href='http://www.w3.org/2000/01/rdf-schema#Class' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>http://www.w3.org/2000/01/rdf-schema#Class</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#volumeSerialNumber node38
-node38 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Volume Serial Number</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#volumeSerialNumber' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#volumeSerialNumber</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#isGitRepositoryDir node39
-node39 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>isGitRepositoryDir</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#isGitRepositoryDir' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#isGitRepositoryDir</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#availabilityResults node40
-node40 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Availability Results</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#availabilityResults' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#availabilityResults</font></td></tr></table> > ] 
-# http://www.w3.org/ns/earl#TestResult node41
-node41 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>TestResult</B></td></tr><tr><td href='http://www.w3.org/ns/earl#TestResult' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>http://www.w3.org/ns/earl#TestResult</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#AvailabilitySummary node42
-node42 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Availability Summary</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#AvailabilitySummary' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#AvailabilitySummary</font></td></tr></table> > ] 
-# http://www.w3.org/2002/07/owl#Ontology node43
-node43 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Ontology</B></td></tr><tr><td href='http://www.w3.org/2002/07/owl#Ontology' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>http://www.w3.org/2002/07/owl#Ontology</font></td></tr></table> > ] 
-# https://schema.org/contentUrl node44
-node44 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>contentUrl</B></td></tr><tr><td href='https://schema.org/contentUrl' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://schema.org/contentUrl</font></td></tr></table> > ] 
-# http://www.w3.org/ns/prov#generatedAtTime node45
-node45 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>generatedAtTime</B></td></tr><tr><td href='http://www.w3.org/ns/prov#generatedAtTime' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>http://www.w3.org/ns/prov#generatedAtTime</font></td></tr></table> > ] 
-# https://purl.org/gag/schema/vocab#posixFileAttributes node46
-node46 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>posixFileAttributes</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#posixFileAttributes' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#posixFileAttributes</font></td></tr></table> > ] 
-# https://schema.org/target node47
-node47 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>target</B></td></tr><tr><td href='https://schema.org/target' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://schema.org/target</font></td></tr></table> > ] 
-# http://www.w3.org/ns/prov#wasAssociatedWith node48
-node48 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>wasAssociatedWith</B></td></tr><tr><td href='http://www.w3.org/ns/prov#wasAssociatedWith' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>http://www.w3.org/ns/prov#wasAssociatedWith</font></td></tr></table> > ] 
-# https://schema.org/ItemList node49
-node49 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>ItemList</B></td></tr><tr><td href='https://schema.org/ItemList' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://schema.org/ItemList</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#directories node20
+node20 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>directories</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#directories' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#directories</font></td></tr></table> > ] 
+# https://schema.org/ItemList node21
+node21 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>ItemList</B></td></tr><tr><td href='https://schema.org/ItemList' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://schema.org/ItemList</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#target node22
+node22 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>target</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#target' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#target</font></td></tr></table> > ] 
+# https://schema.org/target node23
+node23 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>target</B></td></tr><tr><td href='https://schema.org/target' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://schema.org/target</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#inaccessibleCount node24
+node24 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Inaccessible Count</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#inaccessibleCount' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#inaccessibleCount</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#isBareRepository node25
+node25 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>isBareRepository</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#isBareRepository' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#isBareRepository</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#gitTreeMode node26
+node26 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>gitTreeMode</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#gitTreeMode' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#gitTreeMode</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#observedAt node27
+node27 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Observed At</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#observedAt' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#observedAt</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#observer node28
+node28 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>observer</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#observer' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#observer</font></td></tr></table> > ] 
+# https://schema.org/MediaObject node29
+node29 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>MediaObject</B></td></tr><tr><td href='https://schema.org/MediaObject' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://schema.org/MediaObject</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#winFileTimeCreated node30
+node30 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>winFileTimeCreated</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#winFileTimeCreated' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#winFileTimeCreated</font></td></tr></table> > ] 
+# http://www.w3.org/ns/prov#wasAssociatedWith node31
+node31 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>wasAssociatedWith</B></td></tr><tr><td href='http://www.w3.org/ns/prov#wasAssociatedWith' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>http://www.w3.org/ns/prov#wasAssociatedWith</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#isEncrypted node32
+node32 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Is Encrypted</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#isEncrypted' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#isEncrypted</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#observedOnHost node33
+node33 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Observed On Host</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#observedOnHost' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#observedOnHost</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#pathSegment node34
+node34 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Path Segment</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#pathSegment' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#pathSegment</font></td></tr><tr><td align='left'>rdfs:domain</td><td align='left'>&quot;gag:DirectoryTree&quot;</td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#isGitRepositoryDir node35
+node35 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>isGitRepositoryDir</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#isGitRepositoryDir' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#isGitRepositoryDir</font></td></tr></table> > ] 
+# http://www.w3.org/ns/prov#generatedAtTime node36
+node36 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>generatedAtTime</B></td></tr><tr><td href='http://www.w3.org/ns/prov#generatedAtTime' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>http://www.w3.org/ns/prov#generatedAtTime</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#winFileAttributes node37
+node37 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>winFileAttributes</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#winFileAttributes' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#winFileAttributes</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#isMountPoint node38
+node38 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Is Mount Point</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#isMountPoint' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#isMountPoint</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#fullPath node39
+node39 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>fullPath</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#fullPath' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#fullPath</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#redirectHistory node40
+node40 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Redirect History</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#redirectHistory' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#redirectHistory</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#dirtree node41
+node41 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>dirtree</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#dirtree' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#dirtree</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#observedAtPlace node42
+node42 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Observed At Place</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#observedAtPlace' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#observedAtPlace</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#winFileTimeModified node43
+node43 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>winFileTimeModified</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#winFileTimeModified' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#winFileTimeModified</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#winFileTime node44
+node44 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>winFileTime</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#winFileTime' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#winFileTime</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#accessibleCount node45
+node45 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Accessible Count</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#accessibleCount' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#accessibleCount</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#AvailabilityReport node46
+node46 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Availability Report</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#AvailabilityReport' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#AvailabilityReport</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#reparseTag node47
+node47 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Reparse Tag</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#reparseTag' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#reparseTag</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#volumeSerialNumber node48
+node48 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Volume Serial Number</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#volumeSerialNumber' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#volumeSerialNumber</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#isReparsePoint node49
+node49 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Is Reparse Point</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#isReparsePoint' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#isReparsePoint</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#posixFileAttributes node50
+node50 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>posixFileAttributes</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#posixFileAttributes' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#posixFileAttributes</font></td></tr></table> > ] 
+# https://schema.org/contentUrl node51
+node51 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>contentUrl</B></td></tr><tr><td href='https://schema.org/contentUrl' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://schema.org/contentUrl</font></td></tr></table> > ] 
+# https://purl.org/gag/schema/vocab#totalChecks node52
+node52 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>Total Checks</B></td></tr><tr><td href='https://purl.org/gag/schema/vocab#totalChecks' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>https://purl.org/gag/schema/vocab#totalChecks</font></td></tr></table> > ] 
+# http://www.w3.org/ns/prov#atLocation node53
+node53 [ shape=none, color=black label=< <table color='#666666' cellborder='0' cellspacing='0' border='1'><tr><td colspan='2' bgcolor='grey'><B>atLocation</B></td></tr><tr><td href='http://www.w3.org/ns/prov#atLocation' bgcolor='#eeeeee' colspan='2'><font point-size='10' color='#6666ff'>http://www.w3.org/ns/prov#atLocation</font></td></tr></table> > ] 
 }

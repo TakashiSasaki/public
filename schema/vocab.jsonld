@@ -242,6 +242,33 @@
             }
         },
         {
+            "@id": "gag:observedAtPlace",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "Observed At Place",
+            "rdfs:comment": "The location where the observation or scan was performed. This is a general property that can be specialized as a host name or a physical location.",
+            "rdfs:subPropertyOf": {
+                "@id": "prov:atLocation"
+            }
+        },
+        {
+            "@id": "gag:observedOnHost",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "Observed On Host",
+            "rdfs:comment": "The logical location or host machine name (e.g., hostname, domain) where the scan was performed.",
+            "rdfs:subPropertyOf": {
+                "@id": "gag:observedAtPlace"
+            }
+        },
+        {
+            "@id": "gag:observedAtPhysicalLocation",
+            "@type": "owl:DatatypeProperty",
+            "rdfs:label": "Observed At Physical Location",
+            "rdfs:comment": "The physical or geographic location (e.g., address, coordinates, room number) where the scan was performed.",
+            "rdfs:subPropertyOf": {
+                "@id": "gag:observedAtPlace"
+            }
+        },
+        {
             "@id": "gag:AvailabilityReport",
             "@type": "rdfs:Class",
             "rdfs:label": "Availability Report",
