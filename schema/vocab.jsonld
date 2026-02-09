@@ -233,9 +233,9 @@
             }
         },
         {
-            "@id": "gag:observedAt",
+            "@id": "gag:observedAtTime",
             "@type": "owl:DatatypeProperty",
-            "rdfs:label": "Observed At",
+            "rdfs:label": "Observed At Time",
             "rdfs:comment": "The ISO 8601 timestamp when the observation or scan was performed.",
             "rdfs:subPropertyOf": {
                 "@id": "prov:generatedAtTime"

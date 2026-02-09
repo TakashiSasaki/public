@@ -9,7 +9,7 @@
         "uid": "ldap:uid",
         "userPrincipalName": "ad:userPrincipalName",
         "observer": "gag:observer",
-        "observedAt": "gag:observedAt",
+        "observedAtTime": "gag:observedAtTime",
         "dirtree": {
             "@id": "gag:dirtree",
             "@type": "gag:DirectoryTree",

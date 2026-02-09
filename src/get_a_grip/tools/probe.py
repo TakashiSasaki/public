@@ -115,7 +115,7 @@ def get_probe_data() -> dict:
             "https://purl.org/gag/schema/probe.jsonld"
         ],
         "@type": "ProbeResult",
-        "observedAt": datetime.now().isoformat(),
+        "observedAtTime": datetime.now().isoformat(),
         "observer": {
             "uid": get_effective_user(),
             "userPrincipalName": get_user_principal_name()

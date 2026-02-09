@@ -26,6 +26,6 @@
         "freeSpace": "cim:FreeSpace",
         "observer": "gag:observer",
         "target": "gag:target",
-        "observedAt": "gag:observedAt"
+        "observedAtTime": "gag:observedAtTime"
     }
 }
