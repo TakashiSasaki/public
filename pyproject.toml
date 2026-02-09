@@ -14,8 +14,10 @@ dependencies = [
 [project.scripts]
 get-a-grip = "get_a_grip.cli:main"
 gag = "get_a_grip.cli:main"
-gag-gui = "get_a_grip.ttk:main"
 test = "pytest:main"
+
+[project.gui-scripts]
+gag-gui = "get_a_grip.ttk:main"
 
 [tool.poe.tasks]
 check-purls = { cmd = "python scripts/check_purls.py", help = "Check accessibility of GAG PURLs" }

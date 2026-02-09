@@ -35,6 +35,10 @@ class GripLauncher:
         ttk.Button(btn_frame, text="Who Am I", command=self.run_whoami).grid(row=1, column=0, sticky="ew", padx=2, pady=2)
         ttk.Button(btn_frame, text="Scan Directory...", command=self.scan_directory_dialog).grid(row=1, column=1, sticky="ew", padx=2, pady=2)
         
+        # Windows-specific: Add Start Menu registration button
+        if sys.platform == 'win32':
+            ttk.Button(btn_frame, text="Register to Start Menu", command=self.register_to_start_menu).grid(row=2, column=0, columnspan=2, sticky="ew", padx=2, pady=5)
+        
         # Separator
         ttk.Separator(root, orient='horizontal').pack(fill='x', padx=10, pady=5)
 
@@ -132,6 +136,55 @@ class GripLauncher:
             
             cmd = [sys.executable, "-m", "get_a_grip.cli", "filelist", target_dir, "--output", unique_name]
             self.run_command(cmd)
+
+    def register_to_start_menu(self):
+        """Creates a Windows Start Menu shortcut for the GUI."""
+        if sys.platform != 'win32':
+            return
+
+        try:
+            # Attempt to find the full path of the 'gag-gui' entry point
+            # This works if the path is in the environment variable PATH
+            executable_name = "gag-gui.exe"
+            try:
+                exe_path = subprocess.check_output(["where", executable_name], text=True).splitlines()[0]
+                args = ""
+            except Exception:
+                # Fallback to current pythonw (no console) + module if exe not in PATH
+                # Replace python.exe with pythonw.exe if possible
+                exe_path = sys.executable.replace("python.exe", "pythonw.exe")
+                args = "-m get_a_grip.ttk"
+
+            start_menu_path = os.path.join(
+                os.environ["APPDATA"], 
+                "Microsoft", "Windows", "Start Menu", "Programs", 
+                "Get-A-Grip GUI.lnk"
+            )
+
+            # PowerShell script to create WScript.Shell COM shortcut
+            ps_command = f"""
+            $WshShell = New-Object -ComObject WScript.Shell
+            $Shortcut = $WshShell.CreateShortcut("{start_menu_path}")
+            $Shortcut.TargetPath = "{exe_path}"
+            $Shortcut.Arguments = "{args}"
+            $Shortcut.Description = "Get a Grip GUI Launcher"
+            $Shortcut.WorkingDirectory = "{os.getcwd()}"
+            $Shortcut.Save()
+            """
+
+            result = subprocess.run(
+                ["powershell", "-Command", ps_command], 
+                capture_output=True, 
+                text=True
+            )
+
+            if result.returncode == 0:
+                messagebox.showinfo("Success", f"Shortcut created in Start Menu:\n{start_menu_path}")
+                self.log(f"Start Menu shortcut created at: {start_menu_path}")
+            else:
+                messagebox.showerror("Error", f"Failed to create shortcut:\n{result.stderr}")
+        except Exception as e:
+            messagebox.showerror("Error", f"An unexpected error occurred: {e}")
 
 def main():
     root = tk.Tk()
