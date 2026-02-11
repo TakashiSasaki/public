@@ -135,6 +135,17 @@ To ensure consistent behavior across different Git libraries and CLI tools, `get
     -   *Rationale:* Including untracked files in "Dirty" status (like `git status --porcelain` does by default) makes it difficult to distinguish between "active work in progress" and "just added a temporary file".
     -   *Implementation:* Always disable untracked checking in the primary dirty check (e.g., `repo.is_dirty(untracked_files=False)` in GitPython) and perform a separate check for untracked files.
 
+### Cloud Storage / OneDrive Issues
+
+When dealing with repositories stored in cloud-synced folders (OneDrive, Dropbox, Google Drive) on Windows:
+
+-   **Symptoms:**
+    -   `pygit2` raises `GitError: failed to resolve reference 'HEAD': The cloud file provider is not running.` (or localized message).
+    -   `Dulwich` raises `OSError: [Errno 22] Invalid argument`.
+    -   `GitPython` usually succeeds because it delegates to the `git.exe` process, which handles file hydration better than Python's direct file access.
+-   **Cause:** "Files On-Demand" features keep files as placeholders (reparse points) until accessed. Python libraries may fail to read these placeholders if the sync client is not running or if they use low-level file APIs that don't trigger hydration.
+-   **Mitigation:** Treat these errors as "Repository Inaccessible" (return `None` or error state) rather than crashing. Users must ensure the repo is fully synced or the cloud provider is running.
+
 ### Everything Search Strategy
 
 For efficient filesystem scanning on Windows, `get-a-grip` leverages "Everything" via IPC or HTTP.
