@@ -79,10 +79,33 @@ def get_git_info_pygit2(path: str) -> Optional[str]:
 
         branch = "unknown"
         try:
-            head = repo.head
-            branch = head.shorthand
-        except:
+            if repo.head_is_detached:
+                branch = "DETACHED"
+            else:
+                head = repo.head
+                branch = head.shorthand
+        except Exception:
+            # Handle unborn branches (empty repo with no commits yet)
             branch = "HEADLESS"
+            try:
+                # Check if it's an unborn branch
+                # Note: older pygit2 versions might use is_empty or other flags
+                is_unborn = False
+                try:
+                     is_unborn = repo.head_is_unborn
+                except:
+                     pass
+                
+                if is_unborn:
+                     # Get the symbolic reference target of HEAD (e.g. refs/heads/master)
+                     head_ref = repo.lookup_reference("HEAD")
+                     target = head_ref.target
+                     if target.startswith("refs/heads/"):
+                         branch = target[11:]
+                     else:
+                         branch = target
+            except:
+                pass
 
         # Check status
         status_flags = repo.status()
