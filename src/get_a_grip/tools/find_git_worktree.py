@@ -51,7 +51,11 @@ def get_git_info_gitpython(path: str) -> Optional[str]:
         
         # is_dirty(untracked_files=False) checks for staged/unstaged changes only
         is_dirty = repo.is_dirty(untracked_files=False)
-        has_untracked = len(repo.untracked_files) > 0
+        
+        # Check for untracked files using ls-files with --directory to avoid recursion into untracked dirs
+        # This prevents hanging on large directories like C:\Users\takas
+        untracked = repo.git.ls_files('--others', '--exclude-standard', '--directory')
+        has_untracked = len(untracked.strip()) > 0
         
         status = "dirty" if is_dirty else "clean"
         untracked_str = " [untracked]" if has_untracked else ""
