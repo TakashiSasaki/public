@@ -129,11 +129,16 @@ def get_git_info_pygit2(path: str) -> Optional[str]:
         untracked_str = " [untracked]" if has_untracked else ""
 
         return f"{branch} ({status}){untracked_str}"
-    except Exception:
+    except Exception as e:
+        # Detect cloud provider errors (OneDrive, etc)
+        # Error msg example: "failed to resolve reference 'HEAD': The cloud file provider is not running."
+        msg = str(e).lower()
+        if "cloud file provider" in msg or "クラウド ファイル プロバイダー" in msg:
+            return "[Cloud Error]"
         return None
 
 def get_git_info_dulwich(path: str) -> Optional[str]:
-    """Checks if the path is a Git repository using dulwich."""
+    """Checks if the path is a Git repository using Dulwich."""
     if not dulwich:
         return None
     try:
@@ -141,15 +146,16 @@ def get_git_info_dulwich(path: str) -> Optional[str]:
         
         branch = "unknown"
         try:
-            head_ref = repo.refs.read_ref(b'HEAD')
-            if head_ref.startswith(b'ref: '):
-                branch = head_ref.split(b'/')[-1].decode('utf-8')
-            else:
-                branch = "DETACHED"
+             # Read HEAD directly
+             head_ref = repo.refs.read_ref(b'HEAD')
+             if head_ref.startswith(b'ref: '):
+                 branch = head_ref.split(b'/')[-1].decode('utf-8')
+             else:
+                 branch = "DETACHED"
         except KeyError:
              branch = "HEADLESS"
         except:
-             pass
+             branch = "HEADLESS"
 
         # Check status using dulwich.porcelain
         is_dirty = False
@@ -174,7 +180,14 @@ def get_git_info_dulwich(path: str) -> Optional[str]:
         untracked_str = " [untracked]" if has_untracked else ""
 
         return f"{branch} ({status}){untracked_str}"
-    except:
+
+    except OSError as e:
+        # Detect cloud provider errors (OneDrive usually maps to errno 22 'Invalid argument' on access)
+        # This is a heuristic, but common for "Files On-Demand" issues.
+        if e.errno == 22 and "OneDrive" in path:
+            return "[Cloud Error]"
+        return None
+    except Exception:
         return None
 
 import concurrent.futures
