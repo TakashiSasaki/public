@@ -215,6 +215,36 @@ def get_git_info_with_timeout(func, path: str, timeout: float) -> str:
         except Exception as e:
             return f"Error: {e}"
 
+def get_head_content(path: str) -> str:
+    """Reads the content of .git/HEAD if it exists."""
+    head_path = os.path.join(path, ".git", "HEAD")
+    try:
+        git_dir = os.path.join(path, ".git")
+        # Check if .git is a directory
+        if os.path.isdir(git_dir):
+            if os.path.exists(head_path):
+                with open(head_path, "r", encoding="utf-8", errors="ignore") as f:
+                    return f.read().strip()
+        # Check if .git is a file (submodule/worktree)
+        elif os.path.isfile(git_dir):
+            # Read the .git file to find the gitdir
+            with open(git_dir, "r", encoding="utf-8", errors="ignore") as f:
+                content = f.read().strip()
+                if content.startswith("gitdir:"):
+                    # Resolve relative path
+                    rel_git_dir = content[7:].strip()
+                    abs_git_dir = os.path.abspath(os.path.join(path, rel_git_dir))
+                    real_head_path = os.path.join(abs_git_dir, "HEAD")
+                    if os.path.exists(real_head_path):
+                         with open(real_head_path, "r", encoding="utf-8", errors="ignore") as hf:
+                            return hf.read().strip()
+                    return f"gitdir -> {rel_git_dir} (HEAD not found)"
+                return f"[File: {content[:20]}...]"
+        
+        return "[Not Found]"
+    except Exception as e:
+        return f"[Error: {e}]"
+
 def find_git_worktrees(count: int = 50, timeout: float = 0, list_candidates: bool = False):
     """
     Finds git worktrees by searching for .git directories and files.
@@ -301,7 +331,9 @@ def find_git_worktrees(count: int = 50, timeout: float = 0, list_candidates: boo
                  break
         
         if is_valid:
+            head_content = get_head_content(path)
             print(f"[WORKTREE] {path}")
+            print(f"  HEAD      : {head_content}")
             print(f"  GitPython : {results['gitpython']}")
             print(f"  pygit2    : {results['pygit2']}")
             print(f"  Dulwich   : {results['dulwich']}")
