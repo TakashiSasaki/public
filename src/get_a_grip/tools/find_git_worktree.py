@@ -134,10 +134,11 @@ def get_git_info_dulwich(path: str) -> Optional[str]:
         
         try:
             # porcelain.status returns a tuple: (staged, unstaged, untracked)
-            # Each element is a list or dict of changes.
+            # staged is a dict: {'add': [], 'delete': [], 'modify': []}
+            # unstaged is a list of modified files
             staged, unstaged, untracked = dulwich.porcelain.status(repo)
             
-            if staged or unstaged:
+            if any(staged.values()) or unstaged:
                 is_dirty = True
             if untracked:
                 has_untracked = True
