@@ -1,7 +1,8 @@
 import sys
 import os
 import argparse
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
+
 
 # Add current directory to sys.path to ensure we can import the sibling module
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -13,6 +14,7 @@ try:
 except ImportError:
     # Fallback for package relative import if run as a module
     from .filelist_ipc import scan_by_ipc
+
 
 # --- Search Presets Definition ---
 # These queries use "Everything" search syntax.
@@ -75,21 +77,64 @@ def display_results(results: Dict[str, List[Dict[str, Any]]]):
                 
             print(f"[FILE] {f['Filename']} ({size_str})")
 
+def run_search(query: str, count: int = 10):
+    """Executes a search for a raw query string."""
+    try:
+        results = scan_by_ipc(query, count)
+        display_results(results)
+    except Exception as e:
+        print(f"Search failed: {e}")
+
+def interactive_mode(count: int):
+    """Starts an interactive loop for testing Everything queries."""
+    print("=== Everything IPC Interactive Test Mode ===")
+    print(f"Results limit: {count}")
+    print("Type 'exit' or 'quit' to stop, or press Ctrl+C.")
+    print("-" * 40)
+    
+    while True:
+        try:
+            query = input("\nEverything Query > ").strip()
+            if not query:
+                continue
+            if query.lower() in ("exit", "quit"):
+                break
+            
+            run_search(query, count)
+        except KeyboardInterrupt:
+            print("\nExiting...")
+            break
+        except Exception as e:
+            print(f"Error: {e}")
+
 def main():
     parser = argparse.ArgumentParser(description="Search files using Everything IPC with defined presets.")
     parser.add_argument("preset", nargs="?", help="Name of the preset to run (e.g., 'images', 'recent_files').")
     parser.add_argument("--list", "-l", action="store_true", help="List all available presets.")
     parser.add_argument("--count", "-c", type=int, default=20, help="Maximum number of results to display (default: 20).")
+    parser.add_argument("--interactive", "-i", action="store_true", help="Enter interactive mode to test raw queries.")
     
     args = parser.parse_args()
 
-    if args.list or not args.preset:
+    if args.interactive:
+        interactive_mode(args.count)
+    elif args.list:
         print("Available Search Presets:")
         for name, query in PRESETS.items():
             print(f"  {name:<15} : {query}")
         print("\nUsage example: python filelist_ipc_preset.py images --count 50")
+    elif args.preset:
+        if args.preset in PRESETS:
+            run_preset_search(args.preset, args.count)
+        else:
+            # If it's not a preset, treat it as a raw query directly
+            print(f"Running raw query: '{args.preset}'")
+            run_search(args.preset, args.count)
     else:
-        run_preset_search(args.preset, args.count)
+        parser.print_help()
+        print("\nAvailable Search Presets:")
+        for name, query in PRESETS.items():
+            print(f"  {name:<15} : {query}")
 
 if __name__ == "__main__":
     main()

@@ -1,6 +1,6 @@
 [project]
 name = "get-a-grip"
-version = "0.1.31"
+version = "0.1.32"
 description = "A directory searching application"
 authors = [
     {name = "takas"}
@@ -9,6 +9,7 @@ readme = "README.md"
 requires-python = ">=3.12,<4.0"
 dependencies = [
     "textual (>=1.0.0)",
+    "GitPython (>=3.1.44)",
 ]
 
 [project.scripts]
