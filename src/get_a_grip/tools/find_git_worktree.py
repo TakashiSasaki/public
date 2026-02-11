@@ -54,7 +54,8 @@ def get_git_info_gitpython(path: str) -> Optional[str]:
         
         # Check for untracked files using ls-files with --directory to avoid recursion into untracked dirs
         # This prevents hanging on large directories like C:\Users\takas
-        untracked = repo.git.ls_files('--others', '--exclude-standard', '--directory')
+        # Added --no-empty-directory to align with pygit2/Dulwich behavior (ignore empty untracked dirs)
+        untracked = repo.git.ls_files('--others', '--exclude-standard', '--directory', '--no-empty-directory')
         has_untracked = len(untracked.strip()) > 0
         
         status = "dirty" if is_dirty else "clean"

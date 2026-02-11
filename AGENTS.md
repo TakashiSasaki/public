@@ -112,6 +112,7 @@ When working with Git libraries in Python, be aware of the following quirks and 
     *   **Performance Trap:** Avoid `repo.untracked_files`. It recursively lists all untracked files, causing extreme performance degradation or hangs in large directories (e.g., home directories with `node_modules`).
     *   **Solution:** Use `repo.git.ls_files('--others', '--exclude-standard', '--directory')`. This lists directory roots instead of recursing, drastically improving speed.
     *   **Subprocess:** GitPython spawns `git.exe` subprocesses. Use `concurrent.futures.ThreadPoolExecutor` for timeouts, but be aware that it cannot forcefully kill the underlying process.
+    *   **Untracked Directories:** When using `ls-files --directory` to check for untracked files, always include `--no-empty-directory`. Without it, empty directories (which Git typically ignores) are reported as untracked, causing inconsistencies with `git status` or other libraries.
 
 2.  **pygit2 (`pygit2`):**
     *   **Unborn Branches:** Accessing `repo.head` on a fresh repository (no commits) raises a `GitError`.
