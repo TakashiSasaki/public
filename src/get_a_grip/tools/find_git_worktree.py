@@ -165,7 +165,7 @@ def get_git_info_with_timeout(func, path: str, timeout: float) -> str:
         except Exception as e:
             return f"Error: {e}"
 
-def find_git_worktrees(count: int = 50, timeout: float = 0):
+def find_git_worktrees(count: int = 50, timeout: float = 0, list_candidates: bool = False):
     """
     Finds git worktrees by searching for .git directories and files.
     Verifies candidates using all available backends.
@@ -215,6 +215,12 @@ def find_git_worktrees(count: int = 50, timeout: float = 0):
 
     print(f"Found {len(candidates)} unique candidates via Everything.\n")
     
+    if list_candidates:
+        print("Candidates:")
+        for path in candidates:
+            print(f"  {path}")
+        return
+
     for path in candidates:
         results = {}
         
@@ -255,9 +261,10 @@ def main():
     parser = argparse.ArgumentParser(description="Find Git worktrees using Everything and cross-verify with multiple backends.")
     parser.add_argument("--count", "-c", type=int, default=50, help="Maximum number of candidates to scan (default: 50).")
     parser.add_argument("--timeout", "-t", type=float, default=0, help="Timeout in seconds for each backend check (default: 0, 0 for no timeout).")
+    parser.add_argument("--list-candidates", "-l", action="store_true", help="List the candidate directories found by Everything, without running Git checks.")
     
     args = parser.parse_args()
-    find_git_worktrees(args.count, args.timeout)
+    find_git_worktrees(args.count, args.timeout, args.list_candidates)
 
 if __name__ == "__main__":
     main()
