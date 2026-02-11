@@ -116,6 +116,12 @@ To ensure interoperability and clear specifications:
    - **PURL Accessibility Check:** Run `python scripts/check_purls.py` to verify all PURLs in schema files are accessible. Results are saved to `reports/purl-availability/`.
    - **Schema Validation:** Use `python scripts/validate_schema.py <data_file> <schema_file>` to verify output against JSON Schema definitions.
 
+### Troubleshooting: Poetry Command Not Found
+If the `poetry` command is not found in your shell (but `python -m poetry` works):
+1. This usually means the Python scripts folder is not in your system `PATH`.
+2. **Windows location:** `%APPDATA%\Python\Python3xx\Scripts` (e.g., `C:\Users\<User>\AppData\Roaming\Python\Python312\Scripts`).
+3. **Resolution:** Add this path to your Environment Variables, or use `python -m poetry <command>` as a reliable fallback.
+
 ### Automatic Version Bumping
 The project's patch version in `pyproject.toml` is automatically incremented on every commit using a Git hook.
 

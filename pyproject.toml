@@ -1,6 +1,6 @@
 [project]
 name = "get-a-grip"
-version = "0.1.32"
+version = "0.1.33"
 description = "A directory searching application"
 authors = [
     {name = "takas"}
@@ -16,6 +16,7 @@ dependencies = [
 get-a-grip = "get_a_grip.cli:main"
 gag = "get_a_grip.cli:main"
 test = "pytest:main"
+find-github-dir = "get_a_grip.tools.find_github_dir:main"
 
 [project.gui-scripts]
 gag-gui = "get_a_grip.ttk:main"
