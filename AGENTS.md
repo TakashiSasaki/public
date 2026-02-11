@@ -125,7 +125,26 @@ When working with Git libraries in Python, be aware of the following quirks and 
     *   **Solution:** Use `any(staged.values())` to check if there are actual staged files.
     *   **Windows/CRLF:** Dulwich's porcelain status does not automatically handle `core.autocrlf` the same way Git CLI does, potentially leading to false-positive modified files.
 
-## Development Workflow
+### Git Status Standardization
+
+To ensure consistent behavior across different Git libraries and CLI tools, `get-a-grip` adopts the following definitions:
+
+-   **Dirty:** The working tree has **staged** or **unstaged** modifications to tracked files.
+-   **Clean:** No staged or unstaged modifications to tracked files.
+-   **Untracked:** The presence of untracked files is reported separately (e.g., `[untracked]`) and **does NOT** affect the Dirty/Clean status.
+    -   *Rationale:* Including untracked files in "Dirty" status (like `git status --porcelain` does by default) makes it difficult to distinguish between "active work in progress" and "just added a temporary file".
+    -   *Implementation:* Always disable untracked checking in the primary dirty check (e.g., `repo.is_dirty(untracked_files=False)` in GitPython) and perform a separate check for untracked files.
+
+### Everything Search Strategy
+
+For efficient filesystem scanning on Windows, `get-a-grip` leverages "Everything" via IPC or HTTP.
+
+-   **Finding Git Roots:**
+    -   Instead of searching for *any* `.git` folder (which returns thousands of subdirectories), compare:
+        -   `folder: exact:.git` -> Finds standard repository roots.
+        -   `file: exact:.git` -> Finds **submodules** and **worktrees** (where `.git` is a file pointing to the actual dir).
+    -   Combining these two queries covers all types of Git working directories.
+-   **Speed:** Everything is orders of magnitude faster than Python's `os.walk` or `glob` for whole-drive searches. Always prefer Everything for initial discovery.
 1. **Adding Dependencies:** Use `poetry add <package>`.
 2. **Running Locally:**
    - **Standard:** `poetry run get-a-grip filelist <args>`
