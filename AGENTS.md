@@ -125,6 +125,7 @@ When working with Git libraries in Python, be aware of the following quirks and 
     *   **Trap:** `staged` is a dictionary `{'add': [], ...}`. Even if empty (`{'add': [], ...}`), it evaluates to `True` in boolean context because the dictionary keys exist.
     *   **Solution:** Use `any(staged.values())` to check if there are actual staged files.
     *   **Windows/CRLF:** Dulwich's porcelain status does not automatically handle `core.autocrlf` the same way Git CLI does, potentially leading to false-positive modified files.
+    *   **HEAD Reference Parsing:** `repo.refs.read_ref(b'HEAD')` returns the raw ref string (e.g., `b'ref: refs/heads/feature/branch'`). Simply splitting by `/` truncates hierarchical branch names. Check for `b'ref: refs/heads/'` prefix and slice the string instead.
 
 ### Git Status Standardization
 

@@ -153,8 +153,12 @@ def get_git_info_dulwich(path: str) -> Optional[str]:
         try:
              # Read HEAD directly
              head_ref = repo.refs.read_ref(b'HEAD')
-             if head_ref.startswith(b'ref: '):
-                 branch = head_ref.split(b'/')[-1].decode('utf-8')
+             if head_ref.startswith(b'ref: refs/heads/'):
+                 # Full branch name (e.g. CFQV/takas)
+                 branch = head_ref[16:].decode('utf-8')
+             elif head_ref.startswith(b'ref: '):
+                 # Other symbolic ref, fallback to last component or full ref minus 'ref: '
+                 branch = head_ref[5:].decode('utf-8')
              else:
                  branch = "DETACHED"
         except KeyError:
