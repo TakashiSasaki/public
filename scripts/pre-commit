@@ -1,0 +1,13 @@
+#!/bin/sh
+# Git pre-commit hook to automatically bump version in pyproject.toml
+# Created by Antigravity
+
+# Run the bump script
+python scripts/bump_version.py
+
+if [ $? -eq 0 ]; then
+    # Add the modified pyproject.toml to the current commit
+    git add pyproject.toml
+else
+    echo "Warning: Version bump failed. Continuing commit without bumping."
+fi

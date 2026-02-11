@@ -116,7 +116,28 @@ To ensure interoperability and clear specifications:
    - **PURL Accessibility Check:** Run `python scripts/check_purls.py` to verify all PURLs in schema files are accessible. Results are saved to `reports/purl-availability/`.
    - **Schema Validation:** Use `python scripts/validate_schema.py <data_file> <schema_file>` to verify output against JSON Schema definitions.
 
+### Automatic Version Bumping
+The project's patch version in `pyproject.toml` is automatically incremented on every commit using a Git hook.
+
+- **How it works:** A `pre-commit` hook executes `scripts/bump_version.py` which increments the patch level and adds the updated `pyproject.toml` to the commit.
+- **Initial Setup (after clone):**
+  Git hooks are local to your machine. You must manually set up the hook after cloning the repository:
+
+  **Windows (Powershell):**
+  ```powershell
+  Copy-Item scripts/pre-commit .git/hooks/pre-commit
+  ```
+
+  **Linux / macOS (Bash):**
+  ```bash
+  cp scripts/pre-commit .git/hooks/pre-commit
+  chmod +x .git/hooks/pre-commit
+  ```
+- **Manual Override:** To commit without bumping the version, use `git commit --no-verify`.
+- **Note:** `scripts/bump_version.py` is included in the repository to ensure consistent behavior across environments.
+
 ### `src/get_a_grip/tools/dirtree.py`
+
 A recursive directory scanner that outputs a hierarchical JSON structure conforming to `schema/dirtree.json`. It captures the filesystem structure as a nested tree where keys are path segments.
 
 ### `src/get_a_grip/tools/filelist2dirtree.py`
