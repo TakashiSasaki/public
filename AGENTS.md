@@ -147,6 +147,17 @@ When dealing with repositories stored in cloud-synced folders (OneDrive, Dropbox
 -   **Cause:** "Files On-Demand" features keep files as placeholders (reparse points) until accessed. Python libraries may fail to read these placeholders if the sync client is not running or if they use low-level file APIs that don't trigger hydration.
 -   **Mitigation:** Treat these errors as "Repository Inaccessible" (return `None` or error state) rather than crashing. Users must ensure the repo is fully synced or the cloud provider is running.
 
+### Repository Ownership / Safe Directory
+
+Git has security measures preventing access to repositories owned by other users (e.g., specific folders owned by `SYSTEM` or `Administrators`).
+
+-   **Symptoms:**
+    -   `pygit2` raises `GitError: repository path '...' is not owned by current user`.
+    -   `Dulwich` and `GitPython` may succeed depending on their implementation and configuration, but `pygit2` (libgit2-based) is strict by default.
+-   **Mitigation:**
+    -   Report as `[Owner Mismatch]` to inform the user why access failed.
+    -   Users can whitelist directories using `git config --global --add safe.directory <path>`, but `pygit2` might not respect this depending on how it's built/configured vs `git.exe`.
+
 ### Everything Search Strategy
 
 For efficient filesystem scanning on Windows, `get-a-grip` leverages "Everything" via IPC or HTTP.

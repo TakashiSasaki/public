@@ -136,6 +136,10 @@ def get_git_info_pygit2(path: str) -> Optional[str]:
         msg = str(e).lower()
         if "cloud file provider" in msg or "クラウド ファイル プロバイダー" in msg:
             return "[Cloud Error]"
+        # Detect ownership issues (e.g. repo owned by SYSTEM but accessed by user)
+        # Error msg example: "repository path 'C:/Users/takas' is not owned by current user"
+        if "not owned by current user" in msg:
+            return "[Owner Mismatch]"
         return None
 
 def get_git_info_dulwich(path: str) -> Optional[str]:
