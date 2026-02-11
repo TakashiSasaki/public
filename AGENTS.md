@@ -26,6 +26,7 @@ Follow the standard Python src-layout:
       - `efu_converter.py`: Conversions between JSON-LD and Everything EFU files.
       - `filelist_http.py`: Remote scanning via Everything HTTP server.
       - `filelist_ipc.py`: IPC-based scanning using Everything64.dll.
+      - `find_git_worktree.py`: Cross-backend Git repository scanner.
       - `whoami.py`: User identity retrieval.
       - `probe.py`: Environment data collection.
       - Code here must be pure: **NO print()**, **NO sys.exit()**, **NO user prompts**.
@@ -102,6 +103,27 @@ To ensure interoperability and clear specifications:
   - **Interfaces (`cli.py`, `tui.py`, `mcp.py`)**: Handles presentation, user I/O, and orchestration.
     - Responsible for catching exceptions from tools and presenting them to the user.
 - **Round-Trip Verification:** When building data conversion tools, ALWAYS perform round-trip verification (Format A -> Format B -> Format A) to ensure data integrity and losslessness.
+
+### Git Backend Libraries Best Practices
+
+When working with Git libraries in Python, be aware of the following quirks and best practices to ensure performance and consistency:
+
+1.  **GitPython (`git`):**
+    *   **Performance Trap:** Avoid `repo.untracked_files`. It recursively lists all untracked files, causing extreme performance degradation or hangs in large directories (e.g., home directories with `node_modules`).
+    *   **Solution:** Use `repo.git.ls_files('--others', '--exclude-standard', '--directory')`. This lists directory roots instead of recursing, drastically improving speed.
+    *   **Subprocess:** GitPython spawns `git.exe` subprocesses. Use `concurrent.futures.ThreadPoolExecutor` for timeouts, but be aware that it cannot forcefully kill the underlying process.
+
+2.  **pygit2 (`pygit2`):**
+    *   **Unborn Branches:** Accessing `repo.head` on a fresh repository (no commits) raises a `GitError`.
+    *   **Solution:** Catch this exception, check `repo.head_is_unborn`, and if true, inspect the symbol target of HEAD via `repo.lookup_reference("HEAD").target`.
+    *   **Detached HEAD:** `repo.head.shorthand` returns `"HEAD"` instead of a branch name or OID when detached.
+    *   **Solution:** explicitly check `repo.head_is_detached` before accessing shorthand.
+
+3.  **Dulwich (`dulwich`):**
+    *   **Status Check:** `porcelain.status(repo)` returns a tuple `(staged, unstaged, untracked)`.
+    *   **Trap:** `staged` is a dictionary `{'add': [], ...}`. Even if empty (`{'add': [], ...}`), it evaluates to `True` in boolean context because the dictionary keys exist.
+    *   **Solution:** Use `any(staged.values())` to check if there are actual staged files.
+    *   **Windows/CRLF:** Dulwich's porcelain status does not automatically handle `core.autocrlf` the same way Git CLI does, potentially leading to false-positive modified files.
 
 ## Development Workflow
 1. **Adding Dependencies:** Use `poetry add <package>`.
