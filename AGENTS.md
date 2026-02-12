@@ -17,15 +17,16 @@ Follow the standard Python src-layout:
     - `cli.py`: CLI interface layer. Orchestrates tools and handles user interaction (print/input).
     - `tui.py`: Textual-based TUI interface. Wraps tools with a rich terminal UI.
     - `ttk.py`: Tkinter-based GUI interface. Provides graphical user interface.
-    - `tools/`: **Pure Logic Layer**. Contains core implementations of tools (e.g., `filelist.py`).
-      - `filelist.py`: Local directory traversal.
-      - `filelist_rglob.py`: File listing using Python's rglob (recursive glob).
-      - `filelist_scandir.py`: File listing using Python's scandir (efficient directory scanning).
+    - `tools/`: **Pure Logic Layer**. Contains core implementations of tools.
+      - `filelist/`: **File Scanning Package**.
+        - `__init__.py`: Provides a robust `scan()` function that validates multiple methods (`scandir`, `walk`, `rglob`).
+        - `types.py`: Defines common data structures (`FileList`, `FileItem`) and `FileScanner` protocol.
+        - `utils.py`: Shared utilities for saving results and comparing file lists.
+        - `scandir.py`, `walk.py`, `rglob.py`: Individual scanning strategies.
+        - `http.py`, `ipc.py`: Everything-based scanning strategies.
       - `dirtree.py`: Recursive directory tree traversal (hierarchical output).
       - `filelist2dirtree.py`: Converter tool from flat `filelist.json` to hierarchical `dirtree.json`.
       - `efu_converter.py`: Conversions between JSON-LD and Everything EFU files.
-      - `filelist_http.py`: Remote scanning via Everything HTTP server.
-      - `filelist_ipc.py`: IPC-based scanning using Everything64.dll.
       - `find_git_worktree.py`: Cross-backend Git repository scanner.
       - `whoami.py`: User identity retrieval.
       - `probe.py`: Environment data collection.
@@ -102,6 +103,13 @@ To ensure interoperability and clear specifications:
     - **UI Feedback:** If a tool requires progress reporting, use an optional, injectable callback or a dedicated tracker class that defaults to no-op. Avoid direct `print()` calls in core logic.
   - **Interfaces (`cli.py`, `tui.py`, `mcp.py`)**: Handles presentation, user I/O, and orchestration.
     - Responsible for catching exceptions from tools and presenting them to the user.
+- **Strategy Pattern for Scanners:**
+  - All file scanners must implement the `FileScanner` protocol (defined in `src/get_a_grip/tools/filelist/types.py`).
+  - Required interface: `scan(target: str) -> FileList`.
+  - Use `@runtime_checkable` on the protocol to allow `isinstance(obj, FileScanner)` checks.
+- **Robustness & Validation:**
+  - The default `filelist.scan()` function acts as a validator by running `scandir`, `walk`, and `rglob` concurrently and verifying that their results match exactly (counts and metadata).
+  - Use `compare_filelists()` from `utils.py` for this validation.
 - **Round-Trip Verification:** When building data conversion tools, ALWAYS perform round-trip verification (Format A -> Format B -> Format A) to ensure data integrity and losslessness.
 
 ### Git Backend Libraries Best Practices
@@ -175,9 +183,12 @@ For efficient filesystem scanning on Windows, `get-a-grip` leverages "Everything
    - **Alias:** `poetry run gag filelist <args>` (Short for "get-a-grip")
    - **Module:** `poetry run python -m get_a_grip filelist <args>`
 3. **Testing:** 
-   - Run tests with `poetry run pytest`.
-   - Ensure new features have corresponding tests in `tests/`.
-   - **URL Verification:** Run `pytest tests/test_url_accessibility.py` after modifying schemas to ensure all external references are stable.
+   - **General Test Run:** `poetry run test` (uses automated root-directory resolver).
+   - **Poe Tasks:**
+     - `poetry run poe test`: Run all primary tests (excludes slow URL checks).
+     - `poetry run poe test-consistency`: Specifically run filelist consistency tests.
+     - `poetry run poe test-urls`: Run external URL accessibility checks (long-running).
+   - **URL Verification:** After modifying schemas, running `poe test-urls` is recommended.
    - **PURL Accessibility Check:** Run `python scripts/check_purls.py` to verify all PURLs in schema files are accessible. Results are saved to `reports/purl-availability/`.
    - **Schema Validation:** Use `python scripts/validate_schema.py <data_file> <schema_file>` to verify output against JSON Schema definitions.
 
