@@ -106,9 +106,11 @@ def test_find_git_worktrees_real_fs(mock_scan, tmp_path, capsys):
 
         mock_gp.side_effect = gp_side_effect
         
+        from get_a_grip.tools.git.find_git_worktree import print_git_worktrees
         # Ensure git is patched as present
         with patch('get_a_grip.tools.git.find_git_worktree.git'):
-            find_git_worktrees(count=10, timeout=0)
+            data = find_git_worktrees(count=10, timeout=0)
+            print_git_worktrees(data)
             
     captured = capsys.readouterr()
     

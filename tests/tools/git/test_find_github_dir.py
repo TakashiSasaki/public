@@ -130,10 +130,12 @@ def test_find_github_dir_real_fs(mock_scan, tmp_path, capsys):
             return " <GitPython:main (clean)>"
         return "" # Empty string means not a repo
 
+    from get_a_grip.tools.git.find_github_dir import print_github_repos
     with patch('get_a_grip.tools.git.find_github_dir.get_git_info_gitpython', side_effect=get_info_side_effect):
         # Also ensure git is mocked as present so the check passes
         with patch('get_a_grip.tools.git.find_github_dir.git'):
-            find_github_dir(count=1, backend="gitpython")
+            data = find_github_dir(count=1, backend="gitpython")
+            print_github_repos(data)
             
     # 4. Verify Output
     captured = capsys.readouterr()
@@ -150,8 +152,10 @@ def test_find_github_dir_real_fs(mock_scan, tmp_path, capsys):
     assert str(some_file) not in captured.out
 
 def test_find_github_dir_no_results(capsys):
+    from get_a_grip.tools.git.find_github_dir import print_github_repos
     with patch('get_a_grip.tools.git.find_github_dir.scan_by_ipc', return_value={"dirs": []}):
-        find_github_dir(backend="gitpython")
+        data = find_github_dir(backend="gitpython")
+        print_github_repos(data)
              
     captured = capsys.readouterr()
     assert "No folders named 'GitHub' found" in captured.out

@@ -101,8 +101,10 @@ def test_find_git_repos_integration(mock_scan, tmp_path, capsys):
             return True
         return False # Default
         
+    from get_a_grip.tools.git.find_git_repo_dir import print_git_repos
     with patch('get_a_grip.tools.git.find_git_repo_dir.is_bare_repo', side_effect=bare_side_effect):
-        find_git_repos(count=10)
+        data = find_git_repos(count=10)
+        print_git_repos(data)
         
     captured = capsys.readouterr()
     

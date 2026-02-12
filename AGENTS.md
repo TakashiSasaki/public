@@ -27,7 +27,11 @@ Follow the standard Python src-layout:
       - `dirtree.py`: Recursive directory tree traversal (hierarchical output).
       - `filelist2dirtree.py`: Converter tool from flat `filelist.json` to hierarchical `dirtree.json`.
       - `efu_converter.py`: Conversions between JSON-LD and Everything EFU files.
-      - `find_git_worktree.py`: Cross-backend Git repository scanner.
+      - `git/`: **Git Repository Tools**.
+        - `git_types.py`: Defines TypedDicts for Git tools (`GitRepoInfo`, `GitWorktreeInfo`, etc.).
+        - `find_git_repo_dir.py`: Finds .git directories/files and checks bare status.
+        - `find_git_worktree.py`: Finds Git worktrees and cross-verifies with backends.
+        - `find_github_dir.py`: Finds repositories inside folders named 'GitHub'.
       - `whoami.py`: User identity retrieval.
       - `probe.py`: Environment data collection.
       - Code here must be pure: **NO print()**, **NO sys.exit()**, **NO user prompts**.
