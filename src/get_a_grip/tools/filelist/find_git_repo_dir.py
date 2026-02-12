@@ -19,18 +19,24 @@ try:
 except ImportError:
     dulwich = None
 
-# --- Common Imports ---
-current_dir = os.path.dirname(os.path.abspath(__file__))
-if current_dir not in sys.path:
-    sys.path.insert(0, current_dir)
+# Add parent directory to sys.path to ensure we can import filelist_ipc from sibling directory
+current_file_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_file_dir)
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
 
 try:
-    from filelist_ipc import scan_by_ipc
+    from get_a_grip.tools.filelist_ipc import scan_by_ipc
 except ImportError:
     try:
-        from .filelist_ipc import scan_by_ipc
+        from ..filelist_ipc import scan_by_ipc
     except ImportError:
-         pass # Assume it might be imported differently or handled by caller
+        # Fallback for standalone script execution
+        try:
+            from filelist_ipc import scan_by_ipc
+        except ImportError:
+            # Last resort
+            scan_by_ipc = None
 
 def is_bare_repo(path: str) -> bool:
     """Checks if a repository at the given path is bare using available backends."""

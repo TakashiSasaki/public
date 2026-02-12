@@ -23,16 +23,20 @@ except ImportError:
 
 # --- Common Imports ---
 
-# Add current directory to sys.path to ensure we can import the sibling module
-current_dir = os.path.dirname(os.path.abspath(__file__))
-if current_dir not in sys.path:
-    sys.path.insert(0, current_dir)
+# Add parent directory to sys.path to ensure we can import filelist_ipc from sibling directory
+current_file_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_file_dir)
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
 
 try:
-    from filelist_ipc import scan_by_ipc
+    from get_a_grip.tools.filelist_ipc import scan_by_ipc
 except ImportError:
-    # Fallback for package relative import if run as a module
-    from .filelist_ipc import scan_by_ipc
+    try:
+        from ..filelist_ipc import scan_by_ipc
+    except ImportError:
+        # Fallback for standalone script execution
+        from filelist_ipc import scan_by_ipc
 
 # --- Git Info Functions ---
 
