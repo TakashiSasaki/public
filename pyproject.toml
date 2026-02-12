@@ -1,6 +1,6 @@
 [project]
 name = "get-a-grip"
-version = "0.1.71"
+version = "0.1.72"
 description = "A directory searching application"
 authors = [
     {name = "takas"}
