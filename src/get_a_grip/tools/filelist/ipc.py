@@ -4,6 +4,7 @@ import argparse
 import json
 from datetime import datetime
 from typing import Dict, List
+from get_a_grip.tools.filelist.types import FileList, FileItem
 
 # Try to import everything_ipc
 try:
@@ -17,7 +18,7 @@ except ImportError:
 
 from get_a_grip.tools.whoami import get_effective_user, get_user_principal_name
 
-def scan_directory_via_everything(root_path: str) -> Dict[str, List[dict]]:
+def scan_directory_via_everything(root_path: str) -> FileList:
     """
     Recursively list all files and directories under root_path using Everything IPC.
     Query used: "<root_path>\"
@@ -35,9 +36,9 @@ def scan_directory_via_everything(root_path: str) -> Dict[str, List[dict]]:
     
     print(f"Querying Everything with: {query}")
     # count=0 means unlimited results
-    return scan_by_ipc(query, count=0)
+    return FileList(scan_by_ipc(query, count=0))
 
-def save_to_json(data: Dict[str, List[dict]], output_path: str) -> None:
+def save_to_json(data: FileList, output_path: str) -> None:
     """
     Saves the scanned data to a JSON-LD file.
     """

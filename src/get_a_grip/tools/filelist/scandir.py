@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 from typing import List, Dict
 from get_a_grip.tools.whoami import get_effective_user, get_user_principal_name
+from get_a_grip.tools.filelist.types import FileList, FileItem
 
 def unix_to_filetime(unix_timestamp: float) -> str:
     """
@@ -14,15 +15,15 @@ def unix_to_filetime(unix_timestamp: float) -> str:
     filetime = int((unix_timestamp + 11644473600) * 10_000_000)
     return str(filetime)
 
-def scan_directory(root_path: str) -> Dict[str, List[dict]]:
+def scan_directory(root_path: str) -> FileList:
     """
     Recursively scans a directory and returns detailed information for all files and directories.
     Includes the root directory itself in the output.
     Uses os.scandir for better performance on Windows.
     """
     root_abs = os.path.abspath(root_path)
-    files = []
-    directories = []
+    files: List[FileItem] = []
+    directories: List[FileItem] = []
 
     # Include the root directory itself
     try:
@@ -71,9 +72,9 @@ def scan_directory(root_path: str) -> Dict[str, List[dict]]:
              # or if the directory vanished.
              pass
 
-    return {"files": files, "dirs": directories}
+    return FileList(files=files, dirs=directories)
 
-def save_to_json(data: Dict[str, List[dict]], output_path: str) -> None:
+def save_to_json(data: FileList, output_path: str) -> None:
     """
     Saves the scanned data to a JSON-LD file with an external context.
     """
