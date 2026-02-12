@@ -7,13 +7,13 @@ from typing import Dict, List, Any
 
 # Try to import everything_ipc
 try:
-    from everything_ipc import scan_by_ipc
+    from get_a_grip.tools.everything_ipc import scan_by_ipc
 except ImportError:
     try:
-        from .everything_ipc import scan_by_ipc
+        from ..everything_ipc import scan_by_ipc
     except ImportError:
-         # Fallback for package import
-         from get_a_grip.tools.everything_ipc import scan_by_ipc
+         # Fallback
+         from everything_ipc import scan_by_ipc
 
 from get_a_grip.tools.whoami import get_effective_user, get_user_principal_name
 
