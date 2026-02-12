@@ -1,13 +1,25 @@
-from typing import TypedDict, Optional, List
+from typing import TypedDict, Optional, List, Union
 
 class GitRepoInfo(TypedDict):
     """
-    Information about a detected Git repository entry (.git directory or file).
+    Unified information about a detected Git repository or worktree.
+    Combines fields from previous GitRepoInfo and GitWorktreeInfo.
     """
-    path: str
-    is_file: bool
-    target: Optional[str]
-    is_bare: bool
+    worktree_dir: str
+    repo_dir : str # ワークツリーのルートにある .git ディレクトリの場合はそのパス。 .git ファイルの場合はその中に書かれているリポジリのパス
+    is_bare: Optional[bool]      # True if it's a bare repository
+    is_detached: Optional[bool]  # True if HEAD is detached
+    
+    # Backend-specific raw output (for debugging/verification)
+    gitpython: Optional[str]
+    pygit2: Optional[str]
+    dulwich: Optional[str]
+    
+    # Consensus status (None if undetermined or conflicting)
+    isClean: Optional[bool]
+    hasUntracked: Optional[bool]
+    
+    headFile: Optional[str] # HEADファイルの中身
     error: Optional[str]
 
 class GitRepoList(TypedDict):
@@ -17,26 +29,10 @@ class GitRepoList(TypedDict):
     repos: List[GitRepoInfo]
     count: int
 
-class GitWorktreeInfo(TypedDict):
-    """
-    Information about a detected Git worktree.
-    """
-    path: str
-    head: str
-    gitpython: str
-    pygit2: str
-    dulwich: str
-
-class GitWorktreeList(TypedDict):
-    """
-    A collection of Git worktree information.
-    """
-    worktrees: List[GitWorktreeInfo]
-    count: int
-
 class GitHubRepo(TypedDict):
     """
     Information about a detected GitHub repository.
+    This might be merged into GitRepoInfo later, but kept separate for now as it uses a simpler check.
     """
     path: str
     git_info: str
@@ -48,4 +44,4 @@ class GitHubRepoList(TypedDict):
     repos: List[GitHubRepo]
     count: int
     backend: str
-    roots_found: bool  # Whether any 'GitHub' named folders were found
+    roots_found: bool

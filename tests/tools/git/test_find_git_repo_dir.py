@@ -29,9 +29,12 @@ def test_check_path_info_dir_non_bare(tmp_path):
     git_dir = tmp_path / ".git"
     git_dir.mkdir()
     # Mock is_bare_repo return using patch
+    # Mock is_bare_repo return using patch
     with patch('get_a_grip.tools.git.find_git_repo_dir.is_bare_repo', return_value=False):
         info = check_path_info(str(git_dir))
-        assert info["is_file"] is False
+        # Expected: worktree_dir is parent of .git
+        assert info["worktree_dir"] == str(tmp_path)
+        assert info["repo_dir"] == str(git_dir)
         assert info["is_bare"] is False
 
 def test_check_path_info_dir_bare(tmp_path):
@@ -40,7 +43,8 @@ def test_check_path_info_dir_bare(tmp_path):
     bare_dir.mkdir()
     with patch('get_a_grip.tools.git.find_git_repo_dir.is_bare_repo', return_value=True):
         info = check_path_info(str(bare_dir))
-        assert info["is_file"] is False
+        # For bare repo, usually considered its own worktree/root context in this simple logic
+        assert info["repo_dir"] == str(bare_dir)
         assert info["is_bare"] is True
 
 def test_check_path_info_file(tmp_path):
@@ -59,9 +63,10 @@ def test_check_path_info_file(tmp_path):
     # Mock logic that checking the *target* repo
     with patch('get_a_grip.tools.git.find_git_repo_dir.is_bare_repo', return_value=False):
         info = check_path_info(str(git_file))
-        assert info["is_file"] is True
+        assert info["worktree_dir"] == str(wt_root)
+        # Check resolved absolute path
+        assert os.path.normcase(info["repo_dir"]) == os.path.normcase(str(real_git))
         assert info["is_bare"] is False
-        assert info["target"] is not None
 
 @patch('get_a_grip.tools.git.find_git_repo_dir.scan_by_ipc')
 def test_find_git_repos_integration(mock_scan, tmp_path, capsys):
@@ -110,14 +115,19 @@ def test_find_git_repos_integration(mock_scan, tmp_path, capsys):
     
     # Check outputs
     # Non-Bare
-    assert f"[REPO] {str(nb_git)}" in captured.out
-    assert "Status: Non-Bare (Standard)" in captured.out
+    assert f"Worktree: {str(nb_root)}" in captured.out
+    assert f"Git Dir : {str(nb_git)}" in captured.out
+    assert "Status  : Standard" in captured.out
     
     # Bare
-    assert f"[REPO] {str(bare_git)}" in captured.out
-    assert "Status: BARE" in captured.out
+    # For directory scan, worktree is set to parent, likely matches bare_git parent or bare_git depending on logic
+    # In check_path_info: worktree_dir = os.path.dirname(path)
+    assert f"Worktree: {str(tmp_path)}" in captured.out
+    assert f"Git Dir : {str(bare_git)}" in captured.out
+    assert "Status  : BARE" in captured.out
     
     # File
-    assert f"[REPO] {str(wt_git)}" in captured.out
-    assert "Type: Git File (.git)" in captured.out
-    assert "Target Status: Non-Bare" in captured.out
+    assert f"Worktree: {str(wt_root)}" in captured.out
+    # git_file is path to .git file, but repo_dir resolves to target
+    # print_git_repos uses repo_dir
+    assert f"Git Dir : {str(nb_git)}" in captured.out

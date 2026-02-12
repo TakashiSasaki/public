@@ -90,27 +90,25 @@ def test_find_git_worktrees_real_fs(mock_scan, tmp_path, capsys):
     
     with patch('get_a_grip.tools.git.find_git_worktree.get_git_info_gitpython') as mock_gp:
         def gp_side_effect(path):
-            p = Path(path).resolve()
-            std_resolved = std_repo.resolve()
-            wt_resolved = wt_repo.resolve()
-            
-        def gp_side_effect(path):
             # Simplify check: avoid complex path resolution issues in mock
             p_str = str(path).replace("\\", "/")
             
             if p_str.endswith("/std_repo") or p_str.endswith("std_repo"):
-                return "std-main (clean)"
+                return {"info": "std-main (clean)", "is_clean": True, "has_untracked": False}
             if p_str.endswith("/wt_repo") or p_str.endswith("wt_repo"):
-                return "wt-branch (clean)"
+                return {"info": "wt-branch (clean)", "is_clean": True, "has_untracked": False}
             return None
 
         mock_gp.side_effect = gp_side_effect
-        
-        from get_a_grip.tools.git.find_git_worktree import print_git_worktrees
-        # Ensure git is patched as present
-        with patch('get_a_grip.tools.git.find_git_worktree.git'):
-            data = find_git_worktrees(count=10, timeout=0)
-            print_git_worktrees(data)
+
+        # Mock pygit2 as well to have "multiple methods" for consensus
+        with patch('get_a_grip.tools.git.find_git_worktree.get_git_info_pygit2', side_effect=gp_side_effect):
+            with patch('get_a_grip.tools.git.find_git_worktree.pygit2'):
+                from get_a_grip.tools.git.find_git_worktree import print_git_worktrees
+                # Ensure git is patched as present
+                with patch('get_a_grip.tools.git.find_git_worktree.git'):
+                    data = find_git_worktrees(count=10, timeout=0)
+                    print_git_worktrees(data)
             
     captured = capsys.readouterr()
     
@@ -121,8 +119,10 @@ def test_find_git_worktrees_real_fs(mock_scan, tmp_path, capsys):
     assert f"[WORKTREE] {str(std_repo)}" in captured.out
     assert "HEAD      : ref: refs/heads/std-main" in captured.out
     assert "GitPython : std-main (clean)" in captured.out
+    assert "Consensus : isClean=True hasUntracked=False" in captured.out
     
     # Check Worktree
     assert f"[WORKTREE] {str(wt_repo)}" in captured.out
     assert "HEAD      : ref: refs/heads/wt-branch" in captured.out
     assert "GitPython : wt-branch (clean)" in captured.out
+    assert "Consensus : isClean=True hasUntracked=False" in captured.out
