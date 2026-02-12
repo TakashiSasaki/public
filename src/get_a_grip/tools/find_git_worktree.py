@@ -217,33 +217,56 @@ def get_git_info_with_timeout(func, path: str, timeout: float) -> str:
 
 def get_head_content(path: str) -> str:
     """Reads the content of .git/HEAD if it exists."""
+    git_dir = os.path.join(path, ".git")
     head_path = os.path.join(path, ".git", "HEAD")
+    
     try:
-        git_dir = os.path.join(path, ".git")
         # Check if .git is a directory
-        if os.path.isdir(git_dir):
-            if os.path.exists(head_path):
-                with open(head_path, "r", encoding="utf-8", errors="ignore") as f:
-                    return f.read().strip()
+        try:
+            is_dir = os.path.isdir(git_dir)
+        except Exception as e:
+            return f"[Error checking .git directory '{git_dir}': {e}]"
+
+        if is_dir:
+            try:
+                if os.path.exists(head_path):
+                    with open(head_path, "r", encoding="utf-8", errors="ignore") as f:
+                        return f.read().strip()
+                return "[HEAD not found]"
+            except Exception as e:
+                return f"[Error reading HEAD file '{head_path}': {e}]"
+
         # Check if .git is a file (submodule/worktree)
-        elif os.path.isfile(git_dir):
+        try:
+            is_file = os.path.isfile(git_dir)
+        except Exception as e:
+             return f"[Error checking .git file '{git_dir}': {e}]"
+
+        if is_file:
             # Read the .git file to find the gitdir
-            with open(git_dir, "r", encoding="utf-8", errors="ignore") as f:
-                content = f.read().strip()
-                if content.startswith("gitdir:"):
-                    # Resolve relative path
-                    rel_git_dir = content[7:].strip()
-                    abs_git_dir = os.path.abspath(os.path.join(path, rel_git_dir))
-                    real_head_path = os.path.join(abs_git_dir, "HEAD")
+            try:
+                with open(git_dir, "r", encoding="utf-8", errors="ignore") as f:
+                    content = f.read().strip()
+            except Exception as e:
+                return f"[Error reading .git file '{git_dir}': {e}]"
+
+            if content.startswith("gitdir:"):
+                # Resolve relative path
+                rel_git_dir = content[7:].strip()
+                abs_git_dir = os.path.abspath(os.path.join(path, rel_git_dir))
+                real_head_path = os.path.join(abs_git_dir, "HEAD")
+                try:
                     if os.path.exists(real_head_path):
                          with open(real_head_path, "r", encoding="utf-8", errors="ignore") as hf:
                             return hf.read().strip()
                     return f"gitdir -> {rel_git_dir} (HEAD not found)"
-                return f"[File: {content[:20]}...]"
+                except Exception as e:
+                    return f"[Error reading linked HEAD '{real_head_path}': {e}]"
+            return f"[File: {content[:20]}...]"
         
         return "[Not Found]"
     except Exception as e:
-        return f"[Error: {e}]"
+        return f"[Error: {e} (Root Path: {path})]"
 
 def find_git_worktrees(count: int = 50, timeout: float = 0, list_candidates: bool = False):
     """
