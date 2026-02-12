@@ -1,6 +1,6 @@
 [project]
 name = "get-a-grip"
-version = "0.1.54"
+version = "0.1.55"
 description = "A directory searching application"
 authors = [
     {name = "takas"}
@@ -18,9 +18,9 @@ dependencies = [
 get-a-grip = "get_a_grip.cli:main"
 gag = "get_a_grip.cli:main"
 test = "pytest:main"
-find-github-dir = "get_a_grip.tools.filelist.find_github_dir:main"
-find-git-worktree = "get_a_grip.tools.filelist.find_git_worktree:main"
-find-git-repo-dir = "get_a_grip.tools.filelist.find_git_repo_dir:main"
+find-github-dir = "get_a_grip.tools.git.find_github_dir:main"
+find-git-worktree = "get_a_grip.tools.git.find_git_worktree:main"
+find-git-repo-dir = "get_a_grip.tools.git.find_git_repo_dir:main"
 
 [project.gui-scripts]
 gag-gui = "get_a_grip.ttk:main"
