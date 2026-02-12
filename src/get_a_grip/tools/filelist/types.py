@@ -1,16 +1,17 @@
 from typing import TypedDict, List, Protocol, runtime_checkable
 
+# Field mappings match https://purl.org/gag/schema/filelist.jsonld
 FileItem = TypedDict("FileItem", {
-    "Filename": str,
-    "Size": int,
-    "Date Modified": str,
-    "Date Created": str,
-    "Attributes": int
+    "Filename": str,       # gag:fullPath
+    "Size": int,           # schema:contentSize
+    "Date Modified": str,  # gag:winFileTimeModified
+    "Date Created": str,   # gag:winFileTimeCreated
+    "Attributes": int      # gag:fileAttributes
 })
 
 FileList = TypedDict("FileList", {
-    "files": List[FileItem],
-    "dirs": List[FileItem]
+    "files": List[FileItem], # gag:files
+    "dirs": List[FileItem]   # gag:directories
 })
 
 @runtime_checkable
