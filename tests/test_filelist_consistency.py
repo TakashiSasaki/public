@@ -1,79 +1,125 @@
-import json
-import tempfile
-import pytest
 import os
+import pytest
 from pathlib import Path
-from get_a_grip.tools import filelist_rglob, filelist_scandir
+from get_a_grip.tools.filelist import rglob, scandir, walk
 
-# Helper to normalize list of files/dirs for comparison
 def normalize_entries(entries):
     """
     Convert list of file/dir dicts to a dictionary keyed by filename.
-    Normalize paths if needed, but here we assume both tools produce absolute paths similarly.
+    Resolves paths to absolute paths to handle potential slight differences in input handling.
     """
     normalized = {}
     for entry in entries:
-        normalized[entry['Filename']] = entry
+        # Resolve to ensure consistent path string format (e.g. c:\\ vs C:\\)
+        # Using strict resolve ensures realpath match
+        p = Path(entry['Filename']).resolve()
+        # Convert to string, ensuring lower case for Windows case-insensitivity consistency if needed
+        # But let's try exact path match first as resolve() handles casing mostly.
+        normalized[str(p)] = entry
     return normalized
 
-def compare_file_lists(data1, data2):
-    files1 = normalize_entries(data1.get('files', []))
-    dirs1 = normalize_entries(data1.get('dirs', []))
-    files2 = normalize_entries(data2.get('files', []))
-    dirs2 = normalize_entries(data2.get('dirs', []))
-
-    # Check if keys (filenames) match exactly
-    assert set(files1.keys()) == set(files2.keys()), "File list mismatch between implementations"
-    assert set(dirs1.keys()) == set(dirs2.keys()), "Directory list mismatch between implementations"
-
-    # Deep compare metadata for files
-    for key in files1:
-        entry1 = files1[key]
-        entry2 = files2[key]
+def compare_results(result1, result2, mode1_name, mode2_name):
+    """
+    Compare two scan results for equality of filenames and metadata.
+    """
+    # Compare Files
+    files1 = normalize_entries(result1.get('files', []))
+    files2 = normalize_entries(result2.get('files', []))
+    
+    keys1 = set(files1.keys())
+    keys2 = set(files2.keys())
+    
+    # Debug info on mismatch
+    if keys1 != keys2:
+        diff_1_minus_2 = keys1 - keys2
+        diff_2_minus_1 = keys2 - keys1
+        error_msg = f"File list mismatch between {mode1_name} and {mode2_name}.\n"
+        if diff_1_minus_2:
+            error_msg += f"In {mode1_name} only: {diff_1_minus_2}\n"
+        if diff_2_minus_1:
+            error_msg += f"In {mode2_name} only: {diff_2_minus_1}\n"
+        pytest.fail(error_msg)
+    
+    # Compare Metadata (Attributes)
+    for key in keys1:
+        f1 = files1[key]
+        f2 = files2[key]
         
-        # Compare critical fields
-        logging_ctx = f"Mismatch in file: {key}"
-        assert entry1['Size'] == entry2['Size'], f"{logging_ctx} (Size)"
-        assert entry1['Date Modified'] == entry2['Date Modified'], f"{logging_ctx} (Date Modified)"
-        assert entry1['Date Created'] == entry2['Date Created'], f"{logging_ctx} (Date Created)"
-        # Attributes might be tricky if not consistently fetched, but let's assume they should match
-        assert entry1['Attributes'] == entry2['Attributes'], f"{logging_ctx} (Attributes)"
+        # Helper for error messages
+        ctx = f"File: {key} ({mode1_name} vs {mode2_name})"
+        
+        assert f1['Size'] == f2['Size'], f"{ctx} Size mismatch: {f1['Size']} != {f2['Size']}"
+        assert f1['Date Modified'] == f2['Date Modified'], f"{ctx} Date Modified mismatch"
+        assert f1['Date Created'] == f2['Date Created'], f"{ctx} Date Created mismatch"
+        assert f1['Attributes'] == f2['Attributes'], f"{ctx} Attributes mismatch"
 
-def test_filelist_implementations_match(tmp_path):
+    # Compare Directories
+    dirs1 = normalize_entries(result1.get('dirs', []))
+    dirs2 = normalize_entries(result2.get('dirs', []))
+    
+    dkeys1 = set(dirs1.keys())
+    dkeys2 = set(dirs2.keys())
+    
+    if dkeys1 != dkeys2:
+        diff_1_minus_2 = dkeys1 - dkeys2
+        diff_2_minus_1 = dkeys2 - dkeys1
+        error_msg = f"Directory list mismatch between {mode1_name} and {mode2_name}.\n"
+        if diff_1_minus_2:
+            error_msg += f"In {mode1_name} only: {diff_1_minus_2}\n"
+        if diff_2_minus_1:
+            error_msg += f"In {mode2_name} only: {diff_2_minus_1}\n"
+        pytest.fail(error_msg)
+    
+    for key in dkeys1:
+        d1 = dirs1[key]
+        d2 = dirs2[key]
+        
+        ctx = f"Dir: {key} ({mode1_name} vs {mode2_name})"
+        
+        # Check basic attributes
+        # Size for directories is technically 0 or block size, usually consistent but might vary by implementation method (stat vs scandir cached)
+        # Let's focus on Attributes and Dates
+        assert d1['Attributes'] == d2['Attributes'], f"{ctx} Attributes mismatch"
+        assert d1['Date Modified'] == d2['Date Modified'], f"{ctx} Date Modified mismatch"
+
+
+def test_consistency_scandir_rglob_walk(tmp_path):
     """
-    Test that filelist.py (pathlib-based) and filelist_scandir.py (os.scandir-based)
-    produce identical output for the current test directory.
+    Verify that rglob, scandir, and walk implementations produce identical results from a real filesystem scan.
     """
-    # Create some dummy files/dirs to scan
-    (tmp_path / "subdir").mkdir()
-    (tmp_path / "file1.txt").write_text("content1")
-    (tmp_path / "subdir" / "file2.txt").write_text("content2")
-
-    # Run scans
-    # We scan the tmp_path to ensure a controlled environment
-    root_dir = str(tmp_path)
+    # Setup robust test environment
+    root = tmp_path / "consistency_root"
+    root.mkdir()
     
-    data_legacy = filelist_rglob.scan_directory(root_dir)
-    data_scandir = filelist_scandir.scan_directory(root_dir)
-
-    # Compare results
-    compare_file_lists(data_legacy, data_scandir)
-
-if __name__ == "__main__":
-    # If run directly, run scan on current directory and compare
-    import sys
+    (root / "file1.txt").write_text("Hello World")
     
-    print("Running ad-hoc comparison on current directory...")
-    cwd = os.getcwd()
+    subdir = root / "subdir"
+    subdir.mkdir()
+    (subdir / "file2.bin").write_bytes(b"\x00\x01\x02")
     
-    try:
-        data_legacy = filelist_rglob.scan_directory(cwd)
-        data_scandir = filelist_scandir.scan_directory(cwd)
-        compare_file_lists(data_legacy, data_scandir)
-        print("SUCCESS: Both implementations match on current directory.")
-    except AssertionError as e:
-        print(f"FAILURE: {e}")
-        sys.exit(1)
-    except Exception as e:
-        print(f"ERROR: {e}")
-        sys.exit(1)
+    # Nested deeply
+    deep = subdir / "deep" / "structure"
+    deep.mkdir(parents=True)
+    (deep / "deep_file.log").write_text("Log")
+    
+    target_path = str(root.resolve())
+    
+    # Execute all scanning methods
+    print(f"Scanning {target_path} with rglob...")
+    res_rglob = rglob.scan_directory(target_path)
+    
+    print(f"Scanning {target_path} with scandir...")
+    res_scandir = scandir.scan_directory(target_path)
+    
+    print(f"Scanning {target_path} with walk...")
+    res_walk = walk.scan_directory(target_path)
+    
+    # Compare
+    # scandir vs rglob
+    compare_results(res_scandir, res_rglob, "scandir", "rglob")
+    
+    # scandir vs walk
+    compare_results(res_scandir, res_walk, "scandir", "walk")
+    
+    # walk vs rglob (transitive, but good to check explicit edge cases if any)
+    compare_results(res_walk, res_rglob, "walk", "rglob")
