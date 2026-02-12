@@ -3,7 +3,7 @@ import os
 import argparse
 import json
 from datetime import datetime
-from typing import Dict, List, Any
+from typing import Dict, List
 
 # Try to import everything_ipc
 try:

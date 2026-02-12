@@ -1,8 +1,7 @@
 import json
-import os
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional, Dict
+from typing import List, Dict
 from get_a_grip.tools.whoami import get_effective_user, get_user_principal_name
 
 def unix_to_filetime(unix_timestamp: float) -> str:
