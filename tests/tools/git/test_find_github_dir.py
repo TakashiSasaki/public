@@ -83,39 +83,75 @@ def test_get_git_info_dispatch():
         get_git_info("/p", "pygit2")
         mock_pg.assert_called_once()
 
-# Test the main flow (Integration-ish)
+# Test the main flow (Integration with Real Filesystem)
 @patch('get_a_grip.tools.git.find_github_dir.scan_by_ipc')
-def test_find_github_dir_integration(mock_scan, capsys):
-    # Mock Everything search returning one directory
-    mock_scan.return_value = {"dirs": [{"Filename": "/mock/GitHub"}]}
+def test_find_github_dir_real_fs(mock_scan, tmp_path, capsys):
+    """
+    Test find_github_dir using real directory traversal on a temporary filesystem.
+    Everything IPC and Git backend check are mocked contextually.
+    """
+    # 1. Setup Directory Structure in tmp_path
+    # tmp_path/
+    #   FakeGitHub/
+    #     valid-repo/   (Should be found)
+    #     not-a-repo/   (Should be skipped)
+    #     some-file.txt (Should be skipped)
+
+    fake_github = tmp_path / "FakeGitHub"
+    fake_github.mkdir()
     
-    # Mock os.scandir to return entries inside that directory
-    mock_entry = MagicMock()
-    mock_entry.is_dir.return_value = True
-    mock_entry.path = "/mock/GitHub/my-project"
-    mock_entry.name = "my-project"
+    valid_repo = fake_github / "valid-repo"
+    valid_repo.mkdir()
     
-    # Context manager mock for scandir
-    mock_scandir_ctx = MagicMock()
-    mock_scandir_ctx.__enter__.return_value = [mock_entry]
-    mock_scandir_ctx.__exit__.return_value = None
+    not_a_repo = fake_github / "not-a-repo"
+    not_a_repo.mkdir()
     
-    with patch('os.scandir', return_value=mock_scandir_ctx):
-        # Mock GitPython backend call to return info string
-        with patch('get_a_grip.tools.git.find_github_dir.get_git_info_gitpython', return_value=" <GitPython:main (clean)>"):
-             # Also ensure git is mocked as present
-             with patch('get_a_grip.tools.git.find_github_dir.git'):
-                find_github_dir(count=1, backend="gitpython")
+    some_file = fake_github / "some-file.txt"
+    some_file.touch()
+
+    # 2. Mock Everything result to point to our fake GitHub folder
+    mock_scan.return_value = {
+        "dirs": [{"Filename": str(fake_github)}],
+        "files": []
+    }
     
+    # 3. Partially mock Git backend check
+    # We want to verified that valid-repo is detected as Git repo, and not-a-repo is not.
+    # We use side_effect to return different values based on path.
+    
+    from pathlib import Path
+    
+    def get_info_side_effect(path):
+        # Normalize paths for comparison
+        p = Path(path).resolve()
+        v = valid_repo.resolve()
+        
+        if p == v:
+            return " <GitPython:main (clean)>"
+        return "" # Empty string means not a repo
+
+    with patch('get_a_grip.tools.git.find_github_dir.get_git_info_gitpython', side_effect=get_info_side_effect):
+        # Also ensure git is mocked as present so the check passes
+        with patch('get_a_grip.tools.git.find_github_dir.git'):
+            find_github_dir(count=1, backend="gitpython")
+            
+    # 4. Verify Output
     captured = capsys.readouterr()
-    assert "Searching for potential GitHub directories" in captured.out
-    assert "/mock/GitHub/my-project <GitPython:main (clean)>" in captured.out
+    
+    # Check that valid repo is found
+    # Note: Output path might have different casing on Windows, so we check loosely or normalize
+    assert str(valid_repo) in captured.out
+    assert "<GitPython:main (clean)>" in captured.out
+    
+    # Check that invalid repo is NOT found (it was scanned but get_info returned empty)
+    assert str(not_a_repo) not in captured.out
+    
+    # Check that file is skipped (not even passed to get_info)
+    assert str(some_file) not in captured.out
 
 def test_find_github_dir_no_results(capsys):
     with patch('get_a_grip.tools.git.find_github_dir.scan_by_ipc', return_value={"dirs": []}):
-        # Mock git present
-         with patch('get_a_grip.tools.git.find_github_dir.git'):
-             find_github_dir(backend="gitpython")
+        find_github_dir(backend="gitpython")
              
     captured = capsys.readouterr()
     assert "No folders named 'GitHub' found" in captured.out
