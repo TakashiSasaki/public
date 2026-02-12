@@ -5,7 +5,7 @@ from unittest.mock import patch, MagicMock
 
 # Import the module under test
 # Assuming the package is installed in editable mode or PYTHONPATH is set correctly by test runner
-from get_a_grip.tools.filelist.http import scan_by_efu, safe_filetime, fetch_raw_from_everything
+from get_a_grip.tools.filelist.http import scan, safe_filetime, fetch_raw_from_everything
 
 # --- Unit Tests for Utility Functions ---
 
@@ -24,9 +24,9 @@ def test_safe_filetime_int():
 # --- Integration Tests using Mocks (Simulated Network) ---
 
 @patch('urllib.request.urlopen')
-def test_scan_by_efu_success(mock_urlopen):
+def test_scan_success(mock_urlopen):
     """
-    Test successful execution of scan_by_efu with mocked HTTP response.
+    Test successful execution of scan with mocked HTTP response.
     """
     # 1. Setup Mock Response
     mock_response = MagicMock()
@@ -66,7 +66,7 @@ def test_scan_by_efu_success(mock_urlopen):
     mock_urlopen.return_value = mock_response
     
     # 2. Execute
-    result = scan_by_efu(ip="127.0.0.1", port=80, query="test", count=10)
+    result = scan("test", ip="127.0.0.1", port=80, count=10)
     
     # 3. Verify Structure
     assert "files" in result

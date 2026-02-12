@@ -1,4 +1,4 @@
-from typing import TypedDict, List
+from typing import TypedDict, List, Protocol, runtime_checkable
 
 FileItem = TypedDict("FileItem", {
     "Filename": str,
@@ -12,3 +12,9 @@ FileList = TypedDict("FileList", {
     "files": List[FileItem],
     "dirs": List[FileItem]
 })
+
+@runtime_checkable
+class FileScanner(Protocol):
+    def scan(self, target: str) -> FileList:
+        """Recursively scans a target and returns a FileList."""
+        ...

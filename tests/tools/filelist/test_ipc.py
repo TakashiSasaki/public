@@ -2,7 +2,7 @@ import os
 import json
 import pytest
 from unittest.mock import patch, MagicMock
-from get_a_grip.tools.filelist.ipc import scan_directory_via_everything, save_to_json, main
+from get_a_grip.tools.filelist.ipc import scan, save_to_json, main
 
 # --- Unit Tests ---
 
@@ -17,7 +17,7 @@ def test_scan_directory_query_generation(mock_scan):
     
     # Test path
     test_path = os.path.abspath("C:/Data") # Normalized path
-    scan_directory_via_everything("C:/Data")
+    scan("C:/Data")
     
     args, kwargs = mock_scan.call_args
     query = args[0]
@@ -114,7 +114,7 @@ def test_main_invalid_directory(mock_scan, capsys):
     assert "Directory not found" in captured.out
     mock_scan.assert_not_called()
 
-@patch('get_a_grip.tools.filelist.ipc.scan_directory_via_everything')
+@patch('get_a_grip.tools.filelist.ipc.scan')
 def test_main_exception_handling(mock_scan_dir, capsys):
     """
     Test main() handles exceptions during scanning.

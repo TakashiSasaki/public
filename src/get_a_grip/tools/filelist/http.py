@@ -76,11 +76,12 @@ def safe_filetime(value: Any) -> str:
     digits = "".join(filter(str.isdigit, s))
     return digits if digits else "0"
 
-def scan_by_efu(ip: str = "127.160.164.78", port: int = 8000, query: str = "", count: int = 10) -> FileList:
+def scan(target: str = "", ip: str = "127.160.164.78", port: int = 8000, count: int = 10) -> FileList:
     """
     Scans by fetching JSON data from Everything and returns get-a-grip data structure.
+    The 'target' argument is used as the Search Query.
     """
-    data = fetch_json_from_everything(ip, port, query, count=count)
+    data = fetch_json_from_everything(ip, port, query=target, count=count)
     
     files: List[FileItem] = []
     dirs: List[FileItem] = []

@@ -106,13 +106,13 @@ def test_consistency_scandir_rglob_walk(tmp_path):
     
     # Execute all scanning methods
     print(f"Scanning {target_path} with rglob...")
-    res_rglob = rglob.scan_directory(target_path)
+    res_rglob = rglob.scan(target_path)
     
     print(f"Scanning {target_path} with scandir...")
-    res_scandir = scandir.scan_directory(target_path)
+    res_scandir = scandir.scan(target_path)
     
     print(f"Scanning {target_path} with walk...")
-    res_walk = walk.scan_directory(target_path)
+    res_walk = walk.scan(target_path)
     
     # Compare
     # scandir vs rglob

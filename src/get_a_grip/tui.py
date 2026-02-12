@@ -3,7 +3,7 @@ from textual.containers import Container
 from textual.widgets import Header, Footer, Input, Button, Label, RichLog, TabbedContent, TabPane
 from textual.worker import Worker, WorkerState
 import os
-from get_a_grip.tools.filelist import scan_directory, save_to_json
+from get_a_grip.tools.filelist import scan, save_to_json
 
 # Default UUID from schema/uuid.jsonld
 DEFAULT_UUID = "2e985654-ccc3-4141-979b-58d014133d56"
@@ -50,7 +50,7 @@ class FilelistTab(Container):
             # NOTE: Do NOT update UI from here. Just do the heavy lifting.
             try:
                 # Call the tool logic directly
-                data = scan_directory(path)
+                data = scan(path)
                 
                 # Output file is saved INSIDE the target directory
                 output_filename = f"{uuid}.json"

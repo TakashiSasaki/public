@@ -3,7 +3,7 @@ import json
 import pytest
 from unittest.mock import patch, MagicMock
 from pathlib import Path
-from get_a_grip.tools.filelist.scandir import unix_to_filetime, scan_directory, save_to_json
+from get_a_grip.tools.filelist.scandir import unix_to_filetime, scan, save_to_json
 
 # --- Unit Tests ---
 
@@ -36,7 +36,7 @@ def test_scan_directory_integration(tmp_path):
     file2.write_text("content2")
     
     # Execute scan
-    result = scan_directory(str(root))
+    result = scan(str(root))
     
     # Verify Structure
     assert "files" in result
@@ -96,7 +96,7 @@ def test_scan_directory_recursion(tmp_path):
     target_file = lvl2 / "file.txt"
     target_file.touch()
     
-    result = scan_directory(str(root))
+    result = scan(str(root))
     
     paths = [str(Path(f["Filename"]).resolve()) for f in result["files"]]
     assert str(target_file.resolve()) in paths

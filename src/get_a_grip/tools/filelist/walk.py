@@ -15,7 +15,7 @@ def unix_to_filetime(unix_timestamp: float) -> str:
     filetime = int((unix_timestamp + 11644473600) * 10_000_000)
     return str(filetime)
 
-def scan_directory(root_path: str) -> FileList:
+def scan(root_path: str) -> FileList:
     """
     Recursively scans a directory using os.walk and returns detailed information for all files and directories.
     Includes the root directory itself in the output.

@@ -18,7 +18,7 @@ except ImportError:
 
 from get_a_grip.tools.whoami import get_effective_user, get_user_principal_name
 
-def scan_directory_via_everything(root_path: str) -> FileList:
+def scan(root_path: str) -> FileList:
     """
     Recursively list all files and directories under root_path using Everything IPC.
     Query used: "<root_path>\"
@@ -70,7 +70,7 @@ def main():
         sys.exit(1)
 
     try:
-        data = scan_directory_via_everything(args.root_path)
+        data = scan(args.root_path)
         save_to_json(data, args.output_path)
         print(f"Scan complete. Found {len(data['files'])} files and {len(data['dirs'])} dirs.")
     except Exception as e:
