@@ -10,10 +10,13 @@ if current_dir not in sys.path:
     sys.path.insert(0, current_dir)
 
 try:
-    from filelist_ipc import scan_by_ipc
+    from everything_ipc import scan_by_ipc
 except ImportError:
-    # Fallback for package relative import if run as a module
-    from .filelist_ipc import scan_by_ipc
+    try:
+        # Fallback for package relative import if run as a module
+        from .everything_ipc import scan_by_ipc
+    except ImportError:
+        from get_a_grip.tools.everything_ipc import scan_by_ipc
 
 
 # --- Search Presets Definition ---

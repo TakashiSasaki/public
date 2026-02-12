@@ -26,14 +26,14 @@ if parent_dir not in sys.path:
     sys.path.insert(0, parent_dir)
 
 try:
-    from get_a_grip.tools.filelist_ipc import scan_by_ipc
+    from get_a_grip.tools.everything_ipc import scan_by_ipc
 except ImportError:
     try:
-        from ..filelist_ipc import scan_by_ipc
+        from ..everything_ipc import scan_by_ipc
     except ImportError:
         # Fallback for standalone script execution
         try:
-            from filelist_ipc import scan_by_ipc
+            from everything_ipc import scan_by_ipc
         except ImportError:
             # Last resort
             scan_by_ipc = None
