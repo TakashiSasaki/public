@@ -2,90 +2,21 @@ import os
 import argparse
 from typing import Dict, Any, List, Optional
 from .git_types import GitRepoInfo, GitRepoList
-
-# --- Backend Imports ---
-try:
-    import git
-except ImportError:
-    git = None
-
-try:
-    import pygit2
-except ImportError:
-    pygit2 = None
-
-try:
-    import dulwich.repo
-except ImportError:
-    dulwich = None
-
+from .utils import is_bare_repo, get_head_content, get_refs_and_remotes
 from get_a_grip.tools.everything_ipc import scan_by_ipc
 
-def is_bare_repo(path: str) -> bool:
-    """Checks if a repository at the given path is bare using available backends."""
-    # Try pygit2
-    if pygit2:
-        try:
-            repo = pygit2.Repository(path)
-            return repo.is_bare
-        except:
-            pass
-
-    # Try GitPython
-    if git:
-        try:
-            repo = git.Repo(path)
-            return repo.bare
-        except:
-             pass
-
-    # Try Dulwich
-    if dulwich:
-        try:
-            repo = dulwich.repo.Repo(path)
-            config = repo.get_config()
-            try:
-                bare = config.get(b'core', b'bare')
-                return bare == b'true'
-            except:
-                return False
-        except:
-            pass
-            
-    # Fallback: Check config file manually
-    config_path = os.path.join(path, "config")
-    if os.path.exists(config_path):
-        try:
-            with open(config_path, "r", encoding="utf-8", errors="ignore") as f:
-                if "bare = true" in f.read():
-                    return True
-        except:
-            pass
-            
-    return False
-
 def check_path_info(path: str) -> GitRepoInfo:
-    info: GitRepoInfo = {
-        "worktree_dir": os.path.dirname(path) if os.path.isfile(path) else os.path.dirname(path), # .git directory/file is usually at root
-        "repo_dir": path, # Initial assumption, updated below if file
-        "is_bare": False,
-        "is_detached": None,
-        "isClean": None,
-        "hasUntracked": None,
-        "head": None,
-        "refs": None,
-        "remotes": None,
-        "error": None,
-        "gitpython": None,
-    }
-
+    """
+    Analyzes a potential Git repository path (.git directory or file) 
+    and returns a GitRepoInfo structure.
+    """
+    repo_dir = path # Initial assumption
     is_file = os.path.isfile(path)
+    error = None
 
     if is_file:
         # It's a .git file (worktree or submodule)
-        # worktree_dir is the directory containing the .git file
-        info["worktree_dir"] = os.path.dirname(path)
-        
+        # We need to resolve the actual gitdir
         try:
             with open(path, "r", encoding="utf-8", errors="ignore") as f:
                 content = f.read().strip()
@@ -93,24 +24,73 @@ def check_path_info(path: str) -> GitRepoInfo:
                     rel_git_dir = content[7:].strip()
                     # Resolve relative path from the FILE's directory
                     abs_path = os.path.abspath(os.path.join(os.path.dirname(path), rel_git_dir))
-                    info["repo_dir"] = abs_path
+                    repo_dir = abs_path
                     
-                    if os.path.exists(abs_path):
-                        info["is_bare"] = is_bare_repo(abs_path)
-                    else:
-                        info["error"] = f"Target repo not found: {abs_path}"
+                    if not os.path.exists(abs_path):
+                        error = f"Target repo not found: {abs_path}"
                 else:
-                    info["error"] = "Not a valid gitdir file (no gitdir: prefix)"
+                    error = "Not a valid gitdir file (no gitdir: prefix)"
         except Exception as e:
-            info["error"] = str(e)
+            error = str(e)
     else:
         # It's a .git directory
-        # worktree_dir is the parent of the .git directory
-        info["worktree_dir"] = os.path.dirname(path)
-        info["repo_dir"] = path
-        info["is_bare"] = is_bare_repo(path)
+        repo_dir = path
 
-    return info
+    # Initialize info
+    is_bare = False
+    is_detached = None
+    head = None
+    refs = None
+    remotes = None
+
+    if not error:
+        is_bare = is_bare_repo(repo_dir)
+        
+        # Get HEAD content
+        # Note: get_head_content expects the ROOT path of the worktree if it searches for .git
+        # BUT our utility handles raw paths differently?
+        # Let's check get_head_content implementation in utils.py
+        # It constructs os.path.join(path, ".git") ...
+        # This means get_head_content expects the WORKTREE root.
+        
+        # However, here we have the REPO dir (the .git dir itself).
+        # We should probably adjust get_head_content or read HEAD manually here since we are INSIDE .git
+        
+        head_path = os.path.join(repo_dir, "HEAD")
+        if os.path.exists(head_path):
+             try:
+                 with open(head_path, "r", encoding="utf-8", errors="ignore") as f:
+                     head = f.read().strip()
+                     if not head.startswith("ref:"):
+                         is_detached = True
+                     else:
+                         is_detached = False
+             except Exception as e:
+                 head = f"[Error: {e}]"
+        else:
+             if is_file: # It was a .git file, so checking repo_dir/HEAD is correct
+                  head = "[HEAD not found in resolved repo_dir]"
+             else:
+                  # If we passed a .git directory, repo_dir IS that directory
+                  pass
+
+        # Get Refs and Remotes
+        # get_refs_and_remotes expects a path that GitPython/pygit2 can understand.
+        # They usually accept the repo_dir (.git dir) or worktree dir.
+        refs, remotes = get_refs_and_remotes(repo_dir)
+
+    return {
+        "git_repo_dir": repo_dir,
+        "is_bare": is_bare,
+        "is_detached": is_detached,
+        "head": head,
+        "refs": refs,
+        "remotes": remotes,
+        "error": error,
+        "gitpython": None, # Not populated here for now
+        "pygit2": None,
+        "dulwich": None
+    }
 
 def find_git_repos(count: int = 50) -> GitRepoList:
     """
@@ -136,7 +116,10 @@ def find_git_repos(count: int = 50) -> GitRepoList:
     
     repos: List[GitRepoInfo] = []
     for path in candidates:
-        repos.append(check_path_info(path))
+        info = check_path_info(path)
+        # Deduplication based on resolved git_repo_dir?
+        # User might want to see all findings, but let's just return what we find.
+        repos.append(info)
     
     return {
         "repos": repos,
@@ -144,24 +127,30 @@ def find_git_repos(count: int = 50) -> GitRepoList:
     }
 
 def print_git_repos(data: GitRepoList):
-    print(f"Searching for Git repositories (.git directories and files)...")
+    print(f"Searching for Git repositories (.git directories and configurations)...")
     print("-" * 60)
     print(f"Found {data['count']} candidates via Everything.\n")
 
     for info in data["repos"]:
-        worktree = info["worktree_dir"]
-        repo = info["repo_dir"]
+        repo = info["git_repo_dir"]
         is_bare = info["is_bare"]
         
-        print(f"[REPO] Worktree: {worktree}")
-        print(f"       Git Dir : {repo}")
+        print(f"[REPO] Dir : {repo}")
         
         if info["error"]:
              print(f"       Error   : {info['error']}")
         else:
               status = "BARE" if is_bare else "Standard"
               print(f"       Status  : {status}")
+              print(f"       HEAD    : {info['head']}")
+              if info['is_detached']:
+                  print(f"       State   : DETACHED")
               
+              if info['remotes']:
+                  print(f"       Remotes : {', '.join(info['remotes'])}")
+              if info['refs']:
+                  print(f"       Refs    : {len(info['refs'])} refs")
+
         print("")
 
 def main():

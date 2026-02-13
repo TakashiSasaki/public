@@ -2,31 +2,20 @@ import os
 import argparse
 import concurrent.futures
 from typing import Dict, List, Any, Optional, Tuple
-from .git_types import GitRepoInfo, GitRepoList
-
-# --- Backend Imports ---
-
-try:
-    import git
-except ImportError:
-    git = None
-
-try:
-    import pygit2
-except ImportError:
-    pygit2 = None
-
-try:
-    import dulwich.repo
-    import dulwich.porcelain
-except ImportError:
-    dulwich = None
-
+from .git_types import GitRepoInfo, GitWorktreeInfo, GitWorktreeList
+from .utils import (
+    get_head_content, 
+    get_refs_and_remotes, 
+    is_bare_repo, 
+    git, 
+    pygit2, 
+    dulwich
+)
 from get_a_grip.tools.everything_ipc import scan_by_ipc
 
-# --- Git Info Functions ---
+# --- Git Worktree Status Functions ---
 
-def get_git_info_gitpython(path: str) -> Optional[Dict[str, Any]]:
+def get_worktree_status_gitpython(path: str) -> Optional[Dict[str, Any]]:
     """Checks if the path is a Git repository using GitPython."""
     if not git:
         return None
@@ -63,7 +52,7 @@ def get_git_info_gitpython(path: str) -> Optional[Dict[str, Any]]:
             "has_untracked": None
         }
 
-def get_git_info_pygit2(path: str) -> Optional[Dict[str, Any]]:
+def get_worktree_status_pygit2(path: str) -> Optional[Dict[str, Any]]:
     """Checks if the path is a Git repository using pygit2."""
     if not pygit2:
         return None
@@ -141,7 +130,7 @@ def get_git_info_pygit2(path: str) -> Optional[Dict[str, Any]]:
             }
         return None
 
-def get_git_info_dulwich(path: str) -> Optional[Dict[str, Any]]:
+def get_worktree_status_dulwich(path: str) -> Optional[Dict[str, Any]]:
     """Checks if the path is a Git repository using Dulwich."""
     if not dulwich:
         return None
@@ -198,7 +187,7 @@ def get_git_info_dulwich(path: str) -> Optional[Dict[str, Any]]:
     except Exception:
         return None
 
-def get_git_info_with_timeout(func, path: str, timeout: float) -> Dict[str, Any]:
+def get_status_with_timeout(func, path: str, timeout: float) -> Dict[str, Any]:
     """Executes the git info function with a timeout."""
     if timeout <= 0:
         res = func(path)
@@ -214,104 +203,7 @@ def get_git_info_with_timeout(func, path: str, timeout: float) -> Dict[str, Any]
         except Exception as e:
             return {"info": f"Error: {e}", "is_clean": None, "has_untracked": None}
 
-def get_head_content(path: str) -> str:
-    """Reads the content of .git/HEAD if it exists."""
-    git_dir = os.path.join(path, ".git")
-    head_path = os.path.join(path, ".git", "HEAD")
-    
-    try:
-        try:
-            is_dir = os.path.isdir(git_dir)
-        except Exception as e:
-            return f"[Error checking .git directory '{git_dir}': {e}]"
-
-        if is_dir:
-            try:
-                if os.path.exists(head_path):
-                    with open(head_path, "r", encoding="utf-8", errors="ignore") as f:
-                        return f.read().strip()
-                return "[HEAD not found]"
-            except Exception as e:
-                return f"[Error reading HEAD file '{head_path}': {e}]"
-
-        try:
-            is_file = os.path.isfile(git_dir)
-        except Exception as e:
-             return f"[Error checking .git file '{git_dir}': {e}]"
-
-        if is_file:
-            try:
-                with open(git_dir, "r", encoding="utf-8", errors="ignore") as f:
-                    content = f.read().strip()
-            except Exception as e:
-                return f"[Error reading .git file '{git_dir}': {e}]"
-
-            if content.startswith("gitdir:"):
-                rel_git_dir = content[7:].strip()
-                abs_git_dir = os.path.abspath(os.path.join(path, rel_git_dir))
-                real_head_path = os.path.join(abs_git_dir, "HEAD")
-                try:
-                    if os.path.exists(real_head_path):
-                         with open(real_head_path, "r", encoding="utf-8", errors="ignore") as hf:
-                            return hf.read().strip()
-                    return f"gitdir -> {rel_git_dir} (HEAD not found)"
-                except Exception as e:
-                    return f"[Error reading linked HEAD '{real_head_path}': {e}]"
-            return f"[File: {content[:20]}...]"
-        
-        return "[Not Found]"
-    except Exception as e:
-        return f"[Error: {e} (Root Path: {path})]"
-
-def get_refs_and_remotes(path: str) -> Tuple[List[str], List[str]]:
-    refs_list = []
-    remotes_list = []
-    
-    # Try GitPython
-    if git:
-        try:
-            repo = git.Repo(path, search_parent_directories=False)
-            refs_list = [str(r) for r in repo.references]
-            remotes_list = [f"{r.name}: {next(r.urls, 'no-url')}" for r in repo.remotes]
-            return refs_list, remotes_list
-        except:
-            pass
-            
-    # Try pygit2
-    if pygit2:
-        try:
-            repo = pygit2.Repository(path)
-            refs_list = list(repo.listall_references())
-            remotes_list = []
-            for remote_name in repo.remotes.listall():
-                url = repo.remotes[remote_name].url
-                remotes_list.append(f"{remote_name}: {url}")
-            return refs_list, remotes_list
-        except:
-            pass
-
-    # Try Dulwich
-    if dulwich:
-        try:
-            repo = dulwich.repo.Repo(path)
-            refs_list = [r.decode('utf-8', 'ignore') for r in repo.get_refs()]
-            config = repo.get_config()
-            remotes_list = []
-            for section in config.sections():
-                if section[0] == b'remote':
-                    name = section[1].decode('utf-8', 'ignore')
-                    try:
-                        url = config.get(section, b'url').decode('utf-8', 'ignore')
-                        remotes_list.append(f"{name}: {url}")
-                    except:
-                        remotes_list.append(f"{name}: [no url]")
-            return refs_list, remotes_list
-        except:
-            pass
-            
-    return [], []
-
-def find_git_worktrees(count: int = 50, timeout: float = 0) -> GitRepoList:
+def find_git_worktrees(count: int = 50, timeout: float = 0) -> GitWorktreeList:
     """
     Finds git worktrees by searching for .git directories and files.
     Verifies candidates using all available backends.
@@ -344,13 +236,14 @@ def find_git_worktrees(count: int = 50, timeout: float = 0) -> GitRepoList:
     # Remove duplicates
     candidate_paths = sorted(list(set(candidates)))
     
-    repos: List[GitRepoInfo] = []
+    worktrees: List[GitWorktreeInfo] = []
     
     for path in candidate_paths:
+        # 1. Determine Backend Status (for worktree info)
         results = {}
-        results['gitpython'] = get_git_info_with_timeout(get_git_info_gitpython, path, timeout)
-        results['pygit2'] = get_git_info_with_timeout(get_git_info_pygit2, path, timeout)
-        results['dulwich'] = get_git_info_with_timeout(get_git_info_dulwich, path, timeout)
+        results['gitpython'] = get_status_with_timeout(get_worktree_status_gitpython, path, timeout)
+        results['pygit2'] = get_status_with_timeout(get_worktree_status_pygit2, path, timeout)
+        results['dulwich'] = get_status_with_timeout(get_worktree_status_dulwich, path, timeout)
 
         # Consensus check
         is_valid = False
@@ -367,14 +260,18 @@ def find_git_worktrees(count: int = 50, timeout: float = 0) -> GitRepoList:
              if res["has_untracked"] is not None:
                  has_untracked_votes.append(res["has_untracked"])
         
-        # Determine consensus: only if 2+ backends agree or if only 1 backend works and returns valid info (relaxed for now?)
-        # For strict consensus as requested:
-        final_is_clean = None
-        if len(set(is_clean_votes)) == 1 and len(is_clean_votes) >= 2:
+        # Determine consensus
+        final_is_clean = False # Default to False if undetermined? Or True? 
+        # Actually TypedDict says bool, not Optional[bool]. So we must decide.
+        # If we can't determine, maybe assume dirty? Or clean?
+        # Let's use strict consensus or default to False (dirty/unknown).
+        if len(set(is_clean_votes)) == 1 and len(is_clean_votes) >= 1:
             final_is_clean = is_clean_votes[0]
-            
-        final_has_untracked = None
-        if len(set(has_untracked_votes)) == 1 and len(has_untracked_votes) >= 2:
+        else:
+            final_is_clean = False # Conservative
+
+        final_has_untracked = False
+        if len(set(has_untracked_votes)) == 1 and len(has_untracked_votes) >= 1:
             final_has_untracked = has_untracked_votes[0]
         
         if is_valid:
@@ -396,16 +293,14 @@ def find_git_worktrees(count: int = 50, timeout: float = 0) -> GitRepoList:
             head_content = get_head_content(path)
             is_detached = False
             if head_content and not head_content.startswith("["):
-                 # HEAD is valid
                  if not head_content.startswith("ref:"):
                      is_detached = True
             
             refs, remotes = get_refs_and_remotes(path)
             
             repo_info: GitRepoInfo = {
-                "worktree_dir": path,
-                "repo_dir": repo_dir,
-                "is_bare": False, # Worktrees are non-bare
+                "git_repo_dir": repo_dir,
+                "is_bare": is_bare_repo(path),
                 "is_detached": is_detached,
                 "head": head_content,
                 "refs": refs,
@@ -413,19 +308,26 @@ def find_git_worktrees(count: int = 50, timeout: float = 0) -> GitRepoList:
                 "gitpython": results['gitpython']["info"],
                 "pygit2": results['pygit2']["info"],
                 "dulwich": results['dulwich']["info"],
-                "isClean": final_is_clean,
-                "hasUntracked": final_has_untracked,
                 "error": None
             }
-            repos.append(repo_info)
+
+            worktree_info: GitWorktreeInfo = {
+                "git_worktree_dir": path,
+                "git_repo_dir": repo_dir,
+                "is_clean": final_is_clean,
+                "has_untracked": final_has_untracked,
+                "git_repo_info": repo_info
+            }
+
+            worktrees.append(worktree_info)
             
     return {
-        "repos": repos,
-        "count": len(repos)
+        "worktrees": worktrees,
+        "count": len(worktrees)
     }
 
-def print_git_worktrees(data: GitRepoList, timeout: float = 0):
-    print(f"Searching for .git directories and files...")
+def print_git_worktrees(data: GitWorktreeList, timeout: float = 0):
+    print(f"Searching for Git worktrees...")
     if timeout > 0:
         print(f"Start Timeout: {timeout} seconds")
     else:
@@ -433,33 +335,32 @@ def print_git_worktrees(data: GitRepoList, timeout: float = 0):
     print("-" * 50)
     print(f"Found {data['count']} worktrees.\n")
 
-    for info in data["repos"]:
-        print(f"[WORKTREE] {info['worktree_dir']}")
-        head_info = info['head']
-        if info['is_detached']:
+    for info in data["worktrees"]:
+        print(f"[WORKTREE] {info['git_worktree_dir']}")
+        
+        repo_info = info['git_repo_info']
+        head_info = repo_info['head']
+        if repo_info['is_detached']:
             head_info += " (DETACHED)"
+        
+        print(f"  Repo Dir  : {info['git_repo_dir']}")
         print(f"  HEAD      : {head_info}")
         
-        if info.get("remotes"):
-            print(f"  Remotes   : {', '.join(info['remotes'])}")
+        if repo_info.get("remotes"):
+            print(f"  Remotes   : {', '.join(repo_info['remotes'])}")
         
-        if info.get("refs"):
-             print(f"  Refs      : {len(info['refs'])} refs found")
+        # if repo_info.get("refs"):
+        #      print(f"  Refs      : {len(repo_info['refs'])} refs found")
 
-        print(f"  GitPython : {info['gitpython']}")
-        print(f"  pygit2    : {info['pygit2']}")
-        print(f"  Dulwich   : {info['dulwich']}")
+        print(f"  GitPython : {repo_info['gitpython']}")
+        print(f"  pygit2    : {repo_info['pygit2']}")
+        print(f"  Dulwich   : {repo_info['dulwich']}")
         
         status_line = []
-        if info["isClean"] is not None:
-            status_line.append(f"isClean={info['isClean']}")
-        if info["hasUntracked"] is not None:
-            status_line.append(f"hasUntracked={info['hasUntracked']}")
+        status_line.append(f"isClean={info['is_clean']}")
+        status_line.append(f"hasUntracked={info['has_untracked']}")
             
-        if status_line:
-            print(f"  Consensus : {' '.join(status_line)}")
-        else:
-            print(f"  Consensus : [None] (no agreement or insufficient backends)")
+        print(f"  Status    : {' '.join(status_line)}")
         print("")
 
 def main():
@@ -471,7 +372,6 @@ def main():
     args = parser.parse_args()
     
     if args.list_candidates:
-        # Fallback for list-candidates (doesn't return GitRepoList easily as it skips checks)
         print("Listing candidates skip... use normal run for data.")
         return
 
