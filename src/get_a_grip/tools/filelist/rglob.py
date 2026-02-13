@@ -1,9 +1,12 @@
 import json
+import logging
 from datetime import datetime
 from pathlib import Path
 from typing import List, Dict
 from get_a_grip.tools.whoami import get_effective_user, get_user_principal_name
 from get_a_grip.tools.filelist.types import FileList, FileItem
+
+logger = logging.getLogger(__name__)
 
 def unix_to_filetime(unix_timestamp: float) -> str:
     """
@@ -36,7 +39,7 @@ def scan(root_path: str) -> FileList:
             "Attributes": attributes
         })
     except (OSError, PermissionError) as e:
-        print(f"Warning: Could not access root directory {root}: {e}")
+        logger.warning("Could not access root directory %s: %s", root, e)
 
     for path in root.rglob("*"):
         try:
@@ -57,7 +60,7 @@ def scan(root_path: str) -> FileList:
             elif path.is_dir():
                 directories.append(item_info)
         except (OSError, PermissionError) as e:
-            print(f"Warning: Could not access {path}: {e}")
+            logger.warning("Could not access %s: %s", path, e)
 
     return FileList(files=files, dirs=directories)
 

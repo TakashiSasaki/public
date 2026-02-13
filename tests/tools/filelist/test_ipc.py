@@ -96,7 +96,7 @@ def test_main_success(mock_save, mock_scan):
     mock_save.assert_called_once()
 
 @patch('get_a_grip.tools.filelist.ipc.scan_by_ipc')
-def test_main_invalid_directory(mock_scan, capsys):
+def test_main_invalid_directory(mock_scan, caplog):
     """
     Test main() handles non-existent directory gracefully.
     """
@@ -110,12 +110,11 @@ def test_main_invalid_directory(mock_scan, capsys):
                 main()
             assert e.value.code == 1
             
-    captured = capsys.readouterr()
-    assert "Directory not found" in captured.out
+    assert "Directory not found" in caplog.text
     mock_scan.assert_not_called()
 
 @patch('get_a_grip.tools.filelist.ipc.scan')
-def test_main_exception_handling(mock_scan_dir, capsys):
+def test_main_exception_handling(mock_scan_dir, caplog):
     """
     Test main() handles exceptions during scanning.
     """
@@ -129,8 +128,7 @@ def test_main_exception_handling(mock_scan_dir, capsys):
                  main()
              assert e.value.code == 1
              
-    captured = capsys.readouterr()
-    assert "Error: IPC Error" in captured.out
+    assert "Error: IPC Error" in caplog.text
 
 @patch('get_a_grip.tools.filelist.ipc.scan_by_ipc')
 def test_scan_does_not_print(mock_scan):

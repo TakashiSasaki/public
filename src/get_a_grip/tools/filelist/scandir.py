@@ -1,9 +1,12 @@
 import json
 import os
+import logging
 from datetime import datetime
 from typing import List, Dict
 from get_a_grip.tools.whoami import get_effective_user, get_user_principal_name
 from get_a_grip.tools.filelist.types import FileList, FileItem
+
+logger = logging.getLogger(__name__)
 
 def unix_to_filetime(unix_timestamp: float) -> str:
     """
@@ -37,7 +40,7 @@ def scan(root_path: str) -> FileList:
             "Attributes": attributes
         })
     except (OSError, PermissionError) as e:
-        print(f"Warning: Could not access root directory {root_abs}: {e}")
+        logger.warning("Could not access root directory %s: %s", root_abs, e)
 
     # Recursive scan using os.scandir
     # We use a stack to avoid recursion limit and to control flow easier
@@ -66,7 +69,7 @@ def scan(root_path: str) -> FileList:
                             directories.append(item_info)
                             stack.append(entry.path)
                     except (OSError, PermissionError) as e:
-                        print(f"Warning: Could not access {entry.path}: {e}")
+                        logger.warning("Could not access %s: %s", entry.path, e)
         except (OSError, PermissionError) as e:
              # This usually happens if we don't have permission to list the directory
              # or if the directory vanished.
@@ -96,12 +99,13 @@ def save_to_json(data: FileList, output_path: str) -> None:
 
 if __name__ == "__main__":
     import sys
+    logging.basicConfig(level=logging.INFO)
     if len(sys.argv) > 2:
         root = sys.argv[1]
         out = sys.argv[2]
-        print(f"Scanning {root} with os.scandir...")
+        logger.info("Scanning %s with os.scandir...", root)
         data = scan(root)
         save_to_json(data, out)
-        print(f"Saved results to {out}")
+        logger.info("Saved results to %s", out)
     else:
-        print("Usage: filelist_scandir.py <dir> <output.json>")
+        logger.info("Usage: filelist_scandir.py <dir> <output.json>")

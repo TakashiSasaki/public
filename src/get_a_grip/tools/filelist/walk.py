@@ -1,9 +1,12 @@
 import json
 import os
+import logging
 from datetime import datetime
 from typing import List, Dict
 from get_a_grip.tools.whoami import get_effective_user, get_user_principal_name
 from get_a_grip.tools.filelist.types import FileList, FileItem
+
+logger = logging.getLogger(__name__)
 
 def unix_to_filetime(unix_timestamp: float) -> str:
     """
@@ -37,7 +40,7 @@ def scan(root_path: str) -> FileList:
             "Attributes": attributes
         })
     except OSError as e:
-        print(f"Warning: Could not access root directory {root_abs}: {e}")
+        logger.warning("Could not access root directory %s: %s", root_abs, e)
 
     # Use os.walk to verify subdirectories and files
     for dirpath, dirnames, filenames in os.walk(root_abs):
@@ -55,7 +58,7 @@ def scan(root_path: str) -> FileList:
                     "Attributes": attributes
                 })
             except OSError as e:
-                print(f"Warning: Could not access {full_path}: {e}")
+                logger.warning("Could not access %s: %s", full_path, e)
 
         # Process files
         for f in filenames:
@@ -71,7 +74,7 @@ def scan(root_path: str) -> FileList:
                     "Attributes": attributes
                 })
             except OSError as e:
-                print(f"Warning: Could not access {full_path}: {e}")
+                logger.warning("Could not access %s: %s", full_path, e)
 
     return FileList(files=files_list, dirs=dirs_list)
 

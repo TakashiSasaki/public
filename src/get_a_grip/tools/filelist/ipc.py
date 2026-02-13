@@ -2,6 +2,7 @@ import sys
 import os
 import argparse
 import json
+import logging
 from datetime import datetime
 from typing import Dict, List
 from get_a_grip.tools.filelist.types import FileList, FileItem
@@ -17,6 +18,8 @@ except ImportError:
          from everything_ipc import scan_by_ipc
 
 from get_a_grip.tools.whoami import get_effective_user, get_user_principal_name
+
+logger = logging.getLogger(__name__)
 
 def scan(root_path: str) -> FileList:
     """
@@ -58,6 +61,7 @@ def save_to_json(data: FileList, output_path: str) -> None:
         json.dump(output_data, f, ensure_ascii=False, indent=2)
 
 def main():
+    logging.basicConfig(level=logging.INFO)
     parser = argparse.ArgumentParser(description="Recursively list files in a directory using Everything IPC.")
     parser.add_argument("root_path", help="Root directory to scan")
     parser.add_argument("output_path", help="Output JSON file path")
@@ -65,15 +69,15 @@ def main():
     args = parser.parse_args()
     
     if not os.path.isdir(args.root_path):
-        print(f"Error: Directory not found: {args.root_path}")
+        logger.error("Directory not found: %s", args.root_path)
         sys.exit(1)
 
     try:
         data = scan(args.root_path)
         save_to_json(data, args.output_path)
-        print(f"Scan complete. Found {len(data['files'])} files and {len(data['dirs'])} dirs.")
+        logger.info("Scan complete. Found %d files and %d dirs.", len(data["files"]), len(data["dirs"]))
     except Exception as e:
-        print(f"Error: {e}")
+        logger.error("Error: %s", e)
         sys.exit(1)
 
 if __name__ == "__main__":
