@@ -32,7 +32,7 @@ Follow the standard Python src-layout:
       - `git/`: **Git Repository Tools**.
         - `git_types.py`: Defines unified `GitRepoInfo` TypedDict (includes `head`, `is_detached`, `refs`, `remotes`).
         - `utils.py`: Shared Git utility functions and backend initialization.
-        - `find_git_repo_dir.py`: Finds .git directories/files and returns `GitRepoInfo`.
+        - `find_git_repo.py`: Finds .git directories/files and returns `GitRepoInfo`.
         - `find_git_worktree.py`: Finds Git worktrees, cross-verifies status, and returns `GitWorktreeList`.
         - `find_github_dir.py`: Finds repositories specifically inside folders named 'GitHub'.
       - `whoami.py`: User identity retrieval.

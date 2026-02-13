@@ -4,21 +4,21 @@ from unittest.mock import MagicMock, patch
 from pathlib import Path
 
 # Important: Imports must match the module structure
-from get_a_grip.tools.git.find_git_repo_dir import (
+from get_a_grip.tools.git.find_git_repo import (
     check_path_info,
     find_git_repos,
     print_git_repos
 )
 # We need to patch the utils where they are used.
-# Since find_git_repo_dir imports from .utils, we should patch get_a_grip.tools.git.find_git_repo_dir.is_bare_repo
+# Since find_git_repo imports from .utils, we should patch get_a_grip.tools.git.find_git_repo.is_bare_repo
 
 def test_is_bare_repo_gitpython():
     """
-    Tests the is_bare_repo function in utils.py, but accessed via finding_git_repo_dir logic 
+    Tests the is_bare_repo function in utils.py, but accessed via finding_git_repo logic 
     or just test the utility directly? 
-    The original test was testing a function inside find_git_repo_dir.
+    The original test was testing a function inside find_git_repo.
     Now that function is imported from utils.
-    Let's test the imported function in the context of find_git_repo_dir
+    Let's test the imported function in the context of find_git_repo
     or better: test utils directly in a separate test file if needed, 
     but here we can test check_path_info which uses it.
     """
@@ -31,9 +31,9 @@ def test_check_path_info_dir_non_bare(tmp_path):
     git_dir.mkdir()
     
     # Mock is_bare_repo return using patch on the module where check_path_info is defined
-    with patch('get_a_grip.tools.git.find_git_repo_dir.is_bare_repo', return_value=False):
+    with patch('get_a_grip.tools.git.find_git_repo.is_bare_repo', return_value=False):
         # We also need to ensure refs/remotes/head don't fail or return predictable values
-        with patch('get_a_grip.tools.git.find_git_repo_dir.get_refs_and_remotes', return_value=([], [])):
+        with patch('get_a_grip.tools.git.find_git_repo.get_refs_and_remotes', return_value=([], [])):
              # And ensure HEAD file exists or get_head_content logic is handled
              # check_path_info reads HEAD manually if not found? 
              # No, check_path_info calls get_head_content but mostly relies on it?
@@ -53,8 +53,8 @@ def test_check_path_info_dir_bare(tmp_path):
     bare_dir = tmp_path / "repo.git"
     bare_dir.mkdir()
     
-    with patch('get_a_grip.tools.git.find_git_repo_dir.is_bare_repo', return_value=True):
-        with patch('get_a_grip.tools.git.find_git_repo_dir.get_refs_and_remotes', return_value=([], [])):
+    with patch('get_a_grip.tools.git.find_git_repo.is_bare_repo', return_value=True):
+        with patch('get_a_grip.tools.git.find_git_repo.get_refs_and_remotes', return_value=([], [])):
             (bare_dir / "HEAD").write_text("ref: refs/heads/main", encoding="utf-8")
             
             info = check_path_info(str(bare_dir))
@@ -76,15 +76,15 @@ def test_check_path_info_file(tmp_path):
     rel_path = os.path.relpath(real_git, wt_root)
     git_file.write_text(f"gitdir: {rel_path}", encoding="utf-8")
     
-    with patch('get_a_grip.tools.git.find_git_repo_dir.is_bare_repo', return_value=False):
-        with patch('get_a_grip.tools.git.find_git_repo_dir.get_refs_and_remotes', return_value=([], [])):
+    with patch('get_a_grip.tools.git.find_git_repo.is_bare_repo', return_value=False):
+        with patch('get_a_grip.tools.git.find_git_repo.get_refs_and_remotes', return_value=([], [])):
             info = check_path_info(str(git_file))
             
             # Check resolved absolute path
             assert os.path.normcase(info["git_repo_dir"]) == os.path.normcase(str(real_git))
             assert info["is_bare"] is False
 
-@patch('get_a_grip.tools.git.find_git_repo_dir.scan_by_ipc')
+@patch('get_a_grip.tools.git.find_git_repo.scan_by_ipc')
 def test_find_git_repos_integration(mock_scan, tmp_path, capsys):
     # Setup
     # 1. Non-Bare (.git dir)
@@ -124,8 +124,8 @@ def test_find_git_repos_integration(mock_scan, tmp_path, capsys):
             return True
         return False
         
-    with patch('get_a_grip.tools.git.find_git_repo_dir.is_bare_repo', side_effect=bare_side_effect):
-        with patch('get_a_grip.tools.git.find_git_repo_dir.get_refs_and_remotes', return_value=([], [])):
+    with patch('get_a_grip.tools.git.find_git_repo.is_bare_repo', side_effect=bare_side_effect):
+        with patch('get_a_grip.tools.git.find_git_repo.get_refs_and_remotes', return_value=([], [])):
             data = find_git_repos(count=10)
             print_git_repos(data)
         

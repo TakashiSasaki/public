@@ -1,6 +1,6 @@
 [project]
 name = "get-a-grip"
-version = "0.1.97"
+version = "0.1.98"
 description = "A directory searching application"
 authors = [
     {name = "takas"}
@@ -20,7 +20,7 @@ gag = "get_a_grip.cli:main"
 test = "get_a_grip.test_launcher:main"
 find-github-dir = "get_a_grip.tools.git.find_github_dir:main"
 find-git-worktree = "get_a_grip.tools.git.find_git_worktree:main"
-find-git-repo-dir = "get_a_grip.tools.git.find_git_repo_dir:main"
+find-git-repo = "get_a_grip.tools.git.find_git_repo:main"
 inspect-dirs = "get_a_grip.tools.inspect_platform_dirs:main"
 
 [project.gui-scripts]
