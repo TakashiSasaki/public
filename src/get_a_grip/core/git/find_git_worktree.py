@@ -2,7 +2,7 @@ import os
 import argparse
 import concurrent.futures
 from typing import Dict, List, Any, Optional, Tuple
-from .git_types import GitRepoInfo, GitWorktreeInfo, GitWorktreeList
+from get_a_grip.contracts.git import GitRepoInfo, GitWorktreeInfo, GitWorktreeList
 from .utils import (
     get_head_content, 
     get_refs_and_remotes, 

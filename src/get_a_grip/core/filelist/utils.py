@@ -4,7 +4,7 @@ from pathlib import Path
 from collections import Counter
 from typing import Dict, Tuple
 from get_a_grip.core.whoami import get_effective_user, get_user_principal_name
-from get_a_grip.core.filelist.types import FileList, FileItem
+from get_a_grip.contracts.filelist import FileList, FileItem
 
 def save_to_json(data: FileList, output_path: str) -> None:
     """

@@ -1,21 +1,14 @@
-from typing import TypedDict, List, Protocol, runtime_checkable
+"""Core-local scanner protocol and compatibility exports for filelist contracts."""
 
-# Field mappings match https://purl.org/gag/schema/filelist.jsonld
-FileItem = TypedDict("FileItem", {
-    "Filename": str,       # gag:fullPath
-    "Size": int,           # schema:contentSize
-    "Date Modified": str,  # gag:winFileTimeModified
-    "Date Created": str,   # gag:winFileTimeCreated
-    "Attributes": int      # gag:fileAttributes
-})
+from typing import Protocol, runtime_checkable
 
-FileList = TypedDict("FileList", {
-    "files": List[FileItem], # gag:files
-    "dirs": List[FileItem]   # gag:directories
-})
+from get_a_grip.contracts.filelist import FileItem, FileList
 
 @runtime_checkable
 class FileScanner(Protocol):
     def scan(self, target: str) -> FileList:
         """Recursively scans a target and returns a FileList."""
         ...
+
+
+__all__ = ["FileItem", "FileList", "FileScanner"]

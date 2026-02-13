@@ -3,7 +3,7 @@ import os
 import urllib.request
 import urllib.parse
 from typing import Dict, Any, List
-from get_a_grip.core.filelist.types import FileList, FileItem
+from get_a_grip.contracts.filelist import FileList, FileItem
 
 def fetch_raw_from_everything(ip: str, port: int, query: str = "", count: int = 10, format: str = "json") -> str:
     """

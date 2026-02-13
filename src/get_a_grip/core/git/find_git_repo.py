@@ -1,7 +1,7 @@
 import os
 import argparse
 from typing import Dict, Any, List, Optional
-from .git_types import GitRepoInfo, GitRepoList
+from get_a_grip.contracts.git import GitRepoInfo, GitRepoList
 from .utils import is_bare_repo, get_head_content, get_refs_and_remotes
 from get_a_grip.core.everything_ipc import scan_by_ipc
 

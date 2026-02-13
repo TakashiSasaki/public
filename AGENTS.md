@@ -20,10 +20,11 @@ Follow the standard Python src-layout:
     - `identifiers.py`: **Central Identifier Management**. Provides `APP_NAMESPACE_UUID` and `generate_id_v5()`.
     - `storage.py`: **Application Data Storage**. Simple KVS interface (settings/cache) backed by SQLite.
     - `core/`: **Pure Logic Layer**. Contains core implementations of tools.
+    - `contracts/`: **Data Contract Layer**. Shared TypedDict schemas for cross-module and external interoperability.
     - `tools/`: **Compatibility + Interface Layer**. Backward-compatible wrappers and runtime entrypoints (`main()`).
       - `filelist/`: **File Scanning Package**.
         - `__init__.py`: Provides a robust `scan()` function that validates multiple methods (`scandir`, `walk`, `rglob`).
-        - `types.py`: Defines common data structures (`FileList`, `FileItem`) and `FileScanner` protocol.
+        - `types.py`: Compatibility export for filelist types and `FileScanner` protocol.
         - `utils.py`: Shared utilities for saving results and comparing file lists.
         - `scandir.py`, `walk.py`, `rglob.py`: Individual scanning strategies.
         - `http.py`, `ipc.py`: Everything-based scanning strategies.
@@ -31,7 +32,7 @@ Follow the standard Python src-layout:
       - `filelist2dirtree.py`: Converter tool from flat `filelist.json` to hierarchical `dirtree.json`.
       - `efu_converter.py`: Conversions between JSON-LD and Everything EFU files.
       - `git/`: **Git Repository Tools**.
-        - `git_types.py`: Defines unified `GitRepoInfo` TypedDict (includes `head`, `is_detached`, `refs`, `remotes`).
+        - `git_types.py`: Compatibility export for unified `GitRepoInfo` TypedDict and related Git contracts.
         - `utils.py`: Shared Git utility functions and backend initialization.
         - `find_git_repo.py`: Finds .git directories/files and returns `GitRepoInfo`.
         - `find_git_worktree.py`: Finds Git worktrees, cross-verifies status, and returns `GitWorktreeList`.
@@ -113,8 +114,12 @@ To ensure interoperability and clear specifications:
     - **UI Feedback:** If a tool requires progress reporting, use an optional, injectable callback or a dedicated tracker class that defaults to no-op. Avoid direct `print()` calls in core logic.
   - **Interfaces (`cli.py`, `tui.py`, `mcp.py`, `tools/*.py main()`)**: Handles presentation, user I/O, and orchestration.
     - Responsible for catching exceptions from tools and presenting them to the user.
+- **Data Contracts:**
+  - Place shared exchange types in `src/get_a_grip/contracts/` (e.g., filelist/git TypedDict definitions).
+  - Keep runtime behaviors and protocols (e.g., `FileScanner`) in `src/get_a_grip/core/`.
 - **Strategy Pattern for Scanners:**
   - All file scanners must implement the `FileScanner` protocol (defined in `src/get_a_grip/core/filelist/types.py`).
+  - `FileList` / `FileItem` contract types are defined in `src/get_a_grip/contracts/filelist.py`.
   - Required interface: `scan(target: str) -> FileList`.
   - Use `@runtime_checkable` on the protocol to allow `isinstance(obj, FileScanner)` checks.
 - **Robustness & Validation:**

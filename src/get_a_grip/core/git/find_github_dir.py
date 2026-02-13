@@ -1,7 +1,7 @@
 import os
 import argparse
 from typing import Dict, List, Any, Optional
-from .git_types import GitHubRepo, GitHubRepoList
+from get_a_grip.contracts.git import GitHubRepo, GitHubRepoList
 from .utils import git, pygit2, dulwich, sanitized_git_environment
 from get_a_grip.core.everything_ipc import scan_by_ipc
 

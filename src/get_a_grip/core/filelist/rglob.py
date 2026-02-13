@@ -4,7 +4,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import List, Dict
 from get_a_grip.core.whoami import get_effective_user, get_user_principal_name
-from get_a_grip.core.filelist.types import FileList, FileItem
+from get_a_grip.contracts.filelist import FileList, FileItem
 
 logger = logging.getLogger(__name__)
 

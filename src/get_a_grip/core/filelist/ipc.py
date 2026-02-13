@@ -5,7 +5,7 @@ import json
 import logging
 from datetime import datetime
 from typing import Dict, List
-from get_a_grip.core.filelist.types import FileList, FileItem
+from get_a_grip.contracts.filelist import FileList, FileItem
 
 # Try to import everything_ipc
 try:
