@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Coverage for src\get_a_grip\tools\filelist\utils.py: 80%</title>
+    <title>Coverage for src\get_a_grip\tools\filelist\utils.py: 81%</title>
     <link rel="icon" sizes="32x32" href="favicon_32_cb_c827f16f.png">
     <link rel="stylesheet" href="style_cb_5c747636.css" type="text/css">
     <script src="coverage_html_cb_188fc9a4.js" defer></script>
@@ -12,7 +12,7 @@
     <div class="content">
         <h1>
             <span class="text">Coverage for </span><b>src&#8201;\&#8201;get_a_grip&#8201;\&#8201;tools&#8201;\&#8201;filelist&#8201;\&#8201;utils.py</b>:
-            <span class="pc_cov">80%</span>
+            <span class="pc_cov">81%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -54,8 +54,8 @@
             </div>
         </aside>
         <h2>
-            <span class="text">35 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">28<span class="text"> run</span></button>
+            <span class="text">37 statements &nbsp;</span>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">30<span class="text"> run</span></button>
             <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">7<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
         </h2>
@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="z_4a57ddfdf4072c43_walk_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.4">coverage.py v7.13.4</a>,
-            created at 2026-02-12 16:53 +0900
+            created at 2026-02-13 14:52 +0900
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -96,7 +96,7 @@
     <p class="run run2"><span class="n"><a id="t14" href="#t14">14</a></span><span class="t">            <span class="str">"https://purl.org/gag/schema/filelist.jsonld"</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t15" href="#t15">15</a></span><span class="t">        <span class="op">]</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t16" href="#t16">16</a></span><span class="t">        <span class="str">"@type"</span><span class="op">:</span> <span class="str">"ItemList"</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t17" href="#t17">17</a></span><span class="t">        <span class="str">"observedAt"</span><span class="op">:</span> <span class="nam">datetime</span><span class="op">.</span><span class="nam">now</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">isoformat</span><span class="op">(</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run run2"><span class="n"><a id="t17" href="#t17">17</a></span><span class="t">        <span class="str">"observedAtTime"</span><span class="op">:</span> <span class="nam">datetime</span><span class="op">.</span><span class="nam">now</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">isoformat</span><span class="op">(</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t18" href="#t18">18</a></span><span class="t">        <span class="str">"observer"</span><span class="op">:</span> <span class="op">{</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t19" href="#t19">19</a></span><span class="t">            <span class="str">"uid"</span><span class="op">:</span> <span class="nam">get_effective_user</span><span class="op">(</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t20" href="#t20">20</a></span><span class="t">            <span class="str">"userPrincipalName"</span><span class="op">:</span> <span class="nam">get_user_principal_name</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -141,11 +141,15 @@
     <p class="run"><span class="n"><a id="t59" href="#t59">59</a></span><span class="t">            <span class="nam">item1</span> <span class="op">=</span> <span class="nam">norm1</span><span class="op">[</span><span class="nam">key</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t60" href="#t60">60</a></span><span class="t">            <span class="nam">item2</span> <span class="op">=</span> <span class="nam">norm2</span><span class="op">[</span><span class="nam">key</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t61" href="#t61">61</a></span><span class="t">            <span class="key">for</span> <span class="nam">field</span> <span class="key">in</span> <span class="op">[</span><span class="str">"Size"</span><span class="op">,</span> <span class="str">"Date Modified"</span><span class="op">,</span> <span class="str">"Date Created"</span><span class="op">,</span> <span class="str">"Attributes"</span><span class="op">]</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t62" href="#t62">62</a></span><span class="t">                <span class="key">if</span> <span class="nam">item1</span><span class="op">.</span><span class="nam">get</span><span class="op">(</span><span class="nam">field</span><span class="op">)</span> <span class="op">!=</span> <span class="nam">item2</span><span class="op">.</span><span class="nam">get</span><span class="op">(</span><span class="nam">field</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t63" href="#t63">63</a></span><span class="t">                    <span class="key">raise</span> <span class="nam">RuntimeError</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t64" href="#t64">64</a></span><span class="t">                        <span class="fst">f"</span><span class="fst">Metadata mismatch for </span><span class="op">{</span><span class="nam">key</span><span class="op">}</span><span class="fst"> (</span><span class="op">{</span><span class="nam">field</span><span class="op">}</span><span class="fst">): </span><span class="fst">"</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t65" href="#t65">65</a></span><span class="t">                        <span class="fst">f"</span><span class="op">{</span><span class="nam">name1</span><span class="op">}</span><span class="fst">=</span><span class="op">{</span><span class="nam">item1</span><span class="op">.</span><span class="nam">get</span><span class="op">(</span><span class="nam">field</span><span class="op">)</span><span class="op">}</span><span class="fst">, </span><span class="op">{</span><span class="nam">name2</span><span class="op">}</span><span class="fst">=</span><span class="op">{</span><span class="nam">item2</span><span class="op">.</span><span class="nam">get</span><span class="op">(</span><span class="nam">field</span><span class="op">)</span><span class="op">}</span><span class="fst">"</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis mis2 show_mis"><span class="n"><a id="t66" href="#t66">66</a></span><span class="t">                    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t62" href="#t62">62</a></span><span class="t">                <span class="com"># Directory size can be inconsistent between different stat calls on Windows</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t63" href="#t63">63</a></span><span class="t">                <span class="key">if</span> <span class="nam">section</span> <span class="op">==</span> <span class="str">"dirs"</span> <span class="key">and</span> <span class="nam">field</span> <span class="op">==</span> <span class="str">"Size"</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t64" href="#t64">64</a></span><span class="t">                    <span class="key">continue</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t65" href="#t65">65</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t66" href="#t66">66</a></span><span class="t">                <span class="key">if</span> <span class="nam">item1</span><span class="op">.</span><span class="nam">get</span><span class="op">(</span><span class="nam">field</span><span class="op">)</span> <span class="op">!=</span> <span class="nam">item2</span><span class="op">.</span><span class="nam">get</span><span class="op">(</span><span class="nam">field</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t67" href="#t67">67</a></span><span class="t">                    <span class="key">raise</span> <span class="nam">RuntimeError</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t68" href="#t68">68</a></span><span class="t">                        <span class="fst">f"</span><span class="fst">Metadata mismatch for </span><span class="op">{</span><span class="nam">key</span><span class="op">}</span><span class="fst"> (</span><span class="op">{</span><span class="nam">field</span><span class="op">}</span><span class="fst">): </span><span class="fst">"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t69" href="#t69">69</a></span><span class="t">                        <span class="fst">f"</span><span class="op">{</span><span class="nam">name1</span><span class="op">}</span><span class="fst">=</span><span class="op">{</span><span class="nam">item1</span><span class="op">.</span><span class="nam">get</span><span class="op">(</span><span class="nam">field</span><span class="op">)</span><span class="op">}</span><span class="fst">, </span><span class="op">{</span><span class="nam">name2</span><span class="op">}</span><span class="fst">=</span><span class="op">{</span><span class="nam">item2</span><span class="op">.</span><span class="nam">get</span><span class="op">(</span><span class="nam">field</span><span class="op">)</span><span class="op">}</span><span class="fst">"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t70" href="#t70">70</a></span><span class="t">                    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
     <div class="content">
@@ -155,7 +159,7 @@
             <a class="nav" href="z_4a57ddfdf4072c43_walk_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.13.4">coverage.py v7.13.4</a>,
-            created at 2026-02-12 16:53 +0900
+            created at 2026-02-13 14:52 +0900
         </p>
     </div>
 </footer>
