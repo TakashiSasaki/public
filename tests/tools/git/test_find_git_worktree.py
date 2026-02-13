@@ -144,12 +144,50 @@ def test_get_worktree_status_gitpython_success():
         result = get_worktree_status_gitpython("C:/repo")
     assert result == {"is_clean": True, "has_untracked": True, "valid": True}
 
+def test_get_worktree_status_gitpython_ignores_git_env(monkeypatch):
+    monkeypatch.setenv("GIT_DIR", "C:/poisoned")
+
+    class FakeRepo:
+        def __init__(self):
+            self.is_dirty = lambda untracked_files=False: False
+            self.git = type("GitCmd", (), {"ls_files": staticmethod(lambda *args: "")})()
+
+    class FakeGit:
+        @staticmethod
+        def Repo(path, search_parent_directories=False):
+            assert "GIT_DIR" not in os.environ
+            return FakeRepo()
+
+    with patch("get_a_grip.tools.git.find_git_worktree.git", FakeGit):
+        result = get_worktree_status_gitpython("C:/repo")
+    assert result["is_clean"] is True
+    assert os.environ.get("GIT_DIR") == "C:/poisoned"
+
 def test_get_worktree_status_pygit2_bare():
     with patch('get_a_grip.tools.git.find_git_worktree.pygit2') as mock_pygit2:
         mock_repo = mock_pygit2.Repository.return_value
         mock_repo.is_bare = True
         result = get_worktree_status_pygit2("C:/repo")
     assert result == {"is_clean": True, "has_untracked": False, "valid": True}
+
+def test_get_worktree_status_pygit2_ignores_git_env(monkeypatch):
+    monkeypatch.setenv("GIT_WORK_TREE", "C:/poisoned")
+
+    class FakeRepo:
+        is_bare = True
+
+    class FakePygit2:
+        GIT_STATUS_WT_NEW = 0x80
+
+        @staticmethod
+        def Repository(path):
+            assert "GIT_WORK_TREE" not in os.environ
+            return FakeRepo()
+
+    with patch("get_a_grip.tools.git.find_git_worktree.pygit2", FakePygit2):
+        result = get_worktree_status_pygit2("C:/repo")
+    assert result["is_clean"] is True
+    assert os.environ.get("GIT_WORK_TREE") == "C:/poisoned"
 
 def test_get_worktree_status_pygit2_dirty_and_untracked():
     with patch('get_a_grip.tools.git.find_git_worktree.pygit2') as mock_pygit2:
@@ -167,6 +205,31 @@ def test_get_worktree_status_dulwich_status_error():
         mock_dulwich.repo.Repo.return_value = object()
         mock_dulwich.porcelain.status.side_effect = RuntimeError("status fail")
         assert get_worktree_status_dulwich("C:/repo") is None
+
+def test_get_worktree_status_dulwich_ignores_git_env(monkeypatch):
+    monkeypatch.setenv("GIT_INDEX_FILE", "C:/poisoned")
+
+    class FakeRepo:
+        pass
+
+    class FakePorcelain:
+        @staticmethod
+        def status(repo):
+            return ({"add": []}, [], [])
+
+    class FakeDulwich:
+        class repo:
+            @staticmethod
+            def Repo(path):
+                assert "GIT_INDEX_FILE" not in os.environ
+                return FakeRepo()
+
+        porcelain = FakePorcelain
+
+    with patch("get_a_grip.tools.git.find_git_worktree.dulwich", FakeDulwich):
+        result = get_worktree_status_dulwich("C:/repo")
+    assert result["is_clean"] is True
+    assert os.environ.get("GIT_INDEX_FILE") == "C:/poisoned"
 
 def test_get_status_with_timeout_returns_none_on_timeout():
     def sleeper(_):

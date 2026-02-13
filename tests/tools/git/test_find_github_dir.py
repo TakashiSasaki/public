@@ -1,3 +1,4 @@
+import os
 import pytest
 from unittest.mock import MagicMock, patch, mock_open
 
@@ -59,6 +60,34 @@ def test_get_git_info_gitpython_unexpected_error():
         result = get_git_info_gitpython("/path/to/repo")
         assert "GitPython Error: CustomError" in result
 
+def test_get_git_info_gitpython_ignores_git_env(monkeypatch):
+    monkeypatch.setenv("GIT_DIR", "C:/poisoned")
+
+    class FakeRepo:
+        class head:
+            is_detached = False
+
+        class active_branch:
+            name = "main"
+
+        @staticmethod
+        def is_dirty():
+            return False
+
+    class FakeGit:
+        InvalidGitRepositoryError = RuntimeError
+        NoSuchPathError = FileNotFoundError
+
+        @staticmethod
+        def Repo(path, search_parent_directories=False):
+            assert "GIT_DIR" not in os.environ
+            return FakeRepo()
+
+    with patch("get_a_grip.tools.git.find_github_dir.git", FakeGit):
+        result = get_git_info_gitpython("/path/to/repo")
+    assert "GitPython:main (clean)" in result
+    assert os.environ.get("GIT_DIR") == "C:/poisoned"
+
 # Test pygit2 backend info extraction
 def test_get_git_info_pygit2_success():
     with patch('get_a_grip.tools.git.find_github_dir.pygit2') as mock_pygit2:
@@ -99,6 +128,23 @@ def test_get_git_info_pygit2_headless():
         assert "HEADLESS" in result
         assert "dirty" in result
 
+def test_get_git_info_pygit2_ignores_git_env(monkeypatch):
+    monkeypatch.setenv("GIT_WORK_TREE", "C:/poisoned")
+
+    class FakeRepo:
+        is_bare = True
+
+    class FakePygit2:
+        @staticmethod
+        def Repository(path):
+            assert "GIT_WORK_TREE" not in os.environ
+            return FakeRepo()
+
+    with patch("get_a_grip.tools.git.find_github_dir.pygit2", FakePygit2):
+        result = get_git_info_pygit2("/path/to/repo")
+    assert "pygit2:bare" in result
+    assert os.environ.get("GIT_WORK_TREE") == "C:/poisoned"
+
 # Test dulwich backend info extraction
 def test_get_git_info_dulwich_success():
     with patch('get_a_grip.tools.git.find_github_dir.dulwich') as mock_dulwich:
@@ -122,6 +168,29 @@ def test_get_git_info_dulwich_headless():
         mock_dulwich.repo.Repo.return_value = mock_repo
         result = get_git_info_dulwich("/path/to/repo")
         assert "HEADLESS" in result
+
+def test_get_git_info_dulwich_ignores_git_env(monkeypatch):
+    monkeypatch.setenv("GIT_INDEX_FILE", "C:/poisoned")
+
+    class FakeRefs:
+        @staticmethod
+        def read_ref(name):
+            return b"ref: refs/heads/main"
+
+    class FakeRepo:
+        refs = FakeRefs()
+
+    class FakeDulwich:
+        class repo:
+            @staticmethod
+            def Repo(path):
+                assert "GIT_INDEX_FILE" not in os.environ
+                return FakeRepo()
+
+    with patch("get_a_grip.tools.git.find_github_dir.dulwich", FakeDulwich):
+        result = get_git_info_dulwich("/path/to/repo")
+    assert "dulwich:main" in result
+    assert os.environ.get("GIT_INDEX_FILE") == "C:/poisoned"
          
 # Test dispatch logic
 def test_get_git_info_dispatch():

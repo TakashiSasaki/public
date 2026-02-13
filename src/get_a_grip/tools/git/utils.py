@@ -1,6 +1,7 @@
 import os
 import concurrent.futures
-from typing import Dict, Any, List, Optional, Tuple
+from contextlib import contextmanager
+from typing import Dict, Any, Iterator, List, Optional, Tuple
 
 try:
     import git
@@ -17,6 +18,42 @@ try:
     import dulwich.porcelain
 except ImportError:
     dulwich = None
+
+
+IGNORED_GIT_ENV_VARS = (
+    "GIT_DIR",
+    "GIT_WORK_TREE",
+    "GIT_INDEX_FILE",
+    "GIT_OBJECT_DIRECTORY",
+    "GIT_ALTERNATE_OBJECT_DIRECTORIES",
+    "GIT_CEILING_DIRECTORIES",
+    "GIT_CONFIG_GLOBAL",
+    "GIT_CONFIG_SYSTEM",
+    "GIT_SSH",
+    "GIT_SSH_COMMAND",
+    "GIT_ASKPASS",
+    "SSH_ASKPASS",
+    "GIT_OPTIONAL_LOCKS",
+    "GIT_TRACE",
+    "GIT_TRACE_PACK_ACCESS",
+    "GIT_TRACE_PACKET",
+    "GIT_TRACE_PERFORMANCE",
+    "GIT_TRACE_SETUP",
+)
+
+
+@contextmanager
+def sanitized_git_environment() -> Iterator[None]:
+    """Temporarily remove Git-affecting environment variables."""
+    saved = {key: os.environ.get(key) for key in IGNORED_GIT_ENV_VARS if key in os.environ}
+    for key in IGNORED_GIT_ENV_VARS:
+        os.environ.pop(key, None)
+    try:
+        yield
+    finally:
+        for key, value in saved.items():
+            if value is not None:
+                os.environ[key] = value
 
 def get_head_content(path: str) -> str:
     """Reads the content of .git/HEAD if it exists."""
@@ -70,92 +107,94 @@ def get_head_content(path: str) -> str:
 def get_refs_and_remotes(path: str) -> Tuple[List[str], List[str]]:
     refs_list = []
     remotes_list = []
-    
-    # Try GitPython
-    if git:
-        try:
-            repo = git.Repo(path, search_parent_directories=False)
-            refs_list = [str(r) for r in repo.references]
-            remotes_list = [f"{r.name}: {next(r.urls, 'no-url')}" for r in repo.remotes]
-            return refs_list, remotes_list
-        except:
-            pass
-            
-    # Try pygit2
-    if pygit2:
-        try:
-            repo = pygit2.Repository(path)
+
+    with sanitized_git_environment():
+        # Try GitPython
+        if git:
             try:
-                refs_list = list(repo.listall_references())
-            except:
-                refs_list = []
-            
-            remotes_list = []
-            try:
-                for remote_name in repo.remotes.listall():
-                    try:
-                        url = repo.remotes[remote_name].url
-                        remotes_list.append(f"{remote_name}: {url}")
-                    except:
-                        remotes_list.append(f"{remote_name}: [error]")
+                repo = git.Repo(path, search_parent_directories=False)
+                refs_list = [str(r) for r in repo.references]
+                remotes_list = [f"{r.name}: {next(r.urls, 'no-url')}" for r in repo.remotes]
+                return refs_list, remotes_list
             except:
                 pass
-            
-            return refs_list, remotes_list
-        except:
-            pass
 
-    # Try Dulwich
-    if dulwich:
-        try:
-            repo = dulwich.repo.Repo(path)
-            refs_list = [r.decode('utf-8', 'ignore') for r in repo.get_refs()]
-            config = repo.get_config()
-            remotes_list = []
-            for section in config.sections():
-                if section[0] == b'remote':
-                    name = section[1].decode('utf-8', 'ignore')
-                    try:
-                        url = config.get(section, b'url').decode('utf-8', 'ignore')
-                        remotes_list.append(f"{name}: {url}")
-                    except:
-                        remotes_list.append(f"{name}: [no url]")
-            return refs_list, remotes_list
-        except:
-            pass
-            
+        # Try pygit2
+        if pygit2:
+            try:
+                repo = pygit2.Repository(path)
+                try:
+                    refs_list = list(repo.listall_references())
+                except:
+                    refs_list = []
+
+                remotes_list = []
+                try:
+                    for remote_name in repo.remotes.listall():
+                        try:
+                            url = repo.remotes[remote_name].url
+                            remotes_list.append(f"{remote_name}: {url}")
+                        except:
+                            remotes_list.append(f"{remote_name}: [error]")
+                except:
+                    pass
+
+                return refs_list, remotes_list
+            except:
+                pass
+
+        # Try Dulwich
+        if dulwich:
+            try:
+                repo = dulwich.repo.Repo(path)
+                refs_list = [r.decode('utf-8', 'ignore') for r in repo.get_refs()]
+                config = repo.get_config()
+                remotes_list = []
+                for section in config.sections():
+                    if section[0] == b'remote':
+                        name = section[1].decode('utf-8', 'ignore')
+                        try:
+                            url = config.get(section, b'url').decode('utf-8', 'ignore')
+                            remotes_list.append(f"{name}: {url}")
+                        except:
+                            remotes_list.append(f"{name}: [no url]")
+                return refs_list, remotes_list
+            except:
+                pass
+             
     return [], []
 
 def is_bare_repo(path: str) -> bool:
     """Checks if a repository at the given path is bare using available backends."""
-    # Try pygit2
-    if pygit2:
-        try:
-            repo = pygit2.Repository(path)
-            return repo.is_bare
-        except:
-            pass
-
-    # Try GitPython
-    if git:
-        try:
-            repo = git.Repo(path)
-            return repo.bare
-        except:
-             pass
-
-    # Try Dulwich
-    if dulwich:
-        try:
-            repo = dulwich.repo.Repo(path)
-            config = repo.get_config()
+    with sanitized_git_environment():
+        # Try pygit2
+        if pygit2:
             try:
-                bare = config.get(b'core', b'bare')
-                return bare == b'true'
+                repo = pygit2.Repository(path)
+                return repo.is_bare
             except:
-                return False
-        except:
-            pass
+                pass
+
+        # Try GitPython
+        if git:
+            try:
+                repo = git.Repo(path)
+                return repo.bare
+            except:
+                 pass
+
+        # Try Dulwich
+        if dulwich:
+            try:
+                repo = dulwich.repo.Repo(path)
+                config = repo.get_config()
+                try:
+                    bare = config.get(b'core', b'bare')
+                    return bare == b'true'
+                except:
+                    return False
+            except:
+                pass
             
     # Fallback: Check config file manually
     config_path = os.path.join(path, "config")

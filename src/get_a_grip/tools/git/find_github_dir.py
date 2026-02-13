@@ -2,7 +2,7 @@ import os
 import argparse
 from typing import Dict, List, Any, Optional
 from .git_types import GitHubRepo, GitHubRepoList
-from .utils import git, pygit2, dulwich, is_bare_repo, get_head_content
+from .utils import git, pygit2, dulwich, sanitized_git_environment
 from get_a_grip.tools.everything_ipc import scan_by_ipc
 
 # --- Git Info Functions ---
@@ -12,13 +12,14 @@ def get_git_info_gitpython(path: str) -> str:
     if not git:
         return " [GitPython not installed]"
     try:
-        repo = git.Repo(path, search_parent_directories=False)
-        try:
-            branch = repo.active_branch.name if not repo.head.is_detached else "DETACHED"
-        except:
-            branch = "HEADLESS"
-        status = "dirty" if repo.is_dirty() else "clean"
-        return f" <GitPython:{branch} ({status})>"
+        with sanitized_git_environment():
+            repo = git.Repo(path, search_parent_directories=False)
+            try:
+                branch = repo.active_branch.name if not repo.head.is_detached else "DETACHED"
+            except:
+                branch = "HEADLESS"
+            status = "dirty" if repo.is_dirty() else "clean"
+            return f" <GitPython:{branch} ({status})>"
     except (git.InvalidGitRepositoryError, git.NoSuchPathError):
         return ""
     except Exception as e:
@@ -29,22 +30,23 @@ def get_git_info_pygit2(path: str) -> str:
     if not pygit2:
         return " [pygit2 not installed]"
     try:
-        repo = pygit2.Repository(path)
-        if repo.is_bare:
-           return " <pygit2:bare>"
-        branch = "unknown"
-        try:
-            if repo.head_is_detached:
-                branch = "DETACHED"
-            else:
-                head = repo.head
-                branch = head.shorthand
-        except:
-            branch = "HEADLESS"
-        status = "clean"
-        if repo.status():
-            status = "dirty"
-        return f" <pygit2:{branch} ({status})>"
+        with sanitized_git_environment():
+            repo = pygit2.Repository(path)
+            if repo.is_bare:
+               return " <pygit2:bare>"
+            branch = "unknown"
+            try:
+                if repo.head_is_detached:
+                    branch = "DETACHED"
+                else:
+                    head = repo.head
+                    branch = head.shorthand
+            except:
+                branch = "HEADLESS"
+            status = "clean"
+            if repo.status():
+                status = "dirty"
+            return f" <pygit2:{branch} ({status})>"
     except Exception:
         return ""
 
@@ -53,20 +55,21 @@ def get_git_info_dulwich(path: str) -> str:
     if not dulwich:
         return " [dulwich not installed]"
     try:
-        repo = dulwich.repo.Repo(path)
-        branch = "unknown"
-        try:
-             # Read HEAD directly
-             head_ref = repo.refs.read_ref(b'HEAD')
-             if head_ref.startswith(b'ref: refs/heads/'):
-                 branch = head_ref[16:].decode('utf-8')
-             elif head_ref.startswith(b'ref: '):
-                 branch = head_ref[5:].decode('utf-8')
-             else:
-                 branch = "DETACHED"
-        except (KeyError, Exception):
-             branch = "HEADLESS"
-        return f" <dulwich:{branch}>"
+        with sanitized_git_environment():
+            repo = dulwich.repo.Repo(path)
+            branch = "unknown"
+            try:
+                 # Read HEAD directly
+                 head_ref = repo.refs.read_ref(b'HEAD')
+                 if head_ref.startswith(b'ref: refs/heads/'):
+                     branch = head_ref[16:].decode('utf-8')
+                 elif head_ref.startswith(b'ref: '):
+                     branch = head_ref[5:].decode('utf-8')
+                 else:
+                     branch = "DETACHED"
+            except (KeyError, Exception):
+                 branch = "HEADLESS"
+            return f" <dulwich:{branch}>"
     except:
         return ""
 

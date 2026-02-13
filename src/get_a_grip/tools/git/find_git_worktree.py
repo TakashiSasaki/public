@@ -7,6 +7,7 @@ from .utils import (
     get_head_content, 
     get_refs_and_remotes, 
     is_bare_repo, 
+    sanitized_git_environment,
     git, 
     pygit2, 
     dulwich
@@ -20,26 +21,27 @@ def get_worktree_status_gitpython(path: str) -> Optional[Dict[str, Any]]:
     if not git:
         return None
     try:
-        # GitPython Repo(path) handles both .git dir and worktree dir automatically.
-        repo = git.Repo(path, search_parent_directories=False)
-        
-        try:
-            branch = repo.active_branch.name if not repo.head.is_detached else "DETACHED"
-        except:
-            branch = "HEADLESS"
-        
-        # is_dirty(untracked_files=False) checks for staged/unstaged changes only
-        is_dirty = repo.is_dirty(untracked_files=False)
-        
-        # Check for untracked files using ls-files with --directory to avoid recursion into untracked dirs
-        untracked = repo.git.ls_files('--others', '--exclude-standard', '--directory', '--no-empty-directory')
-        has_untracked = len(untracked.strip()) > 0
-        
-        return {
-            "is_clean": not is_dirty,
-            "has_untracked": has_untracked,
-            "valid": True
-        }
+        with sanitized_git_environment():
+            # GitPython Repo(path) handles both .git dir and worktree dir automatically.
+            repo = git.Repo(path, search_parent_directories=False)
+
+            try:
+                branch = repo.active_branch.name if not repo.head.is_detached else "DETACHED"
+            except:
+                branch = "HEADLESS"
+
+            # is_dirty(untracked_files=False) checks for staged/unstaged changes only
+            is_dirty = repo.is_dirty(untracked_files=False)
+
+            # Check for untracked files using ls-files with --directory to avoid recursion into untracked dirs
+            untracked = repo.git.ls_files('--others', '--exclude-standard', '--directory', '--no-empty-directory')
+            has_untracked = len(untracked.strip()) > 0
+
+            return {
+                "is_clean": not is_dirty,
+                "has_untracked": has_untracked,
+                "valid": True
+            }
     except Exception:
         return None
 
@@ -48,32 +50,33 @@ def get_worktree_status_pygit2(path: str) -> Optional[Dict[str, Any]]:
     if not pygit2:
         return None
     try:
-        # pygit2.Repository(path) works with both worktree and .git dir
-        repo = pygit2.Repository(path)
-        
-        if repo.is_bare:
-           return {
-               "is_clean": True, # Bare is technically clean
-               "has_untracked": False,
-               "valid": True
-           }
+        with sanitized_git_environment():
+            # pygit2.Repository(path) works with both worktree and .git dir
+            repo = pygit2.Repository(path)
 
-        # Check status
-        status_flags = repo.status()
-        is_dirty = False
-        has_untracked = False
-        
-        for filepath, flags in status_flags.items():
-            if flags & pygit2.GIT_STATUS_WT_NEW:
-                has_untracked = True
-            if flags & ~pygit2.GIT_STATUS_WT_NEW:
-                is_dirty = True
-            
-        return {
-            "is_clean": not is_dirty,
-            "has_untracked": has_untracked,
-             "valid": True
-        }
+            if repo.is_bare:
+               return {
+                   "is_clean": True, # Bare is technically clean
+                   "has_untracked": False,
+                   "valid": True
+               }
+
+            # Check status
+            status_flags = repo.status()
+            is_dirty = False
+            has_untracked = False
+
+            for filepath, flags in status_flags.items():
+                if flags & pygit2.GIT_STATUS_WT_NEW:
+                    has_untracked = True
+                if flags & ~pygit2.GIT_STATUS_WT_NEW:
+                    is_dirty = True
+
+            return {
+                "is_clean": not is_dirty,
+                "has_untracked": has_untracked,
+                 "valid": True
+            }
     except Exception:
         return None
 
@@ -82,29 +85,30 @@ def get_worktree_status_dulwich(path: str) -> Optional[Dict[str, Any]]:
     if not dulwich:
         return None
     try:
-        repo = dulwich.repo.Repo(path)
-        
-        # Check status using dulwich.porcelain
-        is_dirty = False
-        has_untracked = False
-        
-        try:
-            staged, unstaged, untracked = dulwich.porcelain.status(repo)
-            if any(staged.values()) or unstaged:
-                is_dirty = True
-            if untracked:
-                has_untracked = True
-        except Exception:
-            # If status fails but repo open succeeded, we might still consider it valid but unknown status?
-            # Or just return None if we can't determine status?
-            # Let's return None to be safe as per user request (no error info).
-            return None
+        with sanitized_git_environment():
+            repo = dulwich.repo.Repo(path)
 
-        return {
-            "is_clean": not is_dirty,
-            "has_untracked": has_untracked,
-             "valid": True
-        }
+            # Check status using dulwich.porcelain
+            is_dirty = False
+            has_untracked = False
+
+            try:
+                staged, unstaged, untracked = dulwich.porcelain.status(repo)
+                if any(staged.values()) or unstaged:
+                    is_dirty = True
+                if untracked:
+                    has_untracked = True
+            except Exception:
+                # If status fails but repo open succeeded, we might still consider it valid but unknown status?
+                # Or just return None if we can't determine status?
+                # Let's return None to be safe as per user request (no error info).
+                return None
+
+            return {
+                "is_clean": not is_dirty,
+                "has_untracked": has_untracked,
+                 "valid": True
+            }
 
     except Exception:
         return None
