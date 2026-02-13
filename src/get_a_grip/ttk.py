@@ -4,6 +4,8 @@ import subprocess
 import sys
 import threading
 import os
+import importlib.metadata
+
 
 class GripLauncher:
     def __init__(self, root):
@@ -19,8 +21,14 @@ class GripLauncher:
         # Header
         header_frame = ttk.Frame(root, padding="10")
         header_frame.pack(fill=tk.X)
+        
+        try:
+            version = importlib.metadata.version("get-a-grip")
+        except importlib.metadata.PackageNotFoundError:
+            version = "dev"
+            
         ttk.Label(header_frame, text="Get a Grip Legacy Launcher", font=("Segoe UI", 16, "bold")).pack()
-        ttk.Label(header_frame, text="Lightweight GUI for CUI Tools", font=("Segoe UI", 9)).pack()
+        ttk.Label(header_frame, text=f"v{version} | Lightweight GUI for CUI Tools", font=("Segoe UI", 9)).pack()
 
         # Build Buttons
         btn_frame = ttk.Frame(root, padding="10")

@@ -146,11 +146,51 @@
 
         #graph-container {
             width: 100%;
-            height: 100%;
+            height: calc(100vh - 120px);
             display: none;
             justify-content: center;
             align-items: center;
             overflow: hidden;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+        }
+
+        /* Graph Controls */
+        .graph-controls {
+            display: none;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .graph-controls>div {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .graph-controls select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .graph-controls select:hover {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .graph-controls label {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
         }
 
         pre {
@@ -241,6 +281,27 @@
     <div class="viewport">
         <div class="toolbar">
             <div id="currentFile" class="current-filename">Select a file to view</div>
+            <div id="graphControls" class="graph-controls">
+                <div>
+                    <label>Engine</label>
+                    <select id="engineSelect">
+                        <option value="dot">dot (Hierarchical)</option>
+                        <option value="neato">neato (Spring)</option>
+                        <option value="fdp">fdp (Force)</option>
+                        <option value="twopi">twopi (Radial)</option>
+                        <option value="circo">circo (Circular)</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Layout</label>
+                    <select id="directionSelect">
+                        <option value="TB">Vertical (TB)</option>
+                        <option value="LR">Horizontal (LR)</option>
+                        <option value="BT">Bottom-Up (BT)</option>
+                        <option value="RL">Right-Left (RL)</option>
+                    </select>
+                </div>
+            </div>
             <div class="btn-group">
                 <!-- Actions like copy could go here -->
             </div>
@@ -273,14 +334,40 @@
         const graphContainer = document.getElementById('graph-container');
         const currentFileLabel = document.getElementById('currentFile');
         const loader = document.getElementById('loader');
+        const graphControls = document.getElementById('graphControls');
+        const engineSelect = document.getElementById('engineSelect');
+        const directionSelect = document.getElementById('directionSelect');
 
-        // Configure hpcc-js/wasm manually to avoid CORS issues with default path resolution
-        // Note: New versions of d3-graphviz + hpcc-js handle this better, but we might need
-        // to re-enable configuration if issues persist. For now, let's try defaults.
-        /* global hpccWasm */
-        // if (typeof hpccWasm !== 'undefined') {
-        //     hpccWasm.wasmFolder("https://cdn.jsdelivr.net/npm/@hpcc-js/wasm@2.20.0/dist");
-        // }
+        let currentDotContent = "";
+
+        function renderGraph() {
+            if (!currentDotContent) return;
+
+            const engine = engineSelect.value;
+            const direction = directionSelect.value;
+
+            // Pre-process DOT: Replace or inject rankdir
+            let dotContent = currentDotContent;
+
+            // Minimal cleanup and injection
+            dotContent = dotContent.replace(/rankdir\s*=\s*".*?";?\n?\s*/g, '');
+            dotContent = dotContent.replace(/ranksep\s*=\s*.*?;?\n?\s*/g, '');
+            dotContent = dotContent.replace(/nodesep\s*=\s*.*?;?\n?\s*/g, '');
+
+            const settings = `\n  rankdir="${direction}";\n  ranksep=1.0;\n  nodesep=0.5;\n`;
+            dotContent = dotContent.replace(/digraph\s*{/, `digraph {${settings}`);
+
+            d3.select("#graph-container").graphviz()
+                .width(graphContainer.offsetWidth)
+                .height(graphContainer.offsetHeight)
+                .engine(engine)
+                .fit(false)
+                .zoom(true)
+                .renderDot(dotContent);
+        }
+
+        engineSelect.onchange = renderGraph;
+        directionSelect.onchange = renderGraph;
 
         function init() {
             files.forEach(file => {
@@ -294,7 +381,6 @@
                 fileListEl.appendChild(item);
             });
 
-            // Load first file by default or from URL hash
             const hash = window.location.hash.substring(1);
             if (hash && files.includes(hash)) {
                 const target = Array.from(fileListEl.children).find(el => el.textContent.trim() === hash);
@@ -305,7 +391,6 @@
         }
 
         async function loadFile(filename, element) {
-            // UI State
             document.querySelectorAll('.file-item').forEach(i => i.classList.remove('active'));
             element.classList.add('active');
             currentFileLabel.textContent = filename;
@@ -313,6 +398,7 @@
 
             loader.style.display = 'block';
             codeBlock.textContent = '';
+            graphControls.style.display = 'none';
 
             try {
                 const response = await fetch(filename);
@@ -320,24 +406,19 @@
                 const content = await response.text();
 
                 if (filename.endsWith('.dot')) {
-                    // Show Graph
-                    codeBlock.parentElement.style.overflow = 'hidden'; // Hide scrollbars for graph
+                    codeBlock.parentElement.style.overflow = 'hidden';
                     codeBlock.style.display = 'none';
                     graphContainer.style.display = 'block';
+                    graphControls.style.display = 'flex';
 
-                    d3.select("#graph-container").graphviz()
-                        .width(graphContainer.offsetWidth)
-                        .height(graphContainer.offsetHeight)
-                        .fit(false) // Don't shrink to fit, maintain readable size
-                        .zoom(true)
-                        .renderDot(content);
+                    currentDotContent = content;
+                    renderGraph();
                 } else {
-                    // Show Code
                     codeBlock.parentElement.style.overflow = 'auto';
                     codeBlock.style.display = 'block';
                     graphContainer.style.display = 'none';
+                    currentDotContent = "";
 
-                    // Determine language
                     let lang = 'json';
                     if (filename.endsWith('.txt')) lang = 'text';
                     if (filename.endsWith('.efu')) lang = 'text';
@@ -349,6 +430,7 @@
             } catch (err) {
                 codeBlock.style.display = 'block';
                 graphContainer.style.display = 'none';
+                graphControls.style.display = 'none';
                 codeBlock.textContent = `Error loading file: ${err.message}`;
             } finally {
                 loader.style.display = 'none';
@@ -370,8 +452,6 @@
                 const response = await fetch('../reports/purl-availability/latest.jsonld');
                 if (!response.ok) return;
                 const report = await response.json();
-
-                // Add status summary to sidebar header
                 const header = document.querySelector('.sidebar-header');
                 const statusDiv = document.createElement('div');
                 statusDiv.style.cssText = 'font-size: 0.8rem; margin-top: 0.5rem; color: var(--text-dim); display: flex; align-items: center; gap: 0.5rem;';
@@ -379,14 +459,11 @@
                 const allOk = report.summary.inaccessible === 0;
 
                 statusDiv.innerHTML = `
-                    <div style="width: 8px; height: 8px; border-radius: 50%; background: ${allOk ? '#22c55e' : '#ef4444'}; box-shadow: 0 0 10px ${allOk ? 'rgba(34, 197, 94, 0.4)' : 'rgba(239, 68, 68, 0.4)'}"></div>
+                    <div style="width: 8px; height: 8px; border-radius: 50%; background: ${allOk ? '#22c55e' : '#ef4444'}; shadow: 0 0 10px ${allOk ? 'rgba(34, 197, 94, 0.4)' : 'rgba(239, 68, 68, 0.4)'}"></div>
                     <span>Last Checked: ${date}</span>
                 `;
                 header.appendChild(statusDiv);
-
-            } catch (err) {
-                console.error('Failed to load availability report:', err);
-            }
+            } catch (err) { }
         }
 
         init();

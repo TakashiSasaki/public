@@ -87,7 +87,7 @@ def scan_directory_tree(root_path: str, progress: bool = False) -> Dict[str, Tre
     
     return {
         "@context": "https://purl.org/gag/schema/dirtree.jsonld",
-        "observedAt": datetime.now().isoformat(),
+        "observedAtTime": datetime.now().isoformat(),
         "observer": {
             "uid": get_effective_user(),
             "userPrincipalName": get_user_principal_name()

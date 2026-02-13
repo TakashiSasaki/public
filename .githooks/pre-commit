@@ -1,0 +1,17 @@
+#!/bin/sh
+# Pre-commit hook to automatically bump patch version
+# This file is tracked in the repository at .githooks/pre-commit
+
+if [ -f "pyproject.toml" ]; then
+    echo "[Githook] Bumping patch version..."
+    
+    # Run poetry version patch to increment 0.0.X
+    poetry version patch
+    
+    # Add the updated pyproject.toml to the staging area
+    git add pyproject.toml
+    
+    echo "[Githook] Version bumped and staged."
+else
+    echo "[Githook] Warning: pyproject.toml not found. Skipping version bump."
+fi
