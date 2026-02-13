@@ -46,13 +46,32 @@ class AppDataStorage:
         # アプリケーションIDのチェック (ファイルの識別)
         cur = self.conn.execute("PRAGMA application_id")
         app_id = cur.fetchone()[0]
+        
+        # SQLite uses signed 32-bit integers for application_id
+        # Convert our unsigned 32-bit ID to signed 32-bit for comparison/setting
+        signed_target_id = (self.APPLICATION_ID & 0xFFFFFFFF)
+        if signed_target_id > 0x7FFFFFFF:
+            signed_target_id -= 0x100000000
+
+        logger.info(f"Checking database application_id. Current: {app_id} (Target Signed: {signed_target_id})")
 
         if app_id == 0:
             # 新規DB または 未設定の場合: IDを設定
-            self.conn.execute(f"PRAGMA application_id = {self.APPLICATION_ID}")
-        elif app_id != self.APPLICATION_ID:
+            logger.info(f"Setting application_id to {signed_target_id}")
+            self.conn.execute(f"PRAGMA application_id = {signed_target_id}")
+            self.conn.commit() 
+            
+            # 設定が反映されたか確認
+            cur = self.conn.execute("PRAGMA application_id")
+            new_app_id = cur.fetchone()[0]
+            if new_app_id != signed_target_id:
+                logger.error(f"Failed to set application_id! It is still: {new_app_id}")
+            else:
+                logger.info(f"Successfully set application_id.")
+                
+        elif app_id != signed_target_id:
             # 異なるアプリのDBファイルである可能性があるためエラーにする
-            raise ValueError(f"Invalid database application_id: {app_id} (Expected: {self.APPLICATION_ID})")
+            raise ValueError(f"Invalid database application_id: {app_id} (Expected: {signed_target_id})")
 
         # スキーマバージョンのチェック (PRAGMA user_version)
         cur = self.conn.execute("PRAGMA user_version")
