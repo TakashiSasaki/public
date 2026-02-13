@@ -35,22 +35,13 @@ def get_worktree_status_gitpython(path: str) -> Optional[Dict[str, Any]]:
         untracked = repo.git.ls_files('--others', '--exclude-standard', '--directory', '--no-empty-directory')
         has_untracked = len(untracked.strip()) > 0
         
-        status = "dirty" if is_dirty else "clean"
-        untracked_str = " [untracked]" if has_untracked else ""
-        
         return {
-            "info": f"{branch} ({status}){untracked_str}",
             "is_clean": not is_dirty,
-            "has_untracked": has_untracked
+            "has_untracked": has_untracked,
+            "valid": True
         }
-    except (git.InvalidGitRepositoryError, git.NoSuchPathError):
+    except Exception:
         return None
-    except Exception as e:
-        return {
-            "info": f"Error: {type(e).__name__}",
-            "is_clean": None,
-            "has_untracked": None
-        }
 
 def get_worktree_status_pygit2(path: str) -> Optional[Dict[str, Any]]:
     """Checks if the path is a Git repository using pygit2."""
@@ -62,38 +53,10 @@ def get_worktree_status_pygit2(path: str) -> Optional[Dict[str, Any]]:
         
         if repo.is_bare:
            return {
-               "info": "bare",
                "is_clean": True, # Bare is technically clean
-               "has_untracked": False
+               "has_untracked": False,
+               "valid": True
            }
-
-        branch = "unknown"
-        try:
-            if repo.head_is_detached:
-                branch = "DETACHED"
-            else:
-                head = repo.head
-                branch = head.shorthand
-        except Exception:
-            # Handle unborn branches (empty repo with no commits yet)
-            branch = "HEADLESS"
-            try:
-                is_unborn = False
-                try:
-                     is_unborn = repo.head_is_unborn
-                except:
-                     pass
-                
-                if is_unborn:
-                     # Get the symbolic reference target of HEAD (e.g. refs/heads/master)
-                     head_ref = repo.lookup_reference("HEAD")
-                     target = head_ref.target
-                     if target.startswith("refs/heads/"):
-                         branch = target[11:]
-                     else:
-                         branch = target
-            except:
-                pass
 
         # Check status
         status_flags = repo.status()
@@ -106,28 +69,12 @@ def get_worktree_status_pygit2(path: str) -> Optional[Dict[str, Any]]:
             if flags & ~pygit2.GIT_STATUS_WT_NEW:
                 is_dirty = True
             
-        status = "dirty" if is_dirty else "clean"
-        untracked_str = " [untracked]" if has_untracked else ""
-
         return {
-            "info": f"{branch} ({status}){untracked_str}",
             "is_clean": not is_dirty,
-            "has_untracked": has_untracked
+            "has_untracked": has_untracked,
+             "valid": True
         }
-    except Exception as e:
-        msg = str(e).lower()
-        info = None
-        if "cloud file provider" in msg or "クラウド ファイル プロバイダー" in msg:
-            info = "[Cloud Error]"
-        elif "not owned by current user" in msg:
-            info = "[Owner Mismatch]"
-        
-        if info:
-            return {
-                "info": info,
-                "is_clean": None,
-                "has_untracked": None
-            }
+    except Exception:
         return None
 
 def get_worktree_status_dulwich(path: str) -> Optional[Dict[str, Any]]:
@@ -137,19 +84,6 @@ def get_worktree_status_dulwich(path: str) -> Optional[Dict[str, Any]]:
     try:
         repo = dulwich.repo.Repo(path)
         
-        branch = "unknown"
-        try:
-             # Read HEAD directly
-             head_ref = repo.refs.read_ref(b'HEAD')
-             if head_ref.startswith(b'ref: refs/heads/'):
-                 branch = head_ref[16:].decode('utf-8')
-             elif head_ref.startswith(b'ref: '):
-                 branch = head_ref[5:].decode('utf-8')
-             else:
-                 branch = "DETACHED"
-        except (KeyError, Exception):
-             branch = "HEADLESS"
-
         # Check status using dulwich.porcelain
         is_dirty = False
         has_untracked = False
@@ -161,47 +95,31 @@ def get_worktree_status_dulwich(path: str) -> Optional[Dict[str, Any]]:
             if untracked:
                 has_untracked = True
         except Exception:
-            return {
-                "info": f"{branch} (unknown)",
-                "is_clean": None,
-                "has_untracked": None
-            }
-
-        status = "dirty" if is_dirty else "clean"
-        untracked_str = " [untracked]" if has_untracked else ""
+            # If status fails but repo open succeeded, we might still consider it valid but unknown status?
+            # Or just return None if we can't determine status?
+            # Let's return None to be safe as per user request (no error info).
+            return None
 
         return {
-            "info": f"{branch} ({status}){untracked_str}",
             "is_clean": not is_dirty,
-            "has_untracked": has_untracked
+            "has_untracked": has_untracked,
+             "valid": True
         }
 
-    except OSError as e:
-        if e.errno == 22 and "OneDrive" in path:
-            return {
-                "info": "[Cloud Error]",
-                "is_clean": None,
-                "has_untracked": None
-            }
-        return None
     except Exception:
         return None
 
-def get_status_with_timeout(func, path: str, timeout: float) -> Dict[str, Any]:
-    """Executes the git info function with a timeout."""
+def get_status_with_timeout(func, path: str, timeout: float) -> Optional[Dict[str, Any]]:
+    """Executes the git status function with a timeout."""
     if timeout <= 0:
-        res = func(path)
-        return res if res else {"info": "[None]", "is_clean": None, "has_untracked": None}
+        return func(path)
     
     with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
         future = executor.submit(func, path)
         try:
-            res = future.result(timeout=timeout)
-            return res if res else {"info": "[None]", "is_clean": None, "has_untracked": None}
-        except concurrent.futures.TimeoutError:
-            return {"info": "[Timeout]", "is_clean": None, "has_untracked": None}
-        except Exception as e:
-            return {"info": f"Error: {e}", "is_clean": None, "has_untracked": None}
+            return future.result(timeout=timeout)
+        except Exception:
+            return None
 
 def find_git_worktrees(count: int = 50, timeout: float = 0) -> GitWorktreeList:
     """
@@ -240,86 +158,78 @@ def find_git_worktrees(count: int = 50, timeout: float = 0) -> GitWorktreeList:
     
     for path in candidate_paths:
         # 1. Determine Backend Status (for worktree info)
-        results = {}
-        results['gitpython'] = get_status_with_timeout(get_worktree_status_gitpython, path, timeout)
-        results['pygit2'] = get_status_with_timeout(get_worktree_status_pygit2, path, timeout)
-        results['dulwich'] = get_status_with_timeout(get_worktree_status_dulwich, path, timeout)
+        results = []
+        res_gp = get_status_with_timeout(get_worktree_status_gitpython, path, timeout)
+        if res_gp: results.append(res_gp)
+        
+        res_pg = get_status_with_timeout(get_worktree_status_pygit2, path, timeout)
+        if res_pg: results.append(res_pg)
+        
+        res_dw = get_status_with_timeout(get_worktree_status_dulwich, path, timeout)
+        if res_dw: results.append(res_dw)
+
+        if not results:
+            continue # No valid backend recognized this path
 
         # Consensus check
-        is_valid = False
-        is_clean_votes = []
-        has_untracked_votes = []
-
-        for res in results.values():
-             info = res["info"]
-             if info and not info.startswith("[") and not info.startswith("Error"):
-                 is_valid = True
-             
-             if res["is_clean"] is not None:
-                 is_clean_votes.append(res["is_clean"])
-             if res["has_untracked"] is not None:
-                 has_untracked_votes.append(res["has_untracked"])
+        is_clean_votes = [r["is_clean"] for r in results]
+        has_untracked_votes = [r["has_untracked"] for r in results]
         
         # Determine consensus
-        final_is_clean = False # Default to False if undetermined? Or True? 
-        # Actually TypedDict says bool, not Optional[bool]. So we must decide.
-        # If we can't determine, maybe assume dirty? Or clean?
-        # Let's use strict consensus or default to False (dirty/unknown).
-        if len(set(is_clean_votes)) == 1 and len(is_clean_votes) >= 1:
+        final_is_clean = False
+        if len(set(is_clean_votes)) == 1:
             final_is_clean = is_clean_votes[0]
         else:
-            final_is_clean = False # Conservative
+             # If conflicting, prioritize 'dirty' (False) to be safe?
+             # Or check majority?
+             final_is_clean = False 
 
         final_has_untracked = False
-        if len(set(has_untracked_votes)) == 1 and len(has_untracked_votes) >= 1:
+        if len(set(has_untracked_votes)) == 1:
             final_has_untracked = has_untracked_votes[0]
+        else:
+            final_has_untracked = any(has_untracked_votes) # If any backend sees untracked, say yes?
+
+        # Map to Unified GitRepoInfo
+        git_file_check = os.path.join(path, ".git")
+        repo_dir = git_file_check # Default assumption
         
-        if is_valid:
-            # Map to Unified GitRepoInfo
-            git_file_check = os.path.join(path, ".git")
-            repo_dir = git_file_check # Default assumption
-            
-            # Check if it's a file (.git file) or dir (.git dir) to set repo_dir correctly
-            if os.path.isfile(git_file_check):
-                try:
-                    with open(git_file_check, "r", encoding="utf-8", errors="ignore") as f:
-                         content = f.read().strip()
-                         if content.startswith("gitdir:"):
-                             rel_git = content[7:].strip()
-                             repo_dir = os.path.abspath(os.path.join(path, rel_git))
-                except:
-                    pass
-            
-            head_content = get_head_content(path)
-            is_detached = False
-            if head_content and not head_content.startswith("["):
-                 if not head_content.startswith("ref:"):
-                     is_detached = True
-            
-            refs, remotes = get_refs_and_remotes(path)
-            
-            repo_info: GitRepoInfo = {
-                "git_repo_dir": repo_dir,
-                "is_bare": is_bare_repo(path),
-                "is_detached": is_detached,
-                "head": head_content,
-                "refs": refs,
-                "remotes": remotes,
-                "gitpython": results['gitpython']["info"],
-                "pygit2": results['pygit2']["info"],
-                "dulwich": results['dulwich']["info"],
-                "error": None
-            }
+        if os.path.isfile(git_file_check):
+            try:
+                with open(git_file_check, "r", encoding="utf-8", errors="ignore") as f:
+                        content = f.read().strip()
+                        if content.startswith("gitdir:"):
+                            rel_git = content[7:].strip()
+                            repo_dir = os.path.abspath(os.path.join(path, rel_git))
+            except:
+                pass
+        
+        head_content = get_head_content(path)
+        is_detached = False
+        if head_content and not head_content.startswith("["):
+                if not head_content.startswith("ref:"):
+                    is_detached = True
+        
+        refs, remotes = get_refs_and_remotes(path)
+        
+        repo_info: GitRepoInfo = {
+            "git_repo_dir": repo_dir,
+            "is_bare": is_bare_repo(path),
+            "is_detached": is_detached,
+            "head": head_content,
+            "refs": refs,
+            "remotes": remotes
+        }
 
-            worktree_info: GitWorktreeInfo = {
-                "git_worktree_dir": path,
-                "git_repo_dir": repo_dir,
-                "is_clean": final_is_clean,
-                "has_untracked": final_has_untracked,
-                "git_repo_info": repo_info
-            }
+        worktree_info: GitWorktreeInfo = {
+            "git_worktree_dir": path,
+            "git_repo_dir": repo_dir,
+            "is_clean": final_is_clean,
+            "has_untracked": final_has_untracked,
+            "git_repo_info": repo_info
+        }
 
-            worktrees.append(worktree_info)
+        worktrees.append(worktree_info)
             
     return {
         "worktrees": worktrees,
@@ -340,7 +250,7 @@ def print_git_worktrees(data: GitWorktreeList, timeout: float = 0):
         
         repo_info = info['git_repo_info']
         head_info = repo_info['head']
-        if repo_info['is_detached']:
+        if repo_info.get('is_detached'):
             head_info += " (DETACHED)"
         
         print(f"  Repo Dir  : {info['git_repo_dir']}")
@@ -348,13 +258,6 @@ def print_git_worktrees(data: GitWorktreeList, timeout: float = 0):
         
         if repo_info.get("remotes"):
             print(f"  Remotes   : {', '.join(repo_info['remotes'])}")
-        
-        # if repo_info.get("refs"):
-        #      print(f"  Refs      : {len(repo_info['refs'])} refs found")
-
-        print(f"  GitPython : {repo_info['gitpython']}")
-        print(f"  pygit2    : {repo_info['pygit2']}")
-        print(f"  Dulwich   : {repo_info['dulwich']}")
         
         status_line = []
         status_line.append(f"isClean={info['is_clean']}")

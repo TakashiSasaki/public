@@ -18,13 +18,6 @@ class GitRepoInfo(TypedDict):
     refs: Optional[List[str]]    # List of all refs (e.g., ["refs/heads/main", "refs/remotes/origin/main"])
     remotes: Optional[List[str]] # List of remote URLs or info (e.g., ["origin: https://github.com/..."])
 
-    # Error message (if any)
-    error: Optional[str]
-
-    # Backend-specific raw output (for debugging/verification)
-    gitpython: Optional[str]
-    pygit2: Optional[str]
-    dulwich: Optional[str]
 
 class GitWorktreeInfo(TypedDict):
     git_worktree_dir: str

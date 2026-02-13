@@ -5,10 +5,11 @@ from .git_types import GitRepoInfo, GitRepoList
 from .utils import is_bare_repo, get_head_content, get_refs_and_remotes
 from get_a_grip.tools.everything_ipc import scan_by_ipc
 
-def check_path_info(path: str) -> GitRepoInfo:
+def check_path_info(path: str) -> Optional[GitRepoInfo]:
     """
     Analyzes a potential Git repository path (.git directory or file) 
-    and returns a GitRepoInfo structure.
+    and returns a GitRepoInfo structure if valid.
+    Returns None if an error occurs.
     """
     repo_dir = path # Initial assumption
     is_file = os.path.isfile(path)
@@ -30,8 +31,8 @@ def check_path_info(path: str) -> GitRepoInfo:
                         error = f"Target repo not found: {abs_path}"
                 else:
                     error = "Not a valid gitdir file (no gitdir: prefix)"
-        except Exception as e:
-            error = str(e)
+        except Exception:
+            error = "Error reading .git file"
     else:
         # It's a .git directory
         repo_dir = path
@@ -43,41 +44,31 @@ def check_path_info(path: str) -> GitRepoInfo:
     refs = None
     remotes = None
 
-    if not error:
-        is_bare = is_bare_repo(repo_dir)
-        
-        # Get HEAD content
-        # Note: get_head_content expects the ROOT path of the worktree if it searches for .git
-        # BUT our utility handles raw paths differently?
-        # Let's check get_head_content implementation in utils.py
-        # It constructs os.path.join(path, ".git") ...
-        # This means get_head_content expects the WORKTREE root.
-        
-        # However, here we have the REPO dir (the .git dir itself).
-        # We should probably adjust get_head_content or read HEAD manually here since we are INSIDE .git
-        
-        head_path = os.path.join(repo_dir, "HEAD")
-        if os.path.exists(head_path):
-             try:
-                 with open(head_path, "r", encoding="utf-8", errors="ignore") as f:
-                     head = f.read().strip()
-                     if not head.startswith("ref:"):
-                         is_detached = True
-                     else:
-                         is_detached = False
-             except Exception as e:
-                 head = f"[Error: {e}]"
-        else:
-             if is_file: # It was a .git file, so checking repo_dir/HEAD is correct
-                  head = "[HEAD not found in resolved repo_dir]"
-             else:
-                  # If we passed a .git directory, repo_dir IS that directory
-                  pass
+    if error:
+        return None
 
-        # Get Refs and Remotes
-        # get_refs_and_remotes expects a path that GitPython/pygit2 can understand.
-        # They usually accept the repo_dir (.git dir) or worktree dir.
-        refs, remotes = get_refs_and_remotes(repo_dir)
+    is_bare = is_bare_repo(repo_dir)
+    
+    # Get HEAD content
+    head_path = os.path.join(repo_dir, "HEAD")
+    if os.path.exists(head_path):
+            try:
+                with open(head_path, "r", encoding="utf-8", errors="ignore") as f:
+                    head = f.read().strip()
+                    if not head.startswith("ref:"):
+                        is_detached = True
+                    else:
+                        is_detached = False
+            except Exception:
+                pass
+    else:
+            if is_file: 
+                head = "[HEAD not found in resolved repo_dir]"
+            else:
+                pass
+
+    # Get Refs and Remotes
+    refs, remotes = get_refs_and_remotes(repo_dir)
 
     return {
         "git_repo_dir": repo_dir,
@@ -86,10 +77,6 @@ def check_path_info(path: str) -> GitRepoInfo:
         "head": head,
         "refs": refs,
         "remotes": remotes,
-        "error": error,
-        "gitpython": None, # Not populated here for now
-        "pygit2": None,
-        "dulwich": None
     }
 
 def find_git_repos(count: int = 50) -> GitRepoList:
@@ -100,7 +87,7 @@ def find_git_repos(count: int = 50) -> GitRepoList:
     try:
         results_dirs = scan_by_ipc("folder: exact:.git", count)
         dirs = [d['Filename'] for d in results_dirs.get("dirs", [])]
-    except Exception as e:
+    except Exception:
         dirs = []
 
     # 2. Search for .git files
@@ -109,7 +96,7 @@ def find_git_repos(count: int = 50) -> GitRepoList:
         files = [f['Filename'] for f in results_files.get("files", [])]
         # In case 'files' contains entries, verify they are files
         files = [f for f in files if os.path.isfile(f)]
-    except Exception as e:
+    except Exception:
         files = []
     
     candidates = sorted(list(set(dirs + files)))
@@ -117,9 +104,8 @@ def find_git_repos(count: int = 50) -> GitRepoList:
     repos: List[GitRepoInfo] = []
     for path in candidates:
         info = check_path_info(path)
-        # Deduplication based on resolved git_repo_dir?
-        # User might want to see all findings, but let's just return what we find.
-        repos.append(info)
+        if info:
+            repos.append(info)
     
     return {
         "repos": repos,
@@ -137,19 +123,16 @@ def print_git_repos(data: GitRepoList):
         
         print(f"[REPO] Dir : {repo}")
         
-        if info["error"]:
-             print(f"       Error   : {info['error']}")
-        else:
-              status = "BARE" if is_bare else "Standard"
-              print(f"       Status  : {status}")
-              print(f"       HEAD    : {info['head']}")
-              if info['is_detached']:
-                  print(f"       State   : DETACHED")
-              
-              if info['remotes']:
-                  print(f"       Remotes : {', '.join(info['remotes'])}")
-              if info['refs']:
-                  print(f"       Refs    : {len(info['refs'])} refs")
+        status = "BARE" if is_bare else "Standard"
+        print(f"       Status  : {status}")
+        print(f"       HEAD    : {info['head']}")
+        if info['is_detached']:
+            print(f"       State   : DETACHED")
+        
+        if info['remotes']:
+            print(f"       Remotes : {', '.join(info['remotes'])}")
+        if info['refs']:
+            print(f"       Refs    : {len(info['refs'])} refs")
 
         print("")
 
