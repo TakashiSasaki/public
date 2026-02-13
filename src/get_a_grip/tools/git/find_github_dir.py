@@ -2,25 +2,7 @@ import os
 import argparse
 from typing import Dict, List, Any, Optional
 from .git_types import GitHubRepo, GitHubRepoList
-
-# --- Backend Imports ---
-
-try:
-    import git
-except ImportError:
-    git = None
-
-try:
-    import pygit2
-except ImportError:
-    pygit2 = None
-
-try:
-    import dulwich.repo
-    import dulwich.porcelain
-except ImportError:
-    dulwich = None
-
+from .utils import git, pygit2, dulwich, is_bare_repo, get_head_content
 from get_a_grip.tools.everything_ipc import scan_by_ipc
 
 # --- Git Info Functions ---
@@ -52,8 +34,11 @@ def get_git_info_pygit2(path: str) -> str:
            return " <pygit2:bare>"
         branch = "unknown"
         try:
-            head = repo.head
-            branch = head.shorthand
+            if repo.head_is_detached:
+                branch = "DETACHED"
+            else:
+                head = repo.head
+                branch = head.shorthand
         except:
             branch = "HEADLESS"
         status = "clean"
@@ -71,11 +56,14 @@ def get_git_info_dulwich(path: str) -> str:
         repo = dulwich.repo.Repo(path)
         branch = "unknown"
         try:
-            head_ref = repo.refs.read_ref(b'HEAD')
-            if head_ref.startswith(b'ref: '):
-                branch = head_ref.split(b'/')[-1].decode('utf-8')
-            else:
-                branch = "DETACHED"
+             # Read HEAD directly
+             head_ref = repo.refs.read_ref(b'HEAD')
+             if head_ref.startswith(b'ref: refs/heads/'):
+                 branch = head_ref[16:].decode('utf-8')
+             elif head_ref.startswith(b'ref: '):
+                 branch = head_ref[5:].decode('utf-8')
+             else:
+                 branch = "DETACHED"
         except (KeyError, Exception):
              branch = "HEADLESS"
         return f" <dulwich:{branch}>"
@@ -93,7 +81,7 @@ def get_git_info(path: str, backend: str) -> str:
     else:
         return " [Unknown Backend]"
 
-def find_github_dir(count: int = 20, backend: str = "gitpython") -> GitHubRepoList:
+def find_github_dirs(count: int = 20, backend: str = "gitpython") -> GitHubRepoList:
     """
     Finds directories that look like GitHub repositories using Everything IPC.
     """

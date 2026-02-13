@@ -31,9 +31,10 @@ Follow the standard Python src-layout:
       - `efu_converter.py`: Conversions between JSON-LD and Everything EFU files.
       - `git/`: **Git Repository Tools**.
         - `git_types.py`: Defines unified `GitRepoInfo` TypedDict (includes `head`, `is_detached`, `refs`, `remotes`).
-        - `find_git_repo_dir.py`: Finds .git directories/files and checks bare status.
-        - `find_git_worktree.py`: Finds Git worktrees and cross-verifies with backends.
-        - `find_github_dir.py`: Finds repositories inside folders named 'GitHub'.
+        - `utils.py`: Shared Git utility functions and backend initialization.
+        - `find_git_repo_dir.py`: Finds .git directories/files and returns `GitRepoInfo`.
+        - `find_git_worktree.py`: Finds Git worktrees, cross-verifies status, and returns `GitWorktreeList`.
+        - `find_github_dir.py`: Finds repositories specifically inside folders named 'GitHub'.
       - `whoami.py`: User identity retrieval.
       - `probe.py`: Environment data collection.
       - `inspect_platform_dirs.py`: Tool to inspect OS-specific directory paths provided by `platformdirs`.
