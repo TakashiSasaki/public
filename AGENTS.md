@@ -125,6 +125,12 @@ To ensure consistency across the application and avoid collisions with other sys
   - **DO NOT** hardcode this UUID in other files. Always reuse the constant.
   - Used for: Generating deterministic UUIDs for file items, user identities, or any resource that needs a consistent ID based on a string key (e.g., path).
 
+### SQLite Database Conventions
+When implementing SQLite databases (e.g., for `AppDataStorage`):
+- **Application ID:** Use the first 32 bits of `APP_NAMESPACE_UUID` (`0xc31a2332`) as the `PRAGMA application_id`. This ensures the database file is uniquely identified as belonging to this application.
+- **Schema Versioning:** Use `PRAGMA user_version` to track the database schema version. Do not use a separate metadata table for this purpose.
+- **Storage Location:** Use `platformdirs.user_data_dir()` to place database files in the correct OS-specific location.
+
 ### Git Backend Libraries Best Practices
 
 When working with Git libraries in Python, be aware of the following quirks and best practices to ensure performance and consistency:
