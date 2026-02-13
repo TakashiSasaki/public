@@ -70,13 +70,13 @@ def check_path_info(path: str) -> GitRepoInfo:
         "repo_dir": path, # Initial assumption, updated below if file
         "is_bare": False,
         "is_detached": None,
-        "error": None,
-        "headFile": None,
-        "gitpython": None,
-        "pygit2": None,
-        "dulwich": None,
         "isClean": None,
-        "hasUntracked": None
+        "hasUntracked": None,
+        "head": None,
+        "refs": None,
+        "remotes": None,
+        "error": None,
+        "gitpython": None,
     }
 
     is_file = os.path.isfile(path)

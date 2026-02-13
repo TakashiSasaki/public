@@ -263,6 +263,54 @@ def get_head_content(path: str) -> str:
     except Exception as e:
         return f"[Error: {e} (Root Path: {path})]"
 
+def get_refs_and_remotes(path: str) -> Tuple[List[str], List[str]]:
+    refs_list = []
+    remotes_list = []
+    
+    # Try GitPython
+    if git:
+        try:
+            repo = git.Repo(path, search_parent_directories=False)
+            refs_list = [str(r) for r in repo.references]
+            remotes_list = [f"{r.name}: {next(r.urls, 'no-url')}" for r in repo.remotes]
+            return refs_list, remotes_list
+        except:
+            pass
+            
+    # Try pygit2
+    if pygit2:
+        try:
+            repo = pygit2.Repository(path)
+            refs_list = list(repo.listall_references())
+            remotes_list = []
+            for remote_name in repo.remotes.listall():
+                url = repo.remotes[remote_name].url
+                remotes_list.append(f"{remote_name}: {url}")
+            return refs_list, remotes_list
+        except:
+            pass
+
+    # Try Dulwich
+    if dulwich:
+        try:
+            repo = dulwich.repo.Repo(path)
+            refs_list = [r.decode('utf-8', 'ignore') for r in repo.get_refs()]
+            config = repo.get_config()
+            remotes_list = []
+            for section in config.sections():
+                if section[0] == b'remote':
+                    name = section[1].decode('utf-8', 'ignore')
+                    try:
+                        url = config.get(section, b'url').decode('utf-8', 'ignore')
+                        remotes_list.append(f"{name}: {url}")
+                    except:
+                        remotes_list.append(f"{name}: [no url]")
+            return refs_list, remotes_list
+        except:
+            pass
+            
+    return [], []
+
 def find_git_worktrees(count: int = 50, timeout: float = 0) -> GitRepoList:
     """
     Finds git worktrees by searching for .git directories and files.
@@ -352,12 +400,16 @@ def find_git_worktrees(count: int = 50, timeout: float = 0) -> GitRepoList:
                  if not head_content.startswith("ref:"):
                      is_detached = True
             
+            refs, remotes = get_refs_and_remotes(path)
+            
             repo_info: GitRepoInfo = {
                 "worktree_dir": path,
                 "repo_dir": repo_dir,
                 "is_bare": False, # Worktrees are non-bare
                 "is_detached": is_detached,
-                "headFile": head_content,
+                "head": head_content,
+                "refs": refs,
+                "remotes": remotes,
                 "gitpython": results['gitpython']["info"],
                 "pygit2": results['pygit2']["info"],
                 "dulwich": results['dulwich']["info"],
@@ -383,10 +435,17 @@ def print_git_worktrees(data: GitRepoList, timeout: float = 0):
 
     for info in data["repos"]:
         print(f"[WORKTREE] {info['worktree_dir']}")
-        head_info = info['headFile']
+        head_info = info['head']
         if info['is_detached']:
             head_info += " (DETACHED)"
         print(f"  HEAD      : {head_info}")
+        
+        if info.get("remotes"):
+            print(f"  Remotes   : {', '.join(info['remotes'])}")
+        
+        if info.get("refs"):
+             print(f"  Refs      : {len(info['refs'])} refs found")
+
         print(f"  GitPython : {info['gitpython']}")
         print(f"  pygit2    : {info['pygit2']}")
         print(f"  Dulwich   : {info['dulwich']}")

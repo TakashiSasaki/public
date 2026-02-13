@@ -10,17 +10,22 @@ class GitRepoInfo(TypedDict):
     is_bare: Optional[bool]      # True if it's a bare repository
     is_detached: Optional[bool]  # True if HEAD is detached
     
+    # Consensus status (None if undetermined or conflicting)
+    isClean: Optional[bool]
+    hasUntracked: Optional[bool]    
+    head: Optional[str] # HEADファイルの中身
+    
+    # Detailed Git Info
+    refs: Optional[List[str]]    # List of all refs (e.g., ["refs/heads/main", "refs/remotes/origin/main"])
+    remotes: Optional[List[str]] # List of remote URLs or info (e.g., ["origin: https://github.com/..."])
+
+    # Error message (if any)
+    error: Optional[str]
+
     # Backend-specific raw output (for debugging/verification)
     gitpython: Optional[str]
     pygit2: Optional[str]
     dulwich: Optional[str]
-    
-    # Consensus status (None if undetermined or conflicting)
-    isClean: Optional[bool]
-    hasUntracked: Optional[bool]
-    
-    headFile: Optional[str] # HEADファイルの中身
-    error: Optional[str]
 
 class GitRepoList(TypedDict):
     """
