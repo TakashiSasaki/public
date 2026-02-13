@@ -94,4 +94,4 @@ def test_save_to_json(tmp_path):
     assert content["@type"] == "ItemList"
     assert len(content["files"]) == 1
     assert content["observer"]["uid"] == "mock_user"
-    assert "observedAt" in content
+    assert "observedAtTime" in content

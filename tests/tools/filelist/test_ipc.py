@@ -64,7 +64,7 @@ def test_save_to_json_structure(tmp_path):
     # Check Metadata
     assert content["observer"]["uid"] == "mock_uid"
     assert content["observer"]["userPrincipalName"] == "mock_upn"
-    assert "observedAt" in content
+    assert "observedAtTime" in content
     
     # Check Payload
     assert len(content["files"]) == 1

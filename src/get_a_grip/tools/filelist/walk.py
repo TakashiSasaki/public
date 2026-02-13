@@ -84,7 +84,7 @@ def save_to_json(data: FileList, output_path: str) -> None:
             "https://purl.org/gag/schema/filelist.jsonld"
         ],
         "@type": "ItemList",
-        "observedAt": datetime.now().isoformat(),
+        "observedAtTime": datetime.now().isoformat(),
         "observer": {
             "uid": get_effective_user(),
             "userPrincipalName": get_user_principal_name()

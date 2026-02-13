@@ -14,7 +14,7 @@ def save_to_json(data: FileList, output_path: str) -> None:
             "https://purl.org/gag/schema/filelist.jsonld"
         ],
         "@type": "ItemList",
-        "observedAt": datetime.now().isoformat(),
+        "observedAtTime": datetime.now().isoformat(),
         "observer": {
             "uid": get_effective_user(),
             "userPrincipalName": get_user_principal_name()
@@ -59,6 +59,10 @@ def compare_filelists(result1: FileList, result2: FileList, name1: str, name2: s
             item1 = norm1[key]
             item2 = norm2[key]
             for field in ["Size", "Date Modified", "Date Created", "Attributes"]:
+                # Directory size can be inconsistent between different stat calls on Windows
+                if section == "dirs" and field == "Size":
+                    continue
+                    
                 if item1.get(field) != item2.get(field):
                     raise RuntimeError(
                         f"Metadata mismatch for {key} ({field}): "

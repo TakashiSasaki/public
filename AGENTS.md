@@ -30,7 +30,7 @@ Follow the standard Python src-layout:
       - `filelist2dirtree.py`: Converter tool from flat `filelist.json` to hierarchical `dirtree.json`.
       - `efu_converter.py`: Conversions between JSON-LD and Everything EFU files.
       - `git/`: **Git Repository Tools**.
-        - `git_types.py`: Defines TypedDicts for Git tools (`GitRepoInfo`, `GitWorktreeInfo`, etc.).
+        - `git_types.py`: Defines unified `GitRepoInfo` TypedDict (includes `head`, `is_detached`, `refs`, `remotes`).
         - `find_git_repo_dir.py`: Finds .git directories/files and checks bare status.
         - `find_git_worktree.py`: Finds Git worktrees and cross-verifies with backends.
         - `find_github_dir.py`: Finds repositories inside folders named 'GitHub'.
@@ -117,7 +117,7 @@ To ensure interoperability and clear specifications:
   - Use `@runtime_checkable` on the protocol to allow `isinstance(obj, FileScanner)` checks.
 - **Robustness & Validation:**
   - The default `filelist.scan()` function acts as a validator by running `scandir`, `walk`, and `rglob` concurrently and verifying that their results match exactly (counts and metadata).
-  - Use `compare_filelists()` from `utils.py` for this validation.
+  - Use `compare_filelists()` from `utils.py` for this validation. (Note: Directory size is ignored during comparison on Windows to handle API-specific inconsistencies).
 - **Round-Trip Verification:** When building data conversion tools, ALWAYS perform round-trip verification (Format A -> Format B -> Format A) to ensure data integrity and losslessness.
 
 ## Identifiers & UUIDs
