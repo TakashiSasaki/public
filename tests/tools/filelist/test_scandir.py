@@ -104,3 +104,13 @@ def test_scan_directory_recursion(tmp_path):
     dir_paths = [str(Path(d["Filename"]).resolve()) for d in result["dirs"]]
     assert str(lvl1.resolve()) in dir_paths
     assert str(lvl2.resolve()) in dir_paths
+
+def test_scan_does_not_print(tmp_path):
+    root = tmp_path / "root"
+    root.mkdir()
+    (root / "file.txt").write_text("x")
+
+    with patch("builtins.print", side_effect=AssertionError("scan() must not print")):
+        result = scan(str(root))
+
+    assert len(result["files"]) == 1

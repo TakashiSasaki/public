@@ -131,3 +131,12 @@ def test_main_exception_handling(mock_scan_dir, capsys):
              
     captured = capsys.readouterr()
     assert "Error: IPC Error" in captured.out
+
+@patch('get_a_grip.tools.filelist.ipc.scan_by_ipc')
+def test_scan_does_not_print(mock_scan):
+    mock_scan.return_value = {"files": [], "dirs": []}
+
+    with patch("builtins.print", side_effect=AssertionError("scan() must not print")):
+        result = scan("C:/Data")
+
+    assert result == {"files": [], "dirs": []}

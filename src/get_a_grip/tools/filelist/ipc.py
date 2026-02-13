@@ -34,7 +34,6 @@ def scan(root_path: str) -> FileList:
         
     query = f'"{search_path}"'
     
-    print(f"Querying Everything with: {query}")
     # count=0 means unlimited results
     return FileList(scan_by_ipc(query, count=0))
 

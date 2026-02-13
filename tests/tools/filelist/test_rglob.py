@@ -95,3 +95,13 @@ def test_save_to_json(tmp_path):
     assert len(content["files"]) == 1
     assert content["observer"]["uid"] == "mock_user"
     assert "observedAtTime" in content
+
+def test_scan_does_not_print(tmp_path):
+    root = tmp_path / "root"
+    root.mkdir()
+    (root / "file.txt").write_text("x")
+
+    with patch("builtins.print", side_effect=AssertionError("scan() must not print")):
+        result = scan(str(root))
+
+    assert len(result["files"]) == 1

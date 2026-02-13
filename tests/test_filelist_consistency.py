@@ -1,3 +1,5 @@
+import pytest
+
 from get_a_grip.tools.filelist import rglob, scandir, walk
 from get_a_grip.tools.filelist.utils import compare_filelists
 
@@ -41,3 +43,21 @@ def test_consistency_scandir_rglob_walk(tmp_path):
     
     # walk vs rglob (transitive, but good to check explicit edge cases if any)
     compare_filelists(res_walk, res_rglob, "walk", "rglob")
+
+def test_compare_filelists_detects_duplicate_paths():
+    result1 = {
+        "files": [
+            {"Filename": "C:/tmp/a.txt", "Size": 1, "Date Modified": "1", "Date Created": "1", "Attributes": 0},
+            {"Filename": "C:/tmp/a.txt", "Size": 1, "Date Modified": "1", "Date Created": "1", "Attributes": 0},
+        ],
+        "dirs": [],
+    }
+    result2 = {
+        "files": [
+            {"Filename": "C:/tmp/a.txt", "Size": 1, "Date Modified": "1", "Date Created": "1", "Attributes": 0},
+        ],
+        "dirs": [],
+    }
+
+    with pytest.raises(RuntimeError, match="Duplicate entries detected"):
+        compare_filelists(result1, result2, "result1", "result2")

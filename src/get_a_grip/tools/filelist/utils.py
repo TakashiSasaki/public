@@ -1,7 +1,8 @@
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Dict
+from collections import Counter
+from typing import Dict, Tuple
 from get_a_grip.tools.whoami import get_effective_user, get_user_principal_name
 from get_a_grip.tools.filelist.types import FileList, FileItem
 
@@ -25,23 +26,37 @@ def save_to_json(data: FileList, output_path: str) -> None:
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(output_data, f, ensure_ascii=False, indent=2)
 
-def normalize_filelist(entries: list[FileItem]) -> Dict[str, FileItem]:
+def normalize_filelist(entries: list[FileItem]) -> Tuple[Dict[str, FileItem], Counter[str]]:
     """
     Convert list of file/dir dicts to a dictionary keyed by absolute filename.
+    Also returns a counter for duplicate path detection.
     """
-    normalized = {}
+    normalized: Dict[str, FileItem] = {}
+    counts: Counter[str] = Counter()
     for entry in entries:
         p = Path(entry['Filename']).resolve()
-        normalized[str(p)] = entry
-    return normalized
+        key = str(p)
+        counts[key] += 1
+        normalized[key] = entry
+    return normalized, counts
 
 def compare_filelists(result1: FileList, result2: FileList, name1: str, name2: str) -> None:
     """
     Compare two scan results for equality. Raises RuntimeError if they mismatch.
     """
     for section in ["files", "dirs"]:
-        norm1 = normalize_filelist(result1.get(section, []))
-        norm2 = normalize_filelist(result2.get(section, []))
+        norm1, counts1 = normalize_filelist(result1.get(section, []))
+        norm2, counts2 = normalize_filelist(result2.get(section, []))
+
+        dup1 = [path for path, count in counts1.items() if count > 1]
+        dup2 = [path for path, count in counts2.items() if count > 1]
+        if dup1 or dup2:
+            msg = f"Duplicate entries detected in {section} list between {name1} and {name2}.\n"
+            if dup1:
+                msg += f"Duplicates in {name1}: {dup1[:5]}\n"
+            if dup2:
+                msg += f"Duplicates in {name2}: {dup2[:5]}\n"
+            raise RuntimeError(msg)
         
         keys1 = set(norm1.keys())
         keys2 = set(norm2.keys())

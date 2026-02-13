@@ -8,7 +8,7 @@ from .utils import save_to_json, compare_filelists
 
 def scan(target: str) -> FileList:
     """
-    Robust scan that runs multiple methods and validates consistency.
+    Robust scan that runs multiple methods sequentially and validates consistency.
     """
     res_scandir = scan_scandir(target)
     res_walk = scan_walk(target)
