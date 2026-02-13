@@ -45,6 +45,7 @@ def test_get_git_info_pygit2_success():
     with patch('get_a_grip.tools.git.find_github_dir.pygit2') as mock_pygit2:
         mock_repo = MagicMock()
         mock_repo.is_bare = False
+        mock_repo.head_is_detached = False
         mock_repo.head.shorthand = "dev"
         mock_repo.status.return_value = {} # clean
         mock_pygit2.Repository.return_value = mock_repo

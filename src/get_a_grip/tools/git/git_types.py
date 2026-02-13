@@ -8,20 +8,19 @@ class GitRepoInfo(TypedDict):
     """
     git_repo_dir : str
 
-    is_bare: Optional[bool]      # True if it's a bare repository
-    is_detached: Optional[bool]  # True if HEAD is detached
+    is_bare: bool      # True if it's a bare repository
+    is_detached: bool  # True if HEAD is detached
     
     # Consensus status (None if undetermined or conflicting)
-    head: Optional[str] # HEADファイルの中身
+    head: str # HEADファイルの中身
     
     # Detailed Git Info
-    refs: Optional[List[str]]    # List of all refs (e.g., ["refs/heads/main", "refs/remotes/origin/main"])
-    remotes: Optional[List[str]] # List of remote URLs or info (e.g., ["origin: https://github.com/..."])
+    refs: List[str]    # List of all refs (e.g., ["refs/heads/main", "refs/remotes/origin/main"])
+    remotes: List[str] # List of remote URLs or info (e.g., ["origin: https://github.com/..."])
 
 
 class GitWorktreeInfo(TypedDict):
     git_worktree_dir: str
-    git_repo_dir : str
     is_clean: bool
     has_untracked: bool
     git_repo_info: GitRepoInfo

@@ -81,7 +81,7 @@ def get_git_info(path: str, backend: str) -> str:
     else:
         return " [Unknown Backend]"
 
-def find_github_dirs(count: int = 20, backend: str = "gitpython") -> GitHubRepoList:
+def find_github_dir(count: int = 20, backend: str = "gitpython") -> GitHubRepoList:
     """
     Finds directories that look like GitHub repositories using Everything IPC.
     """
@@ -139,7 +139,7 @@ def main():
     parser.add_argument("--backend", "-b", choices=["gitpython", "pygit2", "dulwich"], default="gitpython", help="Git backend to use for repository verification.")
     
     args = parser.parse_args()
-    data = find_github_dirs(args.count, args.backend)
+    data = find_github_dir(args.count, args.backend)
     print_github_repos(data)
 
 if __name__ == "__main__":

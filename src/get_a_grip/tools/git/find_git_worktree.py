@@ -223,7 +223,6 @@ def find_git_worktrees(count: int = 50, timeout: float = 0) -> GitWorktreeList:
 
         worktree_info: GitWorktreeInfo = {
             "git_worktree_dir": path,
-            "git_repo_dir": repo_dir,
             "is_clean": final_is_clean,
             "has_untracked": final_has_untracked,
             "git_repo_info": repo_info
@@ -253,7 +252,7 @@ def print_git_worktrees(data: GitWorktreeList, timeout: float = 0):
         if repo_info.get('is_detached'):
             head_info += " (DETACHED)"
         
-        print(f"  Repo Dir  : {info['git_repo_dir']}")
+        print(f"  Repo Dir  : {repo_info['git_repo_dir']}")
         print(f"  HEAD      : {head_info}")
         
         if repo_info.get("remotes"):
