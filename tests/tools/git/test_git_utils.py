@@ -2,7 +2,7 @@ import os
 import time
 from unittest.mock import patch
 
-from get_a_grip.tools.git.utils import (
+from get_a_grip.core.git.utils import (
     IGNORED_GIT_ENV_VARS,
     get_git_info_with_timeout,
     get_head_content,
@@ -37,9 +37,9 @@ def test_get_head_content_from_gitfile_linked_head(tmp_path):
 
 
 def test_get_refs_and_remotes_returns_empty_when_no_backends():
-    with patch("get_a_grip.tools.git.utils.git", None):
-        with patch("get_a_grip.tools.git.utils.pygit2", None):
-            with patch("get_a_grip.tools.git.utils.dulwich", None):
+    with patch("get_a_grip.core.git.utils.git", None):
+        with patch("get_a_grip.core.git.utils.pygit2", None):
+            with patch("get_a_grip.core.git.utils.dulwich", None):
                 refs, remotes = get_refs_and_remotes("C:/repo")
     assert refs == []
     assert remotes == []
@@ -71,9 +71,9 @@ def test_get_refs_and_remotes_ignores_git_env(monkeypatch):
             assert "GIT_DIR" not in os.environ
             return FakeRepo()
 
-    with patch("get_a_grip.tools.git.utils.git", FakeGitModule):
-        with patch("get_a_grip.tools.git.utils.pygit2", None):
-            with patch("get_a_grip.tools.git.utils.dulwich", None):
+    with patch("get_a_grip.core.git.utils.git", FakeGitModule):
+        with patch("get_a_grip.core.git.utils.pygit2", None):
+            with patch("get_a_grip.core.git.utils.dulwich", None):
                 refs, remotes = get_refs_and_remotes("C:/repo")
 
     assert refs == ["refs/heads/main"]
@@ -90,9 +90,9 @@ def test_is_bare_repo_uses_config_fallback(tmp_path):
     repo_git_dir = tmp_path / "repo.git"
     repo_git_dir.mkdir()
     (repo_git_dir / "config").write_text("[core]\n\tbare = true\n", encoding="utf-8")
-    with patch("get_a_grip.tools.git.utils.git", None):
-        with patch("get_a_grip.tools.git.utils.pygit2", None):
-            with patch("get_a_grip.tools.git.utils.dulwich", None):
+    with patch("get_a_grip.core.git.utils.git", None):
+        with patch("get_a_grip.core.git.utils.pygit2", None):
+            with patch("get_a_grip.core.git.utils.dulwich", None):
                 assert is_bare_repo(str(repo_git_dir)) is True
 
 
@@ -113,3 +113,4 @@ def test_get_git_info_with_timeout_exception():
     result = get_git_info_with_timeout(boom, "C:/repo", timeout=0.001)
     assert result["info"].startswith("Error:")
     assert result["has_untracked"] is None
+

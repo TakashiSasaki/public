@@ -1,12 +1,12 @@
 import argparse
 import sys
 import os
-from get_a_grip.tools.filelist import scan, save_to_json
-from get_a_grip.tools.filelist.http import scan as scan_http, fetch_raw_from_everything
-from get_a_grip.tools.everything_ipc import scan_by_ipc
-from get_a_grip.tools.efu_converter import json_to_efu, efu_to_json
-from get_a_grip.tools.whoami import print_whoami
-from get_a_grip.tools.probe import print_probe_data, save_probe_data
+from get_a_grip.core.filelist import scan, save_to_json
+from get_a_grip.core.filelist.http import scan as scan_http, fetch_raw_from_everything
+from get_a_grip.core.everything_ipc import scan_by_ipc
+from get_a_grip.core.efu_converter import json_to_efu, efu_to_json
+from get_a_grip.core.whoami import print_whoami
+from get_a_grip.core.probe import print_probe_data, save_probe_data
 
 def main():
     parser = argparse.ArgumentParser(description="get-a-grip: A collection of tools.")
@@ -201,3 +201,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

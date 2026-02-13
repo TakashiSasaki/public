@@ -3,7 +3,7 @@ from textual.containers import Container
 from textual.widgets import Header, Footer, Input, Button, Label, RichLog, TabbedContent, TabPane
 from textual.worker import Worker, WorkerState
 import os
-from get_a_grip.tools.filelist import scan, save_to_json
+from get_a_grip.core.filelist import scan, save_to_json
 
 # Default UUID from schema/uuid.jsonld
 DEFAULT_UUID = "2e985654-ccc3-4141-979b-58d014133d56"
@@ -124,3 +124,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

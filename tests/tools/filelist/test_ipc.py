@@ -2,11 +2,12 @@ import os
 import json
 import pytest
 from unittest.mock import patch, MagicMock
-from get_a_grip.tools.filelist.ipc import scan, save_to_json, main
+from get_a_grip.core.filelist.ipc import scan, save_to_json
+from get_a_grip.tools.filelist.ipc import main
 
 # --- Unit Tests ---
 
-@patch('get_a_grip.tools.filelist.ipc.scan_by_ipc')
+@patch('get_a_grip.core.filelist.ipc.scan_by_ipc')
 def test_scan_directory_query_generation(mock_scan):
     """
     Verify that scan_directory_via_everything generates the correct Everything query
@@ -47,8 +48,8 @@ def test_save_to_json_structure(tmp_path):
     }
     
     # Mock user info functions to ensure stable output
-    with patch('get_a_grip.tools.filelist.ipc.get_effective_user', return_value="mock_uid"), \
-         patch('get_a_grip.tools.filelist.ipc.get_user_principal_name', return_value="mock_upn"):
+    with patch('get_a_grip.core.filelist.ipc.get_effective_user', return_value="mock_uid"), \
+         patch('get_a_grip.core.filelist.ipc.get_user_principal_name', return_value="mock_upn"):
         
         save_to_json(data, str(output_file))
         
@@ -130,7 +131,7 @@ def test_main_exception_handling(mock_scan_dir, caplog):
              
     assert "Error: IPC Error" in caplog.text
 
-@patch('get_a_grip.tools.filelist.ipc.scan_by_ipc')
+@patch('get_a_grip.core.filelist.ipc.scan_by_ipc')
 def test_scan_does_not_print(mock_scan):
     mock_scan.return_value = {"files": [], "dirs": []}
 
@@ -138,3 +139,4 @@ def test_scan_does_not_print(mock_scan):
         result = scan("C:/Data")
 
     assert result == {"files": [], "dirs": []}
+

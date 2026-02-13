@@ -5,7 +5,7 @@ from unittest.mock import patch, MagicMock
 
 # Import the module under test
 # Assuming the package is installed in editable mode or PYTHONPATH is set correctly by test runner
-from get_a_grip.tools.filelist.http import scan, safe_filetime, fetch_raw_from_everything
+from get_a_grip.core.filelist.http import scan, safe_filetime, fetch_raw_from_everything
 
 # --- Unit Tests for Utility Functions ---
 
@@ -118,3 +118,4 @@ def test_fetch_raw_connection_error(mock_urlopen):
     
     assert "Connection error" in str(excinfo.value)
     assert "Connection refused" in str(excinfo.value)
+

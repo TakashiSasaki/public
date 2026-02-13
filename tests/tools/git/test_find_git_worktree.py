@@ -1,7 +1,7 @@
 import os
 from unittest.mock import patch
 
-from get_a_grip.tools.git.find_git_worktree import (
+from get_a_grip.core.git.find_git_worktree import (
     find_git_worktrees,
     get_status_with_timeout,
     get_worktree_status_dulwich,
@@ -12,7 +12,7 @@ from get_a_grip.tools.git.find_git_worktree import (
 
 # --- Integration Test using Real Filesystem & Mocked IPC ---
 
-@patch('get_a_grip.tools.git.find_git_worktree.scan_by_ipc')
+@patch('get_a_grip.core.git.find_git_worktree.scan_by_ipc')
 def test_find_git_worktrees_real_fs(mock_scan, tmp_path, capsys):
     """
     Test finding worktrees with mocked Everything results but real filesystem structures.
@@ -52,7 +52,7 @@ def test_find_git_worktrees_real_fs(mock_scan, tmp_path, capsys):
     
     # 3. Mock Git Backends
     
-    with patch('get_a_grip.tools.git.find_git_worktree.get_worktree_status_gitpython') as mock_gp:
+    with patch('get_a_grip.core.git.find_git_worktree.get_worktree_status_gitpython') as mock_gp:
         def gp_side_effect(path):
             p_str = str(path).replace("\\", "/")
             
@@ -64,7 +64,7 @@ def test_find_git_worktrees_real_fs(mock_scan, tmp_path, capsys):
 
         mock_gp.side_effect = gp_side_effect
 
-        with patch('get_a_grip.tools.git.find_git_worktree.get_worktree_status_pygit2', side_effect=gp_side_effect):
+        with patch('get_a_grip.core.git.find_git_worktree.get_worktree_status_pygit2', side_effect=gp_side_effect):
             
             data = find_git_worktrees(count=10, timeout=0)
             print_git_worktrees(data)
@@ -84,7 +84,7 @@ def test_find_git_worktrees_real_fs(mock_scan, tmp_path, capsys):
     # assert "GitPython : wt-branch (clean)" in captured.out
     assert "Status    : isClean=True hasUntracked=False" in captured.out
 
-@patch('get_a_grip.tools.git.find_git_worktree.scan_by_ipc')
+@patch('get_a_grip.core.git.find_git_worktree.scan_by_ipc')
 def test_find_git_worktrees_conflicting_backend_votes(mock_scan, tmp_path):
     repo = tmp_path / "repo"
     repo.mkdir()
@@ -98,9 +98,9 @@ def test_find_git_worktrees_conflicting_backend_votes(mock_scan, tmp_path):
 
     mock_scan.side_effect = scan_side_effect
 
-    with patch('get_a_grip.tools.git.find_git_worktree.get_worktree_status_gitpython', return_value={"is_clean": True, "has_untracked": False}):
-        with patch('get_a_grip.tools.git.find_git_worktree.get_worktree_status_pygit2', return_value={"is_clean": False, "has_untracked": True}):
-            with patch('get_a_grip.tools.git.find_git_worktree.get_worktree_status_dulwich', return_value=None):
+    with patch('get_a_grip.core.git.find_git_worktree.get_worktree_status_gitpython', return_value={"is_clean": True, "has_untracked": False}):
+        with patch('get_a_grip.core.git.find_git_worktree.get_worktree_status_pygit2', return_value={"is_clean": False, "has_untracked": True}):
+            with patch('get_a_grip.core.git.find_git_worktree.get_worktree_status_dulwich', return_value=None):
                 data = find_git_worktrees(count=10, timeout=0)
 
     assert data["count"] == 1
@@ -110,7 +110,7 @@ def test_find_git_worktrees_conflicting_backend_votes(mock_scan, tmp_path):
     # Conflicting has_untracked votes resolve via any().
     assert wt["has_untracked"] is True
 
-@patch('get_a_grip.tools.git.find_git_worktree.scan_by_ipc')
+@patch('get_a_grip.core.git.find_git_worktree.scan_by_ipc')
 def test_find_git_worktrees_skips_candidates_with_no_valid_backend(mock_scan, tmp_path):
     repo = tmp_path / "repo"
     repo.mkdir()
@@ -124,20 +124,20 @@ def test_find_git_worktrees_skips_candidates_with_no_valid_backend(mock_scan, tm
 
     mock_scan.side_effect = scan_side_effect
 
-    with patch('get_a_grip.tools.git.find_git_worktree.get_worktree_status_gitpython', return_value=None):
-        with patch('get_a_grip.tools.git.find_git_worktree.get_worktree_status_pygit2', return_value=None):
-            with patch('get_a_grip.tools.git.find_git_worktree.get_worktree_status_dulwich', return_value=None):
+    with patch('get_a_grip.core.git.find_git_worktree.get_worktree_status_gitpython', return_value=None):
+        with patch('get_a_grip.core.git.find_git_worktree.get_worktree_status_pygit2', return_value=None):
+            with patch('get_a_grip.core.git.find_git_worktree.get_worktree_status_dulwich', return_value=None):
                 data = find_git_worktrees(count=10, timeout=0)
 
     assert data["count"] == 0
     assert data["worktrees"] == []
 
 def test_get_worktree_status_gitpython_missing_backend():
-    with patch('get_a_grip.tools.git.find_git_worktree.git', None):
+    with patch('get_a_grip.core.git.find_git_worktree.git', None):
         assert get_worktree_status_gitpython("C:/repo") is None
 
 def test_get_worktree_status_gitpython_success():
-    with patch('get_a_grip.tools.git.find_git_worktree.git') as mock_git:
+    with patch('get_a_grip.core.git.find_git_worktree.git') as mock_git:
         mock_repo = mock_git.Repo.return_value
         mock_repo.is_dirty.return_value = False
         mock_repo.git.ls_files.return_value = "tmp.txt\n"
@@ -158,13 +158,13 @@ def test_get_worktree_status_gitpython_ignores_git_env(monkeypatch):
             assert "GIT_DIR" not in os.environ
             return FakeRepo()
 
-    with patch("get_a_grip.tools.git.find_git_worktree.git", FakeGit):
+    with patch("get_a_grip.core.git.find_git_worktree.git", FakeGit):
         result = get_worktree_status_gitpython("C:/repo")
     assert result["is_clean"] is True
     assert os.environ.get("GIT_DIR") == "C:/poisoned"
 
 def test_get_worktree_status_pygit2_bare():
-    with patch('get_a_grip.tools.git.find_git_worktree.pygit2') as mock_pygit2:
+    with patch('get_a_grip.core.git.find_git_worktree.pygit2') as mock_pygit2:
         mock_repo = mock_pygit2.Repository.return_value
         mock_repo.is_bare = True
         result = get_worktree_status_pygit2("C:/repo")
@@ -184,13 +184,13 @@ def test_get_worktree_status_pygit2_ignores_git_env(monkeypatch):
             assert "GIT_WORK_TREE" not in os.environ
             return FakeRepo()
 
-    with patch("get_a_grip.tools.git.find_git_worktree.pygit2", FakePygit2):
+    with patch("get_a_grip.core.git.find_git_worktree.pygit2", FakePygit2):
         result = get_worktree_status_pygit2("C:/repo")
     assert result["is_clean"] is True
     assert os.environ.get("GIT_WORK_TREE") == "C:/poisoned"
 
 def test_get_worktree_status_pygit2_dirty_and_untracked():
-    with patch('get_a_grip.tools.git.find_git_worktree.pygit2') as mock_pygit2:
+    with patch('get_a_grip.core.git.find_git_worktree.pygit2') as mock_pygit2:
         mock_repo = mock_pygit2.Repository.return_value
         mock_repo.is_bare = False
         mock_repo.status.return_value = {
@@ -201,7 +201,7 @@ def test_get_worktree_status_pygit2_dirty_and_untracked():
     assert result == {"is_clean": False, "has_untracked": True, "valid": True}
 
 def test_get_worktree_status_dulwich_status_error():
-    with patch('get_a_grip.tools.git.find_git_worktree.dulwich') as mock_dulwich:
+    with patch('get_a_grip.core.git.find_git_worktree.dulwich') as mock_dulwich:
         mock_dulwich.repo.Repo.return_value = object()
         mock_dulwich.porcelain.status.side_effect = RuntimeError("status fail")
         assert get_worktree_status_dulwich("C:/repo") is None
@@ -226,7 +226,7 @@ def test_get_worktree_status_dulwich_ignores_git_env(monkeypatch):
 
         porcelain = FakePorcelain
 
-    with patch("get_a_grip.tools.git.find_git_worktree.dulwich", FakeDulwich):
+    with patch("get_a_grip.core.git.find_git_worktree.dulwich", FakeDulwich):
         result = get_worktree_status_dulwich("C:/repo")
     assert result["is_clean"] is True
     assert os.environ.get("GIT_INDEX_FILE") == "C:/poisoned"
@@ -264,3 +264,4 @@ def test_print_git_worktrees_timeout_and_detached(capsys):
     assert "Start Timeout: 1.0 seconds" in captured
     assert "HEAD      : deadbeef (DETACHED)" in captured
     assert "Remotes   : origin: https://example.invalid/repo.git" in captured
+

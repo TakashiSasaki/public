@@ -1,6 +1,6 @@
 import pytest
 
-from get_a_grip.tools.filelist.utils import compare_filelists
+from get_a_grip.core.filelist.utils import compare_filelists
 
 
 def test_compare_filelists_raises_on_duplicate_in_first_result():
@@ -39,3 +39,4 @@ def test_compare_filelists_raises_on_duplicate_in_second_result():
 
     with pytest.raises(RuntimeError, match="Duplicate entries detected"):
         compare_filelists(result1, result2, "result1", "result2")
+

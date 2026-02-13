@@ -1,7 +1,7 @@
 import pytest
 
-from get_a_grip.tools.filelist import rglob, scandir, walk
-from get_a_grip.tools.filelist.utils import compare_filelists
+from get_a_grip.core.filelist import rglob, scandir, walk
+from get_a_grip.core.filelist.utils import compare_filelists
 
 def test_consistency_scandir_rglob_walk(tmp_path):
     """
@@ -61,3 +61,4 @@ def test_compare_filelists_detects_duplicate_paths():
 
     with pytest.raises(RuntimeError, match="Duplicate entries detected"):
         compare_filelists(result1, result2, "result1", "result2")
+

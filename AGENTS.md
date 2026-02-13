@@ -19,7 +19,8 @@ Follow the standard Python src-layout:
     - `ttk.py`: Tkinter-based GUI interface. Provides graphical user interface.
     - `identifiers.py`: **Central Identifier Management**. Provides `APP_NAMESPACE_UUID` and `generate_id_v5()`.
     - `storage.py`: **Application Data Storage**. Simple KVS interface (settings/cache) backed by SQLite.
-    - `tools/`: **Pure Logic Layer**. Contains core implementations of tools.
+    - `core/`: **Pure Logic Layer**. Contains core implementations of tools.
+    - `tools/`: **Compatibility + Interface Layer**. Backward-compatible wrappers and runtime entrypoints (`main()`).
       - `filelist/`: **File Scanning Package**.
         - `__init__.py`: Provides a robust `scan()` function that validates multiple methods (`scandir`, `walk`, `rglob`).
         - `types.py`: Defines common data structures (`FileList`, `FileItem`) and `FileScanner` protocol.
@@ -39,7 +40,7 @@ Follow the standard Python src-layout:
       - `probe.py`: Environment data collection.
       - `inspect_platform_dirs.py`: Tool to inspect OS-specific directory paths provided by `platformdirs`.
       - `inspect_app_data.py`: GUI tool to inspect the contents of the `AppDataStorage` database.
-      - Code here must be pure: **NO print()**, **NO sys.exit()**, **NO user prompts**.
+      - Code in `core/` must be pure: **NO print()**, **NO sys.exit()**, **NO user prompts**.
       - Should return raw data (dicts, objects) to be consumed by interfaces (CLI, TUI, MCP).
 - `tests/`: Test suite for automated verification.
 - `scripts/`: Development utilities and troubleshooting scripts (not for production logic).
@@ -106,18 +107,18 @@ To ensure interoperability and clear specifications:
 - **Docstrings:** Use Google-style docstrings for non-trivial functions.
 - **Async:** Use `asyncio` where appropriate for directory I/O if performance is critical.
 - **Separation of Concerns (Core vs Interface):**
-  - **Tools (`src/get_a_grip/tools/`)**: Pure business logic only. Returns data structures.
+  - **Core (`src/get_a_grip/core/`)**: Pure business logic only. Returns data structures.
     - **MUST NOT** depend on `cli.py` or `tui.py`.
     - **MUST NOT** use `input()` or `sys.exit()`. Raise exceptions instead.
     - **UI Feedback:** If a tool requires progress reporting, use an optional, injectable callback or a dedicated tracker class that defaults to no-op. Avoid direct `print()` calls in core logic.
-  - **Interfaces (`cli.py`, `tui.py`, `mcp.py`)**: Handles presentation, user I/O, and orchestration.
+  - **Interfaces (`cli.py`, `tui.py`, `mcp.py`, `tools/*.py main()`)**: Handles presentation, user I/O, and orchestration.
     - Responsible for catching exceptions from tools and presenting them to the user.
 - **Strategy Pattern for Scanners:**
-  - All file scanners must implement the `FileScanner` protocol (defined in `src/get_a_grip/tools/filelist/types.py`).
+  - All file scanners must implement the `FileScanner` protocol (defined in `src/get_a_grip/core/filelist/types.py`).
   - Required interface: `scan(target: str) -> FileList`.
   - Use `@runtime_checkable` on the protocol to allow `isinstance(obj, FileScanner)` checks.
 - **Robustness & Validation:**
-  - The default `filelist.scan()` function acts as a validator by running `scandir`, `walk`, and `rglob` concurrently and verifying that their results match exactly (counts and metadata).
+  - The default `filelist.scan()` function acts as a validator by running `scandir`, `walk`, and `rglob` sequentially and verifying that their results match exactly (counts and metadata).
   - Use `compare_filelists()` from `utils.py` for this validation. (Note: Directory size is ignored during comparison on Windows to handle API-specific inconsistencies).
 - **Round-Trip Verification:** When building data conversion tools, ALWAYS perform round-trip verification (Format A -> Format B -> Format A) to ensure data integrity and losslessness.
 
@@ -247,20 +248,20 @@ The project's patch version in `pyproject.toml` is automatically incremented on 
 - **Manual Override:** To commit without bumping the version, use `git commit --no-verify`.
 - **Note:** `scripts/bump_version.py` is included in the repository to ensure consistent behavior across environments.
 
-### `src/get_a_grip/tools/dirtree.py`
+### `src/get_a_grip/core/dirtree.py`
 
 A recursive directory scanner that outputs a hierarchical JSON structure conforming to `schema/dirtree.json`. It captures the filesystem structure as a nested tree where keys are path segments.
 
-### `src/get_a_grip/tools/filelist2dirtree.py`
+### `src/get_a_grip/core/filelist2dirtree.py`
 A converter tool that takes the flat list output from Everything-based scanners (which conform to `schema/filelist.json`) and transforms them into a hierarchical structure (`schema/dirtree.json`). This is the preferred way to generate trees from IPC/HTTP scans.
 
-### `src/get_a_grip/tools/filelist_http.py`
+### `src/get_a_grip/core/filelist/http.py`
 A module that interfaces with the "Everything" search engine's HTTP server to perform file system scans. It fetches search results in JSON format and converts them into the project's standard schema. It supports raw response inspection and customizing the number of results.
 
-### `src/get_a_grip/tools/filelist_ipc.py`
+### `src/get_a_grip/core/filelist/ipc.py`
 A module that interfaces directly with the "Everything" search engine via IPC (Inter-Process Communication) using the `Everything64.dll`. This method allows for retrieving metadata that might be restricted or unavailable via the HTTP API, such as "Date Created". It requires the DLL to be present in the `bin/` directory.
 
-### `src/get_a_grip/tools/efu_converter.py`
+### `src/get_a_grip/core/efu_converter.py`
 - **Versioning:**
     - Start from version `0.1.0`.
     - Always increment the patch level (e.g., `0.1.0` -> `0.1.1`) whenever ANY change, however small, is made to the source code.

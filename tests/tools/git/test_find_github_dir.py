@@ -3,7 +3,7 @@ import pytest
 from unittest.mock import MagicMock, patch, mock_open
 
 # Import functions to test
-from get_a_grip.tools.git.find_github_dir import (
+from get_a_grip.core.git.find_github_dir import (
     get_git_info_gitpython, 
     get_git_info_pygit2,
     get_git_info_dulwich,
@@ -13,7 +13,7 @@ from get_a_grip.tools.git.find_github_dir import (
 
 # Test GitPython backend info extraction
 def test_get_git_info_gitpython_success():
-    with patch('get_a_grip.tools.git.find_github_dir.git') as mock_git:
+    with patch('get_a_grip.core.git.find_github_dir.git') as mock_git:
         mock_repo = MagicMock()
         mock_repo.active_branch.name = "main"
         mock_repo.is_dirty.return_value = False
@@ -26,7 +26,7 @@ def test_get_git_info_gitpython_success():
         mock_git.Repo.assert_called_with("/path/to/repo", search_parent_directories=False)
 
 def test_get_git_info_gitpython_detached():
-    with patch('get_a_grip.tools.git.find_github_dir.git') as mock_git:
+    with patch('get_a_grip.core.git.find_github_dir.git') as mock_git:
         mock_repo = MagicMock()
         mock_repo.head.is_detached = True
         mock_repo.is_dirty.return_value = True
@@ -37,12 +37,12 @@ def test_get_git_info_gitpython_detached():
         assert "dirty" in result
 
 def test_get_git_info_gitpython_missing():
-    with patch('get_a_grip.tools.git.find_github_dir.git', None):
+    with patch('get_a_grip.core.git.find_github_dir.git', None):
         result = get_git_info_gitpython("/path/to/repo")
         assert "not installed" in result
 
 def test_get_git_info_gitpython_invalid_repo():
-    with patch('get_a_grip.tools.git.find_github_dir.git') as mock_git:
+    with patch('get_a_grip.core.git.find_github_dir.git') as mock_git:
         mock_git.InvalidGitRepositoryError = RuntimeError
         mock_git.NoSuchPathError = FileNotFoundError
         mock_git.Repo.side_effect = RuntimeError("invalid")
@@ -53,7 +53,7 @@ def test_get_git_info_gitpython_unexpected_error():
     class CustomError(Exception):
         pass
 
-    with patch('get_a_grip.tools.git.find_github_dir.git') as mock_git:
+    with patch('get_a_grip.core.git.find_github_dir.git') as mock_git:
         mock_git.InvalidGitRepositoryError = RuntimeError
         mock_git.NoSuchPathError = FileNotFoundError
         mock_git.Repo.side_effect = CustomError("boom")
@@ -83,14 +83,14 @@ def test_get_git_info_gitpython_ignores_git_env(monkeypatch):
             assert "GIT_DIR" not in os.environ
             return FakeRepo()
 
-    with patch("get_a_grip.tools.git.find_github_dir.git", FakeGit):
+    with patch("get_a_grip.core.git.find_github_dir.git", FakeGit):
         result = get_git_info_gitpython("/path/to/repo")
     assert "GitPython:main (clean)" in result
     assert os.environ.get("GIT_DIR") == "C:/poisoned"
 
 # Test pygit2 backend info extraction
 def test_get_git_info_pygit2_success():
-    with patch('get_a_grip.tools.git.find_github_dir.pygit2') as mock_pygit2:
+    with patch('get_a_grip.core.git.find_github_dir.pygit2') as mock_pygit2:
         mock_repo = MagicMock()
         mock_repo.is_bare = False
         mock_repo.head_is_detached = False
@@ -103,7 +103,7 @@ def test_get_git_info_pygit2_success():
         assert "clean" in result
 
 def test_get_git_info_pygit2_bare():
-    with patch('get_a_grip.tools.git.find_github_dir.pygit2') as mock_pygit2:
+    with patch('get_a_grip.core.git.find_github_dir.pygit2') as mock_pygit2:
         mock_repo = MagicMock()
         mock_repo.is_bare = True
         mock_pygit2.Repository.return_value = mock_repo
@@ -112,12 +112,12 @@ def test_get_git_info_pygit2_bare():
         assert "bare" in result
 
 def test_get_git_info_pygit2_missing():
-    with patch('get_a_grip.tools.git.find_github_dir.pygit2', None):
+    with patch('get_a_grip.core.git.find_github_dir.pygit2', None):
         result = get_git_info_pygit2("/path/to/repo")
         assert "not installed" in result
 
 def test_get_git_info_pygit2_headless():
-    with patch('get_a_grip.tools.git.find_github_dir.pygit2') as mock_pygit2:
+    with patch('get_a_grip.core.git.find_github_dir.pygit2') as mock_pygit2:
         mock_repo = MagicMock()
         mock_repo.is_bare = False
         mock_repo.head_is_detached = False
@@ -140,14 +140,14 @@ def test_get_git_info_pygit2_ignores_git_env(monkeypatch):
             assert "GIT_WORK_TREE" not in os.environ
             return FakeRepo()
 
-    with patch("get_a_grip.tools.git.find_github_dir.pygit2", FakePygit2):
+    with patch("get_a_grip.core.git.find_github_dir.pygit2", FakePygit2):
         result = get_git_info_pygit2("/path/to/repo")
     assert "pygit2:bare" in result
     assert os.environ.get("GIT_WORK_TREE") == "C:/poisoned"
 
 # Test dulwich backend info extraction
 def test_get_git_info_dulwich_success():
-    with patch('get_a_grip.tools.git.find_github_dir.dulwich') as mock_dulwich:
+    with patch('get_a_grip.core.git.find_github_dir.dulwich') as mock_dulwich:
         mock_repo = MagicMock()
         # Mock HEAD read
         mock_repo.refs.read_ref.return_value = b'ref: refs/heads/master'
@@ -157,12 +157,12 @@ def test_get_git_info_dulwich_success():
         assert "master" in result 
 
 def test_get_git_info_dulwich_missing():
-    with patch('get_a_grip.tools.git.find_github_dir.dulwich', None):
+    with patch('get_a_grip.core.git.find_github_dir.dulwich', None):
         result = get_git_info_dulwich("/path/to/repo")
         assert "not installed" in result
 
 def test_get_git_info_dulwich_headless():
-    with patch('get_a_grip.tools.git.find_github_dir.dulwich') as mock_dulwich:
+    with patch('get_a_grip.core.git.find_github_dir.dulwich') as mock_dulwich:
         mock_repo = MagicMock()
         mock_repo.refs.read_ref.side_effect = KeyError("HEAD")
         mock_dulwich.repo.Repo.return_value = mock_repo
@@ -187,25 +187,25 @@ def test_get_git_info_dulwich_ignores_git_env(monkeypatch):
                 assert "GIT_INDEX_FILE" not in os.environ
                 return FakeRepo()
 
-    with patch("get_a_grip.tools.git.find_github_dir.dulwich", FakeDulwich):
+    with patch("get_a_grip.core.git.find_github_dir.dulwich", FakeDulwich):
         result = get_git_info_dulwich("/path/to/repo")
     assert "dulwich:main" in result
     assert os.environ.get("GIT_INDEX_FILE") == "C:/poisoned"
          
 # Test dispatch logic
 def test_get_git_info_dispatch():
-    with patch('get_a_grip.tools.git.find_github_dir.get_git_info_gitpython') as mock_gp:
+    with patch('get_a_grip.core.git.find_github_dir.get_git_info_gitpython') as mock_gp:
         get_git_info("/p", "gitpython")
         mock_gp.assert_called_once()
         
-    with patch('get_a_grip.tools.git.find_github_dir.get_git_info_pygit2') as mock_pg:
+    with patch('get_a_grip.core.git.find_github_dir.get_git_info_pygit2') as mock_pg:
         get_git_info("/p", "pygit2")
         mock_pg.assert_called_once()
 
     assert "[Unknown Backend]" in get_git_info("/p", "unknown")
 
 # Test the main flow (Integration with Real Filesystem)
-@patch('get_a_grip.tools.git.find_github_dir.scan_by_ipc')
+@patch('get_a_grip.core.git.find_github_dir.scan_by_ipc')
 def test_find_github_dir_real_fs(mock_scan, tmp_path, capsys):
     """
     Test find_github_dir using real directory traversal on a temporary filesystem.
@@ -251,10 +251,10 @@ def test_find_github_dir_real_fs(mock_scan, tmp_path, capsys):
             return " <GitPython:main (clean)>"
         return "" # Empty string means not a repo
 
-    from get_a_grip.tools.git.find_github_dir import print_github_repos
-    with patch('get_a_grip.tools.git.find_github_dir.get_git_info_gitpython', side_effect=get_info_side_effect):
+    from get_a_grip.core.git.find_github_dir import print_github_repos
+    with patch('get_a_grip.core.git.find_github_dir.get_git_info_gitpython', side_effect=get_info_side_effect):
         # Also ensure git is mocked as present so the check passes
-        with patch('get_a_grip.tools.git.find_github_dir.git'):
+        with patch('get_a_grip.core.git.find_github_dir.git'):
             data = find_github_dir(count=1, backend="gitpython")
             print_github_repos(data)
             
@@ -273,8 +273,8 @@ def test_find_github_dir_real_fs(mock_scan, tmp_path, capsys):
     assert str(some_file) not in captured.out
 
 def test_find_github_dir_no_results(capsys):
-    from get_a_grip.tools.git.find_github_dir import print_github_repos
-    with patch('get_a_grip.tools.git.find_github_dir.scan_by_ipc', return_value={"dirs": []}):
+    from get_a_grip.core.git.find_github_dir import print_github_repos
+    with patch('get_a_grip.core.git.find_github_dir.scan_by_ipc', return_value={"dirs": []}):
         data = find_github_dir(backend="gitpython")
         print_github_repos(data)
              
@@ -282,14 +282,15 @@ def test_find_github_dir_no_results(capsys):
     assert "No folders named 'GitHub' found" in captured.out
 
 def test_find_github_dir_scan_exception():
-    with patch('get_a_grip.tools.git.find_github_dir.scan_by_ipc', side_effect=RuntimeError("ipc-fail")):
+    with patch('get_a_grip.core.git.find_github_dir.scan_by_ipc', side_effect=RuntimeError("ipc-fail")):
         data = find_github_dir(backend="gitpython")
     assert data["roots_found"] is False
     assert data["count"] == 0
 
 def test_print_github_repos_roots_found_but_no_repos(capsys):
-    from get_a_grip.tools.git.find_github_dir import print_github_repos
+    from get_a_grip.core.git.find_github_dir import print_github_repos
     data = {"repos": [], "count": 0, "backend": "gitpython", "roots_found": True}
     print_github_repos(data)
     captured = capsys.readouterr().out
     assert "No valid Git repositories found inside 'GitHub' folders." in captured
+

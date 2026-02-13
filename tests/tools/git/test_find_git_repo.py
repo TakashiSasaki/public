@@ -2,7 +2,7 @@ import os
 from collections import Counter
 from unittest.mock import patch
 
-from get_a_grip.tools.git.find_git_repo import (
+from get_a_grip.core.git.find_git_repo import (
     check_path_info,
     find_git_repos,
     print_git_repos
@@ -15,9 +15,9 @@ def test_check_path_info_dir_non_bare(tmp_path):
     git_dir.mkdir()
     
     # Mock is_bare_repo return using patch on the module where check_path_info is defined
-    with patch('get_a_grip.tools.git.find_git_repo.is_bare_repo', return_value=False):
+    with patch('get_a_grip.core.git.find_git_repo.is_bare_repo', return_value=False):
         # We also need to ensure refs/remotes/head don't fail or return predictable values
-        with patch('get_a_grip.tools.git.find_git_repo.get_refs_and_remotes', return_value=([], [])):
+        with patch('get_a_grip.core.git.find_git_repo.get_refs_and_remotes', return_value=([], [])):
              # And ensure HEAD file exists or get_head_content logic is handled
              # check_path_info reads HEAD manually if not found? 
              # No, check_path_info calls get_head_content but mostly relies on it?
@@ -38,8 +38,8 @@ def test_check_path_info_dir_bare(tmp_path):
     bare_dir = tmp_path / "repo.git"
     bare_dir.mkdir()
     
-    with patch('get_a_grip.tools.git.find_git_repo.is_bare_repo', return_value=True):
-        with patch('get_a_grip.tools.git.find_git_repo.get_refs_and_remotes', return_value=([], [])):
+    with patch('get_a_grip.core.git.find_git_repo.is_bare_repo', return_value=True):
+        with patch('get_a_grip.core.git.find_git_repo.get_refs_and_remotes', return_value=([], [])):
             (bare_dir / "HEAD").write_text("ref: refs/heads/main", encoding="utf-8")
             
             info = check_path_info(str(bare_dir))
@@ -62,8 +62,8 @@ def test_check_path_info_file(tmp_path):
     rel_path = os.path.relpath(real_git, wt_root)
     git_file.write_text(f"gitdir: {rel_path}", encoding="utf-8")
     
-    with patch('get_a_grip.tools.git.find_git_repo.is_bare_repo', return_value=False):
-        with patch('get_a_grip.tools.git.find_git_repo.get_refs_and_remotes', return_value=([], [])):
+    with patch('get_a_grip.core.git.find_git_repo.is_bare_repo', return_value=False):
+        with patch('get_a_grip.core.git.find_git_repo.get_refs_and_remotes', return_value=([], [])):
             info = check_path_info(str(git_file))
             
             # Check resolved absolute path
@@ -75,8 +75,8 @@ def test_check_path_info_returns_none_when_head_missing(tmp_path):
     git_dir = tmp_path / ".git"
     git_dir.mkdir()
 
-    with patch('get_a_grip.tools.git.find_git_repo.is_bare_repo', return_value=False):
-        with patch('get_a_grip.tools.git.find_git_repo.get_refs_and_remotes', return_value=([], [])):
+    with patch('get_a_grip.core.git.find_git_repo.is_bare_repo', return_value=False):
+        with patch('get_a_grip.core.git.find_git_repo.get_refs_and_remotes', return_value=([], [])):
             info = check_path_info(str(git_dir))
 
     assert info is None
@@ -86,8 +86,8 @@ def test_check_path_info_returns_none_when_head_empty(tmp_path):
     git_dir.mkdir()
     (git_dir / "HEAD").write_text("", encoding="utf-8")
 
-    with patch('get_a_grip.tools.git.find_git_repo.is_bare_repo', return_value=False):
-        with patch('get_a_grip.tools.git.find_git_repo.get_refs_and_remotes', return_value=([], [])):
+    with patch('get_a_grip.core.git.find_git_repo.is_bare_repo', return_value=False):
+        with patch('get_a_grip.core.git.find_git_repo.get_refs_and_remotes', return_value=([], [])):
             info = check_path_info(str(git_dir))
 
     assert info is None
@@ -104,8 +104,8 @@ def test_check_path_info_returns_none_on_head_read_error(tmp_path):
             raise OSError("simulated read error")
         return original_open(path, *args, **kwargs)
 
-    with patch('get_a_grip.tools.git.find_git_repo.is_bare_repo', return_value=False):
-        with patch('get_a_grip.tools.git.find_git_repo.get_refs_and_remotes', return_value=([], [])):
+    with patch('get_a_grip.core.git.find_git_repo.is_bare_repo', return_value=False):
+        with patch('get_a_grip.core.git.find_git_repo.get_refs_and_remotes', return_value=([], [])):
             with patch('builtins.open', side_effect=open_side_effect):
                 info = check_path_info(str(git_dir))
 
@@ -129,7 +129,7 @@ def test_check_path_info_returns_none_for_missing_gitdir_target(tmp_path):
     info = check_path_info(str(git_file))
     assert info is None
 
-@patch('get_a_grip.tools.git.find_git_repo.scan_by_ipc')
+@patch('get_a_grip.core.git.find_git_repo.scan_by_ipc')
 def test_find_git_repos_integration(mock_scan, tmp_path, capsys):
     # Setup
     # 1. Non-Bare (.git dir)
@@ -169,8 +169,8 @@ def test_find_git_repos_integration(mock_scan, tmp_path, capsys):
             return True
         return False
         
-    with patch('get_a_grip.tools.git.find_git_repo.is_bare_repo', side_effect=bare_side_effect):
-        with patch('get_a_grip.tools.git.find_git_repo.get_refs_and_remotes', return_value=([], [])):
+    with patch('get_a_grip.core.git.find_git_repo.is_bare_repo', side_effect=bare_side_effect):
+        with patch('get_a_grip.core.git.find_git_repo.get_refs_and_remotes', return_value=([], [])):
             data = find_git_repos(count=10)
             print_git_repos(data)
         
@@ -193,7 +193,7 @@ def test_find_git_repos_integration(mock_scan, tmp_path, capsys):
     assert counts[os.path.normcase(str(bare_git))] == 1
 
 def test_find_git_repos_handles_ipc_failures():
-    with patch('get_a_grip.tools.git.find_git_repo.scan_by_ipc', side_effect=RuntimeError("ipc-fail")):
+    with patch('get_a_grip.core.git.find_git_repo.scan_by_ipc', side_effect=RuntimeError("ipc-fail")):
         data = find_git_repos(count=10)
 
     assert data["count"] == 0
@@ -219,3 +219,4 @@ def test_print_git_repos_prints_detached_remotes_and_refs(capsys):
     assert "State   : DETACHED" in captured
     assert "Remotes : origin: https://example.invalid/repo.git" in captured
     assert "Refs    : 1 refs" in captured
+

@@ -3,7 +3,7 @@ import json
 import pytest
 from unittest.mock import patch, MagicMock
 from pathlib import Path
-from get_a_grip.tools.filelist.scandir import unix_to_filetime, scan, save_to_json
+from get_a_grip.core.filelist.scandir import unix_to_filetime, scan, save_to_json
 
 # --- Unit Tests ---
 
@@ -73,8 +73,8 @@ def test_save_to_json(tmp_path):
     data = {"files": [{"Filename": "a.txt", "Size": 100}], "dirs": []}
     
     # Mock user info functions
-    with patch('get_a_grip.tools.filelist.scandir.get_effective_user', return_value="mock_user"), \
-         patch('get_a_grip.tools.filelist.scandir.get_user_principal_name', return_value="mock_upn"):
+    with patch('get_a_grip.core.filelist.scandir.get_effective_user', return_value="mock_user"), \
+         patch('get_a_grip.core.filelist.scandir.get_user_principal_name', return_value="mock_upn"):
         
         save_to_json(data, str(output_file))
         
@@ -114,3 +114,4 @@ def test_scan_does_not_print(tmp_path):
         result = scan(str(root))
 
     assert len(result["files"]) == 1
+
