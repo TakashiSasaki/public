@@ -16,21 +16,30 @@
             "rdfs:comment": "get-a-grip プロジェクトその他のための語彙定義。"
         },
         {
+            "@id": "gag:FileItem",
+            "@type": "rdfs:Class",
+            "rdfs:label": "File Item",
+            "rdfs:comment": "A filesystem entry represented in filelist outputs. Used for both files and directories.",
+            "rdfs:subClassOf": {
+                "@id": "schema:MediaObject"
+            }
+        },
+        {
             "@id": "gag:files",
             "@type": "owl:ObjectProperty",
             "rdfs:label": "files",
-            "rdfs:comment": "A collection of file objects (mapped to schema:MediaObject).",
+            "rdfs:comment": "A collection of filelist file entries represented as gag:FileItem.",
             "rdfs:range": {
-                "@id": "schema:MediaObject"
+                "@id": "gag:FileItem"
             }
         },
         {
             "@id": "gag:directories",
             "@type": "owl:ObjectProperty",
             "rdfs:label": "directories",
-            "rdfs:comment": "A collection of directory structures (mapped to schema:ItemList).",
+            "rdfs:comment": "A collection of filelist directory entries represented as gag:FileItem.",
             "rdfs:range": {
-                "@id": "schema:ItemList"
+                "@id": "gag:FileItem"
             }
         },
         {
