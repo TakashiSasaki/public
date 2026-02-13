@@ -17,6 +17,8 @@ Follow the standard Python src-layout:
     - `cli.py`: CLI interface layer. Orchestrates tools and handles user interaction (print/input).
     - `tui.py`: Textual-based TUI interface. Wraps tools with a rich terminal UI.
     - `ttk.py`: Tkinter-based GUI interface. Provides graphical user interface.
+    - `identifiers.py`: **Central Identifier Management**. Provides `APP_NAMESPACE_UUID` and `generate_id_v5()`.
+    - `storage.py`: **Application Data Storage**. Simple KVS interface (settings/cache) backed by SQLite.
     - `tools/`: **Pure Logic Layer**. Contains core implementations of tools.
       - `filelist/`: **File Scanning Package**.
         - `__init__.py`: Provides a robust `scan()` function that validates multiple methods (`scandir`, `walk`, `rglob`).
@@ -34,6 +36,8 @@ Follow the standard Python src-layout:
         - `find_github_dir.py`: Finds repositories inside folders named 'GitHub'.
       - `whoami.py`: User identity retrieval.
       - `probe.py`: Environment data collection.
+      - `inspect_platform_dirs.py`: Tool to inspect OS-specific directory paths provided by `platformdirs`.
+      - `inspect_app_data.py`: GUI tool to inspect the contents of the `AppDataStorage` database.
       - Code here must be pure: **NO print()**, **NO sys.exit()**, **NO user prompts**.
       - Should return raw data (dicts, objects) to be consumed by interfaces (CLI, TUI, MCP).
 - `tests/`: Test suite for automated verification.
@@ -126,10 +130,15 @@ To ensure consistency across the application and avoid collisions with other sys
   - Used for: Generating deterministic UUIDs for file items, user identities, or any resource that needs a consistent ID based on a string key (e.g., path).
 
 ### SQLite Database Conventions
-When implementing SQLite databases (e.g., for `AppDataStorage`):
+When implementing SQLite databases (using `src/get_a_grip/storage.py`):
 - **Application ID:** Use the first 32 bits of `APP_NAMESPACE_UUID` (`0xc31a2332`) as the `PRAGMA application_id`. This ensures the database file is uniquely identified as belonging to this application.
 - **Schema Versioning:** Use `PRAGMA user_version` to track the database schema version. Do not use a separate metadata table for this purpose.
-- **Storage Location:** Use `platformdirs.user_data_dir()` to place database files in the correct OS-specific location.
+- **Storage Location:** Use `platformdirs.user_data_dir()` to place database files in the correct OS-specific location (typically `AppData/Local` on Windows).
+- **Implementation:**
+  - Use `AppDataStorage.get_instance()` for a shared connection.
+  - Supports persistent `settings` and TTL-based `cache`.
+  - Automatic JSON serialization/deserialization for values.
+  - Multi-thread safe for use in GUI/TUI environments.
 
 ### Git Backend Libraries Best Practices
 
