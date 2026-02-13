@@ -11,7 +11,7 @@ class GitRepoInfo(TypedDict):
     is_bare: bool      # True if it's a bare repository
     is_detached: bool  # True if HEAD is detached
     
-    # Consensus status (None if undetermined or conflicting)
+    # Raw HEAD content. Repositories with unreadable/missing HEAD are excluded.
     head: str # HEADファイルの中身
     
     # Detailed Git Info

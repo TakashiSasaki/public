@@ -39,8 +39,8 @@ def check_path_info(path: str) -> Optional[GitRepoInfo]:
 
     # Initialize info
     is_bare = False
-    is_detached = None
-    head = None
+    is_detached = False
+    head = ""
     refs = None
     remotes = None
 
@@ -49,23 +49,22 @@ def check_path_info(path: str) -> Optional[GitRepoInfo]:
 
     is_bare = is_bare_repo(repo_dir)
     
-    # Get HEAD content
+    # Get HEAD content (must be determinable; otherwise treat as error)
     head_path = os.path.join(repo_dir, "HEAD")
     if os.path.exists(head_path):
             try:
                 with open(head_path, "r", encoding="utf-8", errors="ignore") as f:
                     head = f.read().strip()
+                    if not head:
+                        return None
                     if not head.startswith("ref:"):
                         is_detached = True
                     else:
                         is_detached = False
             except Exception:
-                pass
+                return None
     else:
-            if is_file: 
-                head = "[HEAD not found in resolved repo_dir]"
-            else:
-                pass
+            return None
 
     # Get Refs and Remotes
     refs, remotes = get_refs_and_remotes(repo_dir)
