@@ -116,6 +116,15 @@ To ensure interoperability and clear specifications:
   - Use `compare_filelists()` from `utils.py` for this validation.
 - **Round-Trip Verification:** When building data conversion tools, ALWAYS perform round-trip verification (Format A -> Format B -> Format A) to ensure data integrity and losslessness.
 
+## Identifiers & UUIDs
+To ensure consistency across the application and avoid collisions with other systems, we use a fixed application-wide Namespace UUID for creating UUIDv5 identifiers.
+
+- **Namespace UUID:** `c31a2332-47da-4ecf-a93a-80880c593533`
+- **Usage:**
+  - Import `APP_NAMESPACE_UUID` or use `generate_id_v5(name)` from `src/get_a_grip/identifiers.py`.
+  - **DO NOT** hardcode this UUID in other files. Always reuse the constant.
+  - Used for: Generating deterministic UUIDs for file items, user identities, or any resource that needs a consistent ID based on a string key (e.g., path).
+
 ### Git Backend Libraries Best Practices
 
 When working with Git libraries in Python, be aware of the following quirks and best practices to ensure performance and consistency:
