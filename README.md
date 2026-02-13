@@ -9,6 +9,9 @@
 - **Windows-Specific Metadata:**
   - **FILETIME Timestamps:** Captures creation and modification dates as 64-bit FILETIME values.
   - **Attribute Flags:** Records Windows file attribute bits (e.g., Read-only, Hidden, System).
+- **Robust Multi-Strategy Scanning:**
+  - **Standardized Interface:** All scanners follow a unified `FileScanner` protocol.
+  - **Automatic Validation:** The default `scan` command runs multiple strategies (`scandir`, `walk`, `rglob`) and cross-validates results for 100% accuracy.
 - **Interoperability-First Design:**
   - **Schema-Driven:** All input/output formats are strictly defined in `schema/` using JSON Schema.
 - **Linked Data & Namespace Ownership:**
@@ -69,8 +72,12 @@ pip install -U git+https://github.com/TakashiSasaki/get-a-grip.git
 To scan a directory and output a JSON-LD file:
 
 ```powershell
-$env:PYTHONPATH="src"
-poetry run python src/get_a_grip/cli.py scanner <target_directory> [-o output_file.json]
+# Standard robust scan (validates multiple methods)
+poetry run gag filelist <target_directory> [-o output_file.json]
+
+# Specialized scanners
+poetry run gag filelist-http <query>   # Everything HTTP scan
+poetry run gag filelist-ipc <directory> # Everything IPC scan
 ```
 
 If no output filename is specified, it defaults to `fbd0009d-e91b-414f-9f4f-db3fbd3a16ee.json`.

@@ -1,79 +1,43 @@
-import json
-import tempfile
-import pytest
-import os
-from pathlib import Path
-from get_a_grip.tools import filelist_rglob, filelist_scandir
+from get_a_grip.tools.filelist import rglob, scandir, walk
+from get_a_grip.tools.filelist.utils import compare_filelists
 
-# Helper to normalize list of files/dirs for comparison
-def normalize_entries(entries):
+def test_consistency_scandir_rglob_walk(tmp_path):
     """
-    Convert list of file/dir dicts to a dictionary keyed by filename.
-    Normalize paths if needed, but here we assume both tools produce absolute paths similarly.
+    Verify that rglob, scandir, and walk implementations produce identical results from a real filesystem scan.
     """
-    normalized = {}
-    for entry in entries:
-        normalized[entry['Filename']] = entry
-    return normalized
-
-def compare_file_lists(data1, data2):
-    files1 = normalize_entries(data1.get('files', []))
-    dirs1 = normalize_entries(data1.get('dirs', []))
-    files2 = normalize_entries(data2.get('files', []))
-    dirs2 = normalize_entries(data2.get('dirs', []))
-
-    # Check if keys (filenames) match exactly
-    assert set(files1.keys()) == set(files2.keys()), "File list mismatch between implementations"
-    assert set(dirs1.keys()) == set(dirs2.keys()), "Directory list mismatch between implementations"
-
-    # Deep compare metadata for files
-    for key in files1:
-        entry1 = files1[key]
-        entry2 = files2[key]
-        
-        # Compare critical fields
-        logging_ctx = f"Mismatch in file: {key}"
-        assert entry1['Size'] == entry2['Size'], f"{logging_ctx} (Size)"
-        assert entry1['Date Modified'] == entry2['Date Modified'], f"{logging_ctx} (Date Modified)"
-        assert entry1['Date Created'] == entry2['Date Created'], f"{logging_ctx} (Date Created)"
-        # Attributes might be tricky if not consistently fetched, but let's assume they should match
-        assert entry1['Attributes'] == entry2['Attributes'], f"{logging_ctx} (Attributes)"
-
-def test_filelist_implementations_match(tmp_path):
-    """
-    Test that filelist.py (pathlib-based) and filelist_scandir.py (os.scandir-based)
-    produce identical output for the current test directory.
-    """
-    # Create some dummy files/dirs to scan
-    (tmp_path / "subdir").mkdir()
-    (tmp_path / "file1.txt").write_text("content1")
-    (tmp_path / "subdir" / "file2.txt").write_text("content2")
-
-    # Run scans
-    # We scan the tmp_path to ensure a controlled environment
-    root_dir = str(tmp_path)
+    # Setup robust test environment
+    root = tmp_path / "consistency_root"
+    root.mkdir()
     
-    data_legacy = filelist_rglob.scan_directory(root_dir)
-    data_scandir = filelist_scandir.scan_directory(root_dir)
-
-    # Compare results
-    compare_file_lists(data_legacy, data_scandir)
-
-if __name__ == "__main__":
-    # If run directly, run scan on current directory and compare
-    import sys
+    (root / "file1.txt").write_text("Hello World")
     
-    print("Running ad-hoc comparison on current directory...")
-    cwd = os.getcwd()
+    subdir = root / "subdir"
+    subdir.mkdir()
+    (subdir / "file2.bin").write_bytes(b"\x00\x01\x02")
     
-    try:
-        data_legacy = filelist_rglob.scan_directory(cwd)
-        data_scandir = filelist_scandir.scan_directory(cwd)
-        compare_file_lists(data_legacy, data_scandir)
-        print("SUCCESS: Both implementations match on current directory.")
-    except AssertionError as e:
-        print(f"FAILURE: {e}")
-        sys.exit(1)
-    except Exception as e:
-        print(f"ERROR: {e}")
-        sys.exit(1)
+    # Nested deeply
+    deep = subdir / "deep" / "structure"
+    deep.mkdir(parents=True)
+    (deep / "deep_file.log").write_text("Log")
+    
+    target_path = str(root.resolve())
+    
+    # Execute all scanning methods
+    print(f"Scanning {target_path} with rglob...")
+    res_rglob = rglob.scan(target_path)
+    
+    print(f"Scanning {target_path} with scandir...")
+    res_scandir = scandir.scan(target_path)
+    
+    print(f"Scanning {target_path} with walk...")
+    res_walk = walk.scan(target_path)
+    
+    # Compare
+    # scandir vs rglob
+    compare_filelists(res_scandir, res_rglob, "scandir", "rglob")
+    
+    # scandir vs walk
+    compare_filelists(res_scandir, res_walk, "scandir", "walk")
+    
+    # walk vs rglob (transitive, but good to check explicit edge cases if any)
+    compare_filelists(res_walk, res_rglob, "walk", "rglob")

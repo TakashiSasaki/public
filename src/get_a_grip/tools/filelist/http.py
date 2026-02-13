@@ -1,10 +1,9 @@
-import csv
-import io
 import json
 import os
 import urllib.request
 import urllib.parse
 from typing import Dict, Any, List
+from get_a_grip.tools.filelist.types import FileList, FileItem
 
 def fetch_raw_from_everything(ip: str, port: int, query: str = "", count: int = 10, format: str = "json") -> str:
     """
@@ -77,14 +76,15 @@ def safe_filetime(value: Any) -> str:
     digits = "".join(filter(str.isdigit, s))
     return digits if digits else "0"
 
-def scan_by_efu(ip: str = "127.160.164.78", port: int = 8000, query: str = "", count: int = 10) -> Dict[str, List[Dict[str, Any]]]:
+def scan(target: str = "", ip: str = "127.160.164.78", port: int = 8000, count: int = 10) -> FileList:
     """
     Scans by fetching JSON data from Everything and returns get-a-grip data structure.
+    The 'target' argument is used as the Search Query.
     """
-    data = fetch_json_from_everything(ip, port, query, count=count)
+    data = fetch_json_from_everything(ip, port, query=target, count=count)
     
-    files = []
-    dirs = []
+    files: List[FileItem] = []
+    dirs: List[FileItem] = []
     
     results = data.get("results", [])
     
@@ -106,4 +106,4 @@ def scan_by_efu(ip: str = "127.160.164.78", port: int = 8000, query: str = "", c
         else:
             files.append(info)
             
-    return {"files": files, "dirs": dirs}
+    return FileList(files=files, dirs=dirs)

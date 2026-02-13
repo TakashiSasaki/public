@@ -1,7 +1,6 @@
 import ctypes
 import os
-import datetime
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any
 
 # Constants from Everything SDK
 EVERYTHING_REQUEST_FILE_NAME = 0x00000001
@@ -22,7 +21,7 @@ def get_dll_path() -> str:
         return cwd_path
     
     # Priority 2: Relative to this file (../../../../bin/Everything64.dll)
-    # src/get_a_grip/tools/scan_by_ipc.py -> root/bin/Everything64.dll
+    # src/get_a_grip/tools/everything_ipc.py -> root/bin/Everything64.dll
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
     pkg_path = os.path.join(base_dir, "bin", "Everything64.dll")
     if os.path.exists(pkg_path):

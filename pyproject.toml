@@ -1,6 +1,6 @@
 [project]
 name = "get-a-grip"
-version = "0.1.32"
+version = "0.1.81"
 description = "A directory searching application"
 authors = [
     {name = "takas"}
@@ -9,24 +9,33 @@ readme = "README.md"
 requires-python = ">=3.12,<4.0"
 dependencies = [
     "textual (>=1.0.0)",
+    "GitPython (>=3.1.44)",
+    "pygit2 (>=1.19.1,<2.0.0)",
+    "dulwich (>=1.0.0,<2.0.0)",
 ]
 
 [project.scripts]
 get-a-grip = "get_a_grip.cli:main"
 gag = "get_a_grip.cli:main"
-test = "pytest:main"
+test = "get_a_grip.test_launcher:main"
+find-github-dir = "get_a_grip.tools.git.find_github_dir:main"
+find-git-worktree = "get_a_grip.tools.git.find_git_worktree:main"
+find-git-repo-dir = "get_a_grip.tools.git.find_git_repo_dir:main"
 
 [project.gui-scripts]
 gag-gui = "get_a_grip.ttk:main"
 
 [tool.poe.tasks]
 check-purls = { cmd = "python scripts/check_purls.py", help = "Check accessibility of GAG PURLs" }
+test = { cmd = "pytest", help = "Run all tests" }
+test-consistency = { cmd = "pytest tests/test_filelist_consistency.py", help = "Run consistency tests" }
+test-urls = { cmd = "pytest tests/test_url_accessibility.py", help = "Run URL accessibility tests" }
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
 # Automatically generate reports when running pytest
-addopts = "--json-report --json-report-file=reports/tests/latest.json --junit-xml=reports/tests/latest.xml --html=reports/tests/latest.html --self-contained-html --cov=get_a_grip --cov-report=json:reports/coverage/latest.json --cov-report=html:reports/coverage/html --cov-report=term -v"
+addopts = "--ignore=tests/test_url_accessibility.py --json-report --json-report-file=reports/tests/latest.json --junit-xml=reports/tests/latest.xml --html=reports/tests/latest.html --self-contained-html --cov=get_a_grip --cov-report=json:reports/coverage/latest.json --cov-report=html:reports/coverage/html --cov-report=term -v"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

@@ -65,21 +65,34 @@ def test_schema_url_accessibility():
             urls = extract_urls_from_file(path)
             all_urls.update(urls)
     
-    print(f"Found {len(all_urls)} unique URLs.")
+    # Remove fragments and track original URLs
+    url_to_originals = {}
+    for url in all_urls:
+        base_url = url.split('#')[0]
+        if base_url not in url_to_originals:
+            url_to_originals[base_url] = []
+        url_to_originals[base_url].append(url)
+    
+    unique_base_urls = sorted(list(url_to_originals.keys()))
+    print(f"Found {len(all_urls)} URLs ({len(unique_base_urls)} unique base URLs).")
     
     accessible = []
     inaccessible = []
 
-    for url in sorted(list(all_urls)):
-        success, status = check_url(url)
+    for i, base_url in enumerate(unique_base_urls, 1):
+        print(f"[{i}/{len(unique_base_urls)}] Checking: {base_url} ...", end=" ", flush=True)
+        success, status = check_url(base_url)
+        print(f"Status: {status}")
         
-        if success or (isinstance(status, int) and status in [403]): 
-            if success:
-                accessible.append((url, status))
+        # Apply the result to all original URLs that shared this base
+        for original_url in url_to_originals[base_url]:
+            if success or (isinstance(status, int) and status in [403]): 
+                if success:
+                    accessible.append((original_url, status))
+                else:
+                    inaccessible.append((original_url, status))
             else:
-                inaccessible.append((url, status))
-        else:
-            inaccessible.append((url, status))
+                inaccessible.append((original_url, status))
 
     # Generate Report Content
     lines = []

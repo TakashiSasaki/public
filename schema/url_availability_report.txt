@@ -1,0 +1,91 @@
+URL AVAILABILITY REPORT
+=======================
+Generated: 2026-02-12T16:35:36.178863
+Scanned Directory: C:\Github\get-a-grip\schema
+
+[OK] Accessible URLs (77):
+  200   http://json-schema.org/draft-07/schema#
+  200   http://schemas.dmtf.org/wbem/wscim/1/cim-schema/2/
+  200   http://www.w3.org/1999/02/22-rdf-syntax-ns#
+  200   http://www.w3.org/2000/01/rdf-schema#
+  200   http://www.w3.org/2000/01/rdf-schema#Class
+  200   http://www.w3.org/2001/XMLSchema#
+  200   http://www.w3.org/2002/07/owl#ObjectProperty
+  200   http://www.w3.org/2002/07/owl#DatatypeProperty
+  200   http://www.w3.org/2002/07/owl#
+  200   http://www.w3.org/2002/07/owl#Ontology
+  200   http://www.w3.org/2011/http#
+  200   http://www.w3.org/ns/earl#
+  200   http://www.w3.org/ns/earl#TestResult
+  200   http://www.w3.org/ns/prov#generatedAtTime
+  200   http://www.w3.org/ns/prov#wasAssociatedWith
+  200   http://www.w3.org/ns/prov#
+  200   https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js
+  200   https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js
+  200   https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css
+  200   https://d3js.org/d3.v7.min.js
+  200   https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap
+  200   https://json-schema.org/draft/2020-12/schema
+  200   https://purl.org/gag/schema/dirtree.json
+  200   https://purl.org/gag/schema/dirtree.jsonld
+  200   https://purl.org/gag/schema/filelist.json
+  200   https://purl.org/gag/schema/filelist.jsonld
+  200   https://purl.org/gag/schema/http_availability.json
+  200   https://purl.org/gag/schema/http_availability.jsonld
+  200   https://purl.org/gag/schema/probe.json
+  200   https://purl.org/gag/schema/probe.jsonld
+  200   https://purl.org/gag/schema/uuid.jsonld
+  200   https://purl.org/gag/schema/vocab#
+  200   https://purl.org/gag/schema/vocab#volumeSerialNumber
+  200   https://purl.org/gag/schema/vocab#reparseTag
+  200   https://purl.org/gag/schema/vocab#isBareRepository
+  200   https://purl.org/gag/schema/vocab#dirtree
+  200   https://purl.org/gag/schema/vocab#target
+  200   https://purl.org/gag/schema/vocab#posixFileAttributes
+  200   https://purl.org/gag/schema/vocab#availabilityResults
+  200   https://purl.org/gag/schema/vocab#accessibleCount
+  200   https://purl.org/gag/schema/vocab#winFileAttributes
+  200   https://purl.org/gag/schema/vocab#fileAttributes
+  200   https://purl.org/gag/schema/vocab#linkTarget
+  200   https://purl.org/gag/schema/vocab#isSymlink
+  200   https://purl.org/gag/schema/vocab#gitTreeMode
+  200   https://purl.org/gag/schema/vocab#fullPath
+  200   https://purl.org/gag/schema/vocab#isEncrypted
+  200   https://purl.org/gag/schema/vocab#DirectoryTree
+  200   https://purl.org/gag/schema/vocab#hasGitDirectory
+  200   https://purl.org/gag/schema/vocab#redirectHistory
+  200   https://purl.org/gag/schema/vocab#observer
+  200   https://purl.org/gag/schema/vocab#inaccessibleCount
+  200   https://purl.org/gag/schema/vocab#totalChecks
+  200   https://purl.org/gag/schema/vocab#isReparsePoint
+  200   https://purl.org/gag/schema/vocab#isMountPoint
+  200   https://purl.org/gag/schema/vocab#isRemovable
+  200   https://purl.org/gag/schema/vocab#winFileTimeModified
+  200   https://purl.org/gag/schema/vocab#observedAt
+  200   https://purl.org/gag/schema/vocab#AvailabilitySummary
+  200   https://purl.org/gag/schema/vocab#directories
+  200   https://purl.org/gag/schema/vocab#isGitRepositoryDir
+  200   https://purl.org/gag/schema/vocab#winFileTime
+  200   https://purl.org/gag/schema/vocab#hasGitFile
+  200   https://purl.org/gag/schema/vocab#files
+  200   https://purl.org/gag/schema/vocab#AvailabilityReport
+  200   https://purl.org/gag/schema/vocab#pathSegment
+  200   https://purl.org/gag/schema/vocab#validationSchema
+  200   https://purl.org/gag/schema/vocab#isGitWorktree
+  200   https://purl.org/gag/schema/vocab#availabilitySummary
+  200   https://purl.org/gag/schema/vocab#winFileTimeCreated
+  200   https://schema.org/
+  200   https://schema.org/ItemList
+  200   https://schema.org/MediaObject
+  200   https://schema.org/contentUrl
+  200   https://schema.org/target
+  200   https://unpkg.com/@hpcc-js/wasm@2.20.0/dist/graphviz.umd.js
+  200   https://unpkg.com/d3-graphviz@5.6.0/build/d3-graphviz.js
+
+[XX] Inaccessible / Error URLs (6):
+  404   http://www.w3.org/ns/snmp#  <-- External standard vocabulary (Known to be possibly offline)
+  404   https://cdn.jsdelivr.net/npm/@hpcc-js/wasm@2.20.0/dist
+  404   https://fonts.googleapis.com
+  404   https://fonts.gstatic.com
+  404   https://purl.org/identity/ad/  <-- External standard vocabulary (Known to be possibly offline)
+  timed out https://purl.org/net/ldap#  <-- External standard vocabulary (Known to be possibly offline)

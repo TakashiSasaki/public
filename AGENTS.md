@@ -17,15 +17,21 @@ Follow the standard Python src-layout:
     - `cli.py`: CLI interface layer. Orchestrates tools and handles user interaction (print/input).
     - `tui.py`: Textual-based TUI interface. Wraps tools with a rich terminal UI.
     - `ttk.py`: Tkinter-based GUI interface. Provides graphical user interface.
-    - `tools/`: **Pure Logic Layer**. Contains core implementations of tools (e.g., `filelist.py`).
-      - `filelist.py`: Local directory traversal.
-      - `filelist_rglob.py`: File listing using Python's rglob (recursive glob).
-      - `filelist_scandir.py`: File listing using Python's scandir (efficient directory scanning).
+    - `tools/`: **Pure Logic Layer**. Contains core implementations of tools.
+      - `filelist/`: **File Scanning Package**.
+        - `__init__.py`: Provides a robust `scan()` function that validates multiple methods (`scandir`, `walk`, `rglob`).
+        - `types.py`: Defines common data structures (`FileList`, `FileItem`) and `FileScanner` protocol.
+        - `utils.py`: Shared utilities for saving results and comparing file lists.
+        - `scandir.py`, `walk.py`, `rglob.py`: Individual scanning strategies.
+        - `http.py`, `ipc.py`: Everything-based scanning strategies.
       - `dirtree.py`: Recursive directory tree traversal (hierarchical output).
       - `filelist2dirtree.py`: Converter tool from flat `filelist.json` to hierarchical `dirtree.json`.
       - `efu_converter.py`: Conversions between JSON-LD and Everything EFU files.
-      - `filelist_http.py`: Remote scanning via Everything HTTP server.
-      - `filelist_ipc.py`: IPC-based scanning using Everything64.dll.
+      - `git/`: **Git Repository Tools**.
+        - `git_types.py`: Defines TypedDicts for Git tools (`GitRepoInfo`, `GitWorktreeInfo`, etc.).
+        - `find_git_repo_dir.py`: Finds .git directories/files and checks bare status.
+        - `find_git_worktree.py`: Finds Git worktrees and cross-verifies with backends.
+        - `find_github_dir.py`: Finds repositories inside folders named 'GitHub'.
       - `whoami.py`: User identity retrieval.
       - `probe.py`: Environment data collection.
       - Code here must be pure: **NO print()**, **NO sys.exit()**, **NO user prompts**.
@@ -101,22 +107,123 @@ To ensure interoperability and clear specifications:
     - **UI Feedback:** If a tool requires progress reporting, use an optional, injectable callback or a dedicated tracker class that defaults to no-op. Avoid direct `print()` calls in core logic.
   - **Interfaces (`cli.py`, `tui.py`, `mcp.py`)**: Handles presentation, user I/O, and orchestration.
     - Responsible for catching exceptions from tools and presenting them to the user.
+- **Strategy Pattern for Scanners:**
+  - All file scanners must implement the `FileScanner` protocol (defined in `src/get_a_grip/tools/filelist/types.py`).
+  - Required interface: `scan(target: str) -> FileList`.
+  - Use `@runtime_checkable` on the protocol to allow `isinstance(obj, FileScanner)` checks.
+- **Robustness & Validation:**
+  - The default `filelist.scan()` function acts as a validator by running `scandir`, `walk`, and `rglob` concurrently and verifying that their results match exactly (counts and metadata).
+  - Use `compare_filelists()` from `utils.py` for this validation.
 - **Round-Trip Verification:** When building data conversion tools, ALWAYS perform round-trip verification (Format A -> Format B -> Format A) to ensure data integrity and losslessness.
 
-## Development Workflow
+### Git Backend Libraries Best Practices
+
+When working with Git libraries in Python, be aware of the following quirks and best practices to ensure performance and consistency:
+
+1.  **GitPython (`git`):**
+    *   **Performance Trap:** Avoid `repo.untracked_files`. It recursively lists all untracked files, causing extreme performance degradation or hangs in large directories (e.g., home directories with `node_modules`).
+    *   **Solution:** Use `repo.git.ls_files('--others', '--exclude-standard', '--directory')`. This lists directory roots instead of recursing, drastically improving speed.
+    *   **Subprocess:** GitPython spawns `git.exe` subprocesses. Use `concurrent.futures.ThreadPoolExecutor` for timeouts, but be aware that it cannot forcefully kill the underlying process.
+    *   **Untracked Directories:** When using `ls-files --directory` to check for untracked files, always include `--no-empty-directory`. Without it, empty directories (which Git typically ignores) are reported as untracked, causing inconsistencies with `git status` or other libraries.
+
+2.  **pygit2 (`pygit2`):**
+    *   **Unborn Branches:** Accessing `repo.head` on a fresh repository (no commits) raises a `GitError`.
+    *   **Solution:** Catch this exception, check `repo.head_is_unborn`, and if true, inspect the symbol target of HEAD via `repo.lookup_reference("HEAD").target`.
+    *   **Detached HEAD:** `repo.head.shorthand` returns `"HEAD"` instead of a branch name or OID when detached.
+    *   **Solution:** explicitly check `repo.head_is_detached` before accessing shorthand.
+
+3.  **Dulwich (`dulwich`):**
+    *   **Status Check:** `porcelain.status(repo)` returns a tuple `(staged, unstaged, untracked)`.
+    *   **Trap:** `staged` is a dictionary `{'add': [], ...}`. Even if empty (`{'add': [], ...}`), it evaluates to `True` in boolean context because the dictionary keys exist.
+    *   **Solution:** Use `any(staged.values())` to check if there are actual staged files.
+    *   **Windows/CRLF:** Dulwich's porcelain status does not automatically handle `core.autocrlf` the same way Git CLI does, potentially leading to false-positive modified files.
+    *   **HEAD Reference Parsing:** `repo.refs.read_ref(b'HEAD')` returns the raw ref string (e.g., `b'ref: refs/heads/feature/branch'`). Simply splitting by `/` truncates hierarchical branch names. Check for `b'ref: refs/heads/'` prefix and slice the string instead.
+
+### Git Status Standardization
+
+To ensure consistent behavior across different Git libraries and CLI tools, `get-a-grip` adopts the following definitions:
+
+-   **Dirty:** The working tree has **staged** or **unstaged** modifications to tracked files.
+-   **Clean:** No staged or unstaged modifications to tracked files.
+-   **Untracked:** The presence of untracked files is reported separately (e.g., `[untracked]`) and **does NOT** affect the Dirty/Clean status.
+    -   *Rationale:* Including untracked files in "Dirty" status (like `git status --porcelain` does by default) makes it difficult to distinguish between "active work in progress" and "just added a temporary file".
+    -   *Implementation:* Always disable untracked checking in the primary dirty check (e.g., `repo.is_dirty(untracked_files=False)` in GitPython) and perform a separate check for untracked files.
+
+### Cloud Storage / OneDrive Issues
+
+When dealing with repositories stored in cloud-synced folders (OneDrive, Dropbox, Google Drive) on Windows:
+
+-   **Symptoms:**
+    -   `pygit2` raises `GitError: failed to resolve reference 'HEAD': The cloud file provider is not running.` (or localized message).
+    -   `Dulwich` raises `OSError: [Errno 22] Invalid argument`.
+    -   `GitPython` usually succeeds because it delegates to the `git.exe` process, which handles file hydration better than Python's direct file access.
+-   **Cause:** "Files On-Demand" features keep files as placeholders (reparse points) until accessed. Python libraries may fail to read these placeholders if the sync client is not running or if they use low-level file APIs that don't trigger hydration.
+-   **Mitigation:** Treat these errors as "Repository Inaccessible" (return `None` or error state) rather than crashing. Users must ensure the repo is fully synced or the cloud provider is running.
+
+### Repository Ownership / Safe Directory
+
+Git has security measures preventing access to repositories owned by other users (e.g., specific folders owned by `SYSTEM` or `Administrators`).
+
+-   **Symptoms:**
+    -   `pygit2` raises `GitError: repository path '...' is not owned by current user`.
+    -   `Dulwich` and `GitPython` may succeed depending on their implementation and configuration, but `pygit2` (libgit2-based) is strict by default.
+-   **Mitigation:**
+    -   Report as `[Owner Mismatch]` to inform the user why access failed.
+    -   Users can whitelist directories using `git config --global --add safe.directory <path>`, but `pygit2` might not respect this depending on how it's built/configured vs `git.exe`.
+
+### Everything Search Strategy
+
+For efficient filesystem scanning on Windows, `get-a-grip` leverages "Everything" via IPC or HTTP.
+
+-   **Finding Git Roots:**
+    -   Instead of searching for *any* `.git` folder (which returns thousands of subdirectories), compare:
+        -   `folder: exact:.git` -> Finds standard repository roots.
+        -   `file: exact:.git` -> Finds **submodules** and **worktrees** (where `.git` is a file pointing to the actual dir).
+    -   Combining these two queries covers all types of Git working directories.
+-   **Speed:** Everything is orders of magnitude faster than Python's `os.walk` or `glob` for whole-drive searches. Always prefer Everything for initial discovery.
 1. **Adding Dependencies:** Use `poetry add <package>`.
 2. **Running Locally:**
    - **Standard:** `poetry run get-a-grip filelist <args>`
    - **Alias:** `poetry run gag filelist <args>` (Short for "get-a-grip")
    - **Module:** `poetry run python -m get_a_grip filelist <args>`
 3. **Testing:** 
-   - Run tests with `poetry run pytest`.
-   - Ensure new features have corresponding tests in `tests/`.
-   - **URL Verification:** Run `pytest tests/test_url_accessibility.py` after modifying schemas to ensure all external references are stable.
+   - **General Test Run:** `poetry run test` (uses automated root-directory resolver).
+   - **Poe Tasks:**
+     - `poetry run poe test`: Run all primary tests (excludes slow URL checks).
+     - `poetry run poe test-consistency`: Specifically run filelist consistency tests.
+     - `poetry run poe test-urls`: Run external URL accessibility checks (long-running).
+   - **URL Verification:** After modifying schemas, running `poe test-urls` is recommended.
    - **PURL Accessibility Check:** Run `python scripts/check_purls.py` to verify all PURLs in schema files are accessible. Results are saved to `reports/purl-availability/`.
    - **Schema Validation:** Use `python scripts/validate_schema.py <data_file> <schema_file>` to verify output against JSON Schema definitions.
 
+### Troubleshooting: Poetry Command Not Found
+If the `poetry` command is not found in your shell (but `python -m poetry` works):
+1. This usually means the Python scripts folder is not in your system `PATH`.
+2. **Windows location:** `%APPDATA%\Python\Python3xx\Scripts` (e.g., `C:\Users\<User>\AppData\Roaming\Python\Python312\Scripts`).
+3. **Resolution:** Add this path to your Environment Variables, or use `python -m poetry <command>` as a reliable fallback.
+
+### Automatic Version Bumping
+The project's patch version in `pyproject.toml` is automatically incremented on every commit using a Git hook.
+
+- **How it works:** A `pre-commit` hook executes `scripts/bump_version.py` which increments the patch level and adds the updated `pyproject.toml` to the commit.
+- **Initial Setup (after clone):**
+  Git hooks are local to your machine. You must manually set up the hook after cloning the repository:
+
+  **Windows (Powershell):**
+  ```powershell
+  Copy-Item scripts/pre-commit .git/hooks/pre-commit
+  ```
+
+  **Linux / macOS (Bash):**
+  ```bash
+  cp scripts/pre-commit .git/hooks/pre-commit
+  chmod +x .git/hooks/pre-commit
+  ```
+- **Manual Override:** To commit without bumping the version, use `git commit --no-verify`.
+- **Note:** `scripts/bump_version.py` is included in the repository to ensure consistent behavior across environments.
+
 ### `src/get_a_grip/tools/dirtree.py`
+
 A recursive directory scanner that outputs a hierarchical JSON structure conforming to `schema/dirtree.json`. It captures the filesystem structure as a nested tree where keys are path segments.
 
 ### `src/get_a_grip/tools/filelist2dirtree.py`

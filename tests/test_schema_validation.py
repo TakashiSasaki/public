@@ -2,7 +2,7 @@ import os
 import json
 import jsonschema
 from jsonschema import validate
-from get_a_grip.tools.filelist import scan_directory, save_to_json
+from get_a_grip.tools.filelist import scan, save_to_json
 
 def test_scanner_output_schema():
     # 1. Setup paths
@@ -12,7 +12,7 @@ def test_scanner_output_schema():
     
     # 2. Run scanner on a small known directory (the schemas directory itself)
     scan_target = os.path.join(root_dir, "schema")
-    file_data = scan_directory(scan_target)
+    file_data = scan(scan_target)
     save_to_json(file_data, output_path)
     
     try:

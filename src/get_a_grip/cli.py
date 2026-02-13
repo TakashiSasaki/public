@@ -1,12 +1,12 @@
 import argparse
 import sys
 import os
-from get_a_grip.tools.filelist import scan_directory, save_to_json
+from get_a_grip.tools.filelist import scan, save_to_json
+from get_a_grip.tools.filelist.http import scan as scan_http, fetch_raw_from_everything
+from get_a_grip.tools.everything_ipc import scan_by_ipc
 from get_a_grip.tools.efu_converter import json_to_efu, efu_to_json
 from get_a_grip.tools.whoami import print_whoami
 from get_a_grip.tools.probe import print_probe_data, save_probe_data
-from get_a_grip.tools.filelist_http import scan_by_efu, fetch_raw_from_everything
-from get_a_grip.tools.filelist_ipc import scan_by_ipc
 
 def main():
     parser = argparse.ArgumentParser(description="get-a-grip: A collection of tools.")
@@ -84,7 +84,7 @@ def main():
                     return
 
             print(f"Scanning directory: {args.directory}...")
-            scan_data = scan_directory(args.directory)
+            scan_data = scan(args.directory)
             
             num_files = len(scan_data.get("files", []))
             num_dirs = len(scan_data.get("dirs", []))
@@ -155,7 +155,7 @@ def main():
                     return
 
             print(f"Scanning via Everything HTTP: {args.ip}:{args.port} (Path: '{target_dir}', Query: '{args.query}', Count: {args.count})...")
-            scan_data = scan_by_efu(args.ip, args.port, combined_query, count=args.count)
+            scan_data = scan_http(target=combined_query, ip=args.ip, port=args.port, count=args.count)
             
             num_files = len(scan_data.get("files", []))
             num_dirs = len(scan_data.get("dirs", []))
