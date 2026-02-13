@@ -1,11 +1,13 @@
 import os
-import pytest
-from unittest.mock import MagicMock, patch
-from pathlib import Path
+from unittest.mock import patch
 
 from get_a_grip.tools.git.find_git_worktree import (
     find_git_worktrees,
-    print_git_worktrees
+    get_status_with_timeout,
+    get_worktree_status_dulwich,
+    get_worktree_status_gitpython,
+    get_worktree_status_pygit2,
+    print_git_worktrees,
 )
 
 # --- Integration Test using Real Filesystem & Mocked IPC ---
@@ -81,3 +83,121 @@ def test_find_git_worktrees_real_fs(mock_scan, tmp_path, capsys):
     assert "HEAD      : ref: refs/heads/wt-branch" in captured.out
     # assert "GitPython : wt-branch (clean)" in captured.out
     assert "Status    : isClean=True hasUntracked=False" in captured.out
+
+@patch('get_a_grip.tools.git.find_git_worktree.scan_by_ipc')
+def test_find_git_worktrees_conflicting_backend_votes(mock_scan, tmp_path):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / ".git").mkdir()
+    (repo / ".git" / "HEAD").write_text("ref: refs/heads/main", encoding="utf-8")
+
+    def scan_side_effect(query, count):
+        if "folder:" in query and "!folder:" not in query:
+            return {"dirs": [{"Filename": str(repo / ".git")}], "files": []}
+        return {"files": [], "dirs": []}
+
+    mock_scan.side_effect = scan_side_effect
+
+    with patch('get_a_grip.tools.git.find_git_worktree.get_worktree_status_gitpython', return_value={"is_clean": True, "has_untracked": False}):
+        with patch('get_a_grip.tools.git.find_git_worktree.get_worktree_status_pygit2', return_value={"is_clean": False, "has_untracked": True}):
+            with patch('get_a_grip.tools.git.find_git_worktree.get_worktree_status_dulwich', return_value=None):
+                data = find_git_worktrees(count=10, timeout=0)
+
+    assert data["count"] == 1
+    wt = data["worktrees"][0]
+    # Conflicting is_clean votes must resolve to False (dirty-safe).
+    assert wt["is_clean"] is False
+    # Conflicting has_untracked votes resolve via any().
+    assert wt["has_untracked"] is True
+
+@patch('get_a_grip.tools.git.find_git_worktree.scan_by_ipc')
+def test_find_git_worktrees_skips_candidates_with_no_valid_backend(mock_scan, tmp_path):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / ".git").mkdir()
+    (repo / ".git" / "HEAD").write_text("ref: refs/heads/main", encoding="utf-8")
+
+    def scan_side_effect(query, count):
+        if "folder:" in query and "!folder:" not in query:
+            return {"dirs": [{"Filename": str(repo / ".git")}], "files": []}
+        return {"files": [], "dirs": []}
+
+    mock_scan.side_effect = scan_side_effect
+
+    with patch('get_a_grip.tools.git.find_git_worktree.get_worktree_status_gitpython', return_value=None):
+        with patch('get_a_grip.tools.git.find_git_worktree.get_worktree_status_pygit2', return_value=None):
+            with patch('get_a_grip.tools.git.find_git_worktree.get_worktree_status_dulwich', return_value=None):
+                data = find_git_worktrees(count=10, timeout=0)
+
+    assert data["count"] == 0
+    assert data["worktrees"] == []
+
+def test_get_worktree_status_gitpython_missing_backend():
+    with patch('get_a_grip.tools.git.find_git_worktree.git', None):
+        assert get_worktree_status_gitpython("C:/repo") is None
+
+def test_get_worktree_status_gitpython_success():
+    with patch('get_a_grip.tools.git.find_git_worktree.git') as mock_git:
+        mock_repo = mock_git.Repo.return_value
+        mock_repo.is_dirty.return_value = False
+        mock_repo.git.ls_files.return_value = "tmp.txt\n"
+        result = get_worktree_status_gitpython("C:/repo")
+    assert result == {"is_clean": True, "has_untracked": True, "valid": True}
+
+def test_get_worktree_status_pygit2_bare():
+    with patch('get_a_grip.tools.git.find_git_worktree.pygit2') as mock_pygit2:
+        mock_repo = mock_pygit2.Repository.return_value
+        mock_repo.is_bare = True
+        result = get_worktree_status_pygit2("C:/repo")
+    assert result == {"is_clean": True, "has_untracked": False, "valid": True}
+
+def test_get_worktree_status_pygit2_dirty_and_untracked():
+    with patch('get_a_grip.tools.git.find_git_worktree.pygit2') as mock_pygit2:
+        mock_repo = mock_pygit2.Repository.return_value
+        mock_repo.is_bare = False
+        mock_repo.status.return_value = {
+            "new.txt": mock_pygit2.GIT_STATUS_WT_NEW,
+            "tracked.txt": 0x02,
+        }
+        result = get_worktree_status_pygit2("C:/repo")
+    assert result == {"is_clean": False, "has_untracked": True, "valid": True}
+
+def test_get_worktree_status_dulwich_status_error():
+    with patch('get_a_grip.tools.git.find_git_worktree.dulwich') as mock_dulwich:
+        mock_dulwich.repo.Repo.return_value = object()
+        mock_dulwich.porcelain.status.side_effect = RuntimeError("status fail")
+        assert get_worktree_status_dulwich("C:/repo") is None
+
+def test_get_status_with_timeout_returns_none_on_timeout():
+    def sleeper(_):
+        import time
+        time.sleep(0.05)
+        return {"is_clean": True, "has_untracked": False}
+
+    result = get_status_with_timeout(sleeper, "C:/repo", 0.001)
+    assert result is None
+
+def test_print_git_worktrees_timeout_and_detached(capsys):
+    data = {
+        "worktrees": [
+            {
+                "git_worktree_dir": "C:/repo",
+                "is_clean": True,
+                "has_untracked": False,
+                "git_repo_info": {
+                    "git_repo_dir": "C:/repo/.git",
+                    "is_bare": False,
+                    "is_detached": True,
+                    "head": "deadbeef",
+                    "refs": ["refs/heads/main"],
+                    "remotes": ["origin: https://example.invalid/repo.git"],
+                },
+            }
+        ],
+        "count": 1,
+    }
+    print_git_worktrees(data, timeout=1.0)
+    captured = capsys.readouterr().out
+    assert "Start Timeout: 1.0 seconds" in captured
+    assert "HEAD      : deadbeef (DETACHED)" in captured
+    assert "Remotes   : origin: https://example.invalid/repo.git" in captured

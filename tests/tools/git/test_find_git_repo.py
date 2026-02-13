@@ -1,28 +1,12 @@
 import os
-import pytest
-from unittest.mock import MagicMock, patch
-from pathlib import Path
+from collections import Counter
+from unittest.mock import patch
 
-# Important: Imports must match the module structure
 from get_a_grip.tools.git.find_git_repo import (
     check_path_info,
     find_git_repos,
     print_git_repos
 )
-# We need to patch the utils where they are used.
-# Since find_git_repo imports from .utils, we should patch get_a_grip.tools.git.find_git_repo.is_bare_repo
-
-def test_is_bare_repo_gitpython():
-    """
-    Tests the is_bare_repo function in utils.py, but accessed via finding_git_repo logic 
-    or just test the utility directly? 
-    The original test was testing a function inside find_git_repo.
-    Now that function is imported from utils.
-    Let's test the imported function in the context of find_git_repo
-    or better: test utils directly in a separate test file if needed, 
-    but here we can test check_path_info which uses it.
-    """
-    pass # Skipped as is_bare_repo is now in utils and tested there or integrated below
 
 # check_path_info integration with temp fs
 def test_check_path_info_dir_non_bare(tmp_path):
@@ -47,6 +31,7 @@ def test_check_path_info_dir_non_bare(tmp_path):
              assert info["git_repo_dir"] == str(git_dir)
              assert info["is_bare"] is False
              assert info["head"] == "ref: refs/heads/main"
+             assert info["is_detached"] is False
 
 def test_check_path_info_dir_bare(tmp_path):
     # Setup bare repo dir (name usually ends in .git)
@@ -58,9 +43,10 @@ def test_check_path_info_dir_bare(tmp_path):
             (bare_dir / "HEAD").write_text("ref: refs/heads/main", encoding="utf-8")
             
             info = check_path_info(str(bare_dir))
-            
+             
             assert info["git_repo_dir"] == str(bare_dir)
             assert info["is_bare"] is True
+            assert info["is_detached"] is False
 
 def test_check_path_info_file(tmp_path):
     # Setup .git file
@@ -83,6 +69,65 @@ def test_check_path_info_file(tmp_path):
             # Check resolved absolute path
             assert os.path.normcase(info["git_repo_dir"]) == os.path.normcase(str(real_git))
             assert info["is_bare"] is False
+            assert info["is_detached"] is False
+
+def test_check_path_info_returns_none_when_head_missing(tmp_path):
+    git_dir = tmp_path / ".git"
+    git_dir.mkdir()
+
+    with patch('get_a_grip.tools.git.find_git_repo.is_bare_repo', return_value=False):
+        with patch('get_a_grip.tools.git.find_git_repo.get_refs_and_remotes', return_value=([], [])):
+            info = check_path_info(str(git_dir))
+
+    assert info is None
+
+def test_check_path_info_returns_none_when_head_empty(tmp_path):
+    git_dir = tmp_path / ".git"
+    git_dir.mkdir()
+    (git_dir / "HEAD").write_text("", encoding="utf-8")
+
+    with patch('get_a_grip.tools.git.find_git_repo.is_bare_repo', return_value=False):
+        with patch('get_a_grip.tools.git.find_git_repo.get_refs_and_remotes', return_value=([], [])):
+            info = check_path_info(str(git_dir))
+
+    assert info is None
+
+def test_check_path_info_returns_none_on_head_read_error(tmp_path):
+    git_dir = tmp_path / ".git"
+    git_dir.mkdir()
+    (git_dir / "HEAD").write_text("ref: refs/heads/main", encoding="utf-8")
+
+    original_open = open
+
+    def open_side_effect(path, *args, **kwargs):
+        if os.path.normcase(str(path)) == os.path.normcase(str(git_dir / "HEAD")):
+            raise OSError("simulated read error")
+        return original_open(path, *args, **kwargs)
+
+    with patch('get_a_grip.tools.git.find_git_repo.is_bare_repo', return_value=False):
+        with patch('get_a_grip.tools.git.find_git_repo.get_refs_and_remotes', return_value=([], [])):
+            with patch('builtins.open', side_effect=open_side_effect):
+                info = check_path_info(str(git_dir))
+
+    assert info is None
+
+def test_check_path_info_returns_none_for_invalid_gitfile_prefix(tmp_path):
+    wt_root = tmp_path / "wt"
+    wt_root.mkdir()
+    git_file = wt_root / ".git"
+    git_file.write_text("not-a-gitdir-file", encoding="utf-8")
+
+    info = check_path_info(str(git_file))
+    assert info is None
+
+def test_check_path_info_returns_none_for_missing_gitdir_target(tmp_path):
+    wt_root = tmp_path / "wt"
+    wt_root.mkdir()
+    git_file = wt_root / ".git"
+    git_file.write_text("gitdir: ../missing.git", encoding="utf-8")
+
+    info = check_path_info(str(git_file))
+    assert info is None
 
 @patch('get_a_grip.tools.git.find_git_repo.scan_by_ipc')
 def test_find_git_repos_integration(mock_scan, tmp_path, capsys):
@@ -139,15 +184,38 @@ def test_find_git_repos_integration(mock_scan, tmp_path, capsys):
     # Bare repo dir
     assert f"Dir : {str(bare_git)}" in captured.out
     assert "Status  : BARE" in captured.out
-    
-    # Worktree .git file -> resolves to repo dir
-    # Since print_git_repos iterates over resolved output, we expect duplications or just list of Repos.
-    # The current implementation returns duplicated repos if multiple candidates point to same repo?
-    # Yes, candidates are paths (dirs and files). 
-    # nb_git matches folder scan. wt_git matches file scan.
-    # Both resolve to nb_git.
-    # So we should see nb_git twice?
-    # Actually check_path_info returns git_repo_dir.
-    # So yes, likely printed twice or logic dedups? 
-    # Logic in find_git_repos: repos.append(info). No dedup on repo_dir, just dedup on candidate path.
-    # nb_git and wt_git are different paths, so they are both processed.
+
+    # Validate returned data directly, not only print output
+    assert data["count"] == 3
+    repo_dirs = [os.path.normcase(repo["git_repo_dir"]) for repo in data["repos"]]
+    counts = Counter(repo_dirs)
+    assert counts[os.path.normcase(str(nb_git))] == 2
+    assert counts[os.path.normcase(str(bare_git))] == 1
+
+def test_find_git_repos_handles_ipc_failures():
+    with patch('get_a_grip.tools.git.find_git_repo.scan_by_ipc', side_effect=RuntimeError("ipc-fail")):
+        data = find_git_repos(count=10)
+
+    assert data["count"] == 0
+    assert data["repos"] == []
+
+def test_print_git_repos_prints_detached_remotes_and_refs(capsys):
+    data = {
+        "repos": [
+            {
+                "git_repo_dir": "C:/repo/.git",
+                "is_bare": False,
+                "is_detached": True,
+                "head": "deadbeef1234",
+                "refs": ["refs/heads/main"],
+                "remotes": ["origin: https://example.invalid/repo.git"],
+            }
+        ],
+        "count": 1,
+    }
+
+    print_git_repos(data)
+    captured = capsys.readouterr().out
+    assert "State   : DETACHED" in captured
+    assert "Remotes : origin: https://example.invalid/repo.git" in captured
+    assert "Refs    : 1 refs" in captured
