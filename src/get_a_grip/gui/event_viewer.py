@@ -115,7 +115,8 @@ class EventLogViewer(ttk.Frame):
                 logs = EventLogCore.fetch_logs(log_name, limit=100)
                 self.after(0, lambda: self._on_fetch_success(logs))
             except Exception as e:
-                self.after(0, lambda: messagebox.showerror("エラー", f"ログ取得失敗: {e}"))
+                error_msg = str(e)
+                self.after(0, lambda: messagebox.showerror("エラー", f"ログ取得失敗: {error_msg}"))
                 
         threading.Thread(target=task, daemon=True).start()
 
