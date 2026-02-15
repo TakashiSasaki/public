@@ -14,14 +14,8 @@ This document provides instructions and context for AI coding agents and human d
 Follow the standard Python src-layout:
 - `src/get_a_grip/`: Main package source code.
 
-    - `cli.py`: CLI interface layer. Orchestrates tools and handles user interaction (print/input).
-    - `tui.py`: Textual-based TUI interface. Wraps tools with a rich terminal UI.
-    - `ttk.py`: Tkinter-based GUI interface. Provides graphical user interface.
-    - `identifiers.py`: **Central Identifier Management**. Provides `APP_NAMESPACE_UUID` and `generate_id_v5()`.
-    - `storage.py`: **Application Data Storage**. Simple KVS interface (settings/cache) backed by SQLite.
-    - `core/`: **Pure Logic Layer**. Contains core implementations of tools.
-    - `contracts/`: **Data Contract Layer**. Shared TypedDict schemas for cross-module and external interoperability.
-    - `tools/`: **Compatibility + Interface Layer**. Backward-compatible wrappers and runtime entrypoints (`main()`).
+    - `cli/`: **CLI Interface & Tools**. Contains CLI entry points and command implementations.
+      - `__init__.py`: Functions as the main entry point (`python -m get_a_grip`).
       - `filelist/`: **File Scanning Package**.
         - `__init__.py`: Provides a robust `scan()` function that validates multiple methods (`scandir`, `walk`, `rglob`).
         - `types.py`: Compatibility export for filelist types and `FileScanner` protocol.
@@ -41,8 +35,15 @@ Follow the standard Python src-layout:
       - `probe.py`: Environment data collection.
       - `inspect_platform_dirs.py`: Tool to inspect OS-specific directory paths provided by `platformdirs`.
       - `inspect_app_data.py`: GUI tool to inspect the contents of the `AppDataStorage` database.
+    - `tui/`: **TUI Interface**. Textual-based terminal user interface.
+    - `gui/`: **GUI Interface**. Tkinter-based graphical user interface.
+    - `mcp/`: **MCP Server**. Interface for Model Context Protocol.
+    - `identifiers.py`: **Central Identifier Management**. Provides `APP_NAMESPACE_UUID` and `generate_id_v5()`.
+    - `storage.py`: **Application Data Storage**. Simple KVS interface (settings/cache) backed by SQLite.
+    - `core/`: **Pure Logic Layer**. Contains core implementations of tools.
       - Code in `core/` must be pure: **NO print()**, **NO sys.exit()**, **NO user prompts**.
-      - Should return raw data (dicts, objects) to be consumed by interfaces (CLI, TUI, MCP).
+      - Should return raw data (dicts, objects) to be consumed by interfaces (CLI, TUI, GUI, MCP).
+    - `contracts/`: **Data Contract Layer**. Shared TypedDict schemas for cross-module and external interoperability.
 - `tests/`: Test suite for automated verification.
 - `scripts/`: Development utilities and troubleshooting scripts (not for production logic).
   - `check_purls.py`: Validates accessibility of all PURLs used in schema files. Outputs to `reports/purl-availability/`.
@@ -112,7 +113,7 @@ To ensure interoperability and clear specifications:
     - **MUST NOT** depend on `cli.py` or `tui.py`.
     - **MUST NOT** use `input()` or `sys.exit()`. Raise exceptions instead.
     - **UI Feedback:** If a tool requires progress reporting, use an optional, injectable callback or a dedicated tracker class that defaults to no-op. Avoid direct `print()` calls in core logic.
-  - **Interfaces (`cli.py`, `tui.py`, `mcp.py`, `tools/*.py main()`)**: Handles presentation, user I/O, and orchestration.
+  - **Interfaces (`cli/`, `tui/`, `gui/`, `mcp/`)**: Handles presentation, user I/O, and orchestration.
     - Responsible for catching exceptions from tools and presenting them to the user.
 - **Data Contracts:**
   - Place shared exchange types in `src/get_a_grip/contracts/` (e.g., filelist/git TypedDict definitions).
@@ -137,13 +138,15 @@ To ensure consistency across the application and avoid collisions with other sys
   - Used for: Generating deterministic UUIDs for file items, user identities, or any resource that needs a consistent ID based on a string key (e.g., path).
 
 ### SQLite Database Conventions
-When implementing SQLite databases (using `src/get_a_grip/storage.py`):
+To maintain data integrity and consistency, **all database operations must be centralized in `src/get_a_grip/storage.py`**. Other modules must not use `sqlite3` directly; they should interact with the database via `AppDataStorage`.
+
+General conventions:
 - **Application ID:** Use the first 32 bits of `APP_NAMESPACE_UUID` (`0xc31a2332`) as the `PRAGMA application_id`. This ensures the database file is uniquely identified as belonging to this application.
 - **Schema Versioning:** Use `PRAGMA user_version` to track the database schema version. Do not use a separate metadata table for this purpose.
 - **Storage Location:** Use `platformdirs.user_data_dir()` to place database files in the correct OS-specific location (typically `AppData/Local` on Windows).
 - **Implementation:**
   - Use `AppDataStorage.get_instance()` for a shared connection.
-  - Supports persistent `settings` and TTL-based `cache`.
+  - Supports persistent `settings`, TTL-based `cache`, and specialized tables like `event_logs`.
   - Automatic JSON serialization/deserialization for values.
   - Multi-thread safe for use in GUI/TUI environments.
 

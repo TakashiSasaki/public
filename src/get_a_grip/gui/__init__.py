@@ -42,10 +42,11 @@ class GripLauncher:
         ttk.Button(btn_frame, text="Probe System Info", command=self.run_probe).grid(row=0, column=1, sticky="ew", padx=2, pady=2)
         ttk.Button(btn_frame, text="Who Am I", command=self.run_whoami).grid(row=1, column=0, sticky="ew", padx=2, pady=2)
         ttk.Button(btn_frame, text="Scan Directory...", command=self.scan_directory_dialog).grid(row=1, column=1, sticky="ew", padx=2, pady=2)
+        ttk.Button(btn_frame, text="Event Log Viewer", command=self.run_event_viewer).grid(row=2, column=0, sticky="ew", padx=2, pady=2)
         
         # Windows-specific: Add Start Menu registration button
         if sys.platform == 'win32':
-            ttk.Button(btn_frame, text="Register to Start Menu", command=self.register_to_start_menu).grid(row=2, column=0, columnspan=2, sticky="ew", padx=2, pady=5)
+            ttk.Button(btn_frame, text="Register to Start Menu", command=self.register_to_start_menu).grid(row=3, column=0, columnspan=2, sticky="ew", padx=2, pady=5)
         
         # Separator
         ttk.Separator(root, orient='horizontal').pack(fill='x', padx=10, pady=5)
@@ -121,6 +122,14 @@ class GripLauncher:
 
     def run_whoami(self):
         self.run_command([sys.executable, "-m", "get_a_grip.cli", "whoami"])
+
+    def run_event_viewer(self):
+        """Launches the Event Log Viewer GUI."""
+        # Using the script we created or a module path if registered
+        script_path = os.path.join(os.getcwd(), "read_events_pywin32.py")
+        cmd = [sys.executable, script_path, "--gui"]
+        self.log(f"> Launching Event Viewer: {' '.join(cmd)}")
+        subprocess.Popen(cmd)
 
     def scan_directory_dialog(self):
         target_dir = filedialog.askdirectory(title="Select Directory to Scan")

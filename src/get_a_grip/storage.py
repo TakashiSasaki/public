@@ -16,7 +16,7 @@ class AppDataStorage:
     # Use first 32 bits of APP_NAMESPACE_UUID (c31a2332-...) as Application ID
     # 0xc31a2332 = 3273204530
     APPLICATION_ID = int(APP_NAMESPACE_UUID.hex[:8], 16)
-    CURRENT_DB_VERSION = 1
+    CURRENT_DB_VERSION = 2  # Event logs table added in v2
 
     def __init__(self, db_name: str = "app_data.db", app_name: str = "get-a-grip", app_author: str = "takas"):
         # OS固有のデータディレクトリを取得 (Windows: AppData/Local/...)
@@ -95,9 +95,9 @@ class AppDataStorage:
                 if current_version < 1:
                     self._create_tables_v1()
                 
-                # 将来的なマイグレーション例:
-                # if current_version < 2:
-                #     self._migrate_v1_to_v2()
+                # Version 1 -> 2: イベントログテーブルの追加
+                if current_version < 2:
+                    self._create_event_logs_table()
 
                 # マイグレーション完了後、バージョン情報を更新 (PRAGMA user_version)
                 self.conn.execute(f"PRAGMA user_version = {self.CURRENT_DB_VERSION}")
@@ -128,6 +128,24 @@ class AppDataStorage:
         """)
         # インデックスによる検索高速化
         self.conn.execute("CREATE INDEX IF NOT EXISTS idx_cache_expires ON cache (expires_at)")
+
+    def _create_event_logs_table(self):
+        """バージョン2でイベントログテーブルを作成"""
+        self.conn.execute("""
+            CREATE TABLE IF NOT EXISTS event_logs (
+                log_name TEXT NOT NULL,
+                record_number INTEGER NOT NULL,
+                event_id INTEGER,
+                event_type TEXT,
+                source_name TEXT,
+                time_generated TIMESTAMP,
+                message TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (log_name, record_number)
+            )
+        """)
+        self.conn.execute("CREATE INDEX IF NOT EXISTS idx_event_logs_time ON event_logs (time_generated)")
+        self.conn.execute("CREATE INDEX IF NOT EXISTS idx_event_logs_type ON event_logs (event_type)")
 
     def close(self):
         """データベース接続を閉じる"""
@@ -234,8 +252,64 @@ class AppDataStorage:
         Returns:
             int: 削除されたレコード数
         """
-        now = datetime.now(timezone.utc)
-        with self.conn as conn:
-            cursor = conn.execute("DELETE FROM cache WHERE expires_at < ?", (now,))
-            deleted_count = cursor.rowcount
-            return deleted_count
+        try:
+            with self.conn:
+                cursor = self.conn.execute("DELETE FROM cache WHERE expires_at < CURRENT_TIMESTAMP")
+                return cursor.rowcount
+        except Exception as e:
+            logger.error(f"Failed to prune cache: {e}")
+            return 0
+
+    # --- Event Logs Methods ---
+
+    def store_event_logs(self, log_name: str, events: list):
+        """
+        イベントログを一括保存します
+        
+        Args:
+            log_name (str): ログの名前 (System, Application等)
+            events (list): イベント情報の辞書リスト
+        """
+        query = """
+            INSERT OR IGNORE INTO event_logs (
+                log_name, record_number, event_id, event_type, 
+                source_name, time_generated, message
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+        """
+        data = [
+            (
+                log_name,
+                e['record_number'],
+                e['event_id'],
+                e['event_type'],
+                e['source_name'],
+                e['time_generated'],
+                e['message']
+            )
+            for e in events
+        ]
+        
+        try:
+            with self.conn:
+                self.conn.executemany(query, data)
+        except Exception as e:
+            logger.error(f"Failed to store event logs: {e}")
+
+    def get_cached_event_logs(self, log_name: str, limit: int = 100):
+        """
+        キャッシュされたイベントログを取得します
+        """
+        query = """
+            SELECT record_number, event_id, event_type, source_name, time_generated, message
+            FROM event_logs
+            WHERE log_name = ?
+            ORDER BY time_generated DESC
+            LIMIT ?
+        """
+        try:
+            cursor = self.conn.execute(query, (log_name, limit))
+            columns = [column[0] for column in cursor.description]
+            return [dict(zip(columns, row)) for row in cursor.fetchall()]
+        except Exception as e:
+            logger.error(f"Failed to get cached event logs: {e}")
+            return []

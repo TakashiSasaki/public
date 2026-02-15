@@ -12,6 +12,7 @@ dependencies = [
     "GitPython (>=3.1.44)",
     "pygit2 (>=1.19.1,<2.0.0)",
     "dulwich (>=1.0.0,<2.0.0)",
+    "pywin32 (>=306)",
 ]
 
 [project.scripts]
@@ -25,8 +26,10 @@ inspect-dirs = "get_a_grip.tools.inspect_platform_dirs:main"
 
 [project.gui-scripts]
 gag-gui = "get_a_grip.ttk:main"
+gui = "get_a_grip.gui.event_viewer:main"
 
 [tool.poe.tasks]
+gui = { cmd = "python -m get_a_grip.gui.event_viewer", help = "Run the Event Viewer GUI" }
 check-purls = { cmd = "python scripts/check_purls.py", help = "Check accessibility of GAG PURLs" }
 test = { cmd = "pytest", help = "Run all tests" }
 test-consistency = { cmd = "pytest tests/test_filelist_consistency.py", help = "Run consistency tests" }
