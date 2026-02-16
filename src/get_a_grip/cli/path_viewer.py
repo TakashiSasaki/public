@@ -7,7 +7,7 @@ from rich.table import Table
 from rich.panel import Panel
 from rich.text import Text
 from get_a_grip.core.path_parser import (
-    get_system_path,
+    get_path_from_environment,
     get_system_path_from_registry,
     get_user_path_from_registry
 )
@@ -18,7 +18,7 @@ def main():
     args = parser.parse_args()
 
     # Get active PATH
-    active_paths = get_system_path()
+    active_paths = get_path_from_environment()
 
     # Get registry PATHs to determine source
     # These are now List[Path]

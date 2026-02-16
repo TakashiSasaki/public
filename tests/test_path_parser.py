@@ -36,7 +36,7 @@ class TestPathParser(unittest.TestCase):
             self.skipTest("path_parser module could not be imported (likely not on Windows)")
 
     @patch('os.environ')
-    def test_get_system_path(self, mock_environ):
+    def test_get_path_from_environment(self, mock_environ):
         # Mock PATH environment variable
         mock_environ.get.return_value = "C:\\Path1;C:\\Path2"
         
@@ -44,14 +44,14 @@ class TestPathParser(unittest.TestCase):
         # If running on non-windows, this test might need os.pathsep patched too if the code uses real os.pathsep.
         # The code uses `os.pathsep`. 
         with patch('os.pathsep', ';'):
-            paths = path_parser.get_system_path()
+            paths = path_parser.get_path_from_environment()
             self.assertEqual(paths, [Path("C:\\Path1"), Path("C:\\Path2")])
 
     @patch('os.environ')
-    def test_get_system_path_empty(self, mock_environ):
+    def test_get_path_from_environment_empty(self, mock_environ):
         mock_environ.get.return_value = ""
         with patch('os.pathsep', ';'):
-            paths = path_parser.get_system_path()
+            paths = path_parser.get_path_from_environment()
             self.assertEqual(paths, [])
 
     @patch('get_a_grip.core.path_parser.winreg')
@@ -108,9 +108,9 @@ class TestPathParser(unittest.TestCase):
         result = path_parser.get_user_path_from_registry()
         self.assertEqual(result, [])
 
-    @patch('get_a_grip.core.path_parser.get_system_path')
+    @patch('get_a_grip.core.path_parser.get_path_from_environment')
     @patch('os.environ')
-    def test_find_in_path(self, mock_environ, mock_get_system_path):
+    def test_find_command_in_path(self, mock_environ, mock_get_path_from_environment):
         import tempfile
         import shutil
 
@@ -130,13 +130,13 @@ class TestPathParser(unittest.TestCase):
         (dir1 / "script.py").touch()
 
         # Mock system path to point to these temporary directories
-        mock_get_system_path.return_value = [dir1, dir2]
+        mock_get_path_from_environment.return_value = [dir1, dir2]
         
         # Setup PATHEXT
         mock_environ.get.return_value = ".EXE;.BAT"
 
         # Test 1: Find 'app' (should find app.exe and app.bat)
-        results = path_parser.find_in_path("app")
+        results = path_parser.find_command_in_path("app")
         
         self.assertEqual(len(results), 2)
         # Sort by name to ensure consistent order for assertion
@@ -156,33 +156,23 @@ class TestPathParser(unittest.TestCase):
         self.assertEqual(results[1].resolve(), (dir2 / "app.bat").resolve())
 
         # Test 2: Find 'script.py' (exact extension)
-        results = path_parser.find_in_path("script.py")
+        results = path_parser.find_command_in_path("script.py")
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].resolve(), (dir1 / "script.py").resolve())
 
         # Test 3: Not found
-        results = path_parser.find_in_path("missing")
+        results = path_parser.find_command_in_path("missing")
         self.assertEqual(results, [])
 
-    # Alternative test strategy: Mock Path object creation or behavior more directly
-    @patch('get_a_grip.core.path_parser.get_system_path')
-    def test_find_in_path_simple(self, mock_get_system_path):
-        # Mock directories
-        dir1 = MagicMock(spec=Path)
-        dir1.exists.return_value = True
-        dir1.is_dir.return_value = True
-        
-        dir2 = MagicMock(spec=Path)
-        dir2.exists.return_value = True
-        dir2.is_dir.return_value = True
-        
-        mock_get_system_path.return_value = [dir1, dir2]
+        # Test 4: Case-insensitive search (e.g. searching 'APP' should find 'app.exe')
+        # Windows filesystem is case-insensitive.
+        # Since tempfile directory structure is real filesystem, checking case-insensitivity works.
+        results = path_parser.find_command_in_path("APP")
+        self.assertEqual(len(results), 2)
+        self.assertTrue(results[0].name.lower() == "app.exe")
+        self.assertTrue(results[1].name.lower() == "app.bat")
 
-        # We need the `directory / candidate_name` to return a Path object that we can verify
-        # but Path operator overloading is hard to mock if we use real Path in get_system_path
-        # Easier to run with real Path objects and mock filesystem partially or use `pyfakefs` if available.
-        # Since we don't have pyfakefs, we'll maintain the current mocking strategy but be careful.
-        pass
+    # Alternative test strategy: Mock Path object creation or behavior more directly
 
 if __name__ == '__main__':
     unittest.main()

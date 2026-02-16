@@ -7,7 +7,7 @@ from pathlib import Path
 if sys.platform != "win32":
     raise OSError("This module is only supported on Windows.")
 
-def get_system_path() -> List[Path]:
+def get_path_from_environment() -> List[Path]:
     """
     Retrieves the system PATH environment variable and returns it as a list of Path objects.
     """
@@ -42,19 +42,21 @@ def get_user_path_from_registry() -> List[Path]:
     except FileNotFoundError:
         return []
 
-def find_in_path(executable_name: str) -> List[Path]:
+def find_command_in_path(command_name: str) -> List[Path]:
     """
-    Searches for an executable in the directories listed in the PATH environment variable.
+    Searches for an executable command in the directories listed in the PATH environment variable.
     Returns a list of all matching paths, similar to the Windows 'where' command.
     
-    If the executable_name includes an extension, searches for that exact file.
+    If the command_name includes an extension, searches for that exact file.
     If no extension is provided, appends extensions from PATHEXT (e.g., .EXE, .BAT) to search.
+    
+    The search is case-insensitive on Windows.
     """
     found_paths = []
-    search_dirs = get_system_path()
+    search_dirs = get_path_from_environment()
     
-    # Check if executable_name has an extension
-    has_extension = os.path.splitext(executable_name)[1] != ""
+    # Check if command_name has an extension
+    has_extension = os.path.splitext(command_name)[1] != ""
     
     extensions = [""]
     if not has_extension:
@@ -70,11 +72,9 @@ def find_in_path(executable_name: str) -> List[Path]:
             
         for ext in extensions:
             # Construct the full path
-            # Case-insensitive check is tricky with pathlib efficiently without iterating directory.
-            # But Windows filesystem is generally case-insensitive. 
-            # We construct the candidate path and check .exists() and .is_file().
+            # Case-insensitive check is handled by filesystem on Windows.
             
-            candidate_name = executable_name + ext if not has_extension else executable_name
+            candidate_name = command_name + ext if not has_extension else command_name
             candidate_path = directory / candidate_name
             
             if candidate_path.exists() and candidate_path.is_file():
