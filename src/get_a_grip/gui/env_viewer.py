@@ -2,11 +2,39 @@ import tkinter as tk
 from tkinter import ttk
 from get_a_grip.core.env_internal import get_python_env_info
 
+FIELD_DESCRIPTIONS = {
+    # General
+    "python_executable": "Path to the Python interpreter binary.",
+    "python_version": "Version of the Python interpreter.",
+    "platform": "Underlying platform name (e.g., win32, linux).",
+    "system": "Operating system name.",
+    "release": "Operating system release version.",
+    "implementation": "Python implementation (e.g., CPython, PyPy).",
+    "is_venv": "True if running inside a virtual environment.",
+    "cwd": "Current working directory of the process.",
+    
+    # Prefixes
+    "prefix": "Installation prefix for platform-independent files.",
+    "base_prefix": "Base prefix (if in venv, this is the system Python's prefix).",
+    "exec_prefix": "Installation prefix for platform-dependent files.",
+    "base_exec_prefix": "Base exec_prefix (if in venv, differs from exec_prefix).",
+    
+    # Site
+    "enable_user_site": "True if user-site packages are enabled.",
+    "user_site": "Path to the user-site packages directory.",
+    "user_base": "Base directory for user-specific installation.",
+    "getusersitepackages": "User site-packages directory (returned by site.getusersitepackages()).",
+    
+    # Hooks
+    "sitecustomize": "Whether the 'sitecustomize' module is importable (customization hook).",
+    "usercustomize": "Whether the 'usercustomize' module is importable (customization hook).",
+}
+
 class EnvViewerApp:
     def __init__(self, root):
         self.root = root
         self.root.title("get-a-grip: Python Environment Info")
-        self.root.geometry("800x600")
+        self.root.geometry("1000x700")
         
         self.info = get_python_env_info()
         
@@ -40,6 +68,9 @@ class EnvViewerApp:
         frame = ttk.Frame(notebook)
         notebook.add(frame, text="sys.path")
         
+        description_label = ttk.Label(frame, text="List of strings that specifies the search path for modules (sys.path).", padding=5)
+        description_label.pack(fill="x")
+
         text_area = tk.Text(frame, wrap="none")
         text_area.pack(expand=True, fill="both", padx=5, pady=5)
         
@@ -60,41 +91,55 @@ class EnvViewerApp:
         frame = ttk.Frame(notebook)
         notebook.add(frame, text="Site")
         
-        # We have lists and values here, we'll use a mix
-        scrollable_canvas = tk.Canvas(frame)
-        scrollbar = ttk.Scrollbar(frame, orient="vertical", command=scrollable_canvas.yview)
-        scrollable_frame = ttk.Frame(scrollable_canvas)
+        # Split into scalar info (Treeview) and lists (Labels/Text)
+        # Using PanedWindow to separate standard info from lists
+        paned = ttk.PanedWindow(frame, orient="vertical")
+        paned.pack(expand=True, fill="both", padx=5, pady=5)
+        
+        # Top frame: Basic scalar info
+        top_frame = ttk.Frame(paned)
+        paned.add(top_frame, weight=1)
+        
+        site_data = self.info["site"]
+        basic_info = {
+            "enable_user_site": site_data["enable_user_site"],
+            "user_site": site_data["user_site"],
+            "user_base": site_data["user_base"],
+            "getusersitepackages": site_data["getusersitepackages"]
+        }
+        self.create_details_view(top_frame, basic_info)
+        
+        # Bottom frame: Lists
+        bottom_frame = ttk.Frame(paned)
+        paned.add(bottom_frame, weight=1)
+        
+        # We use a canvas for scrolling the lists if they are long
+        canvas = tk.Canvas(bottom_frame)
+        scrollbar = ttk.Scrollbar(bottom_frame, orient="vertical", command=canvas.yview)
+        scrollable_frame = ttk.Frame(canvas)
 
         scrollable_frame.bind(
             "<Configure>",
-            lambda e: scrollable_canvas.configure(
-                scrollregion=scrollable_canvas.bbox("all")
+            lambda e: canvas.configure(
+                scrollregion=canvas.bbox("all")
             )
         )
 
-        scrollable_canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-        scrollable_canvas.configure(yscrollcommand=scrollbar.set)
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
 
-        scrollable_canvas.pack(side="left", expand=True, fill="both")
+        canvas.pack(side="left", expand=True, fill="both")
         scrollbar.pack(side="right", fill="y")
-
-        # Basic site info
-        site_data = self.info["site"]
-        basic_info = {
-            "Enable User Site": site_data["enable_user_site"],
-            "User Site": site_data["user_site"],
-            "User Base": site_data["user_base"],
-            "User Site Packages": site_data["getusersitepackages"]
-        }
         
-        self.create_details_view(scrollable_frame, basic_info)
-        
-        # List sections
-        ttk.Label(scrollable_frame, text="\nSite Packages:", font=("Helvetica", 10, "bold")).pack(anchor="w", padx=5)
+        # Site Packages List
+        ttk.Label(scrollable_frame, text="\nSite Packages (site.getsitepackages()):", font=("Helvetica", 10, "bold")).pack(anchor="w", padx=5)
+        ttk.Label(scrollable_frame, text="List of global site-package directories.", font=("Helvetica", 9, "italic")).pack(anchor="w", padx=5)
         for p in site_data["getsitepackages"]:
             ttk.Label(scrollable_frame, text=f"  • {p}").pack(anchor="w", padx=20)
             
-        ttk.Label(scrollable_frame, text="\nSite Prefixes:", font=("Helvetica", 10, "bold")).pack(anchor="w", padx=5)
+        # Site Prefixes List
+        ttk.Label(scrollable_frame, text="\nSite Prefixes (site.PREFIXES):", font=("Helvetica", 10, "bold")).pack(anchor="w", padx=5)
+        ttk.Label(scrollable_frame, text="List of prefixes for site-packages.", font=("Helvetica", 9, "italic")).pack(anchor="w", padx=5)
         for p in site_data["prefixes"]:
             ttk.Label(scrollable_frame, text=f"  • {p}").pack(anchor="w", padx=20)
 
@@ -106,16 +151,35 @@ class EnvViewerApp:
         self.create_details_view(frame, data)
 
     def create_details_view(self, parent, data):
-        for i, (key, value) in enumerate(data.items()):
-            row_frame = ttk.Frame(parent)
-            row_frame.pack(fill="x", padx=5, pady=2)
-            
-            ttk.Label(row_frame, text=f"{key}:", width=25, anchor="e", font=("Helvetica", 9, "bold")).pack(side="left")
-            
-            val_label = tk.Text(row_frame, height=1, borderwidth=0, font=("Helvetica", 9))
-            val_label.insert("1.0", str(value))
-            val_label.configure(state="disabled", background=parent.cget("background"))
-            val_label.pack(side="left", fill="x", expand=True, padx=5)
+        # Create Treeview
+        columns = ("key", "value", "description")
+        tree = ttk.Treeview(parent, columns=columns, show="headings")
+        
+        tree.heading("key", text="Key")
+        tree.heading("value", text="Value")
+        tree.heading("description", text="Description")
+        
+        tree.column("key", width=150, minwidth=100)
+        tree.column("value", width=400, minwidth=200)
+        tree.column("description", width=400, minwidth=200)
+        
+        # Add scrollbars
+        vsb = ttk.Scrollbar(parent, orient="vertical", command=tree.yview)
+        hsb = ttk.Scrollbar(parent, orient="horizontal", command=tree.xview)
+        tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
+        
+        # Grid layout for tree and scrollbars
+        parent.grid_columnconfigure(0, weight=1)
+        parent.grid_rowconfigure(0, weight=1)
+        
+        tree.grid(column=0, row=0, sticky="nsew")
+        vsb.grid(column=1, row=0, sticky="ns")
+        hsb.grid(column=0, row=1, sticky="ew")
+        
+        # Insert data
+        for key, value in data.items():
+            description = FIELD_DESCRIPTIONS.get(key, "")
+            tree.insert("", "end", values=(key, str(value), description))
 
 def main():
     root = tk.Tk()
