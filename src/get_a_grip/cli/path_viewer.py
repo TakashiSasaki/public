@@ -17,6 +17,9 @@ def main():
     parser.add_argument("--json", action="store_true", help="Output as JSON")
     args = parser.parse_args()
 
+    # Get active PATH
+    active_paths = get_system_path()
+
     # Get registry PATHs to determine source
     # These are now List[Path]
     system_registry_paths_list = get_system_path_from_registry()
