@@ -2,19 +2,20 @@ import os
 import sys
 import winreg
 from typing import List
+from pathlib import Path
 
 if sys.platform != "win32":
     raise OSError("This module is only supported on Windows.")
 
-def get_system_path() -> List[str]:
+def get_system_path() -> List[Path]:
     """
-    Retrieves the system PATH environment variable and returns it as a list of paths.
+    Retrieves the system PATH environment variable and returns it as a list of Path objects.
     """
     path_env = os.environ.get("PATH", "")
     # os.pathsep is ';' on Windows and ':' on Unix-like systems
-    return [p for p in path_env.split(os.pathsep) if p]
+    return [Path(p) for p in path_env.split(os.pathsep) if p]
 
-def get_system_path_from_registry() -> List[str]:
+def get_system_path_from_registry() -> List[Path]:
     """
     Retrieves the system PATH environment variable directly from the Windows Registry.
     Key: HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment
@@ -24,11 +25,11 @@ def get_system_path_from_registry() -> List[str]:
         with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, key_path) as key:
             value, _ = winreg.QueryValueEx(key, "Path")
             # os.pathsep is ';' on Windows
-            return [p for p in value.split(os.pathsep) if p]
+            return [Path(p) for p in value.split(os.pathsep) if p]
     except FileNotFoundError:
         return []
 
-def get_user_path_from_registry() -> List[str]:
+def get_user_path_from_registry() -> List[Path]:
     """
     Retrieves the user PATH environment variable directly from the Windows Registry.
     Key: HKEY_CURRENT_USER\\Environment
@@ -37,6 +38,6 @@ def get_user_path_from_registry() -> List[str]:
     try:
         with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path) as key:
             value, _ = winreg.QueryValueEx(key, "Path")
-            return [p for p in value.split(os.pathsep) if p]
+            return [Path(p) for p in value.split(os.pathsep) if p]
     except FileNotFoundError:
         return []

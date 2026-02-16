@@ -17,22 +17,23 @@ def main():
     parser.add_argument("--json", action="store_true", help="Output as JSON")
     args = parser.parse_args()
 
-    # Get active PATH
-    active_paths = get_system_path()
-
     # Get registry PATHs to determine source
-    system_registry_paths_raw = get_system_path_from_registry()
-    user_registry_paths_raw = get_user_path_from_registry()
+    # These are now List[Path]
+    system_registry_paths_list = get_system_path_from_registry()
+    user_registry_paths_list = get_user_path_from_registry()
 
     # Normalize paths for comparison (lower case, resolve symlinks might be too much, just basic normcase)
     # We use a set for faster lookup. 
-    system_registry_paths = set(os.path.normcase(p) for p in system_registry_paths_raw)
-    user_registry_paths = set(os.path.normcase(p) for p in user_registry_paths_raw)
+    # Since we are comparing against what's in PATH (which might be mixed case),
+    # converting to string and normcase is the safest common denominator.
+    system_registry_paths = set(os.path.normcase(str(p)) for p in system_registry_paths_list)
+    user_registry_paths = set(os.path.normcase(str(p)) for p in user_registry_paths_list)
 
     path_data = []
     
     for p in active_paths:
-        norm_p = os.path.normcase(p)
+        # p is a Path object
+        norm_p = os.path.normcase(str(p))
         is_system = norm_p in system_registry_paths
         is_user = norm_p in user_registry_paths
         
@@ -71,7 +72,7 @@ def main():
 
         for idx, item in enumerate(path_data, 1):
             source_text = Text(item["source"], style=item["style"])
-            table.add_row(str(idx), source_text, item["path"])
+            table.add_row(str(idx), source_text, str(item["path"]))
         
         console.print(Panel(table, title="get-a-grip PATH Viewer", subtitle=f"Total entries: {len(active_paths)}"))
 

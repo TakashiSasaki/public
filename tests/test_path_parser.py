@@ -3,6 +3,7 @@ import unittest
 from unittest.mock import patch, MagicMock
 import sys
 import os
+from pathlib import Path
 
 # Ensure we can import from src
 sys.path.append(os.path.join(os.getcwd(), 'src'))
@@ -44,7 +45,7 @@ class TestPathParser(unittest.TestCase):
         # The code uses `os.pathsep`. 
         with patch('os.pathsep', ';'):
             paths = path_parser.get_system_path()
-            self.assertEqual(paths, ["C:\\Path1", "C:\\Path2"])
+            self.assertEqual(paths, [Path("C:\\Path1"), Path("C:\\Path2")])
 
     @patch('os.environ')
     def test_get_system_path_empty(self, mock_environ):
@@ -66,7 +67,7 @@ class TestPathParser(unittest.TestCase):
 
         result = path_parser.get_system_path_from_registry()
         
-        self.assertEqual(result, ["C:\\SystemPath1", "C:\\SystemPath2"])
+        self.assertEqual(result, [Path("C:\\SystemPath1"), Path("C:\\SystemPath2")])
         mock_winreg.OpenKey.assert_called_with(
             mock_winreg.HKEY_LOCAL_MACHINE, 
             r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment"
@@ -94,7 +95,7 @@ class TestPathParser(unittest.TestCase):
 
         result = path_parser.get_user_path_from_registry()
         
-        self.assertEqual(result, ["C:\\UserPath1", "C:\\UserPath2"])
+        self.assertEqual(result, [Path("C:\\UserPath1"), Path("C:\\UserPath2")])
         mock_winreg.OpenKey.assert_called_with(
             mock_winreg.HKEY_CURRENT_USER, 
             r"Environment"
