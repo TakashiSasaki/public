@@ -3,7 +3,7 @@ import json
 import pytest
 from unittest.mock import patch, MagicMock
 from get_a_grip.core.filelist.ipc import scan, save_to_json
-from get_a_grip.tools.filelist.ipc import main
+from get_a_grip.cli.filelist.ipc import main
 
 # --- Unit Tests ---
 
@@ -74,8 +74,8 @@ def test_save_to_json_structure(tmp_path):
 
 # --- Integration / Full Flow Tests ---
 
-@patch('get_a_grip.tools.filelist.ipc.scan_by_ipc')
-@patch('get_a_grip.tools.filelist.ipc.save_to_json')
+@patch('get_a_grip.cli.filelist.ipc.scan_by_ipc')
+@patch('get_a_grip.cli.filelist.ipc.save_to_json')
 def test_main_success(mock_save, mock_scan):
     """
     Test successful execution of main() flow.
@@ -96,7 +96,7 @@ def test_main_success(mock_save, mock_scan):
     mock_scan.assert_called_once()
     mock_save.assert_called_once()
 
-@patch('get_a_grip.tools.filelist.ipc.scan_by_ipc')
+@patch('get_a_grip.cli.filelist.ipc.scan_by_ipc')
 def test_main_invalid_directory(mock_scan, caplog):
     """
     Test main() handles non-existent directory gracefully.
@@ -114,7 +114,7 @@ def test_main_invalid_directory(mock_scan, caplog):
     assert "Directory not found" in caplog.text
     mock_scan.assert_not_called()
 
-@patch('get_a_grip.tools.filelist.ipc.scan')
+@patch('get_a_grip.cli.filelist.ipc.scan')
 def test_main_exception_handling(mock_scan_dir, caplog):
     """
     Test main() handles exceptions during scanning.
