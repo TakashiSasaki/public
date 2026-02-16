@@ -174,5 +174,32 @@ class TestPathParser(unittest.TestCase):
 
     # Alternative test strategy: Mock Path object creation or behavior more directly
 
+class TestPathParserSmoke(unittest.TestCase):
+    """
+    Smoke tests that search for real system commands to ensure
+    the logic works in the actual environment.
+    """
+    def setUp(self):
+        if path_parser is None:
+            self.skipTest("path_parser module could not be imported")
+
+    def test_find_python(self):
+        # python should always be found when running these tests
+        results = path_parser.find_command_in_path("python")
+        self.assertTrue(len(results) > 0, "python should be found in PATH")
+        self.assertTrue(any("python" in p.name.lower() for p in results))
+
+    def test_find_cmd(self):
+        # cmd should be found on Windows
+        results = path_parser.find_command_in_path("cmd")
+        self.assertTrue(len(results) > 0, "cmd should be found in PATH")
+        self.assertTrue(any(p.name.lower() == "cmd.exe" for p in results))
+
+    def test_find_notepad(self):
+        # notepad.exe should be found on Windows
+        results = path_parser.find_command_in_path("notepad.exe")
+        self.assertTrue(len(results) > 0, "notepad.exe should be found in PATH")
+        self.assertTrue(any(p.name.lower() == "notepad.exe" for p in results))
+
 if __name__ == '__main__':
     unittest.main()
