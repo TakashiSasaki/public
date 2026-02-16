@@ -33,14 +33,21 @@ Follow the standard Python src-layout:
         - `find_github_dir.py`: Finds repositories specifically inside folders named 'GitHub'.
       - `whoami.py`: User identity retrieval.
       - `probe.py`: Environment data collection.
+      - `path_viewer.py`: CLI tool for analyzing and verifying PATH environment variables.
       - `inspect_platform_dirs.py`: Tool to inspect OS-specific directory paths provided by `platformdirs`.
       - `inspect_app_data.py`: GUI tool to inspect the contents of the `AppDataStorage` database.
     - `tui/`: **TUI Interface**. Textual-based terminal user interface.
     - `gui/`: **GUI Interface**. Tkinter-based graphical user interface.
+      - `env_viewer.py`: GUI tool for viewing detailed environment variables and PATH information.
     - `mcp/`: **MCP Server**. Interface for Model Context Protocol.
+    - `env_info.py`: **Environment Info Schema**. Defines data structures for environment capture.
     - `identifiers.py`: **Central Identifier Management**. Provides `APP_NAMESPACE_UUID` and `generate_id_v5()`.
     - `storage.py`: **Application Data Storage**. Simple KVS interface (settings/cache) backed by SQLite.
     - `core/`: **Pure Logic Layer**. Contains core implementations of tools.
+      - `env_internal.py`: Core logic for environment variable retrieval and parsing.
+      - `event_log.py`: Core logic for Windows Event Log retrieval.
+      - `path_parser.py`: Core logic for PATH string parsing and command search.
+      - `everything_ipc.py`: Low-level ctypes wrapper for Everything SDK IPC.
       - Code in `core/` must be pure: **NO print()**, **NO sys.exit()**, **NO user prompts**.
       - Should return raw data (dicts, objects) to be consumed by interfaces (CLI, TUI, GUI, MCP).
     - `contracts/`: **Data Contract Layer**. Shared TypedDict schemas for cross-module and external interoperability.
@@ -62,7 +69,7 @@ Follow the standard Python src-layout:
     - `latest.txt`: Human-readable text report.
     - `latest.json`: Machine-readable JSON format for automation and status integration.
     - `latest.jsonld`: JSON-LD format for semantic web compatibility.
-  - **Git Policy**: Track `latest.*` files and HTML reports (for GitHub Pages visibility), ignore historical/timestamped reports.
+  - **Git Policy**: `reports/` directory is **untracked** via `.gitignore` to prevent repository clutter. Do not commit test reports.
 - `examples/`: **Example files** demonstrating tool usage and output formats.
   - Contains sample input files (e.g., `.efu`) and expected output files (e.g., `.jsonld`).
   - Organized by tool or use case (structure to be refined).
@@ -218,8 +225,10 @@ For efficient filesystem scanning on Windows, `get-a-grip` leverages "Everything
 1. **Adding Dependencies:** Use `poetry add <package>`.
 2. **Running Locally:**
    - **Standard:** `poetry run get-a-grip filelist <args>`
-   - **Alias:** `poetry run gag filelist <args>` (Short for "get-a-grip")
-   - **Module:** `poetry run python -m get_a_grip filelist <args>`
+   - **Alias:** `poetry run gag <command> <args>`
+   - **Environment Viewer:** `poetry run env-viewer`
+   - **Path Viewer:** `poetry run get-a-grip path-viewer`
+   - **Module:** `poetry run python -m get_a_grip <module> <args>`
 3. **Testing:** 
    - **General Test Run:** `poetry run test` (uses automated root-directory resolver).
    - **Poe Tasks:**
