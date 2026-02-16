@@ -2,7 +2,7 @@ import os
 import argparse
 import concurrent.futures
 from typing import Dict, List, Any, Optional, Tuple
-from get_a_grip.contracts.git import GitRepoInfo, GitWorktreeInfo, GitWorktreeList
+from get_a_grip.contracts.git import GitRepoInfo, GitWorktreeInfo
 from .utils import (
     get_head_content, 
     get_refs_and_remotes, 
@@ -125,7 +125,7 @@ def get_status_with_timeout(func, path: str, timeout: float) -> Optional[Dict[st
         except Exception:
             return None
 
-def find_git_worktrees(count: int = 50, timeout: float = 0) -> GitWorktreeList:
+def find_git_worktrees(count: int = 50, timeout: float = 0) -> List[GitWorktreeInfo]:
     """
     Finds git worktrees by searching for .git directories and files.
     Verifies candidates using all available backends.
@@ -234,21 +234,19 @@ def find_git_worktrees(count: int = 50, timeout: float = 0) -> GitWorktreeList:
 
         worktrees.append(worktree_info)
             
-    return {
-        "worktrees": worktrees,
-        "count": len(worktrees)
-    }
 
-def print_git_worktrees(data: GitWorktreeList, timeout: float = 0):
+    return worktrees
+
+def print_git_worktrees(worktrees: List[GitWorktreeInfo], timeout: float = 0):
     print(f"Searching for Git worktrees...")
     if timeout > 0:
         print(f"Start Timeout: {timeout} seconds")
     else:
         print("Timeout: Disabled (default)")
     print("-" * 50)
-    print(f"Found {data['count']} worktrees.\n")
+    print(f"Found {len(worktrees)} worktrees.\n")
 
-    for info in data["worktrees"]:
+    for info in worktrees:
         print(f"[WORKTREE] {info['git_worktree_dir']}")
         
         repo_info = info['git_repo_info']

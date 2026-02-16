@@ -6,7 +6,6 @@ from .git import (
     GitHubRepoList,
     GitRepoInfo,
     GitWorktreeInfo,
-    GitWorktreeList,
 )
 
 __all__ = [
@@ -16,5 +15,4 @@ __all__ = [
     "GitWorktreeInfo",
     "GitHubRepo",
     "GitHubRepoList",
-    "GitWorktreeList",
 ]

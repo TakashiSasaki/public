@@ -103,8 +103,8 @@ def test_find_git_worktrees_conflicting_backend_votes(mock_scan, tmp_path):
             with patch('get_a_grip.core.git.find_git_worktree.get_worktree_status_dulwich', return_value=None):
                 data = find_git_worktrees(count=10, timeout=0)
 
-    assert data["count"] == 1
-    wt = data["worktrees"][0]
+    assert len(data) == 1
+    wt = data[0]
     # Conflicting is_clean votes must resolve to False (dirty-safe).
     assert wt["is_clean"] is False
     # Conflicting has_untracked votes resolve via any().
@@ -129,8 +129,7 @@ def test_find_git_worktrees_skips_candidates_with_no_valid_backend(mock_scan, tm
             with patch('get_a_grip.core.git.find_git_worktree.get_worktree_status_dulwich', return_value=None):
                 data = find_git_worktrees(count=10, timeout=0)
 
-    assert data["count"] == 0
-    assert data["worktrees"] == []
+    assert data == []
 
 def test_get_worktree_status_gitpython_missing_backend():
     with patch('get_a_grip.core.git.find_git_worktree.git', None):
@@ -241,24 +240,21 @@ def test_get_status_with_timeout_returns_none_on_timeout():
     assert result is None
 
 def test_print_git_worktrees_timeout_and_detached(capsys):
-    data = {
-        "worktrees": [
-            {
-                "git_worktree_dir": "C:/repo",
-                "is_clean": True,
-                "has_untracked": False,
-                "git_repo_info": {
-                    "git_repo_dir": "C:/repo/.git",
-                    "is_bare": False,
-                    "is_detached": True,
-                    "head": "deadbeef",
-                    "refs": ["refs/heads/main"],
-                    "remotes": ["origin: https://example.invalid/repo.git"],
-                },
-            }
-        ],
-        "count": 1,
-    }
+    data = [
+        {
+            "git_worktree_dir": "C:/repo",
+            "is_clean": True,
+            "has_untracked": False,
+            "git_repo_info": {
+                "git_repo_dir": "C:/repo/.git",
+                "is_bare": False,
+                "is_detached": True,
+                "head": "deadbeef",
+                "refs": ["refs/heads/main"],
+                "remotes": ["origin: https://example.invalid/repo.git"],
+            },
+        }
+    ]
     print_git_worktrees(data, timeout=1.0)
     captured = capsys.readouterr().out
     assert "Start Timeout: 1.0 seconds" in captured

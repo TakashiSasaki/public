@@ -50,11 +50,6 @@ class GitHubRepoList(TypedDict):
     roots_found: bool
 
 
-class GitWorktreeList(TypedDict):
-    """A collection of Git worktree information."""
-
-    worktrees: List[GitWorktreeInfo]
-    count: int
 
 
 __all__ = [
@@ -62,5 +57,4 @@ __all__ = [
     "GitWorktreeInfo",
     "GitHubRepo",
     "GitHubRepoList",
-    "GitWorktreeList",
 ]
