@@ -153,21 +153,7 @@ res_scandir.json
 dirtree_test.json
 
 # Reports directory
-# Keep latest reports and README files, ignore historical data
-/reports/*/history/
-/reports/**/2*.json
-/reports/**/2*.jsonld
-/reports/**/2*.txt
-/reports/**/2*.xml
-/reports/**/2*.html
-
-# Keep latest reports (including HTML for GitHub Pages)
-!/reports/*/latest.*
-!/reports/coverage/html/
-!/reports/status.json
-!/reports/test-status.json
-!/reports/*/README.md
-!/reports/README.md
+reports/
 
 diff.txt
 output.json
@@ -175,3 +161,4 @@ test_output.txt
 test_output_?.txt
 
 .android
+verify_output.txt
