@@ -21,19 +21,13 @@ def main():
     active_paths = get_system_path()
 
     # Get registry PATHs to determine source
-    # Registry paths are stored as strings separated by os.pathsep (';' on Windows)
-    system_registry_path_str = get_system_path_from_registry()
-    user_registry_path_str = get_user_path_from_registry()
+    system_registry_paths_raw = get_system_path_from_registry()
+    user_registry_paths_raw = get_user_path_from_registry()
 
     # Normalize paths for comparison (lower case, resolve symlinks might be too much, just basic normcase)
     # We use a set for faster lookup. 
-    # Handle empty strings to avoid split returning ['']
-    system_registry_paths = set(
-        os.path.normcase(p) for p in system_registry_path_str.split(os.pathsep) if p
-    )
-    user_registry_paths = set(
-        os.path.normcase(p) for p in user_registry_path_str.split(os.pathsep) if p
-    )
+    system_registry_paths = set(os.path.normcase(p) for p in system_registry_paths_raw)
+    user_registry_paths = set(os.path.normcase(p) for p in user_registry_paths_raw)
 
     path_data = []
     

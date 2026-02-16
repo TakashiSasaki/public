@@ -66,7 +66,7 @@ class TestPathParser(unittest.TestCase):
 
         result = path_parser.get_system_path_from_registry()
         
-        self.assertEqual(result, expected_path)
+        self.assertEqual(result, ["C:\\SystemPath1", "C:\\SystemPath2"])
         mock_winreg.OpenKey.assert_called_with(
             mock_winreg.HKEY_LOCAL_MACHINE, 
             r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment"
@@ -79,7 +79,7 @@ class TestPathParser(unittest.TestCase):
         mock_winreg.OpenKey.side_effect = FileNotFoundError
         
         result = path_parser.get_system_path_from_registry()
-        self.assertEqual(result, "")
+        self.assertEqual(result, [])
 
     @patch('get_a_grip.core.path_parser.winreg')
     def test_get_user_path_from_registry(self, mock_winreg):
@@ -94,7 +94,7 @@ class TestPathParser(unittest.TestCase):
 
         result = path_parser.get_user_path_from_registry()
         
-        self.assertEqual(result, expected_path)
+        self.assertEqual(result, ["C:\\UserPath1", "C:\\UserPath2"])
         mock_winreg.OpenKey.assert_called_with(
             mock_winreg.HKEY_CURRENT_USER, 
             r"Environment"
@@ -105,7 +105,7 @@ class TestPathParser(unittest.TestCase):
     def test_get_user_path_from_registry_not_found(self, mock_winreg):
         mock_winreg.OpenKey.side_effect = FileNotFoundError
         result = path_parser.get_user_path_from_registry()
-        self.assertEqual(result, "")
+        self.assertEqual(result, [])
 
 if __name__ == '__main__':
     unittest.main()

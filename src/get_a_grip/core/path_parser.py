@@ -14,7 +14,7 @@ def get_system_path() -> List[str]:
     # os.pathsep is ';' on Windows and ':' on Unix-like systems
     return [p for p in path_env.split(os.pathsep) if p]
 
-def get_system_path_from_registry() -> str:
+def get_system_path_from_registry() -> List[str]:
     """
     Retrieves the system PATH environment variable directly from the Windows Registry.
     Key: HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment
@@ -23,11 +23,12 @@ def get_system_path_from_registry() -> str:
     try:
         with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, key_path) as key:
             value, _ = winreg.QueryValueEx(key, "Path")
-            return value
+            # os.pathsep is ';' on Windows
+            return [p for p in value.split(os.pathsep) if p]
     except FileNotFoundError:
-        return ""
+        return []
 
-def get_user_path_from_registry() -> str:
+def get_user_path_from_registry() -> List[str]:
     """
     Retrieves the user PATH environment variable directly from the Windows Registry.
     Key: HKEY_CURRENT_USER\\Environment
@@ -36,6 +37,6 @@ def get_user_path_from_registry() -> str:
     try:
         with winreg.OpenKey(winreg.HKEY_CURRENT_USER, key_path) as key:
             value, _ = winreg.QueryValueEx(key, "Path")
-            return value
+            return [p for p in value.split(os.pathsep) if p]
     except FileNotFoundError:
-        return ""
+        return []
