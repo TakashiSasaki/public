@@ -24,16 +24,11 @@ class GitRepoInfo(TypedDict):
 
 class GitWorktreeInfo(TypedDict):
     git_worktree_dir: str
+    has_dot_git_file: bool #ワークツリーの中には.gitファイルがリポジトリを指すものがある。
     is_clean: bool
     has_untracked: bool
     git_repo_info: GitRepoInfo
 
-
-class GitRepoList(TypedDict):
-    """A collection of Git repository information."""
-
-    repos: List[GitRepoInfo]
-    count: int
 
 
 class GitHubRepo(TypedDict):
@@ -65,7 +60,6 @@ class GitWorktreeList(TypedDict):
 __all__ = [
     "GitRepoInfo",
     "GitWorktreeInfo",
-    "GitRepoList",
     "GitHubRepo",
     "GitHubRepoList",
     "GitWorktreeList",

@@ -1,7 +1,7 @@
 import os
 import argparse
 from typing import Dict, Any, List, Optional
-from .git_types import GitRepoInfo, GitRepoList
+from .git_types import GitRepoInfo
 from .utils import is_bare_repo, get_head_content, get_refs_and_remotes
 from get_a_grip.tools.everything_ipc import scan_by_ipc
 
@@ -78,7 +78,8 @@ def check_path_info(path: str) -> Optional[GitRepoInfo]:
         "remotes": remotes,
     }
 
-def find_git_repos(count: int = 50) -> GitRepoList:
+
+def find_git_repos(count: int = 50) -> List[GitRepoInfo]:
     """
     Searches for Git repositories and returns a list of their info.
     """
@@ -106,17 +107,14 @@ def find_git_repos(count: int = 50) -> GitRepoList:
         if info:
             repos.append(info)
     
-    return {
-        "repos": repos,
-        "count": len(repos)
-    }
+    return repos
 
-def print_git_repos(data: GitRepoList):
+def print_git_repos(repos: List[GitRepoInfo]):
     print(f"Searching for Git repositories (.git directories and configurations)...")
     print("-" * 60)
-    print(f"Found {data['count']} candidates via Everything.\n")
+    print(f"Found {len(repos)} candidates via Everything.\n")
 
-    for info in data["repos"]:
+    for info in repos:
         repo = info["git_repo_dir"]
         is_bare = info["is_bare"]
         
@@ -139,8 +137,8 @@ def main():
     parser = argparse.ArgumentParser(description="Find Git repositories and check their bare status.")
     parser.add_argument("--count", type=int, default=50, help="Max results from Everything")
     args = parser.parse_args()
-    data = find_git_repos(count=args.count)
-    print_git_repos(data)
+    repos = find_git_repos(count=args.count)
+    print_git_repos(repos)
 
 if __name__ == "__main__":
     main()

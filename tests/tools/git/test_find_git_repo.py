@@ -186,8 +186,8 @@ def test_find_git_repos_integration(mock_scan, tmp_path, capsys):
     assert "Status  : BARE" in captured.out
 
     # Validate returned data directly, not only print output
-    assert data["count"] == 3
-    repo_dirs = [os.path.normcase(repo["git_repo_dir"]) for repo in data["repos"]]
+    assert len(data) == 3
+    repo_dirs = [os.path.normcase(repo["git_repo_dir"]) for repo in data]
     counts = Counter(repo_dirs)
     assert counts[os.path.normcase(str(nb_git))] == 2
     assert counts[os.path.normcase(str(bare_git))] == 1
@@ -196,27 +196,27 @@ def test_find_git_repos_handles_ipc_failures():
     with patch('get_a_grip.core.git.find_git_repo.scan_by_ipc', side_effect=RuntimeError("ipc-fail")):
         data = find_git_repos(count=10)
 
-    assert data["count"] == 0
-    assert data["repos"] == []
+    assert data == []
 
 def test_print_git_repos_prints_detached_remotes_and_refs(capsys):
-    data = {
-        "repos": [
-            {
-                "git_repo_dir": "C:/repo/.git",
-                "is_bare": False,
-                "is_detached": True,
-                "head": "deadbeef1234",
-                "refs": ["refs/heads/main"],
-                "remotes": ["origin: https://example.invalid/repo.git"],
-            }
-        ],
-        "count": 1,
-    }
+    data = [
+        {
+            "git_repo_dir": "C:/repo/.git",
+            "is_bare": False,
+            "is_detached": True,
+            "head": "deadbeef1234",
+            "refs": ["refs/heads/main"],
+            "remotes": ["origin: https://example.invalid/repo.git"],
+        }
+    ]
 
     print_git_repos(data)
     captured = capsys.readouterr().out
     assert "State   : DETACHED" in captured
     assert "Remotes : origin: https://example.invalid/repo.git" in captured
     assert "Refs    : 1 refs" in captured
+
+if __name__ == "__main__":
+    import unittest
+    unittest.main()
 

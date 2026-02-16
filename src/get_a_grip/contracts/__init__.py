@@ -5,7 +5,6 @@ from .git import (
     GitHubRepo,
     GitHubRepoList,
     GitRepoInfo,
-    GitRepoList,
     GitWorktreeInfo,
     GitWorktreeList,
 )
@@ -15,7 +14,6 @@ __all__ = [
     "FileList",
     "GitRepoInfo",
     "GitWorktreeInfo",
-    "GitRepoList",
     "GitHubRepo",
     "GitHubRepoList",
     "GitWorktreeList",
