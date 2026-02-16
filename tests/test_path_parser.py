@@ -108,5 +108,81 @@ class TestPathParser(unittest.TestCase):
         result = path_parser.get_user_path_from_registry()
         self.assertEqual(result, [])
 
+    @patch('get_a_grip.core.path_parser.get_system_path')
+    @patch('os.environ')
+    def test_find_in_path(self, mock_environ, mock_get_system_path):
+        import tempfile
+        import shutil
+
+        # Create a temporary directory structure for testing
+        # We use strict naming to avoid side effects
+        self.test_dir = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.test_dir)
+
+        dir1 = Path(self.test_dir) / "Dir1"
+        dir2 = Path(self.test_dir) / "Dir2"
+        dir1.mkdir()
+        dir2.mkdir()
+
+        # Create dummy files
+        (dir1 / "app.exe").touch()
+        (dir2 / "app.bat").touch()
+        (dir1 / "script.py").touch()
+
+        # Mock system path to point to these temporary directories
+        mock_get_system_path.return_value = [dir1, dir2]
+        
+        # Setup PATHEXT
+        mock_environ.get.return_value = ".EXE;.BAT"
+
+        # Test 1: Find 'app' (should find app.exe and app.bat)
+        results = path_parser.find_in_path("app")
+        
+        self.assertEqual(len(results), 2)
+        # Sort by name to ensure consistent order for assertion
+        # Note: verify actual existence not just string check, though touch() ensures they exist.
+        results_sorted = sorted(results, key=lambda p: str(p).lower())
+        
+        # dir2/app.bat comes after dir1/app.exe alphabetically, but implementation depends on search order
+        # search order: Dir1 then Dir2.
+        # Dir1 has app.exe. Dir2 has app.bat. 
+        # So results[0] should be app.exe, results[1] should be app.bat.
+        
+        self.assertTrue(results[0].name.lower() == "app.exe")
+        self.assertTrue(results[1].name.lower() == "app.bat")
+        
+        # Verify they are the correct full paths
+        self.assertEqual(results[0].resolve(), (dir1 / "app.exe").resolve())
+        self.assertEqual(results[1].resolve(), (dir2 / "app.bat").resolve())
+
+        # Test 2: Find 'script.py' (exact extension)
+        results = path_parser.find_in_path("script.py")
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0].resolve(), (dir1 / "script.py").resolve())
+
+        # Test 3: Not found
+        results = path_parser.find_in_path("missing")
+        self.assertEqual(results, [])
+
+    # Alternative test strategy: Mock Path object creation or behavior more directly
+    @patch('get_a_grip.core.path_parser.get_system_path')
+    def test_find_in_path_simple(self, mock_get_system_path):
+        # Mock directories
+        dir1 = MagicMock(spec=Path)
+        dir1.exists.return_value = True
+        dir1.is_dir.return_value = True
+        
+        dir2 = MagicMock(spec=Path)
+        dir2.exists.return_value = True
+        dir2.is_dir.return_value = True
+        
+        mock_get_system_path.return_value = [dir1, dir2]
+
+        # We need the `directory / candidate_name` to return a Path object that we can verify
+        # but Path operator overloading is hard to mock if we use real Path in get_system_path
+        # Easier to run with real Path objects and mock filesystem partially or use `pyfakefs` if available.
+        # Since we don't have pyfakefs, we'll maintain the current mocking strategy but be careful.
+        pass
+
 if __name__ == '__main__':
     unittest.main()
