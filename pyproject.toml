@@ -20,8 +20,7 @@ dependencies = [
 gag = "get_a_grip.cli.main:main"
 
 [project.gui-scripts]
-gag-gui = "get_a_grip.ttk:main"
-gui = "get_a_grip.gui.event_viewer:main"
+get-a-grip = "get_a_grip.gui.launcher:main"
 
 [tool.poe.tasks]
 gui = { cmd = "python -m get_a_grip.gui.event_viewer", help = "Run the Event Viewer GUI" }
