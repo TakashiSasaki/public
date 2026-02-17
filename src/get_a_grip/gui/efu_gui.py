@@ -18,6 +18,27 @@ class EfuGuiApp:
         self.create_update_tab()
         self.create_merge_tab()
 
+    def get_available_drives(self):
+        import string
+        import os
+        drives = []
+        for d in string.ascii_uppercase:
+            drive_path = f"{d}:/"
+            if os.path.exists(drive_path):
+                drives.append(drive_path)
+        return drives
+
+    def create_drive_buttons(self, parent, string_var):
+        frame = ttk.Frame(parent)
+        frame.pack(fill='x', padx=5, pady=2)
+        ttk.Label(frame, text="Drives:").pack(side='left')
+        
+        drives = self.get_available_drives()
+        for drive in drives:
+            btn = ttk.Button(frame, text=drive, width=4, 
+                             command=lambda d=drive: string_var.set(d))
+            btn.pack(side='left', padx=2)
+
     def create_update_tab(self):
         tab = ttk.Frame(self.notebook)
         self.notebook.add(tab, text="Update EFU")
@@ -36,6 +57,9 @@ class EfuGuiApp:
         self.update_dir_var = tk.StringVar()
         ttk.Entry(frame_dir, textvariable=self.update_dir_var).pack(side='left', expand=True, fill='x', padx=5)
         ttk.Button(frame_dir, text="Browse...", command=lambda: self.browse_dir(self.update_dir_var)).pack(side='left')
+        
+        # Drive Buttons
+        self.create_drive_buttons(tab, self.update_dir_var)
 
         # Execute Button
         ttk.Button(tab, text="Run Update", command=self.run_update).pack(pady=10)
@@ -62,6 +86,9 @@ class EfuGuiApp:
         self.merge_dir_var = tk.StringVar()
         ttk.Entry(frame_dir, textvariable=self.merge_dir_var).pack(side='left', expand=True, fill='x', padx=5)
         ttk.Button(frame_dir, text="Browse...", command=lambda: self.browse_dir(self.merge_dir_var)).pack(side='left')
+
+        # Drive Buttons
+        self.create_drive_buttons(tab, self.merge_dir_var)
 
         # Output File
         frame_out = ttk.Frame(tab)
