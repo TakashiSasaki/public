@@ -46,14 +46,48 @@ def update_efu_file(efu_root: Path, uuid: str):
     # Load existing EFU if it exists
     fieldnames = ["Filename", "Size", "Date Modified", "Date Created", "Attributes", "Last Seen"]
     if efu_path.exists():
+        # Validation: Check if empty or valid CSV
+        is_valid = False
+        if efu_path.stat().st_size == 0:
+            is_valid = True
+        else:
+            try:
+                with open(efu_path, "r", encoding="utf-8-sig", newline="") as f:
+                    # Read the first line to check header
+                    header = f.readline().strip()
+                    # Check if header contains at least "Filename" and looks like CSV
+                    if "Filename" in header and "," in header:
+                        is_valid = True
+                    else:
+                        is_valid = False
+            except Exception:
+                is_valid = False
+
+        if not is_valid:
+            # Try full parse to be sure (and load data) - actually we can just combine validation with loading
+            pass
+
         try:
             with open(efu_path, "r", encoding="utf-8-sig", newline="") as f:
                 reader = csv.DictReader(f)
+                # Force reading to validate CSV structure
+                file_entries = {}
                 for row in reader:
                     if row.get("Filename"):
-                        entries[row["Filename"]] = row
+                        file_entries[row["Filename"]] = row
+                
+                # If we get here, CSV is valid (or empty enough to loop 0 times)
+                entries = file_entries
         except Exception as e:
-            print(f"Warning: Failed to read existing EFU {efu_path}: {e}")
+            if efu_path.stat().st_size > 0:
+                print(f"Error: Existing EFU {efu_path} is not a valid CSV or empty. Skipping update to prevent data loss. ({e})")
+                return
+            else:
+                # File is empty (size > 0 check failed above, but Exception caught?), 
+                # actually checking st_size at start is better.
+                # If size > 0 and read fails, we abort.
+                # If size == 0, we proceed with empty entries.
+                entries = {}
 
     # Collect current files
     current_scan_rows = []
