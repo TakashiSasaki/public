@@ -59,3 +59,21 @@ root/
     - (別途探索プロセスで更新される場合)
     - `root/subdir2/my-uuid.efu`
     - `root/subdir2/file3.txt`
+
+## 5. Everything EFU形式 (CSV) の仕様
+収集した情報は、以下のヘッダーを持つCSV形式で `<uuid>.efu` に保存します。
+
+- **ヘッダー行**: `Filename,Size,Date Modified,Date Created,Attributes`
+- **エンコーディング**: UTF-8 (BOM付き推奨)
+
+### 5.1. 各カラムの定義
+| カラム名 | 説明 | 備考 |
+| :--- | :--- | :--- |
+| **Filename** | ファイルまたはディレクトリのフルパス | |
+| **Size** | ファイルサイズ (バイト) | ディレクトリの場合は通常空、または0 |
+| **Date Modified** | 最終更新日時 | Windows FILETIME形式 (1601年1月1日からの100ナノ秒間隔) |
+| **Date Created** | 作成日時 | Windows FILETIME形式 |
+| **Attributes** | ファイル属性フラグ | ディレクトリの場合は `16` (0x10) を指定 |
+
+> [!NOTE]
+> Windows FILETIMEは、Pythonの `os.path.getmtime()` で得られるUnixタイムスタンプから変換して記録する必要があります。
