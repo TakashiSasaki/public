@@ -69,6 +69,11 @@ try:
 except ImportError:
     tui_main = None
 
+try:
+    from get_a_grip.gui.shortcut_manager import main as shortcut_manager_main
+except ImportError:
+    shortcut_manager_main = None
+
 
 def main():
     parser = argparse.ArgumentParser(description="get-a-grip: A collection of tools.")
@@ -85,6 +90,10 @@ def main():
     # --- Env/Path Tools ---
     subparsers.add_parser("env", help="Environment Viewer GUI")
     subparsers.add_parser("path", help="Path Viewer CLI")
+
+    # --- Shortcut Management ---
+    shortcut_parser = subparsers.add_parser("shortcut", help="Manage Start Menu shortcut")
+    shortcut_parser.add_argument("action", choices=["install", "uninstall"], help="Action to perform")
 
     # --- Git/Tools ---
     tools_parser = subparsers.add_parser("tools", help="Miscellaneous tools")
@@ -240,6 +249,17 @@ def main():
     elif args.command == "tui":
         if tui_main: tui_main()
         else: print("Textual not installed.")
+
+    elif args.command == "shortcut":
+        if shortcut_manager_main:
+            # Reconstruct args for the shortcut manager or just call functions?
+            # shortcut_manager.main uses argparse on sys.argv or we can pass args?
+            # It uses parser.parse_args().
+            # So we set sys.argv.
+            sys.argv = ["gag-shortcut", args.action]
+            shortcut_manager_main()
+        else:
+            print("Error: shortcut manager not found (pywin32 might be missing).")
 
     # --- Core Commands (Fully implemented here) ---
     elif args.command == "filelist":
