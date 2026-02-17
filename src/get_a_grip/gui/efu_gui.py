@@ -39,7 +39,7 @@ class EfuGuiApp:
                              command=lambda d=drive: string_var.set(d))
             btn.pack(side='left', padx=2)
 
-    def check_dir_for_uuid(self, dir_var, uuid_var):
+    def on_dir_change(self, dir_var, uuid_var, log_widget):
         path_str = dir_var.get().strip()
         if not path_str:
             return
@@ -48,35 +48,55 @@ class EfuGuiApp:
         if not path.exists() or not path.is_dir():
             return
             
-        # Find valid UUIDs (files looking like <uuid>.efu)
-        # We assume UUID doesn't contain '.' ? Actually filename is <uuid>.efu.
-        # Let's list all .efu files.
+        # 1. UUID Auto-fill
         try:
             efu_files = list(path.glob('*.efu'))
             if len(efu_files) == 1:
-                # Auto-fill
                 uuid = efu_files[0].stem
                 uuid_var.set(uuid)
         except Exception as e:
-            print(f"Error scanning dir: {e}")
+            print(f"Error scanning dir for UUID: {e}")
+
+        # 2. List Directory Contents
+        try:
+            items = []
+            for item in path.iterdir():
+                prefix = "[DIR] " if item.is_dir() else "[FILE]"
+                items.append(f"{prefix} {item.name}")
+            
+            # Sort: Dirs first, then files
+            items.sort(key=lambda x: (x.startswith("[FILE]"), x))
+
+            log_widget.config(state='normal')
+            log_widget.delete(1.0, 'end')
+            log_widget.insert('end', f"--- Contents of {path} ---\n")
+            log_widget.insert('end', "\n".join(items))
+            log_widget.see('1.0') # Scroll to top
+            log_widget.config(state='disabled')
+        except Exception as e:
+            # Don't use self.log here to avoid appending error to previous content if we wanted to clear it?
+            # actually self.log appends. We probably want to just show error.
+            log_widget.config(state='normal')
+            log_widget.delete(1.0, 'end')
+            log_widget.insert('end', f"Error listing directory: {e}\n")
+            log_widget.config(state='disabled')
 
     def create_update_tab(self):
         tab = ttk.Frame(self.notebook)
         self.notebook.add(tab, text="Update EFU")
 
-        # Start Dir (Moved up)
+        # Start Dir
         frame_dir = ttk.Frame(tab)
         frame_dir.pack(fill='x', padx=5, pady=5)
         ttk.Label(frame_dir, text="Start Directory:").pack(side='left')
         self.update_dir_var = tk.StringVar()
-        self.update_dir_var.trace_add("write", lambda *args: self.check_dir_for_uuid(self.update_dir_var, self.update_uuid_var))
         ttk.Entry(frame_dir, textvariable=self.update_dir_var).pack(side='left', expand=True, fill='x', padx=5)
         ttk.Button(frame_dir, text="Browse...", command=lambda: self.browse_dir(self.update_dir_var)).pack(side='left')
         
         # Drive Buttons
         self.create_drive_buttons(tab, self.update_dir_var)
 
-        # UUID (Moved down)
+        # UUID
         frame_uuid = ttk.Frame(tab)
         frame_uuid.pack(fill='x', padx=5, pady=5)
         ttk.Label(frame_uuid, text="UUID:").pack(side='left')
@@ -89,24 +109,26 @@ class EfuGuiApp:
         # Log Area
         self.update_log = tk.Text(tab, state='disabled', height=15)
         self.update_log.pack(expand=True, fill='both', padx=5, pady=5)
+        
+        # Trace (Late binding)
+        self.update_dir_var.trace_add("write", lambda *args: self.on_dir_change(self.update_dir_var, self.update_uuid_var, self.update_log))
 
     def create_merge_tab(self):
         tab = ttk.Frame(self.notebook)
         self.notebook.add(tab, text="Merge EFU")
 
-        # Start Dir (Moved up)
+        # Start Dir
         frame_dir = ttk.Frame(tab)
         frame_dir.pack(fill='x', padx=5, pady=5)
         ttk.Label(frame_dir, text="Start Directory:").pack(side='left')
         self.merge_dir_var = tk.StringVar()
-        self.merge_dir_var.trace_add("write", lambda *args: self.check_dir_for_uuid(self.merge_dir_var, self.merge_uuid_var))
         ttk.Entry(frame_dir, textvariable=self.merge_dir_var).pack(side='left', expand=True, fill='x', padx=5)
         ttk.Button(frame_dir, text="Browse...", command=lambda: self.browse_dir(self.merge_dir_var)).pack(side='left')
 
         # Drive Buttons
         self.create_drive_buttons(tab, self.merge_dir_var)
 
-        # UUID (Moved down)
+        # UUID
         frame_uuid = ttk.Frame(tab)
         frame_uuid.pack(fill='x', padx=5, pady=5)
         ttk.Label(frame_uuid, text="UUID:").pack(side='left')
@@ -127,6 +149,9 @@ class EfuGuiApp:
         # Log Area
         self.merge_log = tk.Text(tab, state='disabled', height=15)
         self.merge_log.pack(expand=True, fill='both', padx=5, pady=5)
+        
+        # Trace
+        self.merge_dir_var.trace_add("write", lambda *args: self.on_dir_change(self.merge_dir_var, self.merge_uuid_var, self.merge_log))
 
     def browse_dir(self, var):
         d = filedialog.askdirectory()
