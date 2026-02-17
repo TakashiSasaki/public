@@ -19,9 +19,6 @@ dependencies = [
 [project.scripts]
 gag = "get_a_grip.cli.main:main"
 
-[project.gui-scripts]
-get-a-grip = "get_a_grip.gui.launcher:main"
-
 [tool.poe.tasks]
 gui = { cmd = "python -m get_a_grip.gui.event_viewer", help = "Run the Event Viewer GUI" }
 env-viewer = { cmd = "python -m get_a_grip.gui.env_viewer", help = "Run the Environment Info GUI" }
