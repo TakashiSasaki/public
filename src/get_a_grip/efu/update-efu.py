@@ -36,6 +36,7 @@ def update_efu_file(efu_root: Path, uuid: str):
     """
     efu_filename = f"{uuid}.efu"
     efu_path = efu_root / efu_filename
+    last_seen = datetime.now().isoformat()
     
     rows = []
     
@@ -50,6 +51,7 @@ def update_efu_file(efu_root: Path, uuid: str):
                 
                 row = get_efu_row(item)
                 if row:
+                    row["Last Seen"] = last_seen
                     rows.append(row)
                 
                 if item.is_dir():
@@ -66,6 +68,7 @@ def update_efu_file(efu_root: Path, uuid: str):
     # Record the root itself?
     root_row = get_efu_row(efu_root)
     if root_row:
+        root_row["Last Seen"] = last_seen
         rows.append(root_row)
         
     collect(efu_root)
@@ -74,7 +77,7 @@ def update_efu_file(efu_root: Path, uuid: str):
     rows.sort(key=lambda x: x["Filename"])
 
     # Write to CSV with BOM
-    fieldnames = ["Filename", "Size", "Date Modified", "Date Created", "Attributes"]
+    fieldnames = ["Filename", "Size", "Date Modified", "Date Created", "Attributes", "Last Seen"]
     with open(efu_path, "w", encoding="utf-8-sig", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()

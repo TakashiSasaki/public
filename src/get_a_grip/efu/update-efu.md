@@ -63,7 +63,7 @@ root/
 ## 5. Everything EFU形式 (CSV) の仕様
 収集した情報は、以下のヘッダーを持つCSV形式で `<uuid>.efu` に保存します。
 
-- **ヘッダー行**: `Filename,Size,Date Modified,Date Created,Attributes`
+- **ヘッダー行**: `Filename,Size,Date Modified,Date Created,Attributes,Last Seen`
 - **エンコーディング**: UTF-8 (BOM付き推奨)
 
 ### 5.1. 各カラムの定義
@@ -74,6 +74,7 @@ root/
 | **Date Modified** | 最終更新日時 | Windows FILETIME形式 (1601年1月1日からの100ナノ秒間隔) |
 | **Date Created** | 作成日時 | Windows FILETIME形式 |
 | **Attributes** | ファイル属性フラグ | ディレクトリの場合は `16` (0x10) を指定 |
+| **Last Seen** | 情報取得日時 | ISO8601形式 (Everythingでは無視される) |
 
 > [!NOTE]
 > Windows FILETIMEは、Pythonの `os.path.getmtime()` で得られるUnixタイムスタンプから変換して記録する必要があります。
