@@ -244,7 +244,10 @@ class EfuGuiApp:
         self.merge_log.config(state='disabled')
         self.run_command_in_thread(cmd, self.merge_log)
 
-if __name__ == "__main__":
+def main():
     root = tk.Tk()
     app = EfuGuiApp(root)
     root.mainloop()
+
+if __name__ == "__main__":
+    main()
