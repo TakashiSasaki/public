@@ -39,27 +39,49 @@ class EfuGuiApp:
                              command=lambda d=drive: string_var.set(d))
             btn.pack(side='left', padx=2)
 
+    def check_dir_for_uuid(self, dir_var, uuid_var):
+        path_str = dir_var.get().strip()
+        if not path_str:
+            return
+        
+        path = Path(path_str)
+        if not path.exists() or not path.is_dir():
+            return
+            
+        # Find valid UUIDs (files looking like <uuid>.efu)
+        # We assume UUID doesn't contain '.' ? Actually filename is <uuid>.efu.
+        # Let's list all .efu files.
+        try:
+            efu_files = list(path.glob('*.efu'))
+            if len(efu_files) == 1:
+                # Auto-fill
+                uuid = efu_files[0].stem
+                uuid_var.set(uuid)
+        except Exception as e:
+            print(f"Error scanning dir: {e}")
+
     def create_update_tab(self):
         tab = ttk.Frame(self.notebook)
         self.notebook.add(tab, text="Update EFU")
 
-        # UUID
-        frame_uuid = ttk.Frame(tab)
-        frame_uuid.pack(fill='x', padx=5, pady=5)
-        ttk.Label(frame_uuid, text="UUID:").pack(side='left')
-        self.update_uuid_var = tk.StringVar()
-        ttk.Entry(frame_uuid, textvariable=self.update_uuid_var).pack(side='left', expand=True, fill='x', padx=5)
-
-        # Start Dir
+        # Start Dir (Moved up)
         frame_dir = ttk.Frame(tab)
         frame_dir.pack(fill='x', padx=5, pady=5)
         ttk.Label(frame_dir, text="Start Directory:").pack(side='left')
         self.update_dir_var = tk.StringVar()
+        self.update_dir_var.trace_add("write", lambda *args: self.check_dir_for_uuid(self.update_dir_var, self.update_uuid_var))
         ttk.Entry(frame_dir, textvariable=self.update_dir_var).pack(side='left', expand=True, fill='x', padx=5)
         ttk.Button(frame_dir, text="Browse...", command=lambda: self.browse_dir(self.update_dir_var)).pack(side='left')
         
         # Drive Buttons
         self.create_drive_buttons(tab, self.update_dir_var)
+
+        # UUID (Moved down)
+        frame_uuid = ttk.Frame(tab)
+        frame_uuid.pack(fill='x', padx=5, pady=5)
+        ttk.Label(frame_uuid, text="UUID:").pack(side='left')
+        self.update_uuid_var = tk.StringVar()
+        ttk.Entry(frame_uuid, textvariable=self.update_uuid_var).pack(side='left', expand=True, fill='x', padx=5)
 
         # Execute Button
         ttk.Button(tab, text="Run Update", command=self.run_update).pack(pady=10)
@@ -72,23 +94,24 @@ class EfuGuiApp:
         tab = ttk.Frame(self.notebook)
         self.notebook.add(tab, text="Merge EFU")
 
-        # UUID
-        frame_uuid = ttk.Frame(tab)
-        frame_uuid.pack(fill='x', padx=5, pady=5)
-        ttk.Label(frame_uuid, text="UUID:").pack(side='left')
-        self.merge_uuid_var = tk.StringVar()
-        ttk.Entry(frame_uuid, textvariable=self.merge_uuid_var).pack(side='left', expand=True, fill='x', padx=5)
-
-        # Start Dir
+        # Start Dir (Moved up)
         frame_dir = ttk.Frame(tab)
         frame_dir.pack(fill='x', padx=5, pady=5)
         ttk.Label(frame_dir, text="Start Directory:").pack(side='left')
         self.merge_dir_var = tk.StringVar()
+        self.merge_dir_var.trace_add("write", lambda *args: self.check_dir_for_uuid(self.merge_dir_var, self.merge_uuid_var))
         ttk.Entry(frame_dir, textvariable=self.merge_dir_var).pack(side='left', expand=True, fill='x', padx=5)
         ttk.Button(frame_dir, text="Browse...", command=lambda: self.browse_dir(self.merge_dir_var)).pack(side='left')
 
         # Drive Buttons
         self.create_drive_buttons(tab, self.merge_dir_var)
+
+        # UUID (Moved down)
+        frame_uuid = ttk.Frame(tab)
+        frame_uuid.pack(fill='x', padx=5, pady=5)
+        ttk.Label(frame_uuid, text="UUID:").pack(side='left')
+        self.merge_uuid_var = tk.StringVar()
+        ttk.Entry(frame_uuid, textvariable=self.merge_uuid_var).pack(side='left', expand=True, fill='x', padx=5)
 
         # Output File
         frame_out = ttk.Frame(tab)
