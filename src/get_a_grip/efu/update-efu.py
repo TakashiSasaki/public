@@ -33,12 +33,30 @@ def update_efu_file(efu_root: Path, uuid: str):
     """
     Traverses efu_root and records entries into <uuid>.efu.
     Stops at subdirectories that contain their own <uuid>.efu.
+    Existing entries in <uuid>.efu are preserved if not found in current scan (monotonic increase).
     """
     efu_filename = f"{uuid}.efu"
     efu_path = efu_root / efu_filename
     last_seen = datetime.now().isoformat()
     
-    rows = []
+    # Dictionary to store entries keyed by Filename
+    # This allows us to merge existing data with new data
+    entries = {}
+
+    # Load existing EFU if it exists
+    fieldnames = ["Filename", "Size", "Date Modified", "Date Created", "Attributes", "Last Seen"]
+    if efu_path.exists():
+        try:
+            with open(efu_path, "r", encoding="utf-8-sig", newline="") as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    if row.get("Filename"):
+                        entries[row["Filename"]] = row
+        except Exception as e:
+            print(f"Warning: Failed to read existing EFU {efu_path}: {e}")
+
+    # Collect current files
+    current_scan_rows = []
     
     # We use os.walk but manually handle pruning
     # Actually, a simple recursive function is easier for pruning
@@ -52,7 +70,7 @@ def update_efu_file(efu_root: Path, uuid: str):
                 row = get_efu_row(item)
                 if row:
                     row["Last Seen"] = last_seen
-                    rows.append(row)
+                    current_scan_rows.append(row)
                 
                 if item.is_dir():
                     # Check if this subdirectory has its own <uuid>.efu
@@ -69,21 +87,24 @@ def update_efu_file(efu_root: Path, uuid: str):
     root_row = get_efu_row(efu_root)
     if root_row:
         root_row["Last Seen"] = last_seen
-        rows.append(root_row)
+        current_scan_rows.append(root_row)
         
     collect(efu_root)
     
-    # Sort rows by Filename for consistency
-    rows.sort(key=lambda x: x["Filename"])
+    # Merge current scan into entries (overwrite existing)
+    for row in current_scan_rows:
+        entries[row["Filename"]] = row
+
+    # Convert back to list and sort
+    sorted_rows = sorted(entries.values(), key=lambda x: x["Filename"])
 
     # Write to CSV with BOM
-    fieldnames = ["Filename", "Size", "Date Modified", "Date Created", "Attributes", "Last Seen"]
     with open(efu_path, "w", encoding="utf-8-sig", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
-        writer.writerows(rows)
+        writer.writerows(sorted_rows)
     
-    print(f"Updated {efu_path} with {len(rows)} entries.")
+    print(f"Updated {efu_path} with {len(sorted_rows)} entries (scanned: {len(current_scan_rows)}).")
 
 def main():
     parser = argparse.ArgumentParser(description="Update Everything EFU files based on UUID.")
