@@ -142,8 +142,8 @@ def update_efu_file(efu_root: Path, uuid: str):
 
 def main():
     parser = argparse.ArgumentParser(description="Update Everything EFU files based on UUID.")
-    parser.add_argument("uuid", help="UUID used for the EFU filename (<uuid>.efu)")
-    parser.add_argument("start_dir", help="Directory to start searching for EFU files")
+    parser.add_argument("--uuid", required=True, help="UUID used for the EFU filename (<uuid>.efu)")
+    parser.add_argument("--start-dir", required=True, help="Directory to start searching for EFU files")
     
     args = parser.parse_args()
     start_path = Path(args.start_dir)
