@@ -15,7 +15,7 @@ Follow the standard Python src-layout:
 - `src/get_a_grip/`: Main package source code.
 
     - `cli/`: **CLI Interface & Tools**. Contains CLI entry points and command implementations.
-      - `__init__.py`: Functions as the main entry point (`python -m get_a_grip`).
+      - `main.py`: Main entry point for the consolidated `gag` CLI.
       - `filelist/`: **File Scanning Package**.
         - `__init__.py`: Provides a robust `scan()` function that validates multiple methods (`scandir`, `walk`, `rglob`).
         - `types.py`: Compatibility export for filelist types and `FileScanner` protocol.
@@ -25,6 +25,9 @@ Follow the standard Python src-layout:
       - `dirtree.py`: Recursive directory tree traversal (hierarchical output).
       - `filelist2dirtree.py`: Converter tool from flat `filelist.json` to hierarchical `dirtree.json`.
       - `efu_converter.py`: Conversions between JSON-LD and Everything EFU files.
+      - `efu/`: **EFU Tools**.
+        - `update-efu.py`: Updates existing EFU files with new scan results using `es.exe` or HTTP.
+        - `merge-efu.py`: Merges multiple EFU files into a single master file, resolving duplicates by `Last Seen`.
       - `git/`: **Git Repository Tools**.
         - `git_types.py`: Compatibility export for unified `GitRepoInfo` TypedDict and related Git contracts.
         - `utils.py`: Shared Git utility functions and backend initialization.
@@ -38,7 +41,11 @@ Follow the standard Python src-layout:
       - `inspect_app_data.py`: GUI tool to inspect the contents of the `AppDataStorage` database.
     - `tui/`: **TUI Interface**. Textual-based terminal user interface.
     - `gui/`: **GUI Interface**. Tkinter-based graphical user interface.
-      - `env_viewer.py`: GUI tool for viewing detailed environment variables and PATH information.
+      - `launcher.py`: **GUI Launcher**. Central entry point for all GUI tools.
+      - `efu_gui.py`: GUI for EFU Update and Merge tools.
+      - `event_viewer.py`: GUI tool for viewing detailed environment variables and PATH information.
+      - `env_viewer.py`: GUI tool for viewing detailed environment variables.
+      - `shortcut_manager.py`: Manages Start Menu shortcuts for the application.
     - `mcp/`: **MCP Server**. Interface for Model Context Protocol.
     - `env_info.py`: **Environment Info Schema**. Defines data structures for environment capture.
     - `identifiers.py`: **Central Identifier Management**. Provides `APP_NAMESPACE_UUID` and `generate_id_v5()`.
@@ -80,6 +87,8 @@ Follow the standard Python src-layout:
   - `json-schema-jsonld-guide.md`: Guide for JSON Schema and JSON-LD usage.
 - `.github/`: **GitHub-specific files**.
   - `workflows/`: GitHub Actions workflow definitions for CI/CD.
+- `.githooks/`: **Git Hooks**.
+  - `pre-commit`: Automatically bumps the patch version in `pyproject.toml` on every commit.
 - `bin/`: **Binary files**. External dependencies and DLLs.
   - `Everything64.dll`: Required for IPC-based file scanning (`filelist_ipc.py`).
 - `work/`: **Local Work Directory**. Use this for all temporary files, test outputs, and diagnostic results. Contents are ignored by Git.
@@ -224,11 +233,13 @@ For efficient filesystem scanning on Windows, `get-a-grip` leverages "Everything
 -   **Speed:** Everything is orders of magnitude faster than Python's `os.walk` or `glob` for whole-drive searches. Always prefer Everything for initial discovery.
 1. **Adding Dependencies:** Use `poetry add <package>`.
 2. **Running Locally:**
-   - **Standard:** `poetry run get-a-grip filelist <args>`
-   - **Alias:** `poetry run gag <command> <args>`
-   - **Environment Viewer:** `poetry run env-viewer`
-   - **Path Viewer:** `poetry run get-a-grip path-viewer`
-   - **Module:** `poetry run python -m get_a_grip <module> <args>`
+   - **Unified CLI:** `poetry run gag <command>` or `get-a-grip <command>`
+     - `gag efu update ...` / `gag efu merge ...`
+     - `gag efu gui`: Launch EFU tools GUI
+     - `gag env`: Launch Environment Viewer GUI
+     - `gag path`: Launch Path Viewer
+     - `gag shortcut install`: Install Start Menu shortcut
+   - **GUI Launcher:** `get-a-grip` (launches dashboard)
 3. **Testing:** 
    - **General Test Run:** `poetry run test` (uses automated root-directory resolver).
    - **Poe Tasks:**
