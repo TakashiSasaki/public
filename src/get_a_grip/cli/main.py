@@ -82,6 +82,33 @@ except ImportError:
 
 
 def main():
+    try:
+        _run()
+    except KeyboardInterrupt:
+        print()  # newline after ^C
+        try:
+            answer = input("GUI が実行中です。ウィンドウごと終了しますか？ [Y/n]: ").strip().lower()
+        except (KeyboardInterrupt, EOFError):
+            # Second Ctrl+C or pipe closed — just exit
+            print("\nTerminated.")
+            sys.exit(0)
+        if answer in ("", "y", "yes"):
+            print("Closing...")
+            sys.exit(0)
+        else:
+            print("Resuming... (GUI ウィンドウを閉じるとプロセスが終了します)")
+            # Can't re-enter the Tk mainloop after KeyboardInterrupt,
+            # so we just wait for the user to close the window manually.
+            try:
+                import time
+                while True:
+                    time.sleep(1)
+            except KeyboardInterrupt:
+                print("\nTerminated.")
+                sys.exit(0)
+
+
+def _run():
     parser = argparse.ArgumentParser(description="get-a-grip: A collection of tools.")
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
