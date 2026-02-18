@@ -99,6 +99,7 @@ def main():
     # --- Env/Path Tools ---
     subparsers.add_parser("env", help="Environment Viewer GUI")
     subparsers.add_parser("path", help="Path Viewer CLI")
+    subparsers.add_parser("inspect-dirs", help="Inspect platform directories (CLI/GUI)")
 
     # --- Shortcut Management ---
     shortcut_parser = subparsers.add_parser("shortcut", help="Manage Start Menu shortcut")
@@ -255,7 +256,9 @@ def main():
         if tool == "find-github-dir" and find_github_dir_main: find_github_dir_main()
         elif tool == "find-git-worktree" and find_git_worktree_main: find_git_worktree_main()
         elif tool == "find-git-repo" and find_git_repo_main: find_git_repo_main()
-        elif tool == "inspect-dirs" and inspect_platform_dirs_main: inspect_platform_dirs_main()
+        elif tool == "inspect-dirs" and inspect_platform_dirs_main:
+            sys.argv = ["gag-tools-inspect-dirs"] + remaining_argv
+            inspect_platform_dirs_main()
         else:
             print(f"Tool {tool} not found or implementation missing.")
 
@@ -363,6 +366,13 @@ def main():
         except Exception as e:
             print(f"Error: {e}", file=sys.stderr)
             sys.exit(1)
+
+    elif args.command == "inspect-dirs":
+        if inspect_platform_dirs_main:
+            sys.argv = ["gag-inspect-dirs"] + remaining_argv
+            inspect_platform_dirs_main()
+        else:
+            print("Error: inspect-dirs tool not found.")
 
     elif args.command == "launch":
         if launcher_main:

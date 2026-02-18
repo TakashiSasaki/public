@@ -59,8 +59,8 @@ git config core.hooksPath .githooks
 gag --help                       # Show all subcommands
 gag version                      # Show version and check for updates
 gag launch                       # Open the GUI Launcher
-gag tools inspect-dirs --cli     # Show platform directory paths (CLI)
-gag tools inspect-dirs --gui     # Show platform directory paths (GUI)
+gag inspect-dirs --cli     # Show platform directory paths (CLI)
+gag inspect-dirs --gui     # Show platform directory paths (GUI)
 gag env                          # Launch Environment Viewer GUI
 gag path                         # Analyze PATH environment variable
 gag filelist <dir>               # Scan a directory and export JSON-LD
