@@ -24,7 +24,19 @@ class PlatformDirsViewerApp:
             text=f"Platform Directories for '{app_name}'",
             font=("Segoe UI", 12, "bold"),
         )
-        header.pack(pady=(0, 10))
+        header.pack(pady=(0, 5))
+
+        # ユーザー情報
+        try:
+            username = os.getlogin()
+        except OSError:
+            username = os.environ.get("USERNAME", os.environ.get("USER", "unknown"))
+        user_label = ttk.Label(
+            main_frame,
+            text=f"User: {username}",
+            font=("Segoe UI", 10),
+        )
+        user_label.pack(pady=(0, 10))
 
         # ツリービュー
         columns = ("Type", "Path")

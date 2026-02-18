@@ -1,9 +1,9 @@
 [project]
 name = "get-a-grip"
-version = "0.1.115"
+version = "0.1.116"
 description = "A directory searching application"
 authors = [
-    {name = "takas"}
+    {name = "Takashi Sasaki"}
 ]
 readme = "README.md"
 requires-python = ">=3.12,<4.0"
