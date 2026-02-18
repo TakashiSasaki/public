@@ -61,7 +61,7 @@ except ImportError:
     find_git_repo_main = None
 
 try:
-    from get_a_grip.tools.inspect_platform_dirs import main as inspect_platform_dirs_main
+    from get_a_grip.cli.inspect_platform_dirs import main as inspect_platform_dirs_main
 except ImportError:
     inspect_platform_dirs_main = None
 

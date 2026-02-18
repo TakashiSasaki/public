@@ -36,6 +36,7 @@ class LauncherApp:
         self.add_tool_button(tools_frame, "Event Viewer", "get_a_grip.gui.event_viewer")
         self.add_tool_button(tools_frame, "Environment Viewer", "get_a_grip.gui.env_viewer")
         self.add_tool_button(tools_frame, "Shell Special Folders", "get_a_grip.gui.shell_folders_viewer")
+        self.add_tool_button(tools_frame, "Platform Dirs Explorer", "get_a_grip.gui.platform_dirs_viewer")
         
         ttk.Separator(root, orient='horizontal').pack(fill='x', padx=10, pady=10)
         
