@@ -70,6 +70,11 @@ except ImportError:
     tui_main = None
 
 try:
+    from get_a_grip.gui.launcher import main as launcher_main
+except ImportError:
+    launcher_main = None
+
+try:
     from get_a_grip.gui.shortcut_manager import main as shortcut_manager_main
 except ImportError:
     shortcut_manager_main = None
@@ -78,6 +83,9 @@ except ImportError:
 def main():
     parser = argparse.ArgumentParser(description="get-a-grip: A collection of tools.")
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
+
+    # --- Launcher ---
+    subparsers.add_parser("launch", help="Launch GUI Launcher")
 
     # --- EFU Tools ---
     efu_parser = subparsers.add_parser("efu", help="Everything File Utility tools")
@@ -348,6 +356,12 @@ def main():
         except Exception as e:
             print(f"Error: {e}", file=sys.stderr)
             sys.exit(1)
+
+    elif args.command == "launch":
+        if launcher_main:
+            launcher_main()
+        else:
+            print("Error: launcher not found (tk/tcl might be missing).")
     
     else:
         # Fallback if command is not matched but no error raised?
