@@ -1,120 +1,127 @@
 # get-a-grip
 
-`get-a-grip` is a Python-based command-line tool designed to scan and map directory structures with high interpersonal and machine interoperability. It focuses on providing detailed file metadata in semantic formats to facilitate the analysis of complex folder hierarchies.
+`get-a-grip` is a Python toolkit for inspecting Windows system environments — directory structures, platform paths, shell folders, environment variables, and event logs — via a unified CLI (`gag`) and optional GUI launcher.
 
-## 🌟 Key Features
+> **Target audience:** Developers comfortable with `uv`, Python, and the command line who want to install directly from source on GitHub.
 
-- **Recursive Directory Scanning:** Traverse any folder tree and collect all file information.
-- **Semantic Data Export (JSON-LD):** Outputs data using JSON-LD, leveraging Schema.org and custom vocabularies for semantic clarity.
-- **Windows-Specific Metadata:**
-  - **FILETIME Timestamps:** Captures creation and modification dates as 64-bit FILETIME values.
-  - **Attribute Flags:** Records Windows file attribute bits (e.g., Read-only, Hidden, System).
-- **Robust Multi-Strategy Scanning:**
-  - **Standardized Interface:** All scanners follow a unified `FileScanner` protocol.
-  - **Automatic Validation:** The default `scan` command runs multiple strategies (`scandir`, `walk`, `rglob`) and cross-validates results for 100% accuracy.
-- **Interoperability-First Design:**
-  - **Schema-Driven:** All input/output formats are strictly defined in `schema/` using JSON Schema.
-- **Linked Data & Namespace Ownership:**
-  - **Owned Namespace:** The project uses the authoritative namespace `https://purl.org/gag`, which is owned and managed by the developer of this repository.
-  - **Interoperable Metadata:** By using Persistent URLs (PURLs), the project ensures that metadata terms remain stable and unambiguous across different systems.
-  - **Context Identification:** Uses a stable URN (`urn:uuid:fbd0009d-e91b-414f-9f4f-db3fbd3a16ee`) for persistent semantic context identification.
-  - **Compatible Naming:** Uses compatible property names (e.g., `Filename` for full paths) to integrate with existing ecosystems.
+---
 
-## 🛠 Tech Stack
+## Requirements
 
-- **Language:** Python 3.12+
-- **Dependency Management:** [uv](https://github.com/astral-sh/uv)
-- **Data Formats:** JSON-LD, JSON Schema
+- Python 3.12+
+- [uv](https://github.com/astral-sh/uv)
 
-## 📂 Directory Structure
+Install `uv` on Windows (PowerShell):
 
-- `src/get_a_grip/`: Core application logic and context definitions.
-- `schema/`: Official JSON Schema specifications, JSON-LD contexts, and data examples.
-- `scripts/`: Development utilities and troubleshooting scripts.
-- `docs/`: Human-readable documentation.
-- `tests/`: Project test suite.
-- `AGENTS.md`: Technical guidance for coding agents and developers.
-
-## � Schemas and Metadata
-
-This project adheres to a "Schema-First" philosophy. The `schema/` directory contains:
-- **JSON Schemas (`*.schema.json`)**: Define the structural requirements for inputs and outputs.
-- **JSON-LD Contexts (`filelist.jsonld`)**: Map local property names to global semantic vocabularies like Schema.org and CIM.
-- **Examples**: Reference implementations showing the schemas in action.
-
-### Namespace Ownership
-The developer of this project owns and maintains the `https://purl.org/gag` namespace. This ensures:
-- **Stability**: Vocabulary terms like `gag:winAttributes` will not change unexpectedly.
-- **Discovery**: Metadata reflects the specific semantics of the `get-a-grip` ecosystem while remaining compatible with the wider Semantic Web.
-
-## �🚀 Getting Started
-
-### Prerequisites
-
-- Python 3.12 or higher
-- [uv](https://github.com/astral-sh/uv) (for package and project management)
-  - **Windows (PowerShell):** Run the following command to download and install `uv`.
-    ```powershell
-    powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-    ```
-  
-  **Note:** For stability, we recommend explicitly installing Python 3.12:
-  ```powershell
-  uv python install 3.12
-  ```
-
-### Installation
-
-**For developers (using uv):**
-This installs `gag` (get-a-grip) in **editable mode**, meaning changes to the source implementation are immediately reflected.
-```bash
-uv sync
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-To add a shortcut to the Start Menu:
-```bash
-uv run gag shortcut install
-```
+---
 
-**For users (directly from GitHub using uv):**
-This installs `gag` as a standalone tool in an isolated environment.
-```bash
+## Installation
+
+### As a standalone tool (recommended for users)
+
+Installs `gag` into an isolated environment — no virtual environment setup required:
+
+```powershell
 uv tool install git+https://github.com/TakashiSasaki/get-a-grip.git@get-a-grip
 ```
 
-**For beta testers (legacy pip):**
-```bash
-pip install -U git+https://github.com/TakashiSasaki/get-a-grip.git@get-a-grip
-```
-
-### Basic Usage
-
-To scan a directory and output a JSON-LD file:
+Upgrade to the latest version:
 
 ```powershell
-# Standard robust scan (validates multiple methods)
-# Standard robust scan (validates multiple methods)
-uv run gag filelist <target_directory> [-o output_file.json]
-
-# Specialized scanners
-uv run gag filelist-http <query>   # Everything HTTP scan
-uv run gag filelist-ipc <directory> # Everything IPC scan
-
-# Launcher & Shortcuts
-uv run gag launch          # Open GUI Launcher
-uv run gag shortcut install # Install Start Menu shortcut
+uv tool upgrade get-a-grip
 ```
 
-If no output filename is specified, it defaults to `fbd0009d-e91b-414f-9f4f-db3fbd3a16ee.json`.
+### For development (editable install)
 
-## 📜 Principles
+```powershell
+git clone https://github.com/TakashiSasaki/get-a-grip.git
+cd get-a-grip
+uv sync
+```
 
-This project follows a "Schema-First" approach. We believe that explicitly defined interfaces are more important than implementation details. For more details on development standards, refer to [AGENTS.md](./AGENTS.md).
+Changes to source files are immediately reflected without reinstalling.
 
-### Git Hooks
+Set up the automatic version-bump Git hook (increments patch on every commit):
 
-This repository includes a pre-commit hook in `.githooks/` that automatically increments the patch version in `pyproject.toml` on every commit. To enable it locally, run:
-
-```bash
+```powershell
 git config core.hooksPath .githooks
 ```
+
+---
+
+## Usage
+
+```powershell
+gag --help                       # Show all subcommands
+gag version                      # Show version and check for updates
+gag launch                       # Open the GUI Launcher
+gag tools inspect-dirs --cli     # Show platform directory paths (CLI)
+gag tools inspect-dirs --gui     # Show platform directory paths (GUI)
+gag env                          # Launch Environment Viewer GUI
+gag path                         # Analyze PATH environment variable
+gag filelist <dir>               # Scan a directory and export JSON-LD
+gag shortcut install             # Install Start Menu shortcut (Windows)
+```
+
+---
+
+## Running the Test Suite
+
+Tests are managed with [pytest](https://docs.pytest.org/) and run via `uv`:
+
+```powershell
+# Run all tests
+uv run pytest
+
+# Run a specific test file
+uv run pytest tests/test_inspect_platform_dirs.py -v
+
+# Run with coverage report
+uv run pytest --cov=src/get_a_grip --cov-report=html
+
+# Poe shortcuts (using poethepoet)
+uv run poe test               # All primary tests (excludes slow URL checks)
+uv run poe test-consistency   # Filelist consistency tests only
+uv run poe test-urls          # External URL accessibility checks (slow)
+```
+
+Test reports are saved to `reports/tests/` (HTML, JSON, JUnit XML) and are excluded from Git.
+
+---
+
+## Directory Structure
+
+```
+src/get_a_grip/
+  cli/          CLI entry points and tools
+  gui/          Tkinter-based GUI (launcher.py is the main entry point)
+  tui/          Textual-based TUI
+  core/         Pure business logic — no print(), no sys.exit()
+  contracts/    Shared TypedDict schemas
+  mcp/          Model Context Protocol server
+schema/         JSON Schema and JSON-LD context definitions
+tests/          pytest test suite
+scripts/        Dev utilities (version bump, PURL check, schema validation)
+reports/        Auto-generated test and coverage reports (git-ignored)
+docs/           Additional documentation
+```
+
+---
+
+## Key Design Principles
+
+- **Separation of concerns**: `core/` is pure logic; `cli/`, `gui/`, `tui/` handle presentation.
+- **Schema-first**: All I/O formats are defined in `schema/` using JSON Schema and JSON-LD.
+- **Namespace ownership**: The `https://purl.org/gag` namespace is owned by the author for stable semantic terms.
+
+For contributor guidelines, architecture details, and coding standards, see [AGENTS.md](./AGENTS.md).
+
+---
+
+## License
+
+MIT

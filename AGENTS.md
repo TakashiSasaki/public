@@ -2,6 +2,10 @@
 
 This document provides instructions and context for AI coding agents and human developers working on the `get-a-grip` project.
 
+> **Document roles:**
+> - **[README.md](./README.md)** — The **user-facing** document. Written for developers who want to install and use the tool (via `uv tool install` from GitHub). Keep it accurate and up to date whenever the CLI interface or installation process changes.
+> - **AGENTS.md** (this file) — Internal guidance for AI coding agents and contributors. Contains architecture decisions, coding standards, and implementation details not needed by end users.
+
 ## Project Overview
 `get-a-grip` is a Python application designed to search through directory structures.
 
