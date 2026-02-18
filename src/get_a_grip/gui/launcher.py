@@ -5,17 +5,23 @@ import subprocess
 import sys
 import os
 import importlib.metadata
+import threading
+import re
+from urllib.request import urlopen
+from urllib.error import URLError
+
+PYPROJECT_URL = "https://raw.githubusercontent.com/TakashiSasaki/get-a-grip/refs/heads/get-a-grip/pyproject.toml"
 
 class LauncherApp:
     def __init__(self, root):
         try:
-            version = importlib.metadata.version("get-a-grip")
+            self.current_version = importlib.metadata.version("get-a-grip")
         except importlib.metadata.PackageNotFoundError:
-            version = "dev"
+            self.current_version = "dev"
 
         self.root = root
-        self.root.title(f"Get-a-Grip Launcher v{version}")
-        self.root.geometry("350x300")
+        self.root.title(f"Get-a-Grip Launcher v{self.current_version}")
+        self.root.geometry("350x380")
         
         # Track processes and buttons
         self.processes = {}
@@ -31,16 +37,24 @@ class LauncherApp:
         self.add_tool_button(tools_frame, "EFU Tools (Update/Merge)", "get_a_grip.gui.efu_gui")
         self.add_tool_button(tools_frame, "Event Viewer", "get_a_grip.gui.event_viewer")
         self.add_tool_button(tools_frame, "Environment Viewer", "get_a_grip.gui.env_viewer")
+        self.add_tool_button(tools_frame, "Shell Special Folders", "get_a_grip.gui.shell_folders_viewer")
         
         ttk.Separator(root, orient='horizontal').pack(fill='x', padx=10, pady=10)
         
         ttk.Button(root, text="Exit", command=self.on_close).pack(pady=5)
+        
+        # Version status label at the bottom
+        self.version_label = ttk.Label(root, text="Checking for updates...", font=("Arial", 8), foreground="gray")
+        self.version_label.pack(side="bottom", pady=5)
         
         # Handle window close
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
         
         # Start monitoring process status
         self.monitor_processes()
+        
+        # Check for updates in the background
+        threading.Thread(target=self.check_latest_version, daemon=True).start()
 
     def add_tool_button(self, parent, text, module_name):
         # Use standard tk.Button because ttk.Button background color is hard to change on Windows
@@ -73,6 +87,35 @@ class LauncherApp:
         # Update again in 1 second
         self.root.after(1000, self.monitor_processes)
 
+    def check_latest_version(self):
+        """Fetch the latest version from GitHub in a background thread."""
+        try:
+            with urlopen(PYPROJECT_URL, timeout=10) as response:
+                content = response.read().decode("utf-8")
+            match = re.search(r'^version\s*=\s*"([^"]+)"', content, re.MULTILINE)
+            if match:
+                latest_version = match.group(1)
+                self.root.after(0, self.update_version_label, latest_version)
+            else:
+                self.root.after(0, self.set_version_label, "Could not parse remote version", "orange")
+        except (URLError, OSError):
+            self.root.after(0, self.set_version_label, "Update check failed (offline?)", "gray")
+
+    def update_version_label(self, latest_version):
+        """Compare versions and update the label on the main thread."""
+        if self.current_version == "dev":
+            self.set_version_label(f"Latest: v{latest_version} (dev mode)", "gray")
+        elif self.current_version == latest_version:
+            self.set_version_label(f"✓ Up to date (v{self.current_version})", "green")
+        else:
+            self.set_version_label(
+                f"⚠ Update available: v{self.current_version} → v{latest_version}",
+                "red"
+            )
+
+    def set_version_label(self, text, color):
+        self.version_label.config(text=text, foreground=color)
+
     def on_close(self):
         # Kill all subprocesses before exiting
         for module_name, proc in self.processes.items():
@@ -87,3 +130,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
