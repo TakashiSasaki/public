@@ -53,12 +53,26 @@ The developer of this project owns and maintains the `https://purl.org/gag` name
 
 - Python 3.12 or higher
 - [uv](https://github.com/astral-sh/uv)
+  ```powershell
+  powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+  ```
+  
+  **Note:** For stability, we recommend explicitly installing Python 3.12:
+  ```powershell
+  uv python install 3.12
+  ```
 
 ### Installation
 
 **For developers (using uv):**
+This installs `gag` (get-a-grip) in **editable mode**, meaning changes to the source implementation are immediately reflected.
 ```bash
 uv sync
+```
+
+To add a shortcut to the Start Menu:
+```bash
+uv run gag shortcut install
 ```
 
 **For beta testers (direct from GitHub):**
