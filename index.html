@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>get-a-grip | Interoperable Directory Scanning & System Probing</title>
+    <title>get-a-grip | Interoperable Directory Scanning &amp; System Probing</title>
     <meta name="description"
         content="A powerful Python toolkit for semantic directory scanning, environment probing, and system metadata extraction with JSON-LD support.">
     <link rel="canonical" href="https://gag.moukaeritai.work/">
@@ -14,6 +14,8 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap"
         rel="stylesheet">
+    <!-- marked.js for Markdown rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
             --primary: #6366f1;
@@ -59,7 +61,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 0 auto;
             padding: 0 2rem;
         }
@@ -172,6 +174,44 @@
             transform: translateY(-2px);
         }
 
+        /* Package Metadata */
+        #pkg-metadata {
+            margin: 3rem auto 0;
+            max-width: 600px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.5rem 2rem;
+            text-align: left;
+            backdrop-filter: blur(20px);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        #pkg-metadata .meta-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        #pkg-metadata dl {
+            display: grid;
+            grid-template-columns: max-content 1fr;
+            gap: 0.3rem 1rem;
+        }
+
+        #pkg-metadata dt {
+            color: var(--text-dim);
+        }
+
+        #pkg-metadata dd {
+            color: var(--text-main);
+        }
+
         /* Features Section */
         .features {
             padding: 6rem 0;
@@ -224,7 +264,7 @@
 
         /* CLI Section */
         .cli-demo {
-            padding: 6rem 0;
+            padding: 4rem 0;
         }
 
         .terminal {
@@ -281,6 +321,134 @@
             color: var(--text-dim);
         }
 
+        /* README Section */
+        #readme-section {
+            padding: 4rem 0;
+        }
+
+        #readme-section h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: var(--text-dim);
+            letter-spacing: -0.02em;
+        }
+
+        #readme-body {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            backdrop-filter: blur(20px);
+            line-height: 1.8;
+            color: var(--text-main);
+        }
+
+        /* Rendered Markdown styles */
+        #readme-body h1,
+        #readme-body h2,
+        #readme-body h3 {
+            margin-top: 1.8em;
+            margin-bottom: 0.6em;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        #readme-body h1 {
+            font-size: 1.8rem;
+        }
+
+        #readme-body h2 {
+            font-size: 1.4rem;
+            color: var(--accent);
+        }
+
+        #readme-body h3 {
+            font-size: 1.1rem;
+        }
+
+        #readme-body p {
+            color: var(--text-dim);
+            margin-bottom: 1em;
+        }
+
+        #readme-body a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        #readme-body a:hover {
+            text-decoration: underline;
+        }
+
+        #readme-body code {
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 5px;
+            padding: 0.15em 0.45em;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.87em;
+            color: var(--accent);
+        }
+
+        #readme-body pre {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            overflow-x: auto;
+            margin-bottom: 1.2em;
+        }
+
+        #readme-body pre code {
+            background: none;
+            padding: 0;
+            color: #e6edf3;
+            font-size: 0.85rem;
+        }
+
+        #readme-body ul,
+        #readme-body ol {
+            padding-left: 1.5rem;
+            color: var(--text-dim);
+            margin-bottom: 1em;
+        }
+
+        #readme-body li {
+            margin-bottom: 0.3em;
+        }
+
+        #readme-body blockquote {
+            border-left: 3px solid var(--primary);
+            padding-left: 1rem;
+            color: var(--text-dim);
+            margin: 1em 0;
+        }
+
+        #readme-body table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 1.2em;
+        }
+
+        #readme-body th,
+        #readme-body td {
+            border: 1px solid var(--card-border);
+            padding: 0.5rem 0.9rem;
+            text-align: left;
+            color: var(--text-dim);
+        }
+
+        #readme-body th {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--text-main);
+        }
+
+        #readme-body hr {
+            border: none;
+            border-top: 1px solid var(--card-border);
+            margin: 2em 0;
+        }
+
         /* Footer */
         footer {
             padding: 4rem 0;
@@ -307,6 +475,24 @@
 
         .floating {
             animation: float 6s ease-in-out infinite;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            border: 2px solid var(--card-border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            vertical-align: middle;
+            margin-right: 0.4em;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* Responsive */
@@ -338,8 +524,8 @@
             </div>
             <nav class="nav-links">
                 <a href="#features" class="nav-link">Features</a>
+                <a href="#readme-section" class="nav-link">README</a>
                 <a href="schema/" class="nav-link">Schemas</a>
-                <a href="docs/WINDOWS_PYTHON_ENV.md" class="nav-link">Documentation</a>
                 <a href="https://github.com/TakashiSasaki/get-a-grip" class="nav-link">GitHub</a>
             </nav>
         </header>
@@ -360,6 +546,15 @@
                     </svg>
                 </a>
                 <a href="#features" class="btn btn-secondary">Explore Features</a>
+            </div>
+
+            <!-- Package Metadata Card -->
+            <div id="pkg-metadata" aria-label="Package metadata">
+                <div class="meta-title">📦 Package Info</div>
+                <dl id="pkg-meta-dl">
+                    <dt>Version</dt>
+                    <dd><span class="spinner"></span>Loading...</dd>
+                </dl>
             </div>
         </section>
 
@@ -384,8 +579,8 @@
                     </svg>
                 </div>
                 <h3>Multi-Interface</h3>
-                <p>Experience the power of <code>get-a-grip</code> via CLI, a rich Textual-based TUI, or a lightweight
-                    Tkinter-based Legacy GUI launcher.</p>
+                <p>Experience <code>get-a-grip</code> via CLI, a rich Textual-based TUI, or a lightweight
+                    Tkinter-based GUI launcher.</p>
             </div>
 
             <div class="card">
@@ -408,21 +603,31 @@
                     <div class="dot dot-red"></div>
                     <div class="dot dot-yellow"></div>
                     <div class="dot dot-green"></div>
-                    <span style="margin-left: auto; font-size: 0.75rem; opacity: 0.5;">bash — 80x24</span>
+                    <span style="margin-left: auto; font-size: 0.75rem; opacity: 0.5;">PowerShell</span>
                 </div>
                 <div class="terminal-body">
-                    <div><span class="prompt">$</span> <span class="command">pip install get-a-grip</span></div>
-                    <div class="output">Collecting get-a-grip...</div>
-                    <div class="output">Successfully installed get-a-grip-0.1.29</div>
-                    <div style="margin-top: 1rem;"><span class="prompt">$</span> <span class="command">gag probe
-                            --output diag.jsonld</span></div>
-                    <div class="output">Environmental data saved to diag.jsonld</div>
-                    <div style="margin-top: 1rem;"><span class="prompt">$</span> <span class="command">gag-gui</span>
-                    </div>
-                    <div class="output">Launching Legacy Launcher... [OK]</div>
+                    <div><span class="prompt">PS&gt;</span> <span class="command">uv tool install
+                            git+https://github.com/TakashiSasaki/get-a-grip.git@get-a-grip</span></div>
+                    <div class="output">Resolved 1 package in 1.23s</div>
+                    <div class="output">Installed get-a-grip</div>
+                    <div style="margin-top: 1rem;"><span class="prompt">PS&gt;</span> <span class="command">gag
+                            version</span></div>
+                    <div class="output">Local version: <span id="cli-version">...</span></div>
+                    <div class="output">Status: Up to date</div>
+                    <div style="margin-top: 1rem;"><span class="prompt">PS&gt;</span> <span class="command">gag
+                            launch</span></div>
+                    <div class="output">Launching GUI Launcher... [OK]</div>
                 </div>
             </div>
         </div>
+
+        <!-- README.md Rendered Section -->
+        <section id="readme-section">
+            <h2>📄 README</h2>
+            <div id="readme-body">
+                <span class="spinner"></span> Loading README...
+            </div>
+        </section>
     </div>
 
     <footer>
@@ -430,11 +635,80 @@
             <p>&copy; 2026 Takashi Sasaki. Built with precision and interoperability in mind.</p>
             <div style="margin-top: 1rem; display: flex; justify-content: center; gap: 1.5rem;">
                 <a href="https://github.com/TakashiSasaki" class="nav-link">Profile</a>
-                <a href="https://purl.org/gag" class="nav-link">Privacy Policy</a>
-                <a href="mailto:takas@example.com" class="nav-link">Contact</a>
+                <a href="https://purl.org/gag" class="nav-link">Namespace</a>
+                <a href="https://github.com/TakashiSasaki/get-a-grip/issues" class="nav-link">Issues</a>
             </div>
         </div>
     </footer>
+
+    <script>
+        // ─── Fetch and parse pyproject.toml ──────────────────────────────────
+        const PYPROJECT_URL = 'https://raw.githubusercontent.com/TakashiSasaki/get-a-grip/refs/heads/get-a-grip/pyproject.toml';
+        const README_URL = 'https://raw.githubusercontent.com/TakashiSasaki/get-a-grip/refs/heads/get-a-grip/README.md';
+
+        function parseToml(text) {
+            // Minimal TOML parser for [project] section key="value" pairs
+            const result = {};
+            let inProject = false;
+            for (const rawLine of text.split('\n')) {
+                const line = rawLine.trim();
+                if (line === '[project]') { inProject = true; continue; }
+                if (line.startsWith('[') && line !== '[project]') { inProject = false; continue; }
+                if (!inProject) continue;
+                const m = line.match(/^(\w[\w-]*)\s*=\s*"([^"]*)"$/);
+                if (m) result[m[1]] = m[2];
+            }
+            return result;
+        }
+
+        async function loadMetadata() {
+            const dl = document.getElementById('pkg-meta-dl');
+            const cliVersionEl = document.getElementById('cli-version');
+            try {
+                const res = await fetch(PYPROJECT_URL);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const text = await res.text();
+                const meta = parseToml(text);
+
+                const fields = [
+                    ['Name', meta.name || '—'],
+                    ['Version', meta.version || '—'],
+                    ['Description', meta.description || '—'],
+                    ['Python', meta['requires-python'] || '—'],
+                ];
+
+                dl.innerHTML = fields.map(([k, v]) =>
+                    `<dt>${k}</dt><dd>${escapeHtml(v)}</dd>`
+                ).join('');
+
+                if (cliVersionEl && meta.version) {
+                    cliVersionEl.textContent = meta.version;
+                }
+            } catch (e) {
+                dl.innerHTML = `<dt>Error</dt><dd>${escapeHtml(String(e))}</dd>`;
+            }
+        }
+
+        // ─── Fetch and render README.md ───────────────────────────────────────
+        async function loadReadme() {
+            const container = document.getElementById('readme-body');
+            try {
+                const res = await fetch(README_URL);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const text = await res.text();
+                container.innerHTML = marked.parse(text);
+            } catch (e) {
+                container.innerHTML = `<p style="color:var(--text-dim);">Could not load README: ${escapeHtml(String(e))}</p>`;
+            }
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        loadMetadata();
+        loadReadme();
+    </script>
 </body>
 
 </html>
