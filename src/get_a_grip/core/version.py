@@ -26,14 +26,47 @@ def get_remote_version(timeout: int = 10) -> str:
     except (URLError, OSError) as e:
         return f"unknown (offline? {e})"
 
+def parse_version(v_str: str) -> tuple[int, ...]:
+    """Parse version string into a tuple of integers for comparison."""
+    # Handle versions like '0.1.113' or '0.1.113.dev0' or 'unknown'
+    # For now, we only focus on the numeric parts
+    try:
+        parts = re.findall(r'\d+', v_str)
+        return tuple(int(p) for p in parts)
+    except (ValueError, TypeError):
+        return (0,)
+
 def check_for_updates() -> dict:
     """Return a dictionary with local and remote version info."""
     local = get_local_version()
     remote = get_remote_version()
     
+    is_dev = local == "dev"
+    
+    if is_dev:
+        up_to_date = True
+        status_msg = "Running in development mode"
+    elif "unknown" in remote:
+        up_to_date = True
+        status_msg = "Up to date (offline/error checking remote)"
+    else:
+        local_v = parse_version(local)
+        remote_v = parse_version(remote)
+        
+        if local_v < remote_v:
+            up_to_date = False
+            status_msg = "Update available!"
+        elif local_v > remote_v:
+            up_to_date = True
+            status_msg = f"Up to date (newer than remote: v{remote})"
+        else:
+            up_to_date = True
+            status_msg = "Up to date"
+            
     return {
         "local": local,
         "remote": remote,
-        "is_dev": local == "dev",
-        "up_to_date": local == remote if local != "dev" else None
+        "is_dev": is_dev,
+        "up_to_date": up_to_date,
+        "status_msg": status_msg
     }

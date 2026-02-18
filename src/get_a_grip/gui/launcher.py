@@ -87,23 +87,20 @@ class LauncherApp:
 
     def check_latest_version(self):
         """Fetch the latest version from GitHub in a background thread."""
-        latest_version = get_remote_version()
-        if "unknown" in latest_version:
-            self.root.after(0, self.set_version_label, f"Update check failed: {latest_version}", "gray")
-        else:
-            self.root.after(0, self.update_version_label, latest_version)
+        from get_a_grip.core.version import check_for_updates
+        info = check_for_updates()
+        self.root.after(0, self.display_version_info, info)
 
-    def update_version_label(self, latest_version):
-        """Compare versions and update the label on the main thread."""
-        if self.current_version == "dev":
-            self.set_version_label(f"Latest: v{latest_version} (dev mode)", "gray")
-        elif self.current_version == latest_version:
-            self.set_version_label(f"✓ Up to date (v{self.current_version})", "green")
-        else:
-            self.set_version_label(
-                f"⚠ Update available: v{self.current_version} → v{latest_version}",
-                "red"
-            )
+    def display_version_info(self, info):
+        """Update the label on the main thread using info dict."""
+        color = "green" if info["up_to_date"] else "red"
+        if info["is_dev"] or "unknown" in info["remote"]:
+            color = "gray"
+            
+        icon = "✓" if info["up_to_date"] else "⚠"
+        if info["is_dev"]: icon = "🛠"
+        
+        self.set_version_label(f"{icon} {info['status_msg']}", color)
 
     def set_version_label(self, text, color):
         self.version_label.config(text=text, foreground=color)

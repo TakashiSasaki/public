@@ -313,12 +313,7 @@ def main():
         info = check_for_updates()
         print(f"Local version:  {info['local']}")
         print(f"Remote version: {info['remote']}")
-        if info['is_dev']:
-            print("Status:         Running in development mode")
-        elif info['up_to_date']:
-            print("Status:         Up to date")
-        else:
-            print("Status:         Update available!")
+        print(f"Status:         {info['status_msg']}")
 
     elif args.command == "probe":
         if args.output:
