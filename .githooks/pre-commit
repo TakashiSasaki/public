@@ -5,8 +5,8 @@
 if [ -f "pyproject.toml" ]; then
     echo "[Githook] Bumping patch version..."
     
-    # Run poetry version patch to increment 0.0.X
-    poetry version patch
+    # Run python scripts/bump_version.py to increment 0.0.X
+    python scripts/bump_version.py
     
     # Add the updated pyproject.toml to the staging area
     git add pyproject.toml

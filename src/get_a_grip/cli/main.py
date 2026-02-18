@@ -11,6 +11,7 @@ from get_a_grip.core.everything_ipc import scan_by_ipc
 from get_a_grip.core.efu_converter import json_to_efu, efu_to_json
 from get_a_grip.core.whoami import print_whoami
 from get_a_grip.core.probe import print_probe_data, save_probe_data
+from get_a_grip.core.version import check_for_updates
 
 # Sub-tool main imports
 # These tools must be importable. 
@@ -140,6 +141,9 @@ def main():
 
     # whoami
     subparsers.add_parser("whoami", help="Print effective user")
+
+    # version
+    subparsers.add_parser("version", help="Show version info (local and remote)")
 
     # probe
     probe_parser = subparsers.add_parser("probe", help="Collect environmental data")
@@ -304,6 +308,17 @@ def main():
 
     elif args.command == "whoami":
         print_whoami()
+
+    elif args.command == "version":
+        info = check_for_updates()
+        print(f"Local version:  {info['local']}")
+        print(f"Remote version: {info['remote']}")
+        if info['is_dev']:
+            print("Status:         Running in development mode")
+        elif info['up_to_date']:
+            print("Status:         Up to date")
+        else:
+            print("Status:         Update available!")
 
     elif args.command == "probe":
         if args.output:

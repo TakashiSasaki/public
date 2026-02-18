@@ -9,15 +9,13 @@ import threading
 import re
 from urllib.request import urlopen
 from urllib.error import URLError
+from get_a_grip.core.version import get_local_version, get_remote_version
 
 PYPROJECT_URL = "https://raw.githubusercontent.com/TakashiSasaki/get-a-grip/refs/heads/get-a-grip/pyproject.toml"
 
 class LauncherApp:
     def __init__(self, root):
-        try:
-            self.current_version = importlib.metadata.version("get-a-grip")
-        except importlib.metadata.PackageNotFoundError:
-            self.current_version = "dev"
+        self.current_version = get_local_version()
 
         self.root = root
         self.root.title(f"Get-a-Grip Launcher v{self.current_version}")
@@ -89,17 +87,11 @@ class LauncherApp:
 
     def check_latest_version(self):
         """Fetch the latest version from GitHub in a background thread."""
-        try:
-            with urlopen(PYPROJECT_URL, timeout=10) as response:
-                content = response.read().decode("utf-8")
-            match = re.search(r'^version\s*=\s*"([^"]+)"', content, re.MULTILINE)
-            if match:
-                latest_version = match.group(1)
-                self.root.after(0, self.update_version_label, latest_version)
-            else:
-                self.root.after(0, self.set_version_label, "Could not parse remote version", "orange")
-        except (URLError, OSError):
-            self.root.after(0, self.set_version_label, "Update check failed (offline?)", "gray")
+        latest_version = get_remote_version()
+        if "unknown" in latest_version:
+            self.root.after(0, self.set_version_label, f"Update check failed: {latest_version}", "gray")
+        else:
+            self.root.after(0, self.update_version_label, latest_version)
 
     def update_version_label(self, latest_version):
         """Compare versions and update the label on the main thread."""
