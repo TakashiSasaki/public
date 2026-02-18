@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import os
 import sys
+import socket
 
 from get_a_grip.core.inspect_platform_dirs import get_dir_data
 
@@ -120,9 +121,10 @@ class PlatformDirsViewerApp:
             username = os.getlogin()
         except OSError:
             username = os.environ.get("USERNAME", os.environ.get("USER", "unknown"))
+        hostname = socket.gethostname()
         user_label = ttk.Label(
             main_frame,
-            text=f"User: {username}",
+            text=f"User: {username}  |  Host: {hostname}",
             font=("Segoe UI", 10),
         )
         user_label.pack(pady=(0, 10))
