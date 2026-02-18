@@ -34,8 +34,8 @@ testpaths = ["tests"]
 addopts = "--ignore=tests/test_url_accessibility.py --json-report --json-report-file=reports/tests/latest.json --junit-xml=reports/tests/latest.xml --html=reports/tests/latest.html --self-contained-html --cov=get_a_grip --cov-report=json:reports/coverage/latest.json --cov-report=html:reports/coverage/html --cov-report=term -v"
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = [
