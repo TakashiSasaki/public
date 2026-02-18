@@ -22,6 +22,8 @@
             --primary-glow: rgba(99, 102, 241, 0.5);
             --secondary: #a855f7;
             --accent: #22d3ee;
+            --success: #22c55e;
+            --failure: #ef4444;
             --bg: #030712;
             --card-bg: rgba(17, 24, 39, 0.7);
             --card-border: rgba(255, 255, 255, 0.1);
@@ -73,6 +75,12 @@
             align-items: center;
         }
 
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
         .logo {
             font-weight: 800;
             font-size: 1.5rem;
@@ -89,6 +97,7 @@
         .nav-links {
             display: flex;
             gap: 2rem;
+            align-items: center;
         }
 
         .nav-link {
@@ -136,6 +145,7 @@
             gap: 1rem;
             justify-content: center;
             flex-wrap: wrap;
+            margin-bottom: 4rem;
         }
 
         .btn {
@@ -174,42 +184,119 @@
             transform: translateY(-2px);
         }
 
-        /* Package Metadata */
-        #pkg-metadata {
-            margin: 3rem auto 0;
-            max-width: 600px;
+        /* Hero Cards Layout */
+        .hero-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             border-radius: 16px;
             padding: 1.5rem 2rem;
             text-align: left;
             backdrop-filter: blur(20px);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
+            transition: border-color 0.3s ease;
         }
 
-        #pkg-metadata .meta-title {
+        .hero-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .card-title {
             font-family: 'Outfit', sans-serif;
             font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.1em;
             color: var(--accent);
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
             font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
+        /* Package Metadata */
         #pkg-metadata dl {
             display: grid;
             grid-template-columns: max-content 1fr;
-            gap: 0.3rem 1rem;
+            gap: 0.4rem 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
         }
 
-        #pkg-metadata dt {
+        dt {
             color: var(--text-dim);
         }
 
-        #pkg-metadata dd {
+        dd {
             color: var(--text-main);
+        }
+
+        /* Build Activity Feed */
+        .activity-feed {
+            list-style: none;
+            font-size: 0.85rem;
+        }
+
+        .activity-item {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .run-name {
+            color: var(--text-main);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            display: block;
+        }
+
+        .run-meta {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .status-pill {
+            padding: 0.1rem 0.6rem;
+            border-radius: 99px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .status-success {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--success);
+        }
+
+        .status-failure {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--failure);
+        }
+
+        .status-progress {
+            background: rgba(34, 211, 238, 0.15);
+            color: var(--accent);
+        }
+
+        .status-other {
+            background: rgba(156, 163, 175, 0.15);
+            color: var(--text-dim);
         }
 
         /* Features Section */
@@ -504,6 +591,10 @@
             .hero {
                 padding-top: 4rem;
             }
+
+            .hero-cards {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -513,20 +604,24 @@
 
     <div class="container">
         <header>
-            <div class="logo">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path>
-                    <path d="M12 8v4"></path>
-                    <path d="M12 16h.01"></path>
-                </svg>
-                get-a-grip
+            <div class="logo-group">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"></path>
+                        <path d="M12 8v4"></path>
+                        <path d="M12 16h.01"></path>
+                    </svg>
+                    get-a-grip
+                </div>
             </div>
             <nav class="nav-links">
                 <a href="#features" class="nav-link">Features</a>
                 <a href="#readme-section" class="nav-link">README</a>
                 <a href="schema/" class="nav-link">Schemas</a>
                 <a href="https://github.com/TakashiSasaki/get-a-grip" class="nav-link">GitHub</a>
+                <img src="https://github.com/TakashiSasaki/get-a-grip/actions/workflows/python-publish.yml/badge.svg"
+                    alt="Build Status" style="border-radius: 4px;">
             </nav>
         </header>
 
@@ -548,13 +643,28 @@
                 <a href="#features" class="btn btn-secondary">Explore Features</a>
             </div>
 
-            <!-- Package Metadata Card -->
-            <div id="pkg-metadata" aria-label="Package metadata">
-                <div class="meta-title">📦 Package Info</div>
-                <dl id="pkg-meta-dl">
-                    <dt>Version</dt>
-                    <dd><span class="spinner"></span>Loading...</dd>
-                </dl>
+            <!-- Hero Cards Row -->
+            <div class="hero-cards">
+                <!-- Package Metadata Card -->
+                <div id="pkg-metadata" class="hero-card" aria-label="Package metadata">
+                    <div class="card-title">📦 Package Info</div>
+                    <dl id="pkg-meta-dl">
+                        <dt>Version</dt>
+                        <dd><span class="spinner"></span>Loading...</dd>
+                    </dl>
+                </div>
+
+                <!-- Build Activity Card -->
+                <div id="build-activity" class="hero-card" aria-label="Build activity">
+                    <div class="card-title">
+                        🚀 CI Activity
+                        <a href="https://github.com/TakashiSasaki/get-a-grip/actions"
+                            style="font-size: 0.65rem; color: var(--primary); text-decoration: none;">View All</a>
+                    </div>
+                    <ul class="activity-feed" id="build-feed">
+                        <li class="activity-item"><span class="spinner"></span> Loading runs...</li>
+                    </ul>
+                </div>
             </div>
         </section>
 
@@ -642,12 +752,15 @@
     </footer>
 
     <script>
-        // ─── Fetch and parse pyproject.toml ──────────────────────────────────
-        const PYPROJECT_URL = 'https://raw.githubusercontent.com/TakashiSasaki/get-a-grip/refs/heads/get-a-grip/pyproject.toml';
-        const README_URL = 'https://raw.githubusercontent.com/TakashiSasaki/get-a-grip/refs/heads/get-a-grip/README.md';
+        // ─── Constants ────────────────────────────────────────────────────────
+        const REPO_NAME = 'TakashiSasaki/get-a-grip';
+        const BRANCH_NAME = 'get-a-grip';
+        const PYPROJECT_URL = `https://raw.githubusercontent.com/${REPO_NAME}/refs/heads/${BRANCH_NAME}/pyproject.toml`;
+        const README_URL = `https://raw.githubusercontent.com/${REPO_NAME}/refs/heads/${BRANCH_NAME}/README.md`;
+        const ACTIONS_API = `https://api.github.com/repos/${REPO_NAME}/actions/runs?per_page=5`;
 
+        // ─── Fetch and parse pyproject.toml ──────────────────────────────────
         function parseToml(text) {
-            // Minimal TOML parser for [project] section key="value" pairs
             const result = {};
             let inProject = false;
             for (const rawLine of text.split('\n')) {
@@ -673,7 +786,6 @@
                 const fields = [
                     ['Name', meta.name || '—'],
                     ['Version', meta.version || '—'],
-                    ['Description', meta.description || '—'],
                     ['Python', meta['requires-python'] || '—'],
                 ];
 
@@ -686,6 +798,51 @@
                 }
             } catch (e) {
                 dl.innerHTML = `<dt>Error</dt><dd>${escapeHtml(String(e))}</dd>`;
+            }
+        }
+
+        // ─── Fetch and render GitHub Actions runs ─────────────────────────────
+        async function loadBuildActivity() {
+            const feed = document.getElementById('build-feed');
+            try {
+                const res = await fetch(ACTIONS_API);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+
+                if (!data.workflow_runs || data.workflow_runs.length === 0) {
+                    feed.innerHTML = '<li class="activity-item">No recent activity</li>';
+                    return;
+                }
+
+                feed.innerHTML = data.workflow_runs.map(run => {
+                    let statusClass = 'status-other';
+                    let runStatus = run.conclusion || run.status;
+
+                    if (runStatus === 'success') statusClass = 'status-success';
+                    else if (runStatus === 'failure') statusClass = 'status-failure';
+                    else if (['in_progress', 'queued', 'pending'].includes(runStatus)) {
+                        statusClass = 'status-progress';
+                        runStatus = 'In Progress';
+                    }
+
+                    const timeStr = new Date(run.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+
+                    return `
+                        <li class="activity-item">
+                            <div style="min-width: 0;">
+                                <a href="${run.html_url}" class="run-name" target="_blank" title="${escapeHtml(run.display_title || run.name)}">
+                                    ${escapeHtml(run.display_title || run.name)}
+                                </a>
+                                <span class="run-meta">#${run.run_number} • ${timeStr}</span>
+                            </div>
+                            <span class="status-pill ${statusClass}">${runStatus.replace('_', ' ')}</span>
+                        </li>
+                    `;
+                }).join('');
+
+            } catch (e) {
+                feed.innerHTML = `<li class="activity-item" style="color:var(--text-dim);">API Rate limit or Error</li>`;
+                console.error('GitHub API error:', e);
             }
         }
 
@@ -707,6 +864,7 @@
         }
 
         loadMetadata();
+        loadBuildActivity();
         loadReadme();
     </script>
 </body>
