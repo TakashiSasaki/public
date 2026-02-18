@@ -99,9 +99,12 @@ def main():
     subparsers.add_parser("env", help="Environment Viewer GUI")
     subparsers.add_parser("path", help="Path Viewer CLI")
 
-    # --- Shortcut Management ---
-    shortcut_parser = subparsers.add_parser("shortcut", help="Manage Start Menu shortcut")
-    shortcut_parser.add_argument("action", choices=["install", "uninstall"], help="Action to perform")
+    # --- Launcher ---
+    launcher_parser = subparsers.add_parser("launcher", help="GUI Launcher tools")
+    launcher_subparsers = launcher_parser.add_subparsers(dest="launcher_command", help="Launcher subcommands")
+    launcher_subparsers.add_parser("launch", help="Launch GUI Launcher")
+    launcher_subparsers.add_parser("install", help="Install Start Menu shortcut")
+    launcher_subparsers.add_parser("uninstall", help="Uninstall Start Menu shortcut")
 
     # --- Git/Tools ---
     tools_parser = subparsers.add_parser("tools", help="Miscellaneous tools")
@@ -258,16 +261,24 @@ def main():
         if tui_main: tui_main()
         else: print("Textual not installed.")
 
-    elif args.command == "shortcut":
-        if shortcut_manager_main:
-            # Reconstruct args for the shortcut manager or just call functions?
-            # shortcut_manager.main uses argparse on sys.argv or we can pass args?
-            # It uses parser.parse_args().
-            # So we set sys.argv.
-            sys.argv = ["gag-shortcut", args.action]
-            shortcut_manager_main()
-        else:
-            print("Error: shortcut manager not found (pywin32 might be missing).")
+    elif args.command == "launcher":
+        if not hasattr(args, 'launcher_command') or not args.launcher_command:
+            parser.parse_args(['launcher', '--help'])
+            return
+
+        if args.launcher_command == "launch":
+            if launcher_main:
+                launcher_main()
+            else:
+                print("Error: launcher not found (tk/tcl might be missing).")
+        
+        elif args.launcher_command in ["install", "uninstall"]:
+            if shortcut_manager_main:
+                # pass 'install' or 'uninstall' to shortcut_manager
+                sys.argv = ["gag-launcher", args.launcher_command]
+                shortcut_manager_main()
+            else:
+                 print("Error: shortcut manager not found (pywin32 might be missing).")
 
     # --- Core Commands (Fully implemented here) ---
     elif args.command == "filelist":
