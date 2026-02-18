@@ -4,11 +4,17 @@ from tkinter import ttk, messagebox
 import subprocess
 import sys
 import os
+import importlib.metadata
 
 class LauncherApp:
     def __init__(self, root):
+        try:
+            version = importlib.metadata.version("get-a-grip")
+        except importlib.metadata.PackageNotFoundError:
+            version = "dev"
+
         self.root = root
-        self.root.title("Get-a-Grip Launcher")
+        self.root.title(f"Get-a-Grip Launcher v{version}")
         self.root.geometry("300x250")
 
         lbl = ttk.Label(root, text="Select a tool to launch:", font=("Arial", 12))
