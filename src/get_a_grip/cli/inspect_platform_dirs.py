@@ -27,7 +27,7 @@ def run_cli(app_name: str, app_author: str):
 
     # 実用例: pathlib との組み合わせ
     if PlatformDirs:
-        dirs = PlatformDirs(app_name, appauthor=None, roaming=True)
+        dirs = PlatformDirs(app_name, appauthor=False, roaming=True)
         config_dir = Path(dirs.user_config_dir)
         print("[Pathlib Integration Example]")
         print(f"  Potential config file: {config_dir / 'settings.json'}")

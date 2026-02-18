@@ -17,7 +17,7 @@ def get_dir_data(app_name: str = "get-a-grip", app_author: str | None = None) ->
     Returns:
         list of (directory_type, path) tuples.
     """
-    dirs = PlatformDirs(app_name, appauthor=app_author, roaming=True)
+    dirs = PlatformDirs(app_name, appauthor=False if app_author is None else app_author, roaming=True)
 
     data = [
         ("User Data", dirs.user_data_dir),

@@ -96,5 +96,5 @@ class TestGetDirData:
         get_dir_data()
 
         mock_platform_dirs.assert_called_once_with(
-            "get-a-grip", appauthor=None, roaming=True
+            "get-a-grip", appauthor=False, roaming=True
         )
