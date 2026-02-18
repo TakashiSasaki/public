@@ -23,7 +23,7 @@
 ## 🛠 Tech Stack
 
 - **Language:** Python 3.12+
-- **Dependency Management:** [Poetry](https://python-poetry.org/)
+- **Dependency Management:** [uv](https://github.com/astral-sh/uv)
 - **Data Formats:** JSON-LD, JSON Schema
 
 ## 📂 Directory Structure
@@ -52,13 +52,13 @@ The developer of this project owns and maintains the `https://purl.org/gag` name
 ### Prerequisites
 
 - Python 3.12 or higher
-- [Poetry](https://python-poetry.org/docs/#installation)
+- [uv](https://github.com/astral-sh/uv)
 
 ### Installation
 
-**For developers (using Poetry):**
+**For developers (using uv):**
 ```bash
-poetry install
+uv sync
 ```
 
 **For beta testers (direct from GitHub):**
@@ -73,11 +73,16 @@ To scan a directory and output a JSON-LD file:
 
 ```powershell
 # Standard robust scan (validates multiple methods)
-poetry run gag filelist <target_directory> [-o output_file.json]
+# Standard robust scan (validates multiple methods)
+uv run gag filelist <target_directory> [-o output_file.json]
 
 # Specialized scanners
-poetry run gag filelist-http <query>   # Everything HTTP scan
-poetry run gag filelist-ipc <directory> # Everything IPC scan
+uv run gag filelist-http <query>   # Everything HTTP scan
+uv run gag filelist-ipc <directory> # Everything IPC scan
+
+# Launcher & Shortcuts
+uv run gag launch          # Open GUI Launcher
+uv run gag shortcut install # Install Start Menu shortcut
 ```
 
 If no output filename is specified, it defaults to `fbd0009d-e91b-414f-9f4f-db3fbd3a16ee.json`.
