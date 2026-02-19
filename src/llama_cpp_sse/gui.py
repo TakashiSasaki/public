@@ -184,13 +184,15 @@ class LlamaGUI:
 
         ttk.Label(config_frame, text="Model:").grid(row=0, column=2, sticky="w", padx=5, pady=4)
         self.model_var = tk.StringVar()
-        self.model_combo = ttk.Combobox(config_frame, textvariable=self.model_var, state="readonly", width=40)
-        self.model_combo.grid(row=0, column=3, sticky="w", padx=5, pady=4, columnspan=3)
+        self.model_combo = ttk.Combobox(config_frame, textvariable=self.model_var, state="readonly", width=35)
+        self.model_combo.grid(row=0, column=3, sticky="w", padx=5, pady=4)
+        
+        ttk.Button(config_frame, text="🔄", width=3, command=self._load_models).grid(row=0, column=4, sticky="w", padx=2, pady=4)
 
         # Row 1: System Prompt (optional)
         ttk.Label(config_frame, text="System Prompt:").grid(row=1, column=0, sticky="nw", padx=5, pady=4)
         self.system_prompt_text = tk.Text(config_frame, height=2, wrap="word", font=("Consolas", 9))
-        self.system_prompt_text.grid(row=1, column=1, columnspan=5, sticky="ew", padx=5, pady=4)
+        self.system_prompt_text.grid(row=1, column=1, columnspan=4, sticky="ew", padx=5, pady=4)
         config_frame.columnconfigure(3, weight=1)
 
         # --- Buttons (pack at bottom first for guaranteed visibility) ---
