@@ -408,6 +408,44 @@
             color: var(--text-dim);
         }
 
+        .cmd-line {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .cmd-line>div {
+            flex: 1;
+        }
+
+        .copy-btn {
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: var(--text-dim);
+            cursor: pointer;
+            padding: 0.25rem 0.4rem;
+            font-size: 0.75rem;
+            line-height: 1;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .copy-btn:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: var(--primary);
+            color: var(--text-main);
+        }
+
+        .copy-btn.copied {
+            background: rgba(34, 197, 94, 0.15);
+            border-color: var(--success);
+            color: var(--success);
+        }
+
         /* README Section */
         #readme-section {
             padding: 4rem 0;
@@ -716,13 +754,20 @@
                     <span style="margin-left: auto; font-size: 0.75rem; opacity: 0.5;">PowerShell</span>
                 </div>
                 <div class="terminal-body">
-                    <div><span class="prompt">PS&gt;</span> <span class="command">powershell -ExecutionPolicy ByPass -c
-                            "irm https://astral.sh/uv/install.ps1 | iex"</span></div>
+                    <div class="cmd-line">
+                        <div><span class="prompt">PS&gt;</span> <span class="command" id="cmd-uv-install">powershell
+                                -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"</span></div>
+                        <button class="copy-btn" onclick="copyCmd('cmd-uv-install', this)"
+                            title="Copy to clipboard">📋</button>
+                    </div>
                     <div class="output">Downloading uv...</div>
                     <div class="output">uv installed successfully!</div>
-                    <div style="margin-top: 1rem;"><span class="prompt">PS&gt;</span> <span class="command">uv tool
-                            install
-                            git+https://github.com/TakashiSasaki/get-a-grip.git@get-a-grip</span></div>
+                    <div class="cmd-line" style="margin-top: 1rem;">
+                        <div><span class="prompt">PS&gt;</span> <span class="command" id="cmd-tool-install">uv tool
+                                install git+https://github.com/TakashiSasaki/get-a-grip.git@get-a-grip</span></div>
+                        <button class="copy-btn" onclick="copyCmd('cmd-tool-install', this)"
+                            title="Copy to clipboard">📋</button>
+                    </div>
                     <div class="output">Resolved 1 package in 1.23s</div>
                     <div class="output">Installed get-a-grip</div>
                     <div style="margin-top: 1rem;"><span class="prompt">PS&gt;</span> <span class="command">gag
@@ -867,6 +912,19 @@
             } catch (e) {
                 container.innerHTML = `<p style="color:var(--text-dim);">Could not load README: ${escapeHtml(String(e))}</p>`;
             }
+        }
+
+        function copyCmd(id, btn) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            navigator.clipboard.writeText(el.textContent.trim()).then(() => {
+                btn.textContent = '✅';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = '📋';
+                    btn.classList.remove('copied');
+                }, 1500);
+            });
         }
 
         function escapeHtml(str) {
