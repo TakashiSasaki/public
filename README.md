@@ -50,8 +50,19 @@ uv run test-model instruct --backend cuda
 uv run test-model thinking --backend vulkan
 ```
 
-### 6. GPU Memory Cleanup
-If a process hangs or you want to ensure all GPU memory is released, run the cleanup script. This will forcefully terminate any lingering `llama-cli.exe` or `llama-server.exe` processes.
+### 6. Performance Benchmark
+Run a non-interactive benchmark that generates an onion soup recipe and reports performance metrics (token count and speed).
+```bash
+# Default (CUDA)
+uv run benchmark
+
+# Specify backend
+uv run benchmark --backend vulkan
+uv run benchmark --backend cpu
+```
+
+### 7. GPU Memory Cleanup
+If a process hangs or you want to ensure all GPU memory is released, run the cleanup script.
 ```bash
 uv run cleanup-gpu
 ```
