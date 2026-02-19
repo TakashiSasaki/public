@@ -1,8 +1,7 @@
 uv.lock
 *.pyc
 __pycache__
-*.pyc
-__pycache__
+
 deps/
 *.egg-info/
 commit_message.txt
