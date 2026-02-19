@@ -37,6 +37,22 @@ MODELS = {
     "qwen3-think-q8": {
         "url": "https://huggingface.co/bartowski/Qwen_Qwen3-4B-Thinking-2507-GGUF/resolve/main/Qwen_Qwen3-4B-Thinking-2507-Q8_0.gguf",
         "filename": "Qwen_Qwen3-4B-Thinking-2507-Q8_0.gguf"
+    },
+    "mistral": {
+        "url": "https://huggingface.co/unsloth/Ministral-3-3B-Instruct-2512-GGUF/resolve/main/Ministral-3-3B-Instruct-2512-Q4_K_M.gguf",
+        "filename": "Ministral-3-3B-Instruct-2512-Q4_K_M.gguf"
+    },
+    "mistral-q8": {
+        "url": "https://huggingface.co/unsloth/Ministral-3-3B-Instruct-2512-GGUF/resolve/main/Ministral-3-3B-Instruct-2512-Q8_0.gguf",
+        "filename": "Ministral-3-3B-Instruct-2512-Q8_0.gguf"
+    },
+    "mistral-reason": {
+        "url": "https://huggingface.co/unsloth/Ministral-3-3B-Reasoning-2512-GGUF/resolve/main/Ministral-3-3B-Reasoning-2512-Q4_K_M.gguf",
+        "filename": "Ministral-3-3B-Reasoning-2512-Q4_K_M.gguf"
+    },
+    "mistral-reason-q8": {
+        "url": "https://huggingface.co/unsloth/Ministral-3-3B-Reasoning-2512-GGUF/resolve/main/Ministral-3-3B-Reasoning-2512-Q8_0.gguf",
+        "filename": "Ministral-3-3B-Reasoning-2512-Q8_0.gguf"
     }
 }
 
@@ -54,13 +70,13 @@ def download_file(url, dest_path):
 
 def main():
     parser = argparse.ArgumentParser(description="Download GGUF models")
-    parser.add_argument("model", choices=["instruct", "thinking", "gemma3", "gemma3n", "qwen3", "qwen3-q8", "qwen3-think", "qwen3-think-q8", "all"], help="Model to download")
+    parser.add_argument("model", choices=["instruct", "thinking", "gemma3", "gemma3n", "qwen3", "qwen3-q8", "qwen3-think", "qwen3-think-q8", "mistral", "mistral-q8", "mistral-reason", "mistral-reason-q8", "all"], help="Model to download")
     args = parser.parse_args()
 
     if not MODELS_DIR.exists():
         MODELS_DIR.mkdir(parents=True, exist_ok=True)
 
-    models_to_download = [args.model] if args.model != "all" else ["instruct", "thinking", "gemma3", "gemma3n", "qwen3", "qwen3-think"]
+    models_to_download = [args.model] if args.model != "all" else ["instruct", "thinking", "gemma3", "gemma3n", "qwen3", "qwen3-think", "mistral", "mistral-reason"]
 
     for model_key in models_to_download:
         info = MODELS[model_key]
