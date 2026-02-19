@@ -2,6 +2,14 @@
 
 This project provides utilities to set up and run `llama.cpp` with SSE4.x support on Windows, along with tools for downloading compatible models.
 
+## Installation
+
+Run directly from GitHub using `uv`:
+
+```bash
+uv tool install git+https://github.com/TakashiSasaki/public.git@llama-cpp-tk
+```
+
 ## Usage
 
 This project uses `uv` for dependency management and script execution.
