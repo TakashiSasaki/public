@@ -1,0 +1,39 @@
+import sys
+import platform
+import subprocess
+import os
+
+def run_command(command):
+    try:
+        result = subprocess.run(command, capture_output=True, text=True, timeout=10)
+        return result.stdout.strip(), result.stderr.strip(), result.returncode
+    except FileNotFoundError:
+        return None, "Command not found", -1
+    except Exception as e:
+        return None, str(e), -1
+
+print(f"Python Info: {sys.version}")
+print(f"Platform: {platform.platform()}")
+print(f"Processor: {platform.processor()}")
+
+print("\n--- CUDA Check (nvidia-smi) ---")
+out, err, code = run_command(["nvidia-smi"])
+if code == 0:
+    print("CUDA available via nvidia-smi:")
+    # print only first few lines to avoid spam
+    print("\n".join(out.splitlines()[:10]))
+else:
+    print(f"nvidia-smi check failed: {err}")
+
+print("\n--- Vulkan Check (vulkaninfo) ---")
+out, err, code = run_command(["vulkaninfo"])
+if code == 0:
+    print("Vulkan available via vulkaninfo:")
+    print("\n".join(out.splitlines()[:10]))
+else:
+    print(f"vulkaninfo check failed: {err}")
+
+print("\n--- Environment Variables (GPU related) ---")
+for key, val in os.environ.items():
+    if any(k in key.upper() for k in ["CUDA", "VULKAN", "NVIDIA", "AMD", "INTEL"]):
+        print(f"{key}: {val}")
