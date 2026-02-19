@@ -38,12 +38,20 @@ def run_benchmark(backend, extra_args):
         str(cli_path),
         "-m", str(MODEL_FILE),
         "-p", BENCHMARK_PROMPT,
-        "-n", "128", 
-        "-c", "1024",
-        "--temp", "0.7",
         "--no-display-prompt", # Cleaner output
-        "--single-turn"        # Exit after first prompt turn
+        "--single-turn",       # Exit after first prompt turn
+        "--ignore-eos"         # Force generation until limit is reached
     ]
+
+    # Add defaults if not overridden by extra_args
+    if not any(arg in extra_args for arg in ["-n", "--n-predict"]):
+        cmd.extend(["-n", "4096"])
+    
+    if not any(arg in extra_args for arg in ["-c", "--ctx-size"]):
+        cmd.extend(["-c", "8192"])
+
+    if not any(arg in extra_args for arg in ["--temp"]):
+        cmd.extend(["--temp", "0.7"])
 
     if backend in ["cuda", "vulkan"]:
         # Default offload if not overridden by extra_args

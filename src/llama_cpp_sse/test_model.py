@@ -55,7 +55,7 @@ def run_test(model_key, backend):
         "-m", str(model_file),
         "-p", prompt,
         "-n", "64",
-        "-c", "512",
+        "-c", "2048",
         "--temp", "0.7"
     ]
 
