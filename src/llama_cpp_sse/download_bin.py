@@ -2,12 +2,17 @@ import os
 import zipfile
 import urllib.request
 import shutil
+import argparse
 from pathlib import Path
 import sys
 
-URL = "https://github.com/ggml-org/llama.cpp/releases/download/b8095/cudart-llama-bin-win-cuda-12.4-x64.zip"
+URLS = {
+    "cuda": "https://github.com/ggml-org/llama.cpp/releases/download/b8095/cudart-llama-bin-win-cuda-12.4-x64.zip",
+    "vulkan": "https://github.com/ggml-org/llama.cpp/releases/download/b8095/llama-b8095-bin-win-vulkan-x64.zip",
+    "cpu": "https://github.com/ggml-org/llama.cpp/releases/download/b8095/llama-b8095-bin-win-cpu-x64.zip"
+}
+
 DEPS_DIR = Path("deps")
-DEST_DIR = DEPS_DIR / "llama_cpp_bin"
 
 def download_file(url, dest_path):
     print(f"Downloading {url}...")
@@ -30,22 +35,27 @@ def extract_zip(zip_path, extract_to):
         sys.exit(1)
 
 def main():
+    parser = argparse.ArgumentParser(description="Download llama.cpp binaries")
+    parser.add_argument("--backend", choices=["cuda", "vulkan", "cpu"], default="cuda", help="Backend to download (cuda, vulkan, or cpu)")
+    args = parser.parse_args()
+
+    url = URLS[args.backend]
+    dest_dir = DEPS_DIR / f"llama_cpp_{args.backend}"
+
     if not DEPS_DIR.exists():
         DEPS_DIR.mkdir(parents=True, exist_ok=True)
     
-    if DEST_DIR.exists():
-        print(f"Destination directory {DEST_DIR} already exists. Skipping download.")
+    if dest_dir.exists():
+        print(f"Destination directory {dest_dir} already exists. Skipping download.")
         return
 
-    check_env_script = Path("src/llama_cpp_sse/check_env.py")
-    # Simple check to ensure we are running from project root or close to it
-    if not check_env_script.exists() and not Path("pyproject.toml").exists():
-         print("Warning: It seems you are not running from the project root.")
+    print(f"Target backend: {args.backend}")
+    print(f"Target directory: {dest_dir}")
 
-    zip_path = DEPS_DIR / "temp_llama.zip"
+    zip_path = DEPS_DIR / f"temp_llama_{args.backend}.zip"
     
-    download_file(URL, zip_path)
-    extract_zip(zip_path, DEST_DIR)
+    download_file(url, zip_path)
+    extract_zip(zip_path, dest_dir)
     
     try:
         os.remove(zip_path)
@@ -53,7 +63,7 @@ def main():
     except OSError as e:
         print(f"Error removing temporary file: {e}")
 
-    print(f"\nllama.cpp binaries installed to: {DEST_DIR.absolute()}")
+    print(f"\nllama.cpp binaries for {args.backend} installed to: {dest_dir.absolute()}")
 
 if __name__ == "__main__":
     main()
