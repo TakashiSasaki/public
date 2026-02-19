@@ -20,6 +20,7 @@ import tempfile
 import ctypes
 import shutil
 from . import settings
+from . import version_check
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -144,6 +145,7 @@ class LlamaGUI:
         self.output_queue = queue.Queue()
         self.is_running = False
         self.param_vars = []  # List of (flag, var, ptype)
+        self.version_info = None # (is_newer, local, remote)
 
         # Load Settings
         self.settings = settings.load_settings()
@@ -158,6 +160,22 @@ class LlamaGUI:
         
         # Hook window close to save settings
         self.root.protocol("WM_DELETE_WINDOW", self._on_close)
+
+        # Start version check in background
+        threading.Thread(target=self._run_version_check, daemon=True).start()
+
+    def _run_version_check(self):
+        try:
+            self.version_info = version_check.check_for_updates()
+            # Schedule UI update
+            self.root.after(0, self._update_version_ui)
+        except Exception as e:
+            print(f"Version check failed: {e}")
+
+    def _update_version_ui(self):
+        # Refresh env tab if it's already built, or just let it pick up self.version_info
+        if hasattr(self, "env_text"):
+            self._refresh_env_info()
 
     def _on_close(self):
         self._save_current_settings()
@@ -614,6 +632,19 @@ class LlamaGUI:
         # Settings
         lines.append(f"\n--- Settings ---")
         lines.append(f"  File     : {settings.get_settings_path()}")
+
+        # Version
+        lines.append(f"\n--- Version ---")
+        if self.version_info:
+            is_newer, local, remote = self.version_info
+            lines.append(f"  Current  : {local}")
+            if is_newer:
+                 lines.append(f"  Latest   : {remote}  (Update Available!)")
+                 lines.append(f"  Update   : uv pip install --upgrade llama-cpp-tk") # Suggested command
+            else:
+                 lines.append(f"  Latest   : {remote}  (Up to date)")
+        else:
+             lines.append(f"  Checking...")
 
         # Backends
         lines.append(f"\n--- Backends ---")
