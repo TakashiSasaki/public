@@ -61,6 +61,9 @@ uv run benchmark --backend vulkan
 uv run benchmark --backend cpu
 ```
 
+> [!WARNING]
+> **Vulkan Instability**: On some hardware (including this project's target environment), the Vulkan backend may produce garbage output when GPU offloading (`-ngl`) is enabled. If you experience incorrect output, please use the CUDA backend or set `-ngl 0`.
+
 ### 7. GPU Memory Cleanup
 If a process hangs or you want to ensure all GPU memory is released, run the cleanup script.
 ```bash

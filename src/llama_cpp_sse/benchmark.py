@@ -18,7 +18,7 @@ BACKEND_MAP = {
 MODEL_FILE = MODELS_DIR / "LFM2.5-1.2B-Instruct-Q4_K_M.gguf"
 BENCHMARK_PROMPT = "Write a complete recipe for French Onion Soup. Start with the title and ingredient list."
 
-def run_benchmark(backend):
+def run_benchmark(backend, extra_args):
     if not MODEL_FILE.exists():
         print(f"Error: Model file '{MODEL_FILE}' not found. Please run 'uv run download-models instruct' first.")
         sys.exit(1)
@@ -46,7 +46,12 @@ def run_benchmark(backend):
     ]
 
     if backend in ["cuda", "vulkan"]:
-        cmd.extend(["-ngl", "99"])
+        # Default offload if not overridden by extra_args
+        if not any(arg in extra_args for arg in ["-ngl", "--n-gpu-layers"]):
+            cmd.extend(["-ngl", "99"])
+
+    if extra_args:
+        cmd.extend(extra_args)
 
     start_time = time.time()
     merged_output = ""
@@ -124,14 +129,19 @@ def run_benchmark(backend):
 def main():
     parser = argparse.ArgumentParser(description="Non-interactive performance benchmark for llama-cpp-sse")
     parser.add_argument("--backend", choices=["cpu", "cuda", "vulkan"], default="cuda", help="Backend to use (default: cuda)")
-    args = parser.parse_args()
+    parser.add_argument("-ngl", "--n-gpu-layers", type=int, help="Number of layers to offload to GPU (overrides default)")
+    args, extra_args = parser.parse_known_args()
+
+    # Consolidate ngl into extra_args if provided
+    if args.n_gpu_layers is not None:
+        extra_args.extend(["-ngl", str(args.n_gpu_layers)])
 
     # Check if backend cli exists, fallback to cpu if cuda/vulkan missing
     if not BACKEND_MAP[args.backend].exists():
         print(f"Warning: {args.backend} binaries not found. Falling back to CPU for benchmark.")
         args.backend = "cpu"
 
-    run_benchmark(args.backend)
+    run_benchmark(args.backend, extra_args)
 
 if __name__ == "__main__":
     main()

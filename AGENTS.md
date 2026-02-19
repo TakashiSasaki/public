@@ -20,10 +20,11 @@ This file is for logging findings, decisions, and important context for other ag
     - *Models*: `LiquidAI/LFM2.5-1.2B-Instruct` and `LiquidAI/LFM2.5-1.2B-Thinking`.
     - *Quantization*: Q4_K_M is used for balance of size and performance.
 - **Testing**: Use `uv run test-model [instruct|thinking] [--backend cpu|cuda|vulkan]` to verify model execution via `llama-cli`.
-- **Benchmarking**: Use `uv run benchmark [--backend cpu|cuda|vulkan]` for non-interactive performance measurement.
+- **Benchmarking**: Use `uv run benchmark [--backend cpu|cuda|vulkan] [-ngl N]` for non-interactive performance measurement.
     - *Benchmarks (LFM2.5-1.2B)*:
         - **CUDA**: ~103 tokens/s (Balanced)
-        - **Vulkan**: ~121 tokens/s (Fastest)
+        - **Vulkan**: ~121 tokens/s (Fastest, but **unstable with GPU offloading**)
         - **CPU**: ~6.2 tokens/s (Baseline)
+    - *Known Issue*: Vulkan backend produces garbage output when `-ngl` (GPU offloading) is used on this hardware. Use CUDA for acceleration instead.
 - **Maintenance**: Use `uv run cleanup-gpu` to kill lingering llama.cpp processes and free VRAM.
 
