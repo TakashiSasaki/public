@@ -1,8 +1,0 @@
-Add download-bin script for llama.cpp binaries
-
-- Create src/llama_cpp_sse/download_bin.py to download and extract bins
-- Add [project.scripts] entry point `download-bin`
-- Ignore `deps/` directory in .gitignore
-- Document usage in AGENTS.md
-
-This script fetches CUDA 12.4 compatible binaries from GitHub releases.

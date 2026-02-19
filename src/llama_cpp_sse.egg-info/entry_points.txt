@@ -1,2 +1,4 @@
 [console_scripts]
 check-env = llama_cpp_sse.check_env:main
+check-sse = llama_cpp_sse.check_sse:main
+download-bin = llama_cpp_sse.download_bin:main
