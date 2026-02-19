@@ -1,6 +1,6 @@
 [project]
 name = "llama-cpp-sse"
-version = "0.1.16"
+version = "0.1.17"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -11,6 +11,7 @@ dependencies = [
 [project.scripts]
 check-env = "llama_cpp_sse.check_env:main"
 check-sse = "llama_cpp_sse.check_sse:main"
+cleanup-gpu = "llama_cpp_sse.cleanup_gpu:main"
 download-bin = "llama_cpp_sse.download_bin:main"
 download-models = "llama_cpp_sse.download_models:main"
 test-model = "llama_cpp_sse.test_model:main"

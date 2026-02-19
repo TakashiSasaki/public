@@ -19,5 +19,10 @@ This file is for logging findings, decisions, and important context for other ag
 - **Models**: Use `uv run download-models [instruct|thinking|all]` to download LiquidAI LFM2.5 GGUF models to `models/`.
     - *Models*: `LiquidAI/LFM2.5-1.2B-Instruct` and `LiquidAI/LFM2.5-1.2B-Thinking`.
     - *Quantization*: Q4_K_M is used for balance of size and performance.
-- **Testing**: Use `uv run test-model [instruct|thinking]` to verify model execution via `llama-cli`.
+- **Testing**: Use `uv run test-model [instruct|thinking] [--backend cpu|cuda|vulkan]` to verify model execution via `llama-cli`.
+    - *Benchmarks (LFM2.5-1.2B)*:
+        - **CUDA**: ~103 t/s (Fastest)
+        - **Vulkan**: ~65 t/s
+        - **CPU**: ~6.7 t/s
+- **Maintenance**: Use `uv run cleanup-gpu` to kill lingering llama.cpp processes and free VRAM.
 
