@@ -26,5 +26,7 @@ This file is for logging findings, decisions, and important context for other ag
         - **Vulkan**: ~121 tokens/s (Fastest, but **unstable with GPU offloading**)
         - **CPU**: ~6.2 tokens/s (Baseline)
     - *Known Issue*: Vulkan backend produces garbage output when `-ngl` (GPU offloading) is used on this hardware. Use CUDA for acceleration instead.
+- **Worktree Setup**: When creating a new worktree, run the following command to configure the remote fetch Behavior and install the pre-commit hook:
+    - `powershell -ExecutionPolicy Bypass -File .\scripts\setup_repo.ps1`
 - **Maintenance**: Use `uv run cleanup-gpu` to kill lingering llama.cpp processes and free VRAM.
 
