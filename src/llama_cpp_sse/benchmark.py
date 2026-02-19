@@ -64,18 +64,33 @@ def run_benchmark(backend, extra_args):
     start_time = time.time()
     merged_output = ""
     try:
-        # Merge stderr into stdout to prevent deadlocks and capture all info in one stream
+        # Separate stdout and stderr to handle formatting
         process = subprocess.Popen(
             cmd,
             stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
+            stderr=subprocess.PIPE,
             text=True,
             encoding="utf-8",
             bufsize=1,
             universal_newlines=True
         )
 
-        # Read everything in real-time
+        import threading
+
+        def stderr_reader(proc, output_list):
+            for line in proc.stderr:
+                # Intercept memory breakdown to ensure newline
+                if "llama_memory_breakdown_print" in line:
+                     print("\n" + line, end="", flush=True)
+                else:
+                     print(line, end="", flush=True)
+                output_list.append(line)
+
+        stderr_output = []
+        err_thread = threading.Thread(target=stderr_reader, args=(process, stderr_output))
+        err_thread.start()
+
+        # Read stdout in real-time
         while True:
             char = process.stdout.read(1)
             if not char and process.poll() is not None:
@@ -85,6 +100,10 @@ def run_benchmark(backend, extra_args):
                 merged_output += char
 
         process.wait()
+        err_thread.join()
+        
+        # Append stderr to merged_output for regex parsing if needed
+        merged_output += "".join(stderr_output)
         duration = time.time() - start_time
         
         print("\n" + "-" * 30)
