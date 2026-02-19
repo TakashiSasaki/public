@@ -1,13 +1,7 @@
-Initialize project structure with uv
+Add check-env entry point
 
-- Initialize uv project with Python 3.12
-- Create standard directory structure:
-  - .venv/: Virtual environment (managed by uv)
-  - src/llama_cpp_sse/: Source code package
-  - scripts/: Utility scripts
-- Move check_env.py to scripts/ directory
-- Move main.py to src/llama_cpp_sse/main.py for src-layout
-- Add AGENTS.md for agent context and rules
-- Configure project metadata in pyproject.toml
+- Move check_env.py to src/llama_cpp_sse/check_env.py
+- Refactor check_env.py to use a main() function
+- Add [project.scripts] entry point `check-env` in pyproject.toml
 
-This structure follows modern Python packaging standards and ensures reproducible environments.
+This allows running the environment check via `uv run check-env`.
