@@ -19,4 +19,5 @@ This file is for logging findings, decisions, and important context for other ag
 - **Models**: Use `uv run download-models [instruct|thinking|all]` to download LiquidAI LFM2.5 GGUF models to `models/`.
     - *Models*: `LiquidAI/LFM2.5-1.2B-Instruct` and `LiquidAI/LFM2.5-1.2B-Thinking`.
     - *Quantization*: Q4_K_M is used for balance of size and performance.
+- **Testing**: Use `uv run test-model [instruct|thinking]` to verify model execution via `llama-cli`.
 

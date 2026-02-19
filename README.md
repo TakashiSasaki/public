@@ -39,4 +39,14 @@ uv run download-models all
 # Download specific model
 uv run download-models instruct
 uv run download-models thinking
+
+### 5. Test Models
+Verify that the downloaded models can be loaded and generate text using `llama.cpp`.
+```bash
+# Test Instruct model
+uv run test-model instruct
+
+# Test Thinking model
+uv run test-model thinking
+```
 ```
