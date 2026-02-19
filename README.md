@@ -44,9 +44,9 @@ uv run download-models thinking
 Verify that the downloaded models can be loaded and generate text using `llama.cpp`.
 ```bash
 # Test Instruct model
-uv run test-model instruct
+uv run test-model instruct --backend cuda
 
 # Test Thinking model
-uv run test-model thinking
+uv run test-model thinking --backend vulkan
 ```
 ```
