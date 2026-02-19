@@ -716,7 +716,12 @@
                     <span style="margin-left: auto; font-size: 0.75rem; opacity: 0.5;">PowerShell</span>
                 </div>
                 <div class="terminal-body">
-                    <div><span class="prompt">PS&gt;</span> <span class="command">uv tool install
+                    <div><span class="prompt">PS&gt;</span> <span class="command">powershell -ExecutionPolicy ByPass -c
+                            "irm https://astral.sh/uv/install.ps1 | iex"</span></div>
+                    <div class="output">Downloading uv...</div>
+                    <div class="output">uv installed successfully!</div>
+                    <div style="margin-top: 1rem;"><span class="prompt">PS&gt;</span> <span class="command">uv tool
+                            install
                             git+https://github.com/TakashiSasaki/get-a-grip.git@get-a-grip</span></div>
                     <div class="output">Resolved 1 package in 1.23s</div>
                     <div class="output">Installed get-a-grip</div>
