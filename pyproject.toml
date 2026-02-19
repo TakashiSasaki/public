@@ -1,6 +1,6 @@
 [project]
 name = "llama-cpp-sse"
-version = "0.1.7"
+version = "0.1.8"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -12,3 +12,7 @@ dependencies = [
 check-env = "llama_cpp_sse.check_env:main"
 check-sse = "llama_cpp_sse.check_sse:main"
 download-bin = "llama_cpp_sse.download_bin:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
