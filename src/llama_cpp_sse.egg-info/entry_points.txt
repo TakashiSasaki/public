@@ -1,0 +1,2 @@
+[console_scripts]
+check-env = llama_cpp_sse.check_env:main
