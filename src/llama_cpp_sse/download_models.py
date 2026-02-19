@@ -69,6 +69,14 @@ MODELS = {
     "llama-guard": {
         "url": "https://huggingface.co/QuantFactory/Llama-Guard-3-1B-GGUF/resolve/main/Llama-Guard-3-1B.Q4_K_M.gguf",
         "filename": "Llama-Guard-3-1B.Q4_K_M.gguf"
+    },
+    "embed-gemma": {
+        "url": "https://huggingface.co/unsloth/embeddinggemma-300m-GGUF/resolve/main/embeddinggemma-300m-Q4_0.gguf",
+        "filename": "embeddinggemma-300m-Q4_0.gguf"
+    },
+    "embed-nomic": {
+        "url": "https://huggingface.co/nomic-ai/nomic-embed-text-v1.5-GGUF/resolve/main/nomic-embed-text-v1.5.Q4_K_M.gguf",
+        "filename": "nomic-embed-text-v1.5.Q4_K_M.gguf"
     }
 }
 
@@ -86,13 +94,13 @@ def download_file(url, dest_path):
 
 def main():
     parser = argparse.ArgumentParser(description="Download GGUF models")
-    parser.add_argument("model", choices=["instruct", "thinking", "gemma3", "gemma3n", "qwen3", "qwen3-q8", "qwen3-think", "qwen3-think-q8", "mistral", "mistral-q8", "mistral-reason", "mistral-reason-q8", "llama3.2-1b", "llama3.2-1b-q8", "llama3.2-1b-spin", "llama-guard", "all"], help="Model to download")
+    parser.add_argument("model", choices=["instruct", "thinking", "gemma3", "gemma3n", "qwen3", "qwen3-q8", "qwen3-think", "qwen3-think-q8", "mistral", "mistral-q8", "mistral-reason", "mistral-reason-q8", "llama3.2-1b", "llama3.2-1b-q8", "llama3.2-1b-spin", "llama-guard", "embed-gemma", "embed-nomic", "all"], help="Model to download")
     args = parser.parse_args()
 
     if not MODELS_DIR.exists():
         MODELS_DIR.mkdir(parents=True, exist_ok=True)
 
-    models_to_download = [args.model] if args.model != "all" else ["instruct", "thinking", "gemma3", "gemma3n", "qwen3", "qwen3-think", "mistral", "mistral-reason", "llama3.2-1b"]
+    models_to_download = [args.model] if args.model != "all" else ["instruct", "thinking", "gemma3", "gemma3n", "qwen3", "qwen3-think", "mistral", "mistral-reason", "llama3.2-1b", "embed-gemma"]
 
     for model_key in models_to_download:
         info = MODELS[model_key]
