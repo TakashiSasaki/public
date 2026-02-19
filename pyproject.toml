@@ -1,11 +1,14 @@
 [project]
 name = "llama-cpp-sse"
-version = "0.1.6"
+version = "0.1.7"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "py-cpuinfo>=9.0.0",
+]
 
 [project.scripts]
 check-env = "llama_cpp_sse.check_env:main"
+check-sse = "llama_cpp_sse.check_sse:main"
 download-bin = "llama_cpp_sse.download_bin:main"
