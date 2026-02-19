@@ -4,6 +4,11 @@ import shutil
 import sys
 from pathlib import Path
 import hashlib
+try:
+    from . import settings
+except ImportError:
+    # Fallback if running as script
+    import settings
 
 MODELS = {
     "instruct": {
@@ -80,7 +85,9 @@ MODELS = {
     }
 }
 
-MODELS_DIR = Path("models")
+
+# MODELS_DIR = Path("models")
+MODELS_DIR = settings.get_models_path()
 
 def download_file(url, dest_path):
     print(f"Downloading {url}...")

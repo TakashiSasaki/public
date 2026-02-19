@@ -19,12 +19,15 @@ import queue
 import tempfile
 import ctypes
 import shutil
+from . import settings
 
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
 DEPS_DIR = Path("deps")
-MODELS_DIR = Path("models")
+DEPS_DIR = Path("deps")
+# MODELS_DIR will be set dynamically from settings
+
 
 BACKEND_MAP = {
     "cpu": DEPS_DIR / "llama_cpp_cpu" / "llama-cli.exe",
@@ -142,9 +145,69 @@ class LlamaGUI:
         self.is_running = False
         self.param_vars = []  # List of (flag, var, ptype)
 
+        # Load Settings
+        self.settings = settings.load_settings()
+        self.models_dir = settings.get_models_path(self.settings)
+
         self._create_main_layout()
         self._load_models()
         self._check_queue()
+        
+        # Apply last session settings
+        self._apply_last_session_settings()
+        
+        # Hook window close to save settings
+        self.root.protocol("WM_DELETE_WINDOW", self._on_close)
+
+    def _on_close(self):
+        self._save_current_settings()
+        self.root.destroy()
+
+    def _save_current_settings(self):
+        # Update settings dict from UI state
+        
+        # General
+        # (models_path is currently not editable in UI, but we preserve it)
+        
+        # Last Session
+        self.settings["last_session"]["backend"] = self.backend_var.get()
+        self.settings["last_session"]["model"] = self.model_var.get()
+        
+        # Parameters
+        params = {}
+        defaults = {p[0]: p[4] for p in GENERATION_PARAMS + SAMPLING_PARAMS + MIROSTAT_PARAMS + DRY_PARAMS + DYNAMIC_TEMP_PARAMS + XTC_PARAMS + ADVANCED_MODEL_PARAMS}
+        
+        for flag, var, ptype in self.param_vars:
+            try:
+                val = var.get()
+                # Only save if different from default to keep json clean? 
+                # Or save all? Let's save all for consistency or changed ones.
+                # Saving all is easier to implement and ensures exact state restoration.
+                params[flag] = val
+            except:
+                pass
+        self.settings["parameters"] = params
+        
+        settings.save_settings(self.settings)
+
+    def _apply_last_session_settings(self):
+        # Apply backend and model
+        last = self.settings.get("last_session", {})
+        if "backend" in last and last["backend"] in BACKEND_MAP:
+            self.backend_var.set(last["backend"])
+        
+        # Model is set in _load_models if available, but we can try to select the specific one
+        if "model" in last and last["model"] in self.model_combo["values"]:
+            self.model_combo.set(last["model"])
+            
+        # Apply parameters
+        saved_params = self.settings.get("parameters", {})
+        for flag, var, ptype in self.param_vars:
+            if flag in saved_params:
+                try:
+                    var.set(saved_params[flag])
+                except:
+                    pass
 
     # -----------------------------------------------------------------------
     # Layout
@@ -298,9 +361,13 @@ class LlamaGUI:
     # Model Loading
     # -----------------------------------------------------------------------
     def _load_models(self):
-        if not MODELS_DIR.exists():
-            MODELS_DIR.mkdir(parents=True, exist_ok=True)
-        models = [f.name for f in MODELS_DIR.glob("*.gguf")]
+        if not self.models_dir.exists():
+            try:
+                self.models_dir.mkdir(parents=True, exist_ok=True)
+            except Exception as e:
+                print(f"Error creating models dir: {e}")
+                
+        models = [f.name for f in self.models_dir.glob("*.gguf")]
         self.model_combo["values"] = models
         if models:
             self.model_combo.set(models[0])
@@ -348,7 +415,7 @@ class LlamaGUI:
             messagebox.showerror("Error", "Please select a model first.\nDownload one with: uv run download-models all")
             return
 
-        model_path = MODELS_DIR / model_name
+        model_path = self.models_dir / model_name
         cli_path = BACKEND_MAP.get(backend)
 
         if not cli_path or not cli_path.exists():
@@ -532,8 +599,9 @@ class LlamaGUI:
 
         # Models
         lines.append(f"\n--- Models ---")
-        if MODELS_DIR.exists():
-            models = list(MODELS_DIR.glob("*.gguf"))
+        lines.append(f"  Path     : {self.models_dir.absolute()}")
+        if self.models_dir.exists():
+            models = list(self.models_dir.glob("*.gguf"))
             if models:
                 for m in models:
                     size_mb = m.stat().st_size / (1024 * 1024)
@@ -542,6 +610,10 @@ class LlamaGUI:
                 lines.append("  (no .gguf models found)")
         else:
             lines.append("  (models/ directory not found)")
+            
+        # Settings
+        lines.append(f"\n--- Settings ---")
+        lines.append(f"  File     : {settings.get_settings_path()}")
 
         # Backends
         lines.append(f"\n--- Backends ---")

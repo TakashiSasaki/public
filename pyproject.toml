@@ -1,11 +1,12 @@
 [project]
 name = "llama-cpp-tk"
-version = "0.1.34"
+version = "0.1.36"
 description = "Add your description here"
 readme = "README.md"
 authors = [{ name = "Takashi Sasaki", email = "takashi316@gmail.com" }]
 requires-python = ">=3.12"
 dependencies = [
+    "platformdirs>=4.9.2",
     "py-cpuinfo>=9.0.0",
 ]
 
