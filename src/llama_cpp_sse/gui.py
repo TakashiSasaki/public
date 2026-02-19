@@ -197,10 +197,10 @@ class LlamaGUI:
         btn_frame = ttk.Frame(parent, padding=5)
         btn_frame.pack(side="bottom", fill="x", padx=8, pady=(0, 8))
 
-        self.send_btn = ttk.Button(btn_frame, text="▶ Send / Run  (Ctrl+Enter)", command=self._send_prompt)
+        self.send_btn = ttk.Button(btn_frame, text="▶ Send (Shift+Enter)", command=self._send_prompt)
         self.send_btn.pack(side="left", padx=5)
 
-        self.stop_btn = ttk.Button(btn_frame, text="■ Stop", command=self._stop_process, state="disabled")
+        self.stop_btn = ttk.Button(btn_frame, text="■ Stop / New Chat", command=self._stop_process, state="disabled")
         self.stop_btn.pack(side="left", padx=5)
 
         self.clear_btn = ttk.Button(btn_frame, text="🗑 Clear Log", command=self._clear_log)
@@ -212,7 +212,7 @@ class LlamaGUI:
 
         self.input_text = tk.Text(input_frame, height=4, wrap="word", font=("Consolas", 10))
         self.input_text.pack(fill="x", padx=3, pady=3)
-        self.input_text.bind("<Control-Return>", lambda e: self._send_prompt())
+        self.input_text.bind("<Shift-Return>", lambda e: self._send_prompt_event(e))
 
         # --- Output Area (fills remaining space) ---
         output_frame = ttk.LabelFrame(parent, text="Output / Chat Log", padding=5)
@@ -222,6 +222,10 @@ class LlamaGUI:
             output_frame, state="disabled", wrap="word", font=("Consolas", 10)
         )
         self.output_text.pack(fill="both", expand=True)
+
+    def _send_prompt_event(self, event):
+        self._send_prompt()
+        return "break"  # Prevent default newline insertion
 
     def _build_settings_tab(self, parent):
         """Build the Advanced Settings tab with all llama.cpp parameters."""
@@ -306,7 +310,88 @@ class LlamaGUI:
     # -----------------------------------------------------------------------
     # Process Management
     # -----------------------------------------------------------------------
-    def _run_command_thread(self, cmd, env=None):
+    def _send_prompt(self):
+        prompt = self.input_text.get("1.0", "end-1c").strip()
+        if not prompt:
+            return
+
+        self.input_text.delete("1.0", "end")
+        self._log(f"\n{'─'*60}\n> {prompt}\n{'─'*60}\n\n")
+
+        # If process is already running, send to stdin (Multi-turn)
+        if self.process and self.process.poll() is None:
+            try:
+                # Append newline to trigger generation
+                input_data = prompt + "\n"
+                self.process.stdin.write(input_data)
+                self.process.stdin.flush()
+                return
+            except Exception as e:
+                self._log(f"\nError sending to process: {e}\n")
+                self._stop_process()
+                # Fall through to restart if write failed
+
+        # --- Start New Process ---
+        backend = self.backend_var.get()
+        model_name = self.model_var.get()
+
+        if not model_name or model_name == "(no models found)":
+            messagebox.showerror("Error", "Please select a model first.\nDownload one with: uv run download-models all")
+            return
+
+        model_path = MODELS_DIR / model_name
+        cli_path = BACKEND_MAP.get(backend)
+
+        if not cli_path or not cli_path.exists():
+            messagebox.showerror("Error", f"Backend binary not found:\n{cli_path}\nRun: uv run download-bin --backend {backend}")
+            return
+
+        # Build command with Conversation Mode enabled
+        cmd = [str(cli_path), "-m", str(model_path), "-cnv"]
+
+        # System prompt
+        sys_prompt = self.system_prompt_text.get("1.0", "end-1c").strip()
+        if sys_prompt:
+            sys_file = DEPS_DIR / "temp_system_prompt.txt"
+            try:
+                with open(sys_file, "w", encoding="utf-8") as f:
+                    f.write(sys_prompt)
+                cmd.extend(["-sysf", str(sys_file.absolute())])
+            except Exception:
+                pass
+
+        # Collect all parameter values
+        flags_used = set()
+        for flag, var, ptype in self.param_vars:
+            if flag in flags_used:
+                continue
+            try:
+                val = var.get()
+            except tk.TclError:
+                continue
+
+            if ptype == "bool":
+                if val:
+                    cmd.append(flag)
+            elif ptype == "combo":
+                str_val = str(val).split()[0] if val else ""
+                if str_val and str_val != "0": # Skip "0 (auto)" default sometimes
+                    cmd.extend([flag, str_val])
+            else:
+                 # Filter out defaults if needed, but explicit is fine
+                cmd.extend([flag, str(val)])
+            flags_used.add(flag)
+
+        self.is_running = True
+        self._update_ui_state(True)
+
+        env = os.environ.copy()
+        env["PYTHONIOENCODING"] = "utf-8"
+
+        # Start thread
+        threading.Thread(target=self._run_command_thread, args=(cmd, env, prompt), daemon=True).start()
+
+    def _run_command_thread(self, cmd, env=None, initial_prompt=None):
         try:
             startupinfo = None
             if sys.platform == "win32":
@@ -321,7 +406,7 @@ class LlamaGUI:
                 text=True,
                 encoding="utf-8",
                 errors="replace",
-                bufsize=1,
+                bufsize=1,            # Line buffered
                 universal_newlines=True,
                 startupinfo=startupinfo,
                 env=env,
@@ -338,10 +423,29 @@ class LlamaGUI:
             err_thread = threading.Thread(target=_read_stderr, args=(self.process, self.output_queue), daemon=True)
             err_thread.start()
 
-            # stdout reader
-            for line in self.process.stdout:
-                self.output_queue.put(line)
+            # Send initial prompt if provided
+            if initial_prompt:
+                try:
+                    self.process.stdin.write(initial_prompt + "\n")
+                    self.process.stdin.flush()
+                except Exception as e:
+                    self.output_queue.put(f"\nError sending initial prompt: {e}\n")
 
+            # stdout reader
+            # Note: For interactive chat, reading line-by-line might wait for newline.
+            # reading char-by-char might be smoother for streaming but Python's buffering can be tricky.
+            # bufsize=1 means line buffered.
+            while True:
+                # Read line-by-line is safer for simple implementation, 
+                # but might feel laggy if model output doesn't include newlines often.
+                # Let's try read(1) loop or readline.
+                # Given 'bufsize=1', readline() should work well.
+                char = self.process.stdout.read(1)
+                if not char and self.process.poll() is not None:
+                    break
+                if char:
+                    self.output_queue.put(char)
+            
             self.process.wait()
             err_thread.join(timeout=2)
             self.output_queue.put("\n[Process exited]\n")
@@ -351,88 +455,11 @@ class LlamaGUI:
             self.process = None
             self.root.after(0, self._update_ui_state, False)
 
-    def _send_prompt(self):
-        if self.process:
-            return
-
-        backend = self.backend_var.get()
-        model_name = self.model_var.get()
-
-        if not model_name or model_name == "(no models found)":
-            messagebox.showerror("Error", "Please select a model first.\nDownload one with: uv run download-models all")
-            return
-
-        model_path = MODELS_DIR / model_name
-        cli_path = BACKEND_MAP.get(backend)
-
-        if not cli_path or not cli_path.exists():
-            messagebox.showerror("Error", f"Backend binary not found:\n{cli_path}\nRun: uv run download-bin --backend {backend}")
-            return
-
-        prompt = self.input_text.get("1.0", "end-1c").strip()
-        if not prompt:
-            return
-
-        self.input_text.delete("1.0", "end")
-        self._log(f"\n{'─'*60}\n> {prompt}\n{'─'*60}\n\n")
-
-        # Write prompt to temporary file (avoids Windows encoding issues)
-        prompt_file = DEPS_DIR / "temp_prompt.txt"
-        try:
-            with open(prompt_file, "w", encoding="utf-8") as f:
-                f.write(prompt)
-        except Exception as e:
-            self._log(f"Error writing prompt file: {e}\n")
-            return
-
-        # Build command
-        cmd = [str(cli_path), "-m", str(model_path), "-f", str(prompt_file.absolute())]
-
-        # System prompt
-        sys_prompt = self.system_prompt_text.get("1.0", "end-1c").strip()
-        if sys_prompt:
-            sys_file = DEPS_DIR / "temp_system_prompt.txt"
-            try:
-                with open(sys_file, "w", encoding="utf-8") as f:
-                    f.write(sys_prompt)
-                cmd.extend(["-sysf", str(sys_file.absolute())])
-            except Exception:
-                pass
-
-        # Collect all parameter values from Advanced Settings
-        flags_used = set()
-        for flag, var, ptype in self.param_vars:
-            if flag in flags_used:
-                continue
-            try:
-                val = var.get()
-            except tk.TclError:
-                continue
-
-            if ptype == "bool":
-                if val:
-                    cmd.append(flag)
-            elif ptype == "combo":
-                # Extract numeric/text value from combo (e.g. "0 (auto)" -> "0")
-                str_val = str(val).split()[0] if val else ""
-                if str_val:
-                    cmd.extend([flag, str_val])
-            else:
-                cmd.extend([flag, str(val)])
-            flags_used.add(flag)
-
-        self.is_running = True
-        self._update_ui_state(True)
-
-        env = os.environ.copy()
-        env["PYTHONIOENCODING"] = "utf-8"
-
-        threading.Thread(target=self._run_command_thread, args=(cmd, env), daemon=True).start()
-
     def _stop_process(self):
         if self.process:
             self.process.terminate()
-            self._log("\n[Stopping process...]\n")
+            self._log("\n[Stopping process/Ending chat...]\n")
+        self._update_ui_state(False)
 
     def _clear_log(self):
         self.output_text.configure(state="normal")
@@ -441,7 +468,11 @@ class LlamaGUI:
 
     def _update_ui_state(self, running):
         if running:
-            self.send_btn.configure(state="disabled")
+            # In multi-turn, we allow sending even if running (to queue next message), 
+            # BUT confusingly llama.cpp blocks input while generating.
+            # Best to keep "Send" enabled but maybe handle concurrent writes carefully?
+            # Actually, standard chat UI allows typing while generating.
+            self.send_btn.configure(state="normal") 
             self.stop_btn.configure(state="normal")
         else:
             self.send_btn.configure(state="normal")
