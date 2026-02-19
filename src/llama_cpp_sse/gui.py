@@ -17,6 +17,8 @@ import platform
 from pathlib import Path
 import queue
 import tempfile
+import ctypes
+import shutil
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -166,6 +168,11 @@ class LlamaGUI:
         env_tab = ttk.Frame(notebook)
         notebook.add(env_tab, text="  Environment Info  ")
         self._build_env_tab(env_tab)
+
+        # --- Tab 4: Drives ---
+        drives_tab = ttk.Frame(notebook)
+        notebook.add(drives_tab, text="  Drives  ")
+        self._build_drives_tab(drives_tab)
 
     def _build_chat_tab(self, parent):
         """Build the Chat tab with model selection, output, and input."""
@@ -592,6 +599,87 @@ class LlamaGUI:
 
         self.env_text.insert("end", "\n".join(lines))
         self.env_text.configure(state="disabled")
+
+    # -----------------------------------------------------------------------
+    # Drives Tab
+    # -----------------------------------------------------------------------
+    def _build_drives_tab(self, parent):
+        """Build the Drives tab listing fixed drives and free space."""
+        # Toolbar
+        toolbar = ttk.Frame(parent, padding=5)
+        toolbar.pack(fill="x", padx=5, pady=5)
+        
+        ttk.Button(toolbar, text="🔄 Refresh Drives", command=self._refresh_drive_info).pack(side="left")
+
+        # Treeview
+        columns = ("drive", "type", "total", "free", "usage")
+        self.drive_tree = ttk.Treeview(parent, columns=columns, show="headings", selectmode="browse")
+        
+        # Define headings
+        self.drive_tree.heading("drive", text="Drive")
+        self.drive_tree.heading("type", text="Type")
+        self.drive_tree.heading("total", text="Total (GB)")
+        self.drive_tree.heading("free", text="Free (GB)")
+        self.drive_tree.heading("usage", text="Usage %")
+        
+        # Define columns
+        self.drive_tree.column("drive", width=80, anchor="center")
+        self.drive_tree.column("type", width=120, anchor="center")
+        self.drive_tree.column("total", width=100, anchor="e")
+        self.drive_tree.column("free", width=100, anchor="e")
+        self.drive_tree.column("usage", width=100, anchor="e")
+
+        # Scrollbar
+        scrollbar = ttk.Scrollbar(parent, orient="vertical", command=self.drive_tree.yview)
+        self.drive_tree.configure(yscrollcommand=scrollbar.set)
+        
+        self.drive_tree.pack(side="left", fill="both", expand=True, padx=(8, 0), pady=8)
+        scrollbar.pack(side="right", fill="y", pady=8)
+
+        # Initial Load
+        self.root.after(200, self._refresh_drive_info)
+
+    def _refresh_drive_info(self):
+        """Fetch and display fixed drive information."""
+        # Clear existing items
+        for item in self.drive_tree.get_children():
+            self.drive_tree.delete(item)
+
+        try:
+            drives = []
+            bitmask = ctypes.windll.kernel32.GetLogicalDrives()
+            for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
+                if bitmask & 1:
+                    drive_path = f"{letter}:\\"
+                    drive_type = ctypes.windll.kernel32.GetDriveTypeW(drive_path)
+                    
+                    # DRIVE_FIXED = 3
+                    if drive_type == 3:
+                        try:
+                            usage = shutil.disk_usage(drive_path)
+                            total_gb = usage.total / (1024**3)
+                            free_gb = usage.free / (1024**3)
+                            used_gb = usage.used / (1024**3)
+                            percent = (usage.used / usage.total) * 100 if usage.total > 0 else 0
+                            
+                            drives.append((
+                                f"{letter}:",
+                                "Fixed Drive",
+                                f"{total_gb:.1f}",
+                                f"{free_gb:.1f}",
+                                f"{percent:.1f}%"
+                            ))
+                        except Exception as e:
+                             drives.append((f"{letter}:", f"Error: {e}", "-", "-", "-"))
+                bitmask >>= 1
+            
+            # Insert into tree
+            for drive in drives:
+                self.drive_tree.insert("", "end", values=drive)
+                
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to list drives: {e}")
+
 
 
 # ---------------------------------------------------------------------------
