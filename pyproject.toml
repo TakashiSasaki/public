@@ -1,6 +1,6 @@
 [project]
 name = "llama-cpp-sse"
-version = "0.1.21"
+version = "0.1.22"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -16,6 +16,7 @@ benchmark = "llama_cpp_sse.benchmark:main"
 download-bin = "llama_cpp_sse.download_bin:main"
 download-models = "llama_cpp_sse.download_models:main"
 test-model = "llama_cpp_sse.test_model:main"
+gui = "llama_cpp_sse.gui:main"
 
 [build-system]
 requires = ["hatchling"]

@@ -69,3 +69,9 @@ If a process hangs or you want to ensure all GPU memory is released, run the cle
 ```bash
 uv run cleanup-gpu
 ```
+
+### 8. GUI Application
+Launch the graphical interface to easily select models, backends, and parameters.
+```bash
+uv run gui
+```
