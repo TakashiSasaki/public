@@ -1,0 +1,14 @@
+warning: unknown trace value for 'GIT_TRACE': 1 
+         If you want to trace into a file, then please set GIT_TRACE
+         to an absolute pathname (starting with /)
+warning: unknown trace value for 'GIT_TRACE_PERFORMANCE': 1 
+         If you want to trace into a file, then please set GIT_TRACE_PERFORMANCE
+         to an absolute pathname (starting with /)
+fatal: detected dubious ownership in repository at '//133.71.3.4/home/server-certification'
+'//133.71.3.4/home/server-certification' is owned by:
+	(inconvertible) (S-1-5-21-2799445059-1177668081-509006194-3074)
+but the current user is:
+	SASAKI64/takas (S-1-5-21-571252568-1109258875-3459571816-1001)
+To add an exception for this directory, call:
+
+	git config --global --add safe.directory '%(prefix)///133.71.3.4/home/server-certification'
