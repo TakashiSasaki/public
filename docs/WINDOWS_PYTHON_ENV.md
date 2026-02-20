@@ -76,3 +76,17 @@ Get-ChildItem env:
 ## Shebangs (`#!`)
 
 Windows generally ignores the Shebang line (`#!/usr/bin/env python3`) at the top of scripts unless you use the `py` launcher. When running scripts via `poetry run python script.py` or `python script.py`, the interpreter is determined by the command you use, not the file header.
+
+## Browser Tool / Playwright Setup (Agentic Coding)
+
+The Browser Tool (used by `browser_subagent`) relies on **Playwright**, which in turn requires the `HOME` environment variable to be set on Windows to locate user directories correctly.
+
+If you encounter `failed to install playwright: $HOME environment variable is not set`, you must set `HOME` to your `USERPROFILE` path.
+
+**Fix:**
+Run the following PowerShell command to set the variable permanently (User scope):
+```powershell
+[System.Environment]::SetEnvironmentVariable('HOME', $env:USERPROFILE, 'User')
+```
+
+**Important:** After running this command, you must **restart your terminal or application (e.g., VS Code)** for the changes to take effect in the Agent's process.
