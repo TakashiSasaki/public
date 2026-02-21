@@ -18,7 +18,10 @@ def create_cursor_image(
     shape="arrow", 
     border_color=(0, 0, 0, 255), 
     border_thickness=1,
-    inner_char=""
+    tr_text="",
+    tr_text_size=10,
+    br_text="",
+    br_text_size=10
 ):
     """
     指定されたパラメータでカーソル画像を生成する。
@@ -29,7 +32,10 @@ def create_cursor_image(
         shape (str): 形状 ("arrow", "triangle", "cross")
         border_color (tuple): 枠線の色 (R, G, B, A)
         border_thickness (int): 枠線の太さ
-        inner_char (str): 内部に描画する1文字
+        tr_text (str): 右上に描画する文字
+        tr_text_size (int): 右上の文字サイズ
+        br_text (str): 右下に描画する文字
+        br_text_size (int): 右下の文字サイズ
         
     Returns:
         tuple: (Imageオブジェクト, (hotspot_x, hotspot_y))
@@ -88,43 +94,33 @@ def create_cursor_image(
         # サポートされていない古いPillowの場合は単純な描画
         draw.polygon(points, fill=color, outline=border_color)
         
-    # 2. 内側の文字を描画（もしあれば）
-    if inner_char:
-        # 1文字だけ取得
-        char = inner_char[0]
-        
-        # 文字のサイズは形状によって調整が必要だが、とりあえず全体サイズの一定比率とする
-        font_size = int(size * 0.4)
-        if shape == "arrow":
-            # 矢印の場合は左上に寄りすぎないように少し右下にずらす
-            text_x = 4 * s
-            text_y = 6 * s
-        elif shape == "triangle":
-            text_x = 16 * s - font_size * 0.3
-            text_y = 10 * s
-        elif shape == "cross":
-            text_x = 16 * s - font_size * 0.3
-            text_y = 16 * s - font_size * 0.5
-        else:
-            text_x = 8 * s
-            text_y = 8 * s
-            
-        font = get_default_font(font_size)
-        
-        # 文字の枠線（白文字・黒フチなどで見やすくする）
-        # 反対色を簡易的に計算（ここでは白または黒）
+    # 2. 右上・右下の文字を描画
+    def draw_outlined_text(text, position, font, anchor="lt"):
+        if not text:
+            return
         brightness = sum(color[:3]) / 3
         text_color = (0, 0, 0, 255) if brightness > 128 else (255, 255, 255, 255)
         text_bg = (255, 255, 255, 255) if brightness > 128 else (0, 0, 0, 255)
         
-        # フチドリ文字
         offset = max(1, int(size * 0.03))
-        draw.text((text_x-offset, text_y), char, font=font, fill=text_bg)
-        draw.text((text_x+offset, text_y), char, font=font, fill=text_bg)
-        draw.text((text_x, text_y-offset), char, font=font, fill=text_bg)
-        draw.text((text_x, text_y+offset), char, font=font, fill=text_bg)
+        x, y = position
         
-        # 本体文字
-        draw.text((text_x, text_y), char, font=font, fill=text_color)
+        # フチドリ
+        draw.text((x-offset, y), text, font=font, fill=text_bg, anchor=anchor)
+        draw.text((x+offset, y), text, font=font, fill=text_bg, anchor=anchor)
+        draw.text((x, y-offset), text, font=font, fill=text_bg, anchor=anchor)
+        draw.text((x, y+offset), text, font=font, fill=text_bg, anchor=anchor)
+        # ナナメのフチドリも追加するとより綺麗ですが、ここでは上下左右のみ
+        
+        # 本体
+        draw.text((x, y), text, font=font, fill=text_color, anchor=anchor)
+
+    if tr_text:
+        tr_font = get_default_font(tr_text_size)
+        draw_outlined_text(tr_text, (size - 2, 2), tr_font, anchor="rt")
+        
+    if br_text:
+        br_font = get_default_font(br_text_size)
+        draw_outlined_text(br_text, (size - 2, size - 2), br_font, anchor="rb")
         
     return img, hotspot

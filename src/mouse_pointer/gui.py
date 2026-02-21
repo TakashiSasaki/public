@@ -18,7 +18,10 @@ class CursorGeneratorGUI(tk.Tk):
         self.var_color = tk.StringVar(value="#800080")       # Default Purple
         self.var_border_color = tk.StringVar(value="#000000") # Default Black
         self.var_border_thickness = tk.IntVar(value=1)
-        self.var_char = tk.StringVar(value="")
+        self.var_tr_text = tk.StringVar(value="")
+        self.var_tr_size = tk.IntVar(value=12)
+        self.var_br_text = tk.StringVar(value="")
+        self.var_br_size = tk.IntVar(value=12)
         
         self.preview_image = None
         self.img_tk = None
@@ -82,11 +85,32 @@ class CursorGeneratorGUI(tk.Tk):
         thickness_spin.bind("<FocusOut>", self.on_change)
         row += 1
         
-        # Inner Character
-        ttk.Label(controls_frame, text="Inner Char:").grid(row=row, column=0, sticky=tk.W, pady=5)
-        char_entry = ttk.Entry(controls_frame, textvariable=self.var_char, width=5)
-        char_entry.grid(row=row, column=1, sticky=tk.W, pady=5)
-        char_entry.bind("<KeyRelease>", self.on_change)
+        # Top-Right Text
+        ttk.Label(controls_frame, text="TR Text:").grid(row=row, column=0, sticky=tk.W, pady=5)
+        tr_frame = ttk.Frame(controls_frame)
+        tr_frame.grid(row=row, column=1, sticky=tk.EW, pady=5)
+        tr_entry = ttk.Entry(tr_frame, textvariable=self.var_tr_text, width=4)
+        tr_entry.pack(side=tk.LEFT)
+        tr_entry.bind("<KeyRelease>", self.on_change)
+        ttk.Label(tr_frame, text=" Size:").pack(side=tk.LEFT, padx=(5, 2))
+        tr_spin = ttk.Spinbox(tr_frame, from_=8, to=32, textvariable=self.var_tr_size, width=3, command=self.on_change)
+        tr_spin.pack(side=tk.LEFT)
+        tr_spin.bind("<Return>", self.on_change)
+        tr_spin.bind("<FocusOut>", self.on_change)
+        row += 1
+        
+        # Bottom-Right Text
+        ttk.Label(controls_frame, text="BR Text:").grid(row=row, column=0, sticky=tk.W, pady=5)
+        br_frame = ttk.Frame(controls_frame)
+        br_frame.grid(row=row, column=1, sticky=tk.EW, pady=5)
+        br_entry = ttk.Entry(br_frame, textvariable=self.var_br_text, width=4)
+        br_entry.pack(side=tk.LEFT)
+        br_entry.bind("<KeyRelease>", self.on_change)
+        ttk.Label(br_frame, text=" Size:").pack(side=tk.LEFT, padx=(5, 2))
+        br_spin = ttk.Spinbox(br_frame, from_=8, to=32, textvariable=self.var_br_size, width=3, command=self.on_change)
+        br_spin.pack(side=tk.LEFT)
+        br_spin.bind("<Return>", self.on_change)
+        br_spin.bind("<FocusOut>", self.on_change)
         row += 1
         
         # --- Right Panel (Preview & Action) ---
@@ -141,13 +165,25 @@ class CursorGeneratorGUI(tk.Tk):
             fill_rgba = self.hex_to_rgba(self.var_color.get())
             border_rgba = self.hex_to_rgba(self.var_border_color.get())
             
+            try:
+                tr_s = self.var_tr_size.get()
+            except tk.TclError:
+                tr_s = 12
+            try:
+                br_s = self.var_br_size.get()
+            except tk.TclError:
+                br_s = 12
+            
             img, hotspot = create_cursor_image(
                 size=size,
                 color=fill_rgba,
                 shape=self.var_shape.get(),
                 border_color=border_rgba,
                 border_thickness=self.var_border_thickness.get(),
-                inner_char=self.var_char.get()
+                tr_text=self.var_tr_text.get(),
+                tr_text_size=tr_s,
+                br_text=self.var_br_text.get(),
+                br_text_size=br_s
             )
             
             self.preview_image = img
@@ -156,12 +192,8 @@ class CursorGeneratorGUI(tk.Tk):
             # Update info label
             self.hotspot_label.config(text=f"Hotspot: {hotspot}")
             
-            # Scale image for preview if it's too small
-            scale_factor = min(120 // size, max(1, 150 // size))
-            if scale_factor > 1:
-                preview_scaled = img.resize((size * scale_factor, size * scale_factor), Image.Resampling.NEAREST)
-            else:
-                preview_scaled = img
+            # Scale image so that the preview size is consistent (128x128) regardless of cursor resolution
+            preview_scaled = img.resize((128, 128), Image.Resampling.NEAREST)
                 
             self.img_tk = ImageTk.PhotoImage(preview_scaled)
             

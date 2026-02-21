@@ -17,6 +17,10 @@ def main():
     gen_parser.add_argument("--output", type=str, default="output.cur", help="Output filename")
     gen_parser.add_argument("--size", type=int, default=32, help="Cursor size (px)")
     gen_parser.add_argument("--shape", type=str, default="arrow", choices=["arrow", "triangle", "cross"], help="Shape of the cursor")
+    gen_parser.add_argument("--tr-text", type=str, default="", help="Text to display in the top-right corner")
+    gen_parser.add_argument("--tr-size", type=int, default=12, help="Font size for top-right text")
+    gen_parser.add_argument("--br-text", type=str, default="", help="Text to display in the bottom-right corner")
+    gen_parser.add_argument("--br-size", type=int, default=12, help="Font size for bottom-right text")
     
     args = parser.parse_args()
     
@@ -45,7 +49,15 @@ def main():
             color = color_map.get(args.color.lower(), (128, 0, 128, 255))
         
         print(f"Generating {args.color} {args.shape} cursor at {args.output}...")
-        img, hotspot = create_cursor_image(size=args.size, color=color, shape=args.shape)
+        img, hotspot = create_cursor_image(
+            size=args.size, 
+            color=color, 
+            shape=args.shape,
+            tr_text=args.tr_text,
+            tr_text_size=args.tr_size,
+            br_text=args.br_text,
+            br_text_size=args.br_size
+        )
         save_cursor(img, args.output, hotspot=hotspot)
         print("Done!")
 
