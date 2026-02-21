@@ -2,31 +2,64 @@ import struct
 import io
 from PIL import Image
 
-def build_cursor_binary(image: Image.Image, hotspot=(0, 0)) -> bytes:
-    """画像をWindowsの.cur形式のバイナリデータに変換する"""
-    # 1. 画像をPNGとしてバイト配列に変換（Vista以降はPNGを格納可能）
-    img_byte_arr = io.BytesIO()
-    image.save(img_byte_arr, format='PNG')
-    png_data = img_byte_arr.getvalue()
+def build_multi_cursor_binary(image_data_list) -> bytes:
+    """複数の画像（ペア: Image, (hx, hy)）を1つのWindowsの.cur形式のバイナリデータに変換する"""
     
-    width, height = image.size
+    # 1. 画像をPNGとしてバイト配列に変換し、データを準備
+    encoded_images = []
+    for img, hotspot in image_data_list:
+        img_byte_arr = io.BytesIO()
+        img.save(img_byte_arr, format='PNG')
+        png_data = img_byte_arr.getvalue()
+        
+        width, height = img.size
+        w = 0 if width == 256 else width
+        # カーソルフォーマットでは、PNGを含める場合でも height は 2倍 (XOR + AND マスク分) に設定するのが本来の仕様とされる場合があるが、
+        # 近年のWindowsではPNGの場合はそのままのheightでも認識される。念のため画像高さをそのまま使用。
+        h = 0 if height == 256 else height
+        
+        encoded_images.append({
+            'w': w, 'h': h, 
+            'hx': hotspot[0], 'hy': hotspot[1],
+            'size': len(png_data),
+            'data': png_data
+        })
+        
+    image_count = len(encoded_images)
     
     # 2. CURヘッダー (6 bytes)
-    header = struct.pack('<HHH', 0, 2, 1)
+    # idReserved(2)=0, idType(2)=2(cursor), idCount(2)=N
+    header = struct.pack('<HHH', 0, 2, image_count)
     
-    # 3. CURディレクトリのエントリ (16 bytes)
-    w = 0 if width == 256 else width
-    h = 0 if height == 256 else height
+    # 3. リスト分のディレクトリエントリ (16 bytes * N) を構築
+    entries_binary = b""
+    image_data_binary = b""
     
-    entry = struct.pack('<BBBBHHII', 
-                        w, h, 0, 0, 
-                        hotspot[0], hotspot[1], 
-                        len(png_data), 22) # Header(6) + Entry(16) = 22
+    # 最初の画像データのオフセットは ヘッダーサイズ(6) + エントリサイズ(16) * 画像数
+    current_offset = 6 + (16 * image_count)
     
-    return header + entry + png_data
+    for info in encoded_images:
+        # width, height, colors(0), reserved(0), hotspot.x, hotspot.y, size_bytes, offset
+        entry = struct.pack('<BBBBHHII', 
+                            info['w'], info['h'], 0, 0, 
+                            info['hx'], info['hy'], 
+                            info['size'], current_offset)
+        entries_binary += entry
+        image_data_binary += info['data']
+        
+        current_offset += info['size']
+        
+    return header + entries_binary + image_data_binary
 
 def save_cursor(image: Image.Image, filename: str, hotspot=(0, 0)):
-    """画像を.curファイルとして保存する"""
-    data = build_cursor_binary(image, hotspot)
+    """単一の画像を.curファイルとして保存する（後方互換用）"""
+    save_multi_cursor([(image, hotspot)], filename)
+
+def save_multi_cursor(image_data_list, filename: str):
+    """複数の画像を1つの.curファイルとして保存する"""
+    if not image_data_list:
+        raise ValueError("image_data_list cannot be empty")
+        
+    data = build_multi_cursor_binary(image_data_list)
     with open(filename, 'wb') as f:
         f.write(data)

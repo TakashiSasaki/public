@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk, colorchooser, filedialog, messagebox
 from PIL import Image, ImageTk
 from mouse_pointer.generators.basic import create_cursor_image
-from mouse_pointer.core.cursor import save_cursor
+from mouse_pointer.core.cursor import save_cursor, save_multi_cursor
 
 class CursorGeneratorGUI(tk.Tk):
     def __init__(self):
@@ -22,6 +22,7 @@ class CursorGeneratorGUI(tk.Tk):
         self.var_tr_size = tk.IntVar(value=12)
         self.var_br_text = tk.StringVar(value="")
         self.var_br_size = tk.IntVar(value=12)
+        self.var_drop_shadow = tk.BooleanVar(value=True)
         
         self.preview_image = None
         self.img_tk = None
@@ -113,6 +114,12 @@ class CursorGeneratorGUI(tk.Tk):
         br_spin.bind("<FocusOut>", self.on_change)
         row += 1
         
+        # Drop Shadow
+        ttk.Label(controls_frame, text="Effects:").grid(row=row, column=0, sticky=tk.W, pady=5)
+        shadow_chk = ttk.Checkbutton(controls_frame, text="Drop Shadow", variable=self.var_drop_shadow, command=self.on_change)
+        shadow_chk.grid(row=row, column=1, sticky=tk.W, pady=5)
+        row += 1
+        
         # --- Right Panel (Preview & Action) ---
         right_frame = ttk.Frame(self)
         right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
@@ -183,7 +190,8 @@ class CursorGeneratorGUI(tk.Tk):
                 tr_text=self.var_tr_text.get(),
                 tr_text_size=tr_s,
                 br_text=self.var_br_text.get(),
-                br_text_size=br_s
+                br_text_size=br_s,
+                drop_shadow=self.var_drop_shadow.get()
             )
             
             self.preview_image = img
@@ -225,8 +233,37 @@ class CursorGeneratorGUI(tk.Tk):
         
         if file_path:
             try:
-                save_cursor(self.preview_image, file_path, hotspot=self.current_hotspot)
-                messagebox.showinfo("Success", f"Cursor saved successfully to:\n{file_path}")
+                # 設定を取得してマルチ解像度を生成
+                sizes_to_generate = [32, 48, 64]
+                fill_rgba = self.hex_to_rgba(self.var_color.get())
+                border_rgba = self.hex_to_rgba(self.var_border_color.get())
+                
+                try: tr_s = self.var_tr_size.get()
+                except tk.TclError: tr_s = 12
+                try: br_s = self.var_br_size.get()
+                except tk.TclError: br_s = 12
+                
+                multi_image_data = []
+                for s in sizes_to_generate:
+                    # それぞれのサイズで生成
+                    img, hotspot = create_cursor_image(
+                        size=s,
+                        color=fill_rgba,
+                        shape=self.var_shape.get(),
+                        border_color=border_rgba,
+                        border_thickness=self.var_border_thickness.get(),
+                        tr_text=self.var_tr_text.get(),
+                        tr_text_size=tr_s, # 必要に応じてサイズ比率で動的計算してもよい
+                        br_text=self.var_br_text.get(),
+                        br_text_size=br_s,
+                        drop_shadow=self.var_drop_shadow.get()
+                    )
+                    multi_image_data.append((img, hotspot))
+                
+                # マルチ解像度で保存 (.cur 1ファイルに複数画像を含める)
+                save_multi_cursor(multi_image_data, file_path)
+                
+                messagebox.showinfo("Success", f"Multi-resolution Cursor (32, 48, 64px) saved successfully to:\n{file_path}")
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to save cursor:\n{str(e)}")
 

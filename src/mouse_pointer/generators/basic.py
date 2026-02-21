@@ -21,7 +21,8 @@ def create_cursor_image(
     tr_text="",
     tr_text_size=10,
     br_text="",
-    br_text_size=10
+    br_text_size=10,
+    drop_shadow=False
 ):
     """
     指定されたパラメータでカーソル画像を生成する。
@@ -40,51 +41,80 @@ def create_cursor_image(
     Returns:
         tuple: (Imageオブジェクト, (hotspot_x, hotspot_y))
     """
+    # ベースとなる画像
     img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(img)
+    # シャドウ用として少し縮小するためのスケール調整（影がはみ出さないように）
+    pad = 2 if drop_shadow else 0
+    s_factor = (size - pad * 2) / 32.0
+    s = s_factor
     
-    s = size / 32.0
-    hotspot = (0, 0)
+    # 描画位置のオフセット
+    ox, oy = pad, pad
+    
+    # ホットスポットのオフセットも考慮
+    hotspot = (ox, oy)
     
     if shape == "arrow":
         points = [
-            (0*s, 0*s),   # 先端
-            (0*s, 22*s),  # 左下
-            (6*s, 16*s),  # 切り欠き左
-            (10*s, 25*s), # 足の左下
-            (14*s, 23*s), # 足の右下
-            (10*s, 14*s), # 切り欠き右
-            (16*s, 14*s), # 右端
+            (ox+0*s, oy+0*s),   # 先端
+            (ox+0*s, oy+22*s),  # 左下
+            (ox+6*s, oy+16*s),  # 切り欠き左
+            (ox+10*s, oy+25*s), # 足の左下
+            (ox+14*s, oy+23*s), # 足の右下
+            (ox+10*s, oy+14*s), # 切り欠き右
+            (ox+16*s, oy+14*s), # 右端
         ]
-        hotspot = (0, 0)
+        hotspot = (int(ox+0), int(oy+0))
     elif shape == "triangle":
         points = [
-            (16*s, 0*s),  # 上端（中央）
-            (0*s, 30*s),  # 左下
-            (32*s, 30*s), # 右下
+            (ox+16*s, oy+0*s),  # 上端（中央）
+            (ox+0*s, oy+30*s),  # 左下
+            (ox+32*s, oy+30*s), # 右下
         ]
-        hotspot = (int(16*s), 0)
+        hotspot = (int(ox+16*s), int(oy+0))
     elif shape == "cross":
         thick = 6 * s
         points = [
-            (16*s - thick/2, 0*s),
-            (16*s + thick/2, 0*s),
-            (16*s + thick/2, 16*s - thick/2),
-            (32*s, 16*s - thick/2),
-            (32*s, 16*s + thick/2),
-            (16*s + thick/2, 16*s + thick/2),
-            (16*s + thick/2, 32*s),
-            (16*s - thick/2, 32*s),
-            (16*s - thick/2, 16*s + thick/2),
-            (0*s, 16*s + thick/2),
-            (0*s, 16*s - thick/2),
-            (16*s - thick/2, 16*s - thick/2),
+            (ox + 16*s - thick/2, oy + 0*s),
+            (ox + 16*s + thick/2, oy + 0*s),
+            (ox + 16*s + thick/2, oy + 16*s - thick/2),
+            (ox + 32*s, oy + 16*s - thick/2),
+            (ox + 32*s, oy + 16*s + thick/2),
+            (ox + 16*s + thick/2, oy + 16*s + thick/2),
+            (ox + 16*s + thick/2, oy + 32*s),
+            (ox + 16*s - thick/2, oy + 32*s),
+            (ox + 16*s - thick/2, oy + 16*s + thick/2),
+            (ox + 0*s, oy + 16*s + thick/2),
+            (ox + 0*s, oy + 16*s - thick/2),
+            (ox + 16*s - thick/2, oy + 16*s - thick/2),
         ]
-        hotspot = (int(16*s), int(16*s))
+        hotspot = (int(ox+16*s), int(oy+16*s))
     else:
         # デフォルトは矢印
-        points = [(0, 0), (0, 22*s), (6*s, 16*s), (16*s, 14*s)]
-        hotspot = (0, 0)
+        points = [(ox+0, oy+0), (ox+0, oy+22*s), (ox+6*s, oy+16*s), (ox+16*s, oy+14*s)]
+        hotspot = (int(ox+0), int(oy+0))
+        
+    # ドロップシャドウの描画
+    if drop_shadow:
+        from PIL import ImageFilter
+        shadow_img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+        shadow_draw = ImageDraw.Draw(shadow_img)
+        # 影は黒色で少しオフセット（右下にずらす）
+        shadow_offset_x = int(size * 0.05)
+        shadow_offset_y = int(size * 0.05)
+        shadow_points = [(p[0] + shadow_offset_x, p[1] + shadow_offset_y) for p in points]
+        
+        # 影のシルエットを描画
+        shadow_draw.polygon(shadow_points, fill=(0, 0, 0, 150))
+        
+        # ぼかしフィルターを適用
+        shadow_blur_radius = max(1, size // 16)
+        shadow_img = shadow_img.filter(ImageFilter.GaussianBlur(shadow_blur_radius))
+        
+        # ベース画像に合成
+        img.paste(shadow_img, (0, 0), shadow_img)
+        
+    draw = ImageDraw.Draw(img)
 
     # 1. 枠線の描画（太さをシミュレーションするため、少しずらした位置に複数回描画するか、Pillow 9.2以降のwidthパラメータを使用）
     try:

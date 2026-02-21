@@ -21,6 +21,7 @@ def main():
     gen_parser.add_argument("--tr-size", type=int, default=12, help="Font size for top-right text")
     gen_parser.add_argument("--br-text", type=str, default="", help="Text to display in the bottom-right corner")
     gen_parser.add_argument("--br-size", type=int, default=12, help="Font size for bottom-right text")
+    gen_parser.add_argument("--drop-shadow", action="store_true", help="Enable drop shadow effect")
     
     args = parser.parse_args()
     
@@ -48,17 +49,27 @@ def main():
         else:
             color = color_map.get(args.color.lower(), (128, 0, 128, 255))
         
-        print(f"Generating {args.color} {args.shape} cursor at {args.output}...")
-        img, hotspot = create_cursor_image(
-            size=args.size, 
-            color=color, 
-            shape=args.shape,
-            tr_text=args.tr_text,
-            tr_text_size=args.tr_size,
-            br_text=args.br_text,
-            br_text_size=args.br_size
-        )
-        save_cursor(img, args.output, hotspot=hotspot)
+        print(f"Generating multi-resolution (32, 48, 64) {args.color} {args.shape} cursor at {args.output}...")
+        
+        # CLIでもマルチ解像度エクスポートをデフォルトとする
+        from mouse_pointer.core.cursor import save_multi_cursor
+        sizes_to_generate = [32, 48, 64]
+        multi_image_data = []
+        
+        for s in sizes_to_generate:
+            img, hotspot = create_cursor_image(
+                size=s, 
+                color=color, 
+                shape=args.shape,
+                tr_text=args.tr_text,
+                tr_text_size=args.tr_size,
+                br_text=args.br_text,
+                br_text_size=args.br_size,
+                drop_shadow=args.drop_shadow
+            )
+            multi_image_data.append((img, hotspot))
+            
+        save_multi_cursor(multi_image_data, args.output)
         print("Done!")
 
 if __name__ == "__main__":
