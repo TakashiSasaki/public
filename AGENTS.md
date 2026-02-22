@@ -25,5 +25,12 @@
 - コマンドが失敗した場合は、実行権限やサンドボックス制約を確認し、必要に応じて昇格実行で再試行してください。
 - Git 操作時に改行コード関連の警告（`LF will be replaced by CRLF`）が表示されることがあります。必要ならリポジトリで改行コード方針を明示してください。
 
+## バージョン運用（Manifest）
+- `manifest.webmanifest` の `version` はセマンティックバージョン（`major.minor.patch`）を使用します。
+- コミット時は少なくともパッチ番号を `+1` します。
+- pre-commit フック（`.githooks/pre-commit`）で `manifest.webmanifest` の `version` を自動バンプし、同ファイルを自動 `git add` します。
+- フックは `git config core.hooksPath .githooks` で有効化します。
+- 別のチェックアウト先でも同じ挙動にするため、チェックアウト後に `scripts/setup-hooks.ps1` または `scripts/setup-hooks.sh` を実行してください。
+
 ## 運用ルール
 - 今後もプロジェクト運用に有効な知見は、継続的に `AGENTS.md` へ反映してください。
