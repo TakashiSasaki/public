@@ -7,6 +7,12 @@
 ## 公開ブランチ
 - 公開対象は、ドメイン名と同じブランチ `public.moukaeritai.work` です。
 
+## サブモジュール構成
+- `public.moukaeritai.work` ブランチには、このブランチ以外の各ブランチをサブモジュールとして配置します。
+- サブモジュールの配置先は、対象ブランチ名と同名のサブディレクトリです。
+- 例: `pictogram` ブランチは `./pictogram` サブモジュールとして配置します。
+- サブモジュール URL は同一リポジトリ `git@github.com:TakashiSasaki/public` を使用し、`.gitmodules` の `branch` に対象ブランチ名を設定します。
+
 ## AGENTS.md の目的
 - `AGENTS.md` は、他の開発者やコーディングエージェントも参照する共通指示ファイルです。
 
