@@ -444,6 +444,23 @@ class CursorGeneratorGUI(tk.Tk):
             # Center the image
             self.preview_canvas.create_image(cw//2, ch//2, image=self.img_tk, anchor=tk.CENTER)
 
+            # Draw hotspot crosshair marker
+            # Image is drawn 128x128 centered on the 150x150 canvas → top-left at (11, 11)
+            img_offset_x = cw // 2 - 64  # = 11
+            img_offset_y = ch // 2 - 64  # = 11
+            scale = 128 / size
+            hx = img_offset_x + hotspot[0] * scale
+            hy = img_offset_y + hotspot[1] * scale
+            r = 4  # crosshair arm length
+            # White outline for contrast
+            self.preview_canvas.create_line(hx - r - 1, hy, hx + r + 1, hy, fill="white", width=3)
+            self.preview_canvas.create_line(hx, hy - r - 1, hx, hy + r + 1, fill="white", width=3)
+            # Red crosshair
+            self.preview_canvas.create_line(hx - r, hy, hx + r, hy, fill="#ff2222", width=1)
+            self.preview_canvas.create_line(hx, hy - r, hx, hy + r, fill="#ff2222", width=1)
+            # Center dot
+            self.preview_canvas.create_oval(hx - 1.5, hy - 1.5, hx + 1.5, hy + 1.5, fill="#ff2222", outline="white")
+
         except Exception as e:
             print(f"Preview update error: {e}")
 
