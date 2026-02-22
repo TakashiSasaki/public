@@ -20,6 +20,7 @@ def sync_versions():
         pyproject_data = tomllib.load(f)
     
     version = pyproject_data.get("project", {}).get("version")
+    print(f"Read version from pyproject.toml [project]: {version}")
     if not version:
         # Fallback for poetry style
         version = pyproject_data.get("tool", {}).get("poetry", {}).get("version")
