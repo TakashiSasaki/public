@@ -70,7 +70,7 @@ class CursorGeneratorGUI(tk.Tk):
         return (r, g, b, 255)
 
     def render_svg_thumbnail(self, svg_data, size=48, stroke_color="#800080"):
-        """SVGデータをPIL Imageとしてレンダリングして返す。失敗時はNone。"""
+        """SVGデータをPIL Imageとしてレンダリングして返す（透明背景）。失敗時はNone。"""
         try:
             from svglib.svglib import svg2rlg
             from reportlab.graphics import renderPM
@@ -88,10 +88,47 @@ class CursorGeneratorGUI(tk.Tk):
             drawing.scale(factor, factor)
             drawing.width = size
             drawing.height = size
-            buf = io.BytesIO()
-            renderPM.drawToFile(drawing, buf, fmt="PNG")
-            buf.seek(0)
-            return Image.open(buf).convert("RGBA")
+
+            # svglib/reportlab は透明PNG出力を正しくサポートしないため
+            # black/white matte 技法でアルファチャンネルを抽出する:
+            #   白背景: pixel_w = C * a + 255 * (1 - a)
+            #   黒背景: pixel_b = C * a
+            #   → a = 1 - (pixel_w - pixel_b) / 255
+            #   → C = pixel_b / a  (a > 0 の場合)
+            buf_w = io.BytesIO()
+            renderPM.drawToFile(drawing, buf_w, fmt="PNG", bg=0xFFFFFF)
+            buf_w.seek(0)
+            img_w = Image.open(buf_w).convert("RGB")
+
+            buf_b = io.BytesIO()
+            renderPM.drawToFile(drawing, buf_b, fmt="PNG", bg=0x000000)
+            buf_b.seek(0)
+            img_b = Image.open(buf_b).convert("RGB")
+
+            pw = list(img_w.getdata())
+            pb = list(img_b.getdata())
+            out = []
+            for (rw, gw, bw), (rb, gb, bb) in zip(pw, pb):
+                # アルファ: 各チャンネルで計算し最大値を採用
+                a = max(
+                    1.0 - (rw - rb) / 255.0,
+                    1.0 - (gw - gb) / 255.0,
+                    1.0 - (bw - bb) / 255.0,
+                    0.0
+                )
+                a = min(a, 1.0)
+                if a > 0:
+                    r = min(int(rb / a), 255)
+                    g = min(int(gb / a), 255)
+                    b = min(int(bb / a), 255)
+                else:
+                    r, g, b = 0, 0, 0
+                out.append((r, g, b, int(a * 255)))
+
+            result = Image.new("RGBA", (size, size))
+            result.putdata(out)
+            return result
+
         except Exception as e:
             print(f"SVG thumbnail render error: {e}")
             return None
@@ -113,10 +150,25 @@ class CursorGeneratorGUI(tk.Tk):
         self.notebook.add(editor_tab, text="  Cursor Editor  ")
         self._build_editor_tab(editor_tab)
 
-        # ---- Tab 2: Pictogram Gallery ----
-        gallery_tab = ttk.Frame(self.notebook, padding=5)
-        self.notebook.add(gallery_tab, text="  Pictograms  ")
-        self._build_gallery_tab(gallery_tab)
+        # ---- Tab 2: Bases Gallery ----
+        bases_tab = ttk.Frame(self.notebook, padding=5)
+        self.notebook.add(bases_tab, text="  Bases  ")
+        self._build_pictogram_list(
+            bases_tab,
+            self.pictograms_data.get("bases", {}),
+            click_callback=self._on_base_selected,
+            thumb_size=48,
+        )
+
+        # ---- Tab 3: Badges Gallery ----
+        badges_tab = ttk.Frame(self.notebook, padding=5)
+        self.notebook.add(badges_tab, text="  Badges  ")
+        self._build_pictogram_list(
+            badges_tab,
+            self.pictograms_data.get("badges", {}),
+            click_callback=self._on_badge_selected,
+            thumb_size=40,
+        )
 
     # ------------------------------------------------------------------
     #  Tab 1 – Cursor Editor
@@ -244,41 +296,8 @@ class CursorGeneratorGUI(tk.Tk):
         generate_btn.pack(fill=tk.X, pady=10, ipady=10)
 
     # ------------------------------------------------------------------
-    #  Tab 2 – Pictogram Gallery
+    #  Tab 2 / 3 – Gallery helpers
     # ------------------------------------------------------------------
-    def _build_gallery_tab(self, parent):
-        """ピクトグラム一覧を bases / badges のサブタブで表示する。"""
-
-        # 説明ラベル
-        info_label = ttk.Label(
-            parent,
-            text="ピクトグラムの一覧です。クリックすると Cursor Editor の選択欄に反映されます。",
-            wraplength=620,
-            justify=tk.LEFT,
-        )
-        info_label.pack(anchor=tk.W, pady=(0, 6))
-
-        # サブNotebook (Bases / Badges)
-        sub_nb = ttk.Notebook(parent)
-        sub_nb.pack(fill=tk.BOTH, expand=True)
-
-        bases_frame = ttk.Frame(sub_nb)
-        badges_frame = ttk.Frame(sub_nb)
-        sub_nb.add(bases_frame, text="  Bases  ")
-        sub_nb.add(badges_frame, text="  Badges  ")
-
-        self._build_pictogram_list(
-            bases_frame,
-            self.pictograms_data.get("bases", {}),
-            click_callback=self._on_base_selected,
-            thumb_size=48,
-        )
-        self._build_pictogram_list(
-            badges_frame,
-            self.pictograms_data.get("badges", {}),
-            click_callback=self._on_badge_selected,
-            thumb_size=40,
-        )
 
     def _build_pictogram_list(self, parent, items: dict, click_callback, thumb_size: int = 48):
         """スクロール可能なピクトグラムグリッドを parent に描画する。"""
@@ -328,13 +347,10 @@ class CursorGeneratorGUI(tk.Tk):
             # サムネイル生成
             pil_img = self.render_svg_thumbnail(svg_data, size=thumb_size, stroke_color=stroke_color)
             if pil_img:
-                # チェッカーボード背景に合成
-                bg = Image.new("RGBA", (thumb_size, thumb_size), (220, 220, 220, 255))
-                bg.paste(pil_img, (0, 0), pil_img)
-                img_tk = ImageTk.PhotoImage(bg)
+                img_tk = ImageTk.PhotoImage(pil_img)
             else:
-                # レンダリング失敗時はグレーのダミー
-                dummy = Image.new("RGBA", (thumb_size, thumb_size), (200, 200, 200, 255))
+                # レンダリング失敗時は透明なダミー
+                dummy = Image.new("RGBA", (thumb_size, thumb_size), (0, 0, 0, 0))
                 img_tk = ImageTk.PhotoImage(dummy)
 
             self._thumb_cache.append(img_tk)
@@ -343,9 +359,8 @@ class CursorGeneratorGUI(tk.Tk):
                 cell,
                 image=img_tk,
                 relief=tk.FLAT,
-                bd=1,
+                bd=0,
                 cursor="hand2",
-                bg="#f0f0f0",
                 activebackground="#d0e8ff",
                 command=lambda n=name: click_callback(n),
             )

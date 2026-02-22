@@ -179,32 +179,54 @@ def create_cursor_image(
                 hex_color = f"#{r:02x}{g:02x}{b:02x}"
                 
                 def render_svg_to_pil(svg_data, target_size):
-                    # Inject color and proper XML structure
+                    """black/white matte技法でSVGを透明背景でレンダリングする。"""
                     content = svg_data.get("content", "")
                     viewBox = svg_data.get("viewBox", "0 0 32 32")
                     stroke_w = 1.5 if viewBox == "0 0 16 16" else 2
-                    
+
                     full_svg = f'''<?xml version="1.0" encoding="utf-8"?>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="{viewBox}" width="{target_size}" height="{target_size}" fill="none" stroke="{hex_color}" stroke-width="{stroke_w}" stroke-linecap="round" stroke-linejoin="round">
                         {content}
                     </svg>'''
-                    
-                    # Convert SVG to reportlab drawing
+
                     drawing = svg2rlg(io.BytesIO(full_svg.encode('utf-8')))
-                    
-                    # Scale drawing to target size
-                    # svglib determines size from viewBox and width/height attributes
-                    # Here we scale the drawing object itself if needed
                     factor = target_size / float(drawing.width)
                     drawing.scale(factor, factor)
                     drawing.width = target_size
                     drawing.height = target_size
-                    
-                    # Render to PNG in memory
-                    buf = io.BytesIO()
-                    renderPM.drawToFile(drawing, buf, fmt="PNG")
-                    buf.seek(0)
-                    return Image.open(buf).convert("RGBA")
+
+                    buf_w = io.BytesIO()
+                    renderPM.drawToFile(drawing, buf_w, fmt="PNG", bg=0xFFFFFF)
+                    buf_w.seek(0)
+                    img_w = Image.open(buf_w).convert("RGB")
+
+                    buf_b = io.BytesIO()
+                    renderPM.drawToFile(drawing, buf_b, fmt="PNG", bg=0x000000)
+                    buf_b.seek(0)
+                    img_b = Image.open(buf_b).convert("RGB")
+
+                    pw = list(img_w.getdata())
+                    pb = list(img_b.getdata())
+                    out = []
+                    for (rw, gw, bw), (rb, gb, bb) in zip(pw, pb):
+                        a = max(
+                            1.0 - (rw - rb) / 255.0,
+                            1.0 - (gw - gb) / 255.0,
+                            1.0 - (bw - bb) / 255.0,
+                            0.0,
+                        )
+                        a = min(a, 1.0)
+                        if a > 0:
+                            r = min(int(rb / a), 255)
+                            g = min(int(gb / a), 255)
+                            b = min(int(bb / a), 255)
+                        else:
+                            r, g, b = 0, 0, 0
+                        out.append((r, g, b, int(a * 255)))
+
+                    result = Image.new("RGBA", (target_size, target_size))
+                    result.putdata(out)
+                    return result
 
                 # コンポジット用のキャンバス
                 overlay = Image.new("RGBA", (size, size), (0, 0, 0, 0))
