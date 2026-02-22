@@ -1,37 +1,22 @@
 #!/bin/sh
 
 # pre-commit hook
-# pyproject.tomlのパッチバージョンをバンプアップする
+# pyproject.tomlのパッチバージョンをバンプし、pictogram/package.jsonを同期させる
 
-# PowerShellやBash環境でPythonスクリプトを実行する
 if command -v uv >/dev/null 2>&1; then
-    uv run python scripts/bump_version.py
+    uv run python scripts/update_versions.py
 else
-    # uvが見つからなければ通常のpythonで試行する
-    python scripts/bump_version.py
+    python scripts/update_versions.py
 fi
 
 # 戻り値チェック
 if [ $? -ne 0 ]; then
-    echo "Error: Failed to bump version in pyproject.toml"
+    echo "Error: Failed to update versions"
     exit 1
 fi
 
-# 以前の変更をステージする
+# 変更をステージする
 git add pyproject.toml
-
-# pictogram/package.jsonと同期させる
-if command -v uv >/dev/null 2>&1; then
-    uv run python scripts/sync_versions.py
-else
-    python scripts/sync_versions.py
-fi
-
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to sync version to pictogram/package.json"
-    exit 1
-fi
-
 git add pictogram/package.json
 
 exit 0
