@@ -1,6 +1,6 @@
 [project]
 name = "mouse-pointer"
-version = "0.1.12"
+version = "0.1.13"
 description = "Add your description here"
 readme = "README.md"
 authors = [
@@ -9,6 +9,8 @@ authors = [
 requires-python = ">=3.12"
 dependencies = [
     "pillow>=12.1.1",
+    "reportlab>=4.4.10",
+    "svglib>=1.6.0",
 ]
 
 [project.scripts]

@@ -1,4 +1,6 @@
 import tkinter as tk
+import json
+from pathlib import Path
 from tkinter import ttk, colorchooser, filedialog, messagebox
 from PIL import Image, ImageTk
 from mouse_pointer.generators.basic import create_cursor_image
@@ -24,12 +26,34 @@ class CursorGeneratorGUI(tk.Tk):
         self.var_br_size = tk.IntVar(value=12)
         self.var_drop_shadow = tk.BooleanVar(value=True)
         
+        # SVG Overlay Variables
+        self.var_base_name = tk.StringVar(value="")
+        self.var_badge1_name = tk.StringVar(value="")
+        self.var_badge2_name = tk.StringVar(value="")
+        
         self.preview_image = None
         self.img_tk = None
         self.current_hotspot = (0, 0)
         
+        # Load JSON data
+        self.base_choices = [""]
+        self.badge_choices = [""]
+        self.load_pictograms()
+        
         self.create_widgets()
         self.update_preview()
+        
+    def load_pictograms(self):
+        assets_dir = Path(__file__).parent.parent.parent / "gallery-app" / "src" / "assets"
+        json_path = assets_dir / "pictograms.json"
+        if json_path.exists():
+            try:
+                with open(json_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    self.base_choices.extend(list(data.get("bases", {}).keys()))
+                    self.badge_choices.extend(list(data.get("badges", {}).keys()))
+            except Exception as e:
+                print(f"Failed to load pictograms.json: {e}")
         
     def hex_to_rgba(self, hex_color):
         hex_color = hex_color.lstrip('#')
@@ -114,6 +138,31 @@ class CursorGeneratorGUI(tk.Tk):
         br_spin.bind("<FocusOut>", self.on_change)
         row += 1
         
+        # --- SVG Overlays ---
+        ttk.Separator(controls_frame, orient=tk.HORIZONTAL).grid(row=row, column=0, columnspan=3, sticky=tk.EW, pady=10)
+        row += 1
+        
+        # Base Overlay
+        ttk.Label(controls_frame, text="SVG Base:").grid(row=row, column=0, sticky=tk.W, pady=5)
+        base_combo = ttk.Combobox(controls_frame, textvariable=self.var_base_name, state="readonly", values=self.base_choices)
+        base_combo.grid(row=row, column=1, sticky=tk.EW, pady=5)
+        base_combo.bind("<<ComboboxSelected>>", self.on_change)
+        row += 1
+
+        # Badge 1 (Bottom Right)
+        ttk.Label(controls_frame, text="Badge 1 (BR):").grid(row=row, column=0, sticky=tk.W, pady=5)
+        badge1_combo = ttk.Combobox(controls_frame, textvariable=self.var_badge1_name, state="readonly", values=self.badge_choices)
+        badge1_combo.grid(row=row, column=1, sticky=tk.EW, pady=5)
+        badge1_combo.bind("<<ComboboxSelected>>", self.on_change)
+        row += 1
+        
+        # Badge 2 (Top Left)
+        ttk.Label(controls_frame, text="Badge 2 (TL):").grid(row=row, column=0, sticky=tk.W, pady=5)
+        badge2_combo = ttk.Combobox(controls_frame, textvariable=self.var_badge2_name, state="readonly", values=self.badge_choices)
+        badge2_combo.grid(row=row, column=1, sticky=tk.EW, pady=5)
+        badge2_combo.bind("<<ComboboxSelected>>", self.on_change)
+        row += 1
+        
         # Drop Shadow
         ttk.Label(controls_frame, text="Effects:").grid(row=row, column=0, sticky=tk.W, pady=5)
         shadow_chk = ttk.Checkbutton(controls_frame, text="Drop Shadow", variable=self.var_drop_shadow, command=self.on_change)
@@ -191,7 +240,10 @@ class CursorGeneratorGUI(tk.Tk):
                 tr_text_size=tr_s,
                 br_text=self.var_br_text.get(),
                 br_text_size=br_s,
-                drop_shadow=self.var_drop_shadow.get()
+                drop_shadow=self.var_drop_shadow.get(),
+                base_name=self.var_base_name.get(),
+                badge1_name=self.var_badge1_name.get(),
+                badge2_name=self.var_badge2_name.get()
             )
             
             self.preview_image = img
@@ -256,7 +308,10 @@ class CursorGeneratorGUI(tk.Tk):
                         tr_text_size=tr_s, # 必要に応じてサイズ比率で動的計算してもよい
                         br_text=self.var_br_text.get(),
                         br_text_size=br_s,
-                        drop_shadow=self.var_drop_shadow.get()
+                        drop_shadow=self.var_drop_shadow.get(),
+                        base_name=self.var_base_name.get(),
+                        badge1_name=self.var_badge1_name.get(),
+                        badge2_name=self.var_badge2_name.get()
                     )
                     multi_image_data.append((img, hotspot))
                 

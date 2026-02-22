@@ -1,4 +1,8 @@
 import math
+import io
+import json
+import os
+from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
 def get_default_font(size):
@@ -22,7 +26,10 @@ def create_cursor_image(
     tr_text_size=10,
     br_text="",
     br_text_size=10,
-    drop_shadow=False
+    drop_shadow=False,
+    base_name="",
+    badge1_name="",
+    badge2_name="",
 ):
     """
     指定されたパラメータでカーソル画像を生成する。
@@ -152,5 +159,100 @@ def create_cursor_image(
     if br_text:
         br_font = get_default_font(br_text_size)
         draw_outlined_text(br_text, (size - 2, size - 2), br_font, anchor="rb")
+
+    # 3. SVGオーバレイの合成 (Pictograms)
+    if base_name or badge1_name or badge2_name:
+        try:
+            from svglib.svglib import svg2rlg
+            from reportlab.graphics import renderPM
+            
+            # Load pictograms.json
+            assets_dir = Path(__file__).parent.parent.parent.parent / "gallery-app" / "src" / "assets"
+            json_path = assets_dir / "pictograms.json"
+            
+            if json_path.exists():
+                with open(json_path, "r", encoding="utf-8") as f:
+                    pictograms = json.load(f)
+                    
+                # Convert color tuple to CSS color
+                r, g, b, a = color
+                hex_color = f"#{r:02x}{g:02x}{b:02x}"
+                
+                def render_svg_to_pil(svg_data, target_size):
+                    # Inject color and proper XML structure
+                    content = svg_data.get("content", "")
+                    viewBox = svg_data.get("viewBox", "0 0 32 32")
+                    stroke_w = 1.5 if viewBox == "0 0 16 16" else 2
+                    
+                    full_svg = f'''<?xml version="1.0" encoding="utf-8"?>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="{viewBox}" width="{target_size}" height="{target_size}" fill="none" stroke="{hex_color}" stroke-width="{stroke_w}" stroke-linecap="round" stroke-linejoin="round">
+                        {content}
+                    </svg>'''
+                    
+                    # Convert SVG to reportlab drawing
+                    drawing = svg2rlg(io.BytesIO(full_svg.encode('utf-8')))
+                    
+                    # Scale drawing to target size
+                    # svglib determines size from viewBox and width/height attributes
+                    # Here we scale the drawing object itself if needed
+                    factor = target_size / float(drawing.width)
+                    drawing.scale(factor, factor)
+                    drawing.width = target_size
+                    drawing.height = target_size
+                    
+                    # Render to PNG in memory
+                    buf = io.BytesIO()
+                    renderPM.drawToFile(drawing, buf, fmt="PNG")
+                    buf.seek(0)
+                    return Image.open(buf).convert("RGBA")
+
+                # コンポジット用のキャンバス
+                overlay = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+                
+                # Base rendering
+                if base_name and base_name in pictograms.get("bases", {}):
+                    base_pil = render_svg_to_pil(pictograms["bases"][base_name], size)
+                    overlay.paste(base_pil, (0, 0), base_pil)
+                    
+                # Badge 2 (Top Left)
+                if badge2_name and badge2_name in pictograms.get("badges", {}):
+                    badge2_size = size // 2
+                    badge2_pil = render_svg_to_pil(pictograms["badges"][badge2_name], badge2_size)
+                    
+                    # Create a mask to blank out the base underneath
+                    mask_draw = ImageDraw.Draw(overlay)
+                    offset = -size*0.125
+                    mask_draw.ellipse(
+                        [(offset, offset), (offset + badge2_size*1.2, offset + badge2_size*1.2)], 
+                        fill=(0,0,0,0)
+                    )
+                    
+                    temp_badge_layer = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+                    temp_badge_layer.paste(badge2_pil, (int(offset), int(offset)), badge2_pil)
+                    overlay = Image.alpha_composite(overlay, temp_badge_layer)
+
+                # Badge 1 (Bottom Right)
+                if badge1_name and badge1_name in pictograms.get("badges", {}):
+                    badge1_size = size // 2
+                    badge1_pil = render_svg_to_pil(pictograms["badges"][badge1_name], badge1_size)
+                    
+                    mask_draw = ImageDraw.Draw(overlay)
+                    offset = size * 0.625
+                    mask_draw.ellipse(
+                        [(offset - badge1_size*0.1, offset - badge1_size*0.1), (size+size*0.1, size+size*0.1)], 
+                        fill=(0,0,0,0)
+                    )
+                    
+                    temp_badge_layer = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+                    temp_badge_layer.paste(badge1_pil, (int(size - badge1_size + size*0.125), int(size - badge1_size + size*0.125)), badge1_pil)
+                    overlay = Image.alpha_composite(overlay, temp_badge_layer)
+                    
+                # Finally composite the overlay onto the main cursor image
+                img = Image.alpha_composite(img, overlay)
+                
+        except Exception as e:
+            print(f"Error rendering SVG overlay: {e}")
+            import traceback
+            traceback.print_exc()
         
     return img, hotspot
