@@ -47,7 +47,7 @@ class CursorGeneratorGUI(tk.Tk):
         self.update_preview()
 
     def load_pictograms(self):
-        assets_dir = Path(__file__).parent.parent.parent / "gallery-app" / "src" / "assets"
+        assets_dir = Path(__file__).parent.parent.parent / "pictogram" / "src" / "assets"
         json_path = assets_dir / "pictograms.json"
         if json_path.exists():
             try:

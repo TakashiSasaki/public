@@ -1,6 +1,6 @@
 # Web Development Guide (for Python Developers)
 
-このプロジェクトのフロントエンド（`gallery-app`）は、**Bun**, **Vite**, **React**, **Tailwind CSS** という現代的なウェブ技術スタックを使用して構築されています。Python 開発者向けに、これらのツールの役割と開発フローを解説します。
+このプロジェクトのフロントエンド（`pictogram`）は、**Bun**, **Vite**, **React**, **Tailwind CSS** という現代的なウェブ技術スタックを使用して構築されています。Python 開発者向けに、これらのツールの役割と開発フローを解説します。
 
 ---
 
@@ -24,7 +24,7 @@ Python エコシステムに慣れている方向けに、ウェブ開発ツー�
 ### 依存関係のインストール
 新しい開発環境で作業を始める際は、まずライブラリをインストールします。
 ```bash
-cd gallery-app
+cd pictogram
 bun install
 ```
 *Python で言う `pip install .` や `uv sync` に相当します。*
@@ -51,7 +51,7 @@ bun run dev
 
 ## 4. プロジェクト構成
 
-`gallery-app/` 以下の主要ファイル：
+`pictogram/` 以下の主要ファイル：
 
 - **`src/App.jsx`**: アプリケーションのメインロジック。UI コンポーネントや状態（State）を記述します。
 - **`src/main.jsx`**: React を起動し、`index.html` の `root` 要素に流し込むエントリーポイント。

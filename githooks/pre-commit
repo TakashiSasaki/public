@@ -20,7 +20,7 @@ fi
 # 以前の変更をステージする
 git add pyproject.toml
 
-# gallery-app/package.jsonと同期させる
+# pictogram/package.jsonと同期させる
 if command -v uv >/dev/null 2>&1; then
     uv run python scripts/sync_versions.py
 else
@@ -28,10 +28,10 @@ else
 fi
 
 if [ $? -ne 0 ]; then
-    echo "Error: Failed to sync version to gallery-app/package.json"
+    echo "Error: Failed to sync version to pictogram/package.json"
     exit 1
 fi
 
-git add gallery-app/package.json
+git add pictogram/package.json
 
 exit 0

@@ -167,7 +167,7 @@ def create_cursor_image(
             from reportlab.graphics import renderPM
             
             # Load pictograms.json
-            assets_dir = Path(__file__).parent.parent.parent.parent / "gallery-app" / "src" / "assets"
+            assets_dir = Path(__file__).parent.parent.parent.parent / "pictogram" / "src" / "assets"
             json_path = assets_dir / "pictograms.json"
             
             if json_path.exists():
