@@ -139,6 +139,36 @@
       "type": "base",
       "viewBox": "0 0 32 32",
       "content": "<!-- Tall cabinets -->\n            <rect x=\"4\" y=\"4\" width=\"10\" height=\"24\" rx=\"1\" />\n            <rect x=\"18\" y=\"4\" width=\"10\" height=\"24\" rx=\"1\" />\n            <!-- Lights/Panels -->\n            <path d=\"M6,8 h6 M6,12 h6\" stroke-dasharray=\"1 1\" />\n            <path d=\"M20,8 h6 M20,12 h6\" stroke-dasharray=\"1 1\" />\n            <rect x=\"6\" y=\"16\" width=\"6\" height=\"8\" opacity=\"0.3\" />\n            <rect x=\"20\" y=\"16\" width=\"6\" height=\"8\" opacity=\"0.3\" />\n            <!-- Grounding -->\n            <line x1=\"2\" y1=\"28\" x2=\"30\" y2=\"28\" stroke-width=\"1.5\" />"
+    },
+    "GamingLaptop": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Screen - angular sharp corners -->\n            <rect x=\"3\" y=\"4\" width=\"26\" height=\"14\" rx=\"0\" />\n            <!-- RGB stripe at hinge -->\n            <line x1=\"1\" y1=\"18\" x2=\"31\" y2=\"18\" stroke-width=\"1.5\" />\n            <!-- Thick chassis -->\n            <path d=\"M1,18 H31 V26 H1 Z\" />\n            <!-- Vent slots front -->\n            <path d=\"M5,21 h4 M5,23 h4\" stroke-width=\"1\" />\n            <!-- Touchpad -->\n            <rect x=\"13\" y=\"21\" width=\"7\" height=\"3\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" />"
+    },
+    "UltrabookLight": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Ultra-thin screen with large bezels minimal -->\n            <rect x=\"5\" y=\"5\" width=\"22\" height=\"12\" rx=\"2\" />\n            <!-- Paper-thin hinge area -->\n            <line x1=\"3\" y1=\"17\" x2=\"29\" y2=\"17\" />\n            <!-- Extremely slim base -->\n            <path d=\"M3,17 L5,21 H27 L29,17 Z\" />\n            <!-- Slim touchpad -->\n            <rect x=\"12\" y=\"18.5\" width=\"8\" height=\"2\" rx=\"1\" />"
+    },
+    "LaptopDarkPremium": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Filled dark screen lid -->\n            <path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M5,4 h22 a2,2 0 0,1 2,2 v12 a2,2 0 0,1 -2,2 h-22 a2,2 0 0,1 -2,-2 v-12 a2,2 0 0,1 2,-2 z M8,7 h16 v9 h-16 z\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Solid dark base -->\n            <path d=\"M3,20 L5,26 H27 L29,20 Z\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Subtle touchpad outline -->\n            <rect x=\"12\" y=\"22\" width=\"8\" height=\"3\" rx=\"1\" fill=\"none\" stroke-width=\"0.8\" />"
+    },
+    "PC9801": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Horizontal desktop unit -->\n            <rect x=\"2\" y=\"8\" width=\"28\" height=\"18\" rx=\"1\" />\n            <!-- 5.25-inch floppy bay 1 -->\n            <rect x=\"5\" y=\"11\" width=\"8\" height=\"5\" />\n            <!-- 5.25-inch floppy bay 2 -->\n            <rect x=\"5\" y=\"18\" width=\"8\" height=\"5\" />\n            <!-- Eject buttons -->\n            <circle cx=\"12\" cy=\"13.5\" r=\"0.7\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"12\" cy=\"20.5\" r=\"0.7\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Power button -->\n            <circle cx=\"20\" cy=\"12\" r=\"1.5\" />\n            <!-- Reset + indicator area -->\n            <rect x=\"18\" y=\"15\" width=\"10\" height=\"2\" rx=\"0.5\" />\n            <!-- LED indicators -->\n            <rect x=\"18\" y=\"19\" width=\"2\" height=\"1.5\" fill=\"currentColor\" stroke=\"none\" />\n            <rect x=\"22\" y=\"19\" width=\"2\" height=\"1.5\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "FMTowns": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Tower case - wider than typical tower -->\n            <rect x=\"8\" y=\"3\" width=\"16\" height=\"27\" rx=\"1\" />\n            <!-- Wide CD-ROM tray (distinctive FM Towns feature) -->\n            <rect x=\"10\" y=\"6\" width=\"12\" height=\"3\" />\n            <!-- CD eject button -->\n            <circle cx=\"20\" cy=\"7.5\" r=\"0.7\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Floppy drive -->\n            <rect x=\"10\" y=\"11\" width=\"7\" height=\"3\" />\n            <!-- Large power button -->\n            <circle cx=\"20\" cy=\"12.5\" r=\"1.5\" />\n            <!-- Activity LED bar -->\n            <rect x=\"10\" y=\"16\" width=\"12\" height=\"1.5\" rx=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Decorative bottom panel -->\n            <line x1=\"10\" y1=\"24\" x2=\"22\" y2=\"24\" />"
+    },
+    "RetroCRT": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- CRT Monitor body - boxy -->\n            <rect x=\"4\" y=\"2\" width=\"24\" height=\"18\" rx=\"2\" />\n            <!-- Screen with subtle bezel -->\n            <rect x=\"6\" y=\"4\" width=\"20\" height=\"14\" rx=\"1\" />\n            <!-- Monitor neck -->\n            <path d=\"M12,20 L10,23 M20,20 L22,23\" stroke-width=\"1.5\" />\n            <line x1=\"10\" y1=\"23\" x2=\"22\" y2=\"23\" />\n            <!-- Computer unit (keyboard integrated style) -->\n            <rect x=\"4\" y=\"24\" width=\"24\" height=\"6\" rx=\"1\" />\n            <!-- Floppy slot -->\n            <rect x=\"11\" y=\"26\" width=\"8\" height=\"2\" />\n            <!-- Power circle indicator -->\n            <circle cx=\"27\" cy=\"26\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />"
     }
   },
   "badges": {
