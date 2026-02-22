@@ -551,6 +551,91 @@
       "type": "badge",
       "viewBox": "0 0 16 16",
       "content": "<!-- Prism -->\n            <polygon points=\"3,13 8,3 13,13\" />\n            <!-- Input beam -->\n            <line x1=\"1\" y1=\"7\" x2=\"5.5\" y2=\"7\" stroke-width=\"1\" />\n            <!-- Output spectrum -->\n            <line x1=\"10.5\" y1=\"6\" x2=\"15\" y2=\"4\" stroke-width=\"0.8\" />\n            <line x1=\"10.5\" y1=\"8\" x2=\"15\" y2=\"8\" stroke-width=\"0.8\" />\n            <line x1=\"10.5\" y1=\"10\" x2=\"15\" y2=\"12\" stroke-width=\"0.8\" />"
+    },
+    "Piston": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Cylinder -->\n            <rect x=\"4\" y=\"6\" width=\"8\" height=\"8\" rx=\"0.5\" />\n            <!-- Piston head -->\n            <rect x=\"5\" y=\"8\" width=\"6\" height=\"2\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Connecting rod -->\n            <line x1=\"8\" y1=\"6\" x2=\"8\" y2=\"2\" stroke-width=\"1.5\" />\n            <!-- Crank circle -->\n            <circle cx=\"8\" cy=\"2\" r=\"1.5\" />"
+    },
+    "Bearing": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Outer ring -->\n            <circle cx=\"8\" cy=\"8\" r=\"6.5\" />\n            <!-- Inner ring -->\n            <circle cx=\"8\" cy=\"8\" r=\"3\" />\n            <!-- Balls -->\n            <circle cx=\"8\" cy=\"1.5\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"14.5\" cy=\"8\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"8\" cy=\"14.5\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"1.5\" cy=\"8\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "Turbine": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Hub -->\n            <circle cx=\"8\" cy=\"8\" r=\"2\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Blades -->\n            <path d=\"M8,6 C6,2 4,1 3,2 C2,3 4,5 6,6\" />\n            <path d=\"M10,8 C14,6 15,4 14,3 C13,2 11,4 10,6\" />\n            <path d=\"M8,10 C10,14 12,15 13,14 C14,13 12,11 10,10\" />\n            <path d=\"M6,8 C2,10 1,12 2,13 C3,14 5,12 6,10\" />"
+    },
+    "GitBranch": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Main branch -->\n            <line x1=\"4\" y1=\"3\" x2=\"4\" y2=\"13\" stroke-width=\"1.5\" />\n            <!-- Branch -->\n            <line x1=\"12\" y1=\"3\" x2=\"12\" y2=\"8\" stroke-width=\"1.5\" />\n            <path d=\"M12,8 C12,11 4,10 4,13\" fill=\"none\" stroke-width=\"1.5\" />\n            <!-- Nodes -->\n            <circle cx=\"4\" cy=\"3\" r=\"1.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"4\" cy=\"13\" r=\"1.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"12\" cy=\"3\" r=\"1.5\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "API": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- API endpoint nodes -->\n            <rect x=\"1\" y=\"2\" width=\"5\" height=\"3\" rx=\"0.5\" />\n            <rect x=\"1\" y=\"7\" width=\"5\" height=\"3\" rx=\"0.5\" />\n            <rect x=\"1\" y=\"12\" width=\"5\" height=\"3\" rx=\"0.5\" />\n            <!-- Connection lines -->\n            <line x1=\"6\" y1=\"3.5\" x2=\"10\" y2=\"8\" stroke-width=\"1\" />\n            <line x1=\"6\" y1=\"8.5\" x2=\"10\" y2=\"8\" stroke-width=\"1\" />\n            <line x1=\"6\" y1=\"13.5\" x2=\"10\" y2=\"8\" stroke-width=\"1\" />\n            <!-- Server -->\n            <rect x=\"10\" y=\"5\" width=\"5\" height=\"6\" rx=\"1\" />\n            <circle cx=\"12.5\" cy=\"8\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "Terminal": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Terminal window -->\n            <rect x=\"1\" y=\"2\" width=\"14\" height=\"12\" rx=\"1\" />\n            <!-- Title bar -->\n            <line x1=\"1\" y1=\"5\" x2=\"15\" y2=\"5\" />\n            <!-- Prompt -->\n            <polyline points=\"3,7 5,9 3,11\" fill=\"none\" stroke-width=\"1.5\" />\n            <!-- Cursor -->\n            <line x1=\"7\" y1=\"9\" x2=\"11\" y2=\"9\" stroke-width=\"1\" />"
+    },
+    "Bug": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Body -->\n            <ellipse cx=\"8\" cy=\"10\" rx=\"4\" ry=\"4.5\" />\n            <!-- Head -->\n            <circle cx=\"8\" cy=\"5\" r=\"2\" />\n            <!-- Antennae -->\n            <path d=\"M7,3 L5,1 M9,3 L11,1\" stroke-width=\"1\" />\n            <!-- Legs -->\n            <path d=\"M4,8 L1,6 M4,10 L1,10 M4,12 L1,14 M12,8 L15,6 M12,10 L15,10 M12,12 L15,14\" stroke-width=\"0.8\" />"
+    },
+    "CloudUpload": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Cloud -->\n            <path d=\"M4,11 C2,11 1,9.5 1,8 C1,6.5 2.5,5.5 4,5.5 C4.5,3 6.5,2 9,2.5 C11,3 12,4.5 12,6 C14,6.2 15,7.5 15,9 C15,10.5 13.5,11 12,11\" fill=\"none\" />\n            <!-- Upload arrow -->\n            <line x1=\"8\" y1=\"14\" x2=\"8\" y2=\"8\" stroke-width=\"1.5\" />\n            <polyline points=\"5.5,10.5 8,8 10.5,10.5\" fill=\"none\" stroke-width=\"1.5\" />"
+    },
+    "Sigma": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Sigma symbol -->\n            <polyline points=\"12,2 3,2 8,8 3,14 12,14\" fill=\"none\" stroke-width=\"2\" />"
+    },
+    "Graph": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Axes -->\n            <line x1=\"2\" y1=\"14\" x2=\"14\" y2=\"14\" stroke-width=\"1\" />\n            <line x1=\"2\" y1=\"2\" x2=\"2\" y2=\"14\" stroke-width=\"1\" />\n            <!-- Curve -->\n            <path d=\"M2,12 C4,12 5,4 8,4 C11,4 10,10 14,2\" fill=\"none\" stroke-width=\"1.5\" />\n            <!-- Data points -->\n            <circle cx=\"5\" cy=\"6\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"8\" cy=\"4\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"12\" cy=\"5\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "Binary": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Binary digits -->\n            <path d=\"M2,4 h2 M6,4 h2 M10,4 h2\" stroke-width=\"2\" />\n            <circle cx=\"3\" cy=\"8\" r=\"1.5\" />\n            <path d=\"M7,8 h2\" stroke-width=\"2\" />\n            <circle cx=\"11\" cy=\"8\" r=\"1.5\" />\n            <path d=\"M2,12 h2 M6,12 h2\" stroke-width=\"2\" />\n            <circle cx=\"11\" cy=\"12\" r=\"1.5\" />"
+    },
+    "NeuralNet": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Input layer -->\n            <circle cx=\"2\" cy=\"4\" r=\"1.2\" />\n            <circle cx=\"2\" cy=\"8\" r=\"1.2\" />\n            <circle cx=\"2\" cy=\"12\" r=\"1.2\" />\n            <!-- Hidden layer -->\n            <circle cx=\"8\" cy=\"5\" r=\"1.2\" />\n            <circle cx=\"8\" cy=\"11\" r=\"1.2\" />\n            <!-- Output -->\n            <circle cx=\"14\" cy=\"8\" r=\"1.2\" />\n            <!-- Connections -->\n            <path d=\"M3.2,4 L6.8,5 M3.2,4 L6.8,11 M3.2,8 L6.8,5 M3.2,8 L6.8,11 M3.2,12 L6.8,5 M3.2,12 L6.8,11 M9.2,5 L12.8,8 M9.2,11 L12.8,8\" stroke-width=\"0.5\" />"
+    },
+    "Antibody": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Y-shaped antibody -->\n            <path d=\"M8,14 V8 M8,8 L4,3 M8,8 L12,3\" stroke-width=\"2\" stroke-linecap=\"round\" />\n            <!-- Binding sites -->\n            <circle cx=\"4\" cy=\"3\" r=\"1.5\" />\n            <circle cx=\"12\" cy=\"3\" r=\"1.5\" />\n            <!-- Fc region -->\n            <circle cx=\"8\" cy=\"14\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "Syringe": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Barrel -->\n            <rect x=\"4\" y=\"3\" width=\"6\" height=\"9\" rx=\"0.5\" />\n            <!-- Plunger -->\n            <line x1=\"7\" y1=\"1\" x2=\"7\" y2=\"3\" stroke-width=\"1.5\" />\n            <line x1=\"5\" y1=\"1\" x2=\"9\" y2=\"1\" stroke-width=\"1.5\" />\n            <!-- Needle -->\n            <line x1=\"7\" y1=\"12\" x2=\"7\" y2=\"15\" stroke-width=\"0.8\" />\n            <!-- Markings -->\n            <path d=\"M4,5 h2 M4,7 h2 M4,9 h2\" stroke-width=\"0.8\" />"
+    },
+    "Stethoscope": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Tubes -->\n            <path d=\"M5,2 V6 C5,10 8,10 8,10 C8,10 11,10 11,6 V2\" fill=\"none\" />\n            <!-- Earpieces -->\n            <circle cx=\"5\" cy=\"2\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"11\" cy=\"2\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Chest piece -->\n            <circle cx=\"8\" cy=\"12\" r=\"2.5\" />\n            <circle cx=\"8\" cy=\"12\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "Heartbeat": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- ECG line -->\n            <polyline points=\"1,8 4,8 5,4 6,12 7,6 8,10 9,8 12,8 13,5 14,8 15,8\" fill=\"none\" stroke-width=\"1.2\" />"
+    },
+    "PawPrint": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Main pad -->\n            <ellipse cx=\"8\" cy=\"11\" rx=\"3\" ry=\"2.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Toe pads -->\n            <ellipse cx=\"4.5\" cy=\"7\" rx=\"1.5\" ry=\"1.8\" fill=\"currentColor\" stroke=\"none\" />\n            <ellipse cx=\"7\" cy=\"5.5\" rx=\"1.3\" ry=\"1.8\" fill=\"currentColor\" stroke=\"none\" />\n            <ellipse cx=\"9.5\" cy=\"5.5\" rx=\"1.3\" ry=\"1.8\" fill=\"currentColor\" stroke=\"none\" />\n            <ellipse cx=\"12\" cy=\"7\" rx=\"1.5\" ry=\"1.8\" fill=\"currentColor\" stroke=\"none\" />"
     }
   }
 }
