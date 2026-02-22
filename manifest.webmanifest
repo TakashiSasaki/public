@@ -6,8 +6,13 @@
   "display": "standalone",
   "background_color": "#f6f7fb",
   "theme_color": "#0f766e",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "lang": "ja",
+  "author": {
+    "name": "Takashi Sasaki",
+    "email": "takashi316@gmail.com",
+    "url": "https://x.com/TakashiSasaki"
+  },
   "description": "public.moukaeritai.work の公開ページです。",
   "icons": [
     {
@@ -22,5 +27,6 @@
     }
   ]
 }
+
 
 
