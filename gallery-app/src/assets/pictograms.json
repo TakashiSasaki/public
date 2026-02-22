@@ -109,6 +109,36 @@
       "type": "base",
       "viewBox": "0 0 32 32",
       "content": "\n            <rect x=\"2\" y=\"6\" width=\"28\" height=\"18\" rx=\"1\" />\n            <line x1=\"16\" y1=\"6\" x2=\"16\" y2=\"24\" />\n            <line x1=\"2\" y1=\"15\" x2=\"30\" y2=\"15\" />\n            \n            <path d=\"M12,24 L10,28 H22 L20,24\" />"
+    },
+    "RaspberryPi": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Board -->\n            <rect x=\"4\" y=\"6\" width=\"24\" height=\"20\" rx=\"2\" />\n            <!-- GPIO Pins -->\n            <path d=\"M6,6 V4 M10,6 V4 M14,6 V4 M18,6 V4 M22,6 V4 M26,6 V4\" stroke-width=\"1\" />\n            <!-- SOC / Chip -->\n            <rect x=\"13\" y=\"11\" width=\"6\" height=\"6\" rx=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Ports -->\n            <rect x=\"26\" y=\"9\" width=\"4\" height=\"4\" />\n            <rect x=\"26\" y=\"15\" width=\"4\" height=\"4\" />\n            <rect x=\"26\" y=\"21\" width=\"4\" height=\"4\" />\n            <!-- Components -->\n            <circle cx=\"8\" cy=\"15\" r=\"1.5\" />\n            <rect x=\"10\" y=\"22\" width=\"3\" height=\"2\" />"
+    },
+    "RaspberryPiZero": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Board -->\n            <rect x=\"4\" y=\"10\" width=\"24\" height=\"12\" rx=\"1.5\" />\n            <!-- GPIO -->\n            <line x1=\"6\" y1=\"10\" x2=\"26\" y2=\"10\" stroke-dasharray=\"1 1\" />\n            <!-- CPU -->\n            <rect x=\"10\" y=\"13\" width=\"4\" height=\"4\" rx=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Ports -->\n            <rect x=\"7\" y=\"22\" width=\"3\" height=\"2\" />\n            <rect x=\"15\" y=\"22\" width=\"3\" height=\"2\" />\n            <rect x=\"22\" y=\"22\" width=\"3\" height=\"2\" />"
+    },
+    "KVM": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Central Monitor -->\n            <rect x=\"10\" y=\"6\" width=\"12\" height=\"9\" rx=\"1\" />\n            <path d=\"M14,15 v3 M12,18 h8\" />\n            <!-- Switch Box -->\n            <rect x=\"6\" y=\"20\" width=\"20\" height=\"8\" rx=\"1\" />\n            <circle cx=\"10\" cy=\"24\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"14\" cy=\"24\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"18\" cy=\"24\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"22\" cy=\"24\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Connection lines -->\n            <path d=\"M16,18 v2\" stroke-dasharray=\"1 1\" />"
+    },
+    "IoTGateway": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Case -->\n            <rect x=\"8\" y=\"12\" width=\"16\" height=\"14\" rx=\"1\" />\n            <!-- Antenna -->\n            <path d=\"M12,12 V4 M20,12 V6\" stroke-width=\"2\" />\n            <circle cx=\"12\" cy=\"4\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Status Lights -->\n            <circle cx=\"12\" cy=\"18\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"12\" cy=\"22\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <line x1=\"16\" y1=\"18\" x2=\"20\" y2=\"18\" />\n            <line x1=\"16\" y1=\"22\" x2=\"20\" y2=\"22\" />"
+    },
+    "VirtualMachine": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Layered Boxes -->\n            <rect x=\"4\" y=\"14\" width=\"24\" height=\"14\" rx=\"1\" opacity=\"0.5\" />\n            <rect x=\"4\" y=\"10\" width=\"24\" height=\"14\" rx=\"1\" opacity=\"0.7\" />\n            <rect x=\"4\" y=\"6\" width=\"24\" height=\"14\" rx=\"1\" class=\"fill-white dark:fill-gray-900\" />\n            <rect x=\"4\" y=\"6\" width=\"24\" height=\"14\" rx=\"1\" />\n            <!-- VM Label -->\n            <path d=\"M10,10 h4 M18,10 h4 M10,14 h12\" />"
+    },
+    "Mainframe": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Tall cabinets -->\n            <rect x=\"4\" y=\"4\" width=\"10\" height=\"24\" rx=\"1\" />\n            <rect x=\"18\" y=\"4\" width=\"10\" height=\"24\" rx=\"1\" />\n            <!-- Lights/Panels -->\n            <path d=\"M6,8 h6 M6,12 h6\" stroke-dasharray=\"1 1\" />\n            <path d=\"M20,8 h6 M20,12 h6\" stroke-dasharray=\"1 1\" />\n            <rect x=\"6\" y=\"16\" width=\"6\" height=\"8\" opacity=\"0.3\" />\n            <rect x=\"20\" y=\"16\" width=\"6\" height=\"8\" opacity=\"0.3\" />\n            <!-- Grounding -->\n            <line x1=\"2\" y1=\"28\" x2=\"30\" y2=\"28\" stroke-width=\"1.5\" />"
     }
   },
   "badges": {
