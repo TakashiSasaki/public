@@ -1,0 +1,811 @@
+{
+  "bases": {
+    "RackServer": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "\n            <rect x=\"3\" y=\"6\" width=\"26\" height=\"8\" rx=\"1\" />\n            <rect x=\"3\" y=\"18\" width=\"26\" height=\"8\" rx=\"1\" />\n            \n            <circle cx=\"24\" cy=\"10\" r=\"1.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"24\" cy=\"22\" r=\"1.5\" fill=\"currentColor\" stroke=\"none\" />\n            \n            <line x1=\"1\" y1=\"8\" x2=\"3\" y2=\"8\" />\n            <line x1=\"1\" y1=\"12\" x2=\"3\" y2=\"12\" />\n            <line x1=\"1\" y1=\"20\" x2=\"3\" y2=\"20\" />\n            <line x1=\"1\" y1=\"24\" x2=\"3\" y2=\"24\" />\n            <line x1=\"29\" y1=\"8\" x2=\"31\" y2=\"8\" />\n            <line x1=\"29\" y1=\"12\" x2=\"31\" y2=\"12\" />\n            <line x1=\"29\" y1=\"20\" x2=\"31\" y2=\"20\" />\n            <line x1=\"29\" y1=\"24\" x2=\"31\" y2=\"24\" />"
+    },
+    "TowerServer": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<rect x=\"8\" y=\"4\" width=\"16\" height=\"24\" rx=\"2\" />\n            \n            <line x1=\"12\" y1=\"19\" x2=\"20\" y2=\"19\" />\n            <line x1=\"12\" y1=\"22\" x2=\"20\" y2=\"22\" />\n            <line x1=\"12\" y1=\"25\" x2=\"20\" y2=\"25\" />\n            \n            <circle cx=\"16\" cy=\"10\" r=\"2\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "DesktopPC": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "\n            <rect x=\"2\" y=\"8\" width=\"18\" height=\"14\" rx=\"1\" />\n            <path d=\"M7,22 v3 M15,22 v3 M5,25 h12\" />\n            \n            <rect x=\"22\" y=\"8\" width=\"8\" height=\"17\" rx=\"1\" />\n            <line x1=\"24\" y1=\"12\" x2=\"28\" y2=\"12\" />"
+    },
+    "Laptop": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "\n            <rect x=\"5\" y=\"8\" width=\"22\" height=\"14\" rx=\"1\" />\n            \n            <path d=\"M3,22 h26 l-3,5 H6 Z\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "MiniPC": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "\n            <rect x=\"6\" y=\"10\" width=\"20\" height=\"14\" rx=\"2\" />\n            \n            <circle cx=\"16\" cy=\"17\" r=\"4\" />\n            <line x1=\"16\" y1=\"13\" x2=\"16\" y2=\"17\" />"
+    },
+    "Industrial": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "\n            <rect x=\"6\" y=\"6\" width=\"20\" height=\"20\" rx=\"1\" />\n            \n            <path d=\"M6,10 h-2 M6,16 h-2 M6,22 h-2 M26,10 h2 M26,16 h2 M26,22 h2\" />\n            \n            <rect x=\"10\" y=\"10\" width=\"12\" height=\"12\" rx=\"1\" />\n            <circle cx=\"16\" cy=\"16\" r=\"2\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "Cloud": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "\n            <path d=\"M10,22 C6,22 4,19 4,16 C4,13.2 6.2,11 9,11 C10,7 13.5,5 17.5,6 C21.5,7 23,10 23,12 C26,12.5 28,15 28,18 C28,21 25.5,22 22,22 L10,22 Z\" />\n            \n            <rect x=\"12\" y=\"12\" width=\"6\" height=\"6\" rx=\"1\" stroke-dasharray=\"1 1\" />"
+    },
+    "SignageSTB": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "\n            <rect x=\"20\" y=\"4\" width=\"7\" height=\"8\" rx=\"1\" />\n            <line x1=\"22\" y1=\"6\" x2=\"25\" y2=\"6\" stroke-width=\"1\" />\n            \n            <rect\n                x=\"2\"\n                y=\"10\"\n                width=\"28\"\n                height=\"16\"\n                rx=\"1\"\n                class=\"fill-white dark:fill-gray-900\"\n            />\n            <rect x=\"2\" y=\"10\" width=\"28\" height=\"16\" rx=\"1\" />\n            \n            <path d=\"M12,26 v4 M20,26 v4 M10,30 h12\" />"
+    },
+    "LaptopSmallBlack": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "\n            <path\n                fill-rule=\"evenodd\"\n                clip-rule=\"evenodd\"\n                d=\"M6,8 h20 a1,1 0 0,1 1,1 v11 a1,1 0 0,1 -1,1 h-20 a1,1 0 0,1 -1,-1 v-11 a1,1 0 0,1 1,-1 z M8,10 h16 v8 h-16 z\"\n                fill=\"currentColor\"\n                stroke=\"none\"\n            />\n            \n            <path d=\"M3,23 h26 l-2,4 h-22 z\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "LaptopSmallWhite": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "\n            <rect x=\"7\" y=\"10\" width=\"18\" height=\"11\" rx=\"1\" />\n            \n            <path d=\"M5,21 h22 l-2,4 H7 Z\" />"
+    },
+    "NasVertical": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<rect x=\"6\" y=\"8\" width=\"20\" height=\"16\" rx=\"2\" />\n            \n            <line x1=\"11\" y1=\"8\" x2=\"11\" y2=\"24\" />\n            <line x1=\"16\" y1=\"8\" x2=\"16\" y2=\"24\" />\n            <line x1=\"21\" y1=\"8\" x2=\"21\" y2=\"24\" />\n            \n            <circle cx=\"8.5\" cy=\"11\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"13.5\" cy=\"11\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"18.5\" cy=\"11\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"23.5\" cy=\"11\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "DualMonitorPC": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "\n            <rect x=\"1\" y=\"10\" width=\"11\" height=\"8\" rx=\"1\" />\n            <path d=\"M6.5,18 v3 M3,21 h7\" />\n            \n            <rect x=\"13\" y=\"10\" width=\"11\" height=\"8\" rx=\"1\" />\n            <path d=\"M18.5,18 v3 M15,21 h7\" />\n            \n            <rect x=\"25\" y=\"8\" width=\"6\" height=\"13\" rx=\"1\" />\n            <line x1=\"26\" y1=\"12\" x2=\"30\" y2=\"12\" />"
+    },
+    "DualMonitorVerticalPC": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "\n            <path d=\"M7,25 h8 M11,21 v4\" />\n            \n            <rect x=\"3\" y=\"13\" width=\"16\" height=\"9\" rx=\"1\" />\n            \n            <rect x=\"3\" y=\"2\" width=\"16\" height=\"9\" rx=\"1\" />\n            \n            <rect x=\"22\" y=\"6\" width=\"8\" height=\"20\" rx=\"1\" />\n            <line x1=\"24\" y1=\"10\" x2=\"28\" y2=\"10\" />\n            <line x1=\"24\" y1=\"22\" x2=\"28\" y2=\"22\" />"
+    },
+    "LaptopFrontOpen": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "\n            <rect x=\"6\" y=\"6\" width=\"20\" height=\"12\" rx=\"1\" />\n            \n            <path d=\"M 4,20 L 28,20 L 31,26 L 1,26 Z\" />\n            \n            <rect x=\"13\" y=\"23\" width=\"6\" height=\"2\" rx=\"0.5\" />\n            \n            <line x1=\"7\" y1=\"21.5\" x2=\"25\" y2=\"21.5\" stroke-width=\"1\" />\n            <line x1=\"6\" y1=\"23.5\" x2=\"11\" y2=\"23.5\" stroke-width=\"1\" />\n            <line x1=\"21\" y1=\"23.5\" x2=\"26\" y2=\"23.5\" stroke-width=\"1\" />"
+    },
+    "LaptopFlat": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "\n            <rect x=\"6\" y=\"2\" width=\"20\" height=\"13\" rx=\"1\" />\n            \n            <rect x=\"6\" y=\"16\" width=\"20\" height=\"14\" rx=\"1\" />\n            \n            <rect x=\"8\" y=\"18\" width=\"16\" height=\"7\" rx=\"0.5\" />\n            <line x1=\"8\" y1=\"20.5\" x2=\"24\" y2=\"20.5\" stroke-width=\"1\" />\n            <line x1=\"8\" y1=\"23\" x2=\"24\" y2=\"23\" stroke-width=\"1\" />\n            <line x1=\"12\" y1=\"18\" x2=\"12\" y2=\"25\" stroke-width=\"1\" />\n            <line x1=\"16\" y1=\"18\" x2=\"16\" y2=\"25\" stroke-width=\"1\" />\n            <line x1=\"20\" y1=\"18\" x2=\"20\" y2=\"25\" stroke-width=\"1\" />\n            \n            <rect x=\"13\" y=\"27\" width=\"6\" height=\"2\" rx=\"0.5\" />"
+    },
+    "NasHorizontal": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<rect x=\"6\" y=\"8\" width=\"20\" height=\"16\" rx=\"2\" />\n            \n            <line x1=\"6\" y1=\"13\" x2=\"21\" y2=\"13\" />\n            <line x1=\"6\" y1=\"18\" x2=\"21\" y2=\"18\" />\n            \n            <line x1=\"21\" y1=\"8\" x2=\"21\" y2=\"24\" />\n            <circle cx=\"23.5\" cy=\"11\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"23.5\" cy=\"14\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"23.5\" cy=\"17\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"23.5\" cy=\"20\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "ScientificCalculator": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<rect x=\"6\" y=\"2\" width=\"20\" height=\"28\" rx=\"2\" />\n            \n            <rect x=\"8\" y=\"5\" width=\"16\" height=\"6\" rx=\"0.5\" />\n            \n            <ellipse cx=\"16\" cy=\"14\" rx=\"3\" ry=\"2\" />\n            \n            <path\n                d=\"M9,18 h14 M9,21 h14 M9,24 h14 M9,27 h14\"\n                stroke-width=\"1\"\n                stroke-dasharray=\"2 2\"\n            />"
+    },
+    "PocketComputer": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "\n            <rect x=\"2\" y=\"10\" width=\"28\" height=\"12\" rx=\"1\" />\n            \n            <rect x=\"4\" y=\"12\" width=\"8\" height=\"8\" rx=\"0.5\" />\n            \n            <path\n                d=\"M14,13 h14 M14,16 h14 M14,19 h14\"\n                stroke-width=\"1\"\n                stroke-dasharray=\"1.5 2\"\n            />"
+    },
+    "ComputeServer": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "\n            <rect x=\"4\" y=\"4\" width=\"24\" height=\"24\" rx=\"1\" />\n            \n            <line x1=\"8\" y1=\"4\" x2=\"8\" y2=\"20\" stroke-width=\"1.5\" />\n            <line x1=\"12\" y1=\"4\" x2=\"12\" y2=\"20\" stroke-width=\"1.5\" />\n            <line x1=\"16\" y1=\"4\" x2=\"16\" y2=\"20\" stroke-width=\"1.5\" />\n            <line x1=\"20\" y1=\"4\" x2=\"20\" y2=\"20\" stroke-width=\"1.5\" />\n            <line x1=\"24\" y1=\"4\" x2=\"24\" y2=\"20\" stroke-width=\"1.5\" />\n            \n            <line x1=\"4\" y1=\"20\" x2=\"28\" y2=\"20\" />\n            \n            <circle cx=\"9\" cy=\"24\" r=\"2\" />\n            <circle cx=\"16\" cy=\"24\" r=\"2\" />\n            <circle cx=\"23\" cy=\"24\" r=\"2\" />"
+    },
+    "ControlTerminal": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "\n            <rect x=\"4\" y=\"4\" width=\"24\" height=\"24\" rx=\"2\" />\n            \n            <rect x=\"6\" y=\"6\" width=\"20\" height=\"14\" rx=\"1\" />\n            \n            <circle cx=\"10\" cy=\"24\" r=\"2\" />\n            <circle cx=\"16\" cy=\"24\" r=\"2\" />\n            <circle cx=\"22\" cy=\"24\" r=\"2\" />"
+    },
+    "FATerminal": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "\n            <rect x=\"5\" y=\"4\" width=\"22\" height=\"24\" rx=\"1\" />\n            \n            <line x1=\"12\" y1=\"4\" x2=\"12\" y2=\"28\" />\n            <line x1=\"19\" y1=\"4\" x2=\"19\" y2=\"28\" />\n            \n            <circle cx=\"8.5\" cy=\"8\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"8.5\" cy=\"12\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            \n            <rect x=\"14\" y=\"20\" width=\"3\" height=\"4\" />\n            <rect x=\"21\" y=\"20\" width=\"3\" height=\"4\" />\n            <line x1=\"14\" y1=\"8\" x2=\"17\" y2=\"8\" />\n            <line x1=\"21\" y1=\"8\" x2=\"24\" y2=\"8\" />"
+    },
+    "MonitoringDevice": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "\n            <rect x=\"2\" y=\"6\" width=\"28\" height=\"18\" rx=\"1\" />\n            <line x1=\"16\" y1=\"6\" x2=\"16\" y2=\"24\" />\n            <line x1=\"2\" y1=\"15\" x2=\"30\" y2=\"15\" />\n            \n            <path d=\"M12,24 L10,28 H22 L20,24\" />"
+    },
+    "RaspberryPi": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Board -->\n            <rect x=\"4\" y=\"6\" width=\"24\" height=\"20\" rx=\"2\" />\n            <!-- GPIO Pins -->\n            <path d=\"M6,6 V4 M10,6 V4 M14,6 V4 M18,6 V4 M22,6 V4 M26,6 V4\" stroke-width=\"1\" />\n            <!-- SOC / Chip -->\n            <rect x=\"13\" y=\"11\" width=\"6\" height=\"6\" rx=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Ports -->\n            <rect x=\"26\" y=\"9\" width=\"4\" height=\"4\" />\n            <rect x=\"26\" y=\"15\" width=\"4\" height=\"4\" />\n            <rect x=\"26\" y=\"21\" width=\"4\" height=\"4\" />\n            <!-- Components -->\n            <circle cx=\"8\" cy=\"15\" r=\"1.5\" />\n            <rect x=\"10\" y=\"22\" width=\"3\" height=\"2\" />"
+    },
+    "RaspberryPiZero": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Board -->\n            <rect x=\"4\" y=\"10\" width=\"24\" height=\"12\" rx=\"1.5\" />\n            <!-- GPIO -->\n            <line x1=\"6\" y1=\"10\" x2=\"26\" y2=\"10\" stroke-dasharray=\"1 1\" />\n            <!-- CPU -->\n            <rect x=\"10\" y=\"13\" width=\"4\" height=\"4\" rx=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Ports -->\n            <rect x=\"7\" y=\"22\" width=\"3\" height=\"2\" />\n            <rect x=\"15\" y=\"22\" width=\"3\" height=\"2\" />\n            <rect x=\"22\" y=\"22\" width=\"3\" height=\"2\" />"
+    },
+    "KVM": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Central Monitor -->\n            <rect x=\"10\" y=\"6\" width=\"12\" height=\"9\" rx=\"1\" />\n            <path d=\"M14,15 v3 M12,18 h8\" />\n            <!-- Switch Box -->\n            <rect x=\"6\" y=\"20\" width=\"20\" height=\"8\" rx=\"1\" />\n            <circle cx=\"10\" cy=\"24\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"14\" cy=\"24\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"18\" cy=\"24\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"22\" cy=\"24\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Connection lines -->\n            <path d=\"M16,18 v2\" stroke-dasharray=\"1 1\" />"
+    },
+    "IoTGateway": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Case -->\n            <rect x=\"8\" y=\"12\" width=\"16\" height=\"14\" rx=\"1\" />\n            <!-- Antenna -->\n            <path d=\"M12,12 V4 M20,12 V6\" stroke-width=\"2\" />\n            <circle cx=\"12\" cy=\"4\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Status Lights -->\n            <circle cx=\"12\" cy=\"18\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"12\" cy=\"22\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <line x1=\"16\" y1=\"18\" x2=\"20\" y2=\"18\" />\n            <line x1=\"16\" y1=\"22\" x2=\"20\" y2=\"22\" />"
+    },
+    "VirtualMachine": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Layered Boxes -->\n            <rect x=\"4\" y=\"14\" width=\"24\" height=\"14\" rx=\"1\" opacity=\"0.5\" />\n            <rect x=\"4\" y=\"10\" width=\"24\" height=\"14\" rx=\"1\" opacity=\"0.7\" />\n            <rect x=\"4\" y=\"6\" width=\"24\" height=\"14\" rx=\"1\" class=\"fill-white dark:fill-gray-900\" />\n            <rect x=\"4\" y=\"6\" width=\"24\" height=\"14\" rx=\"1\" />\n            <!-- VM Label -->\n            <path d=\"M10,10 h4 M18,10 h4 M10,14 h12\" />"
+    },
+    "Mainframe": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Tall cabinets -->\n            <rect x=\"4\" y=\"4\" width=\"10\" height=\"24\" rx=\"1\" />\n            <rect x=\"18\" y=\"4\" width=\"10\" height=\"24\" rx=\"1\" />\n            <!-- Lights/Panels -->\n            <path d=\"M6,8 h6 M6,12 h6\" stroke-dasharray=\"1 1\" />\n            <path d=\"M20,8 h6 M20,12 h6\" stroke-dasharray=\"1 1\" />\n            <rect x=\"6\" y=\"16\" width=\"6\" height=\"8\" opacity=\"0.3\" />\n            <rect x=\"20\" y=\"16\" width=\"6\" height=\"8\" opacity=\"0.3\" />\n            <!-- Grounding -->\n            <line x1=\"2\" y1=\"28\" x2=\"30\" y2=\"28\" stroke-width=\"1.5\" />"
+    },
+    "GamingLaptop": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Screen - angular sharp corners -->\n            <rect x=\"3\" y=\"4\" width=\"26\" height=\"14\" rx=\"0\" />\n            <!-- RGB stripe at hinge -->\n            <line x1=\"1\" y1=\"18\" x2=\"31\" y2=\"18\" stroke-width=\"1.5\" />\n            <!-- Thick chassis -->\n            <path d=\"M1,18 H31 V26 H1 Z\" />\n            <!-- Vent slots front -->\n            <path d=\"M5,21 h4 M5,23 h4\" stroke-width=\"1\" />\n            <!-- Touchpad -->\n            <rect x=\"13\" y=\"21\" width=\"7\" height=\"3\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\" />"
+    },
+    "UltrabookLight": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Ultra-thin screen with large bezels minimal -->\n            <rect x=\"5\" y=\"5\" width=\"22\" height=\"12\" rx=\"2\" />\n            <!-- Paper-thin hinge area -->\n            <line x1=\"3\" y1=\"17\" x2=\"29\" y2=\"17\" />\n            <!-- Extremely slim base -->\n            <path d=\"M3,17 L5,21 H27 L29,17 Z\" />\n            <!-- Slim touchpad -->\n            <rect x=\"12\" y=\"18.5\" width=\"8\" height=\"2\" rx=\"1\" />"
+    },
+    "LaptopDarkPremium": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Filled dark screen lid -->\n            <path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M5,4 h22 a2,2 0 0,1 2,2 v12 a2,2 0 0,1 -2,2 h-22 a2,2 0 0,1 -2,-2 v-12 a2,2 0 0,1 2,-2 z M8,7 h16 v9 h-16 z\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Solid dark base -->\n            <path d=\"M3,20 L5,26 H27 L29,20 Z\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Subtle touchpad outline -->\n            <rect x=\"12\" y=\"22\" width=\"8\" height=\"3\" rx=\"1\" fill=\"none\" stroke-width=\"0.8\" />"
+    },
+    "PC9801": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Horizontal desktop unit -->\n            <rect x=\"2\" y=\"8\" width=\"28\" height=\"18\" rx=\"1\" />\n            <!-- 5.25-inch floppy bay 1 -->\n            <rect x=\"5\" y=\"11\" width=\"8\" height=\"5\" />\n            <!-- 5.25-inch floppy bay 2 -->\n            <rect x=\"5\" y=\"18\" width=\"8\" height=\"5\" />\n            <!-- Eject buttons -->\n            <circle cx=\"12\" cy=\"13.5\" r=\"0.7\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"12\" cy=\"20.5\" r=\"0.7\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Power button -->\n            <circle cx=\"20\" cy=\"12\" r=\"1.5\" />\n            <!-- Reset + indicator area -->\n            <rect x=\"18\" y=\"15\" width=\"10\" height=\"2\" rx=\"0.5\" />\n            <!-- LED indicators -->\n            <rect x=\"18\" y=\"19\" width=\"2\" height=\"1.5\" fill=\"currentColor\" stroke=\"none\" />\n            <rect x=\"22\" y=\"19\" width=\"2\" height=\"1.5\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "FMTowns": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Tower case - wider than typical tower -->\n            <rect x=\"8\" y=\"3\" width=\"16\" height=\"27\" rx=\"1\" />\n            <!-- Wide CD-ROM tray (distinctive FM Towns feature) -->\n            <rect x=\"10\" y=\"6\" width=\"12\" height=\"3\" />\n            <!-- CD eject button -->\n            <circle cx=\"20\" cy=\"7.5\" r=\"0.7\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Floppy drive -->\n            <rect x=\"10\" y=\"11\" width=\"7\" height=\"3\" />\n            <!-- Large power button -->\n            <circle cx=\"20\" cy=\"12.5\" r=\"1.5\" />\n            <!-- Activity LED bar -->\n            <rect x=\"10\" y=\"16\" width=\"12\" height=\"1.5\" rx=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Decorative bottom panel -->\n            <line x1=\"10\" y1=\"24\" x2=\"22\" y2=\"24\" />"
+    },
+    "RetroCRT": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- CRT Monitor body - boxy -->\n            <rect x=\"4\" y=\"2\" width=\"24\" height=\"18\" rx=\"2\" />\n            <!-- Screen with subtle bezel -->\n            <rect x=\"6\" y=\"4\" width=\"20\" height=\"14\" rx=\"1\" />\n            <!-- Monitor neck -->\n            <path d=\"M12,20 L10,23 M20,20 L22,23\" stroke-width=\"1.5\" />\n            <line x1=\"10\" y1=\"23\" x2=\"22\" y2=\"23\" />\n            <!-- Computer unit (keyboard integrated style) -->\n            <rect x=\"4\" y=\"24\" width=\"24\" height=\"6\" rx=\"1\" />\n            <!-- Floppy slot -->\n            <rect x=\"11\" y=\"26\" width=\"8\" height=\"2\" />\n            <!-- Power circle indicator -->\n            <circle cx=\"27\" cy=\"26\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "Osborne1": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Portable suitcase body -->\n            <rect x=\"3\" y=\"4\" width=\"26\" height=\"24\" rx=\"2\" />\n            <!-- Tiny 5\" CRT -->\n            <rect x=\"5\" y=\"6\" width=\"10\" height=\"8\" rx=\"1\" />\n            <!-- Dual floppy drives -->\n            <rect x=\"17\" y=\"6\" width=\"10\" height=\"4\" />\n            <rect x=\"17\" y=\"12\" width=\"10\" height=\"4\" />\n            <!-- Eject buttons -->\n            <circle cx=\"25\" cy=\"8\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"25\" cy=\"14\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Handle -->\n            <path d=\"M12,4 v-2 h8 v2\" />\n            <!-- Keyboard area -->\n            <path d=\"M5,18 h22 M5,21 h22 M5,24 h22\" stroke-dasharray=\"1.5 1\" stroke-width=\"1\" />"
+    },
+    "AtariST": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Wedge-shaped keyboard unit -->\n            <path d=\"M2,16 L4,28 H28 L30,16 Z\" />\n            <!-- Keyboard grid -->\n            <path d=\"M6,19 h20 M6,22 h20 M6,25 h20\" stroke-dasharray=\"1.5 1\" stroke-width=\"1\" />\n            <!-- Monitor above -->\n            <rect x=\"8\" y=\"2\" width=\"16\" height=\"12\" rx=\"1\" />\n            <!-- Floppy slot on side -->\n            <rect x=\"22\" y=\"20\" width=\"5\" height=\"2\" />\n            <!-- Atari logo area -->\n            <circle cx=\"6\" cy=\"26\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "MSX": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Main keyboard unit -->\n            <rect x=\"2\" y=\"14\" width=\"28\" height=\"12\" rx=\"1\" />\n            <!-- Keyboard keys -->\n            <path d=\"M4,17 h24 M4,20 h24 M4,23 h24\" stroke-dasharray=\"1 1\" stroke-width=\"1\" />\n            <!-- Cartridge slot top -->\n            <rect x=\"10\" y=\"12\" width=\"12\" height=\"3\" />\n            <!-- Cartridge -->\n            <rect x=\"12\" y=\"8\" width=\"8\" height=\"7\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- LED -->\n            <circle cx=\"26\" cy=\"15.5\" r=\"0.7\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "SharpX1": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Main unit (horizontal desktop) -->\n            <rect x=\"2\" y=\"18\" width=\"28\" height=\"10\" rx=\"1\" />\n            <!-- Built-in data recorder (cassette) -->\n            <rect x=\"4\" y=\"20\" width=\"8\" height=\"5\" />\n            <circle cx=\"6\" cy=\"22.5\" r=\"1.5\" />\n            <circle cx=\"10\" cy=\"22.5\" r=\"1.5\" />\n            <!-- Floppy drive -->\n            <rect x=\"14\" y=\"20\" width=\"6\" height=\"3\" />\n            <!-- Power/reset -->\n            <circle cx=\"24\" cy=\"22\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- CRT on top -->\n            <rect x=\"6\" y=\"4\" width=\"20\" height=\"13\" rx=\"1\" />"
+    },
+    "Commodore64": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Breadbin keyboard case -->\n            <path d=\"M2,16 h28 v10 a2,2 0 0,1 -2,2 h-24 a2,2 0 0,1 -2,-2 Z\" />\n            <!-- Keyboard rows -->\n            <path d=\"M4,19 h24 M4,22 h24 M4,25 h24\" stroke-dasharray=\"1.5 1\" stroke-width=\"1\" />\n            <!-- Badge/label area -->\n            <rect x=\"2\" y=\"14\" width=\"8\" height=\"3\" rx=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Power LED -->\n            <circle cx=\"28\" cy=\"17\" r=\"0.7\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Ports on back -->\n            <path d=\"M8,16 v-2 M12,16 v-2 M16,16 v-2\" stroke-width=\"1\" />"
+    },
+    "LaptopFlatWhite": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Screen (outline only, 'white/light' look) -->\n            <rect x=\"6\" y=\"2\" width=\"20\" height=\"13\" rx=\"1\" />\n            <!-- Body (outline only) -->\n            <rect x=\"6\" y=\"16\" width=\"20\" height=\"14\" rx=\"1\" />\n            <!-- Keyboard grid -->\n            <rect x=\"8\" y=\"18\" width=\"16\" height=\"7\" rx=\"0.5\" />\n            <line x1=\"8\" y1=\"20.5\" x2=\"24\" y2=\"20.5\" stroke-width=\"1\" />\n            <line x1=\"8\" y1=\"23\" x2=\"24\" y2=\"23\" stroke-width=\"1\" />\n            <line x1=\"12\" y1=\"18\" x2=\"12\" y2=\"25\" stroke-width=\"1\" />\n            <line x1=\"16\" y1=\"18\" x2=\"16\" y2=\"25\" stroke-width=\"1\" />\n            <line x1=\"20\" y1=\"18\" x2=\"20\" y2=\"25\" stroke-width=\"1\" />\n            <!-- Touchpad -->\n            <rect x=\"13\" y=\"27\" width=\"6\" height=\"2\" rx=\"0.5\" />"
+    },
+    "ThinkPad": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Lid (dark fill = ThinkPad signature black) -->\n            <path fill-rule=\"evenodd\" clip-rule=\"evenodd\" d=\"M5,4 h22 a1,1 0 0,1 1,1 v13 a1,1 0 0,1 -1,1 h-22 a1,1 0 0,1 -1,-1 v-13 a1,1 0 0,1 1,-1 z M7,6 h18 v10 h-18 z\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Base -->\n            <path d=\"M4,19 h24 v7 h-24 z\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- TrackPoint (red nub center) -->\n            <circle cx=\"16\" cy=\"22\" r=\"1.2\" fill=\"none\" />\n            <!-- Three mouse buttons below keyboard -->\n            <rect x=\"9\" y=\"24\" width=\"4\" height=\"1.5\" rx=\"0.3\" fill=\"none\" stroke-width=\"0.8\" />\n            <rect x=\"14\" y=\"24\" width=\"4\" height=\"1.5\" rx=\"0.3\" fill=\"none\" stroke-width=\"0.8\" />\n            <rect x=\"19\" y=\"24\" width=\"4\" height=\"1.5\" rx=\"0.3\" fill=\"none\" stroke-width=\"0.8\" />"
+    },
+    "LaptopWheelPad": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Screen -->\n            <rect x=\"5\" y=\"6\" width=\"22\" height=\"13\" rx=\"1\" />\n            <!-- Base -->\n            <path d=\"M3,19 h26 l-2,8 h-22 z\" />\n            <!-- Keyboard area (subtle) -->\n            <path d=\"M7,21 h18\" stroke-width=\"1\" stroke-dasharray=\"1.5 1\" />\n            <path d=\"M7,23\" stroke-width=\"1\" />\n            <!-- Circular scroll wheel / touchpad -->\n            <circle cx=\"16\" cy=\"24\" r=\"2.5\" />\n            <circle cx=\"16\" cy=\"24\" r=\"0.8\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "Laptop2in1": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Screen (tablet mode indicator - rotated hinge) -->\n            <rect x=\"4\" y=\"4\" width=\"24\" height=\"16\" rx=\"1\" />\n            <!-- Hinge pivot -->\n            <circle cx=\"16\" cy=\"20\" r=\"1.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Folded-back keyboard (visible underneath) -->\n            <rect x=\"6\" y=\"21\" width=\"20\" height=\"9\" rx=\"1\" stroke-dasharray=\"2 1\" />\n            <!-- Stand angle lines -->\n            <path d=\"M6,30 L4,32 M26,30 L28,32\" stroke-width=\"1\" />"
+    },
+    "LaptopWidescreen": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Ultra-wide 16:9 screen -->\n            <rect x=\"2\" y=\"8\" width=\"28\" height=\"11\" rx=\"1\" />\n            <!-- Thin base -->\n            <path d=\"M2,19 h28 l-1,6 h-26 z\" />\n            <!-- Wide touchpad -->\n            <rect x=\"9\" y=\"21\" width=\"14\" height=\"3\" rx=\"1\" />\n            <!-- Keyboard dots -->\n            <path d=\"M4,20 h6 M22,20 h6\" stroke-dasharray=\"1 1\" stroke-width=\"1\" />"
+    },
+    "LaptopRugged": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Thick rugged frame -->\n            <rect x=\"2\" y=\"4\" width=\"28\" height=\"15\" rx=\"3\" stroke-width=\"2.5\" />\n            <!-- Screen inside -->\n            <rect x=\"5\" y=\"6\" width=\"22\" height=\"11\" rx=\"1\" />\n            <!-- Thick rugged base -->\n            <rect x=\"1\" y=\"19\" width=\"30\" height=\"10\" rx=\"3\" stroke-width=\"2.5\" />\n            <!-- Handle / latch -->\n            <rect x=\"13\" y=\"17\" width=\"6\" height=\"3\" rx=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Corner bumpers -->\n            <circle cx=\"3.5\" cy=\"5.5\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"28.5\" cy=\"5.5\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "Chromebook": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Slim screen -->\n            <rect x=\"5\" y=\"5\" width=\"22\" height=\"12\" rx=\"1.5\" />\n            <!-- Chrome circle logo (simplified) -->\n            <circle cx=\"16\" cy=\"11\" r=\"2\" />\n            <!-- Slim base -->\n            <path d=\"M4,17 h24 l-1,7 h-22 z\" />\n            <!-- Full-width keyboard -->\n            <path d=\"M6,19 h20 M6,21 h20\" stroke-dasharray=\"1 1\" stroke-width=\"1\" />\n            <!-- Large touchpad -->\n            <rect x=\"10\" y=\"22\" width=\"12\" height=\"1.5\" rx=\"0.5\" />"
+    },
+    "HandheldPC": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Clamshell body -->\n            <rect x=\"2\" y=\"6\" width=\"28\" height=\"10\" rx=\"2\" />\n            <!-- Small screen -->\n            <rect x=\"4\" y=\"8\" width=\"12\" height=\"6\" rx=\"1\" />\n            <!-- Mini QWERTY keyboard -->\n            <path d=\"M18,8 h10 M18,10.5 h10 M18,13 h10\" stroke-dasharray=\"1 0.8\" stroke-width=\"0.8\" />\n            <!-- Hinge line -->\n            <line x1=\"2\" y1=\"16\" x2=\"30\" y2=\"16\" />\n            <!-- Lower half (keyboard side when open) -->\n            <rect x=\"2\" y=\"16\" width=\"28\" height=\"10\" rx=\"2\" />\n            <!-- Full keyboard area -->\n            <path d=\"M4,18 h24 M4,20.5 h24 M4,23 h24\" stroke-dasharray=\"1 0.8\" stroke-width=\"0.8\" />"
+    },
+    "HandheldGamePC": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Wide handheld body -->\n            <rect x=\"1\" y=\"8\" width=\"30\" height=\"16\" rx=\"3\" />\n            <!-- Central screen -->\n            <rect x=\"8\" y=\"10\" width=\"16\" height=\"12\" rx=\"1\" />\n            <!-- D-pad (left) -->\n            <line x1=\"3\" y1=\"14\" x2=\"3\" y2=\"18\" stroke-width=\"2\" />\n            <line x1=\"1.5\" y1=\"16\" x2=\"4.5\" y2=\"16\" stroke-width=\"2\" />\n            <!-- ABXY buttons (right) -->\n            <circle cx=\"28\" cy=\"14\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"28\" cy=\"18\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"26\" cy=\"16\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"30\" cy=\"16\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Analog sticks -->\n            <circle cx=\"5.5\" cy=\"20\" r=\"1.5\" />\n            <circle cx=\"26.5\" cy=\"20\" r=\"1.5\" />"
+    },
+    "MZ80C": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- All-in-one unit body -->\n            <rect x=\"2\" y=\"2\" width=\"28\" height=\"28\" rx=\"2\" />\n            <!-- Built-in CRT (upper half) -->\n            <rect x=\"5\" y=\"4\" width=\"22\" height=\"10\" rx=\"1\" />\n            <!-- Divider line -->\n            <line x1=\"2\" y1=\"16\" x2=\"30\" y2=\"16\" />\n            <!-- Built-in cassette deck -->\n            <rect x=\"5\" y=\"18\" width=\"10\" height=\"5\" />\n            <circle cx=\"8\" cy=\"20.5\" r=\"1.5\" />\n            <circle cx=\"13\" cy=\"20.5\" r=\"1.5\" />\n            <!-- Buttons/indicators -->\n            <circle cx=\"20\" cy=\"19\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"24\" cy=\"19\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Keyboard tray at bottom -->\n            <path d=\"M4,25 h24 M4,27 h24\" stroke-dasharray=\"1.5 1\" stroke-width=\"1\" />"
+    },
+    "FMTownsDesktop": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Horizontal desktop unit -->\n            <rect x=\"2\" y=\"10\" width=\"28\" height=\"16\" rx=\"1\" />\n            <!-- Front-loading CD-ROM tray (signature feature) -->\n            <rect x=\"4\" y=\"13\" width=\"14\" height=\"3\" />\n            <circle cx=\"11\" cy=\"14.5\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Floppy drive below CD -->\n            <rect x=\"4\" y=\"18\" width=\"10\" height=\"3\" />\n            <!-- Eject button -->\n            <circle cx=\"13\" cy=\"19.5\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Power button + LEDs -->\n            <circle cx=\"22\" cy=\"14\" r=\"1.5\" />\n            <rect x=\"20\" y=\"18\" width=\"2\" height=\"1.5\" fill=\"currentColor\" stroke=\"none\" />\n            <rect x=\"24\" y=\"18\" width=\"2\" height=\"1.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Label area -->\n            <rect x=\"18\" y=\"22\" width=\"10\" height=\"2\" rx=\"0.5\" />"
+    },
+    "Express5800Rack": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- 1U Rack chassis -->\n            <rect x=\"2\" y=\"10\" width=\"28\" height=\"6\" rx=\"0.5\" />\n            <!-- Front bezel perforations (airflow) -->\n            <path d=\"M5,12 h3 M5,14 h3\" stroke-dasharray=\"0.5 0.5\" stroke-width=\"0.8\" />\n            <!-- HDD bays -->\n            <rect x=\"10\" y=\"11\" width=\"3\" height=\"4\" />\n            <rect x=\"14\" y=\"11\" width=\"3\" height=\"4\" />\n            <rect x=\"18\" y=\"11\" width=\"3\" height=\"4\" />\n            <rect x=\"22\" y=\"11\" width=\"3\" height=\"4\" />\n            <!-- Status LEDs -->\n            <circle cx=\"27\" cy=\"11.5\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"27\" cy=\"14.5\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Rack ears -->\n            <line x1=\"1\" y1=\"10\" x2=\"1\" y2=\"16\" stroke-width=\"1.5\" />\n            <line x1=\"31\" y1=\"10\" x2=\"31\" y2=\"16\" stroke-width=\"1.5\" />\n            <!-- 2nd unit below -->\n            <rect x=\"2\" y=\"18\" width=\"28\" height=\"6\" rx=\"0.5\" />\n            <rect x=\"10\" y=\"19\" width=\"3\" height=\"4\" />\n            <rect x=\"14\" y=\"19\" width=\"3\" height=\"4\" />\n            <rect x=\"18\" y=\"19\" width=\"3\" height=\"4\" />\n            <rect x=\"22\" y=\"19\" width=\"3\" height=\"4\" />"
+    },
+    "Express5800Tower": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Tower chassis -->\n            <rect x=\"6\" y=\"2\" width=\"20\" height=\"28\" rx=\"1\" />\n            <!-- Front bezel top (ODD bay) -->\n            <rect x=\"8\" y=\"4\" width=\"16\" height=\"3\" />\n            <!-- HDD access LEDs -->\n            <circle cx=\"10\" cy=\"9\" r=\"0.7\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"13\" cy=\"9\" r=\"0.7\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Power button (large round) -->\n            <circle cx=\"22\" cy=\"9\" r=\"1.5\" />\n            <!-- Ventilation pattern -->\n            <path d=\"M8,14 h16 M8,17 h16 M8,20 h16\" stroke-dasharray=\"0.8 0.8\" stroke-width=\"0.6\" />\n            <!-- NEC badge area -->\n            <rect x=\"10\" y=\"25\" width=\"12\" height=\"2\" rx=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Feet -->\n            <line x1=\"8\" y1=\"30\" x2=\"12\" y2=\"30\" stroke-width=\"2\" />\n            <line x1=\"20\" y1=\"30\" x2=\"24\" y2=\"30\" stroke-width=\"2\" />"
+    },
+    "Express5800Blade": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Blade enclosure chassis -->\n            <rect x=\"2\" y=\"4\" width=\"28\" height=\"24\" rx=\"1\" />\n            <!-- Blade slots (8 blades) -->\n            <rect x=\"4\" y=\"6\" width=\"6\" height=\"9\" />\n            <rect x=\"11\" y=\"6\" width=\"6\" height=\"9\" />\n            <rect x=\"18\" y=\"6\" width=\"6\" height=\"9\" />\n            <rect x=\"25\" y=\"6\" width=\"4\" height=\"9\" />\n            <!-- Blade handle dots -->\n            <circle cx=\"7\" cy=\"8\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"14\" cy=\"8\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"21\" cy=\"8\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Management module -->\n            <rect x=\"4\" y=\"17\" width=\"12\" height=\"4\" />\n            <circle cx=\"8\" cy=\"19\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Power supplies -->\n            <rect x=\"18\" y=\"17\" width=\"5\" height=\"4\" />\n            <rect x=\"24\" y=\"17\" width=\"5\" height=\"4\" />\n            <!-- Fan area -->\n            <path d=\"M4,24 h24\" stroke-dasharray=\"1 1\" />"
+    },
+    "Express5800FT": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Fault Tolerant dual-module tower -->\n            <!-- Module A -->\n            <rect x=\"2\" y=\"4\" width=\"13\" height=\"24\" rx=\"1\" />\n            <rect x=\"4\" y=\"6\" width=\"9\" height=\"3\" />\n            <circle cx=\"6\" cy=\"11\" r=\"0.7\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"9\" cy=\"11\" r=\"0.7\" fill=\"currentColor\" stroke=\"none\" />\n            <path d=\"M4,14 h9 M4,17 h9 M4,20 h9\" stroke-dasharray=\"0.8 0.8\" stroke-width=\"0.6\" />\n            <!-- Module B (mirror) -->\n            <rect x=\"17\" y=\"4\" width=\"13\" height=\"24\" rx=\"1\" />\n            <rect x=\"19\" y=\"6\" width=\"9\" height=\"3\" />\n            <circle cx=\"21\" cy=\"11\" r=\"0.7\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"24\" cy=\"11\" r=\"0.7\" fill=\"currentColor\" stroke=\"none\" />\n            <path d=\"M19,14 h9 M19,17 h9 M19,20 h9\" stroke-dasharray=\"0.8 0.8\" stroke-width=\"0.6\" />\n            <!-- Sync connector between modules -->\n            <path d=\"M15,12 h2 M15,16 h2 M15,20 h2\" stroke-width=\"1.5\" />\n            <!-- FT badge -->\n            <rect x=\"6\" y=\"24\" width=\"7\" height=\"2\" fill=\"currentColor\" stroke=\"none\" rx=\"0.5\" />\n            <rect x=\"21\" y=\"24\" width=\"7\" height=\"2\" fill=\"currentColor\" stroke=\"none\" rx=\"0.5\" />"
+    },
+    "QNAP2Bay": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Compact 2-bay NAS -->\n            <rect x=\"8\" y=\"6\" width=\"16\" height=\"20\" rx=\"2\" />\n            <!-- HDD bays -->\n            <rect x=\"10\" y=\"8\" width=\"12\" height=\"6\" />\n            <rect x=\"10\" y=\"16\" width=\"12\" height=\"6\" />\n            <!-- HDD handles -->\n            <rect x=\"14\" y=\"9\" width=\"4\" height=\"1\" rx=\"0.3\" fill=\"currentColor\" stroke=\"none\" />\n            <rect x=\"14\" y=\"17\" width=\"4\" height=\"1\" rx=\"0.3\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Status LED -->\n            <circle cx=\"16\" cy=\"24\" r=\"0.7\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "QNAP3Bay": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- 3-bay NAS -->\n            <rect x=\"7\" y=\"5\" width=\"18\" height=\"23\" rx=\"2\" />\n            <!-- HDD bays -->\n            <rect x=\"9\" y=\"7\" width=\"14\" height=\"5\" />\n            <rect x=\"9\" y=\"13\" width=\"14\" height=\"5\" />\n            <rect x=\"9\" y=\"19\" width=\"14\" height=\"5\" />\n            <!-- HDD handles -->\n            <rect x=\"13\" y=\"8\" width=\"4\" height=\"1\" rx=\"0.3\" fill=\"currentColor\" stroke=\"none\" />\n            <rect x=\"13\" y=\"14\" width=\"4\" height=\"1\" rx=\"0.3\" fill=\"currentColor\" stroke=\"none\" />\n            <rect x=\"13\" y=\"20\" width=\"4\" height=\"1\" rx=\"0.3\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- LED -->\n            <circle cx=\"16\" cy=\"26\" r=\"0.7\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "QNAP4Bay": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- 4-bay NAS -->\n            <rect x=\"6\" y=\"4\" width=\"20\" height=\"24\" rx=\"2\" />\n            <!-- HDD bays (vertical slots) -->\n            <line x1=\"11\" y1=\"4\" x2=\"11\" y2=\"22\" />\n            <line x1=\"16\" y1=\"4\" x2=\"16\" y2=\"22\" />\n            <line x1=\"21\" y1=\"4\" x2=\"21\" y2=\"22\" />\n            <!-- HDD indicators -->\n            <circle cx=\"8.5\" cy=\"8\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"13.5\" cy=\"8\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"18.5\" cy=\"8\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"23.5\" cy=\"8\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Bottom panel -->\n            <line x1=\"6\" y1=\"22\" x2=\"26\" y2=\"22\" />\n            <!-- Power + USB -->\n            <circle cx=\"10\" cy=\"25\" r=\"1\" />\n            <rect x=\"18\" y=\"24\" width=\"4\" height=\"2\" rx=\"0.5\" />"
+    },
+    "QNAP6Bay": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- 6-bay NAS -->\n            <rect x=\"4\" y=\"4\" width=\"24\" height=\"24\" rx=\"2\" />\n            <!-- 2x3 HDD bay grid -->\n            <rect x=\"6\" y=\"6\" width=\"9\" height=\"5\" />\n            <rect x=\"17\" y=\"6\" width=\"9\" height=\"5\" />\n            <rect x=\"6\" y=\"12\" width=\"9\" height=\"5\" />\n            <rect x=\"17\" y=\"12\" width=\"9\" height=\"5\" />\n            <rect x=\"6\" y=\"18\" width=\"9\" height=\"5\" />\n            <rect x=\"17\" y=\"18\" width=\"9\" height=\"5\" />\n            <!-- Bay handles -->\n            <rect x=\"9\" y=\"7\" width=\"3\" height=\"0.8\" rx=\"0.3\" fill=\"currentColor\" stroke=\"none\" />\n            <rect x=\"20\" y=\"7\" width=\"3\" height=\"0.8\" rx=\"0.3\" fill=\"currentColor\" stroke=\"none\" />\n            <rect x=\"9\" y=\"13\" width=\"3\" height=\"0.8\" rx=\"0.3\" fill=\"currentColor\" stroke=\"none\" />\n            <rect x=\"20\" y=\"13\" width=\"3\" height=\"0.8\" rx=\"0.3\" fill=\"currentColor\" stroke=\"none\" />\n            <rect x=\"9\" y=\"19\" width=\"3\" height=\"0.8\" rx=\"0.3\" fill=\"currentColor\" stroke=\"none\" />\n            <rect x=\"20\" y=\"19\" width=\"3\" height=\"0.8\" rx=\"0.3\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Status -->\n            <circle cx=\"16\" cy=\"26\" r=\"0.7\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "QNAP8Bay": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- 8-bay rackmount NAS -->\n            <rect x=\"2\" y=\"8\" width=\"28\" height=\"8\" rx=\"0.5\" />\n            <!-- 8 HDD bays -->\n            <rect x=\"4\" y=\"9\" width=\"3\" height=\"6\" />\n            <rect x=\"7.5\" y=\"9\" width=\"3\" height=\"6\" />\n            <rect x=\"11\" y=\"9\" width=\"3\" height=\"6\" />\n            <rect x=\"14.5\" y=\"9\" width=\"3\" height=\"6\" />\n            <rect x=\"18\" y=\"9\" width=\"3\" height=\"6\" />\n            <rect x=\"21.5\" y=\"9\" width=\"3\" height=\"6\" />\n            <rect x=\"25\" y=\"9\" width=\"3\" height=\"6\" />\n            <!-- Rack ears -->\n            <line x1=\"1\" y1=\"8\" x2=\"1\" y2=\"16\" stroke-width=\"1.5\" />\n            <line x1=\"31\" y1=\"8\" x2=\"31\" y2=\"16\" stroke-width=\"1.5\" />\n            <!-- 2nd unit -->\n            <rect x=\"2\" y=\"18\" width=\"28\" height=\"8\" rx=\"0.5\" />\n            <rect x=\"4\" y=\"19\" width=\"3\" height=\"6\" />\n            <rect x=\"7.5\" y=\"19\" width=\"3\" height=\"6\" />\n            <rect x=\"11\" y=\"19\" width=\"3\" height=\"6\" />\n            <rect x=\"14.5\" y=\"19\" width=\"3\" height=\"6\" />"
+    },
+    "QNAP10Bay": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- 10-bay large tower NAS -->\n            <rect x=\"4\" y=\"2\" width=\"24\" height=\"28\" rx=\"2\" />\n            <!-- 2x5 HDD bay grid -->\n            <rect x=\"6\" y=\"4\" width=\"9\" height=\"4\" />\n            <rect x=\"17\" y=\"4\" width=\"9\" height=\"4\" />\n            <rect x=\"6\" y=\"9\" width=\"9\" height=\"4\" />\n            <rect x=\"17\" y=\"9\" width=\"9\" height=\"4\" />\n            <rect x=\"6\" y=\"14\" width=\"9\" height=\"4\" />\n            <rect x=\"17\" y=\"14\" width=\"9\" height=\"4\" />\n            <rect x=\"6\" y=\"19\" width=\"9\" height=\"4\" />\n            <rect x=\"17\" y=\"19\" width=\"9\" height=\"4\" />\n            <rect x=\"6\" y=\"24\" width=\"9\" height=\"4\" />\n            <rect x=\"17\" y=\"24\" width=\"9\" height=\"4\" />\n            <!-- Status LEDs -->\n            <circle cx=\"8\" cy=\"5\" r=\"0.4\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"19\" cy=\"5\" r=\"0.4\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "QNAPWithExpansion": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Main NAS unit (4-bay) -->\n            <rect x=\"2\" y=\"4\" width=\"14\" height=\"20\" rx=\"1\" />\n            <line x1=\"5.5\" y1=\"4\" x2=\"5.5\" y2=\"20\" stroke-width=\"0.8\" />\n            <line x1=\"9\" y1=\"4\" x2=\"9\" y2=\"20\" stroke-width=\"0.8\" />\n            <line x1=\"12.5\" y1=\"4\" x2=\"12.5\" y2=\"20\" stroke-width=\"0.8\" />\n            <!-- Power + LED -->\n            <circle cx=\"9\" cy=\"22\" r=\"0.7\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Cable connection -->\n            <path d=\"M16,14 h2\" stroke-width=\"1.5\" />\n            <!-- Expansion unit -->\n            <rect x=\"18\" y=\"4\" width=\"12\" height=\"20\" rx=\"1\" />\n            <line x1=\"21\" y1=\"4\" x2=\"21\" y2=\"20\" stroke-width=\"0.8\" />\n            <line x1=\"24\" y1=\"4\" x2=\"24\" y2=\"20\" stroke-width=\"0.8\" />\n            <line x1=\"27\" y1=\"4\" x2=\"27\" y2=\"20\" stroke-width=\"0.8\" />\n            <!-- Expansion LED -->\n            <circle cx=\"24\" cy=\"22\" r=\"0.7\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Label -->\n            <rect x=\"3\" y=\"26\" width=\"5\" height=\"2\" fill=\"currentColor\" stroke=\"none\" rx=\"0.5\" />\n            <rect x=\"19\" y=\"26\" width=\"5\" height=\"2\" fill=\"currentColor\" stroke=\"none\" rx=\"0.5\" />"
+    },
+    "FM11": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- FM-11: Desktop unit with separate FDD unit -->\n            <!-- Main unit -->\n            <rect x=\"2\" y=\"14\" width=\"16\" height=\"14\" rx=\"1\" />\n            <!-- FDD horizontal side-by-side -->\n            <rect x=\"4\" y=\"16\" width=\"6\" height=\"4\" />\n            <rect x=\"11\" y=\"16\" width=\"6\" height=\"4\" />\n            <!-- Eject buttons -->\n            <circle cx=\"9\" cy=\"18\" r=\"0.4\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"16\" cy=\"18\" r=\"0.4\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- LEDs -->\n            <circle cx=\"5\" cy=\"24\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"8\" cy=\"24\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Separate CRT -->\n            <rect x=\"18\" y=\"4\" width=\"12\" height=\"10\" rx=\"1\" />\n            <!-- Cable -->\n            <path d=\"M18,18 h-1\" stroke-width=\"1\" stroke-dasharray=\"1 0.5\" />"
+    },
+    "FM77AV": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- FM-77AV: keyboard-integrated with side-by-side 3.5\" FDD -->\n            <rect x=\"2\" y=\"12\" width=\"28\" height=\"16\" rx=\"1\" />\n            <!-- Side-by-side 3.5\" floppy drives (signature feature) -->\n            <rect x=\"4\" y=\"14\" width=\"6\" height=\"4\" />\n            <rect x=\"11\" y=\"14\" width=\"6\" height=\"4\" />\n            <!-- Drive LEDs -->\n            <circle cx=\"9\" cy=\"15\" r=\"0.4\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"16\" cy=\"15\" r=\"0.4\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Power button -->\n            <circle cx=\"24\" cy=\"16\" r=\"1.2\" />\n            <!-- Keyboard area -->\n            <path d=\"M4,20 h24 M4,23 h24 M4,26 h24\" stroke-dasharray=\"1.5 1\" stroke-width=\"0.8\" />\n            <!-- AV label -->\n            <rect x=\"20\" y=\"14\" width=\"3\" height=\"1.5\" fill=\"currentColor\" stroke=\"none\" rx=\"0.3\" />"
+    },
+    "FM7DualFDD": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- FM-7 style: horizontal unit with twin FDDs -->\n            <rect x=\"2\" y=\"10\" width=\"28\" height=\"16\" rx=\"1\" />\n            <!-- Twin 5.25\" floppy drives side-by-side -->\n            <rect x=\"4\" y=\"12\" width=\"12\" height=\"6\" />\n            <line x1=\"10\" y1=\"12\" x2=\"10\" y2=\"18\" />\n            <!-- Drive access indicators -->\n            <rect x=\"5\" y=\"13\" width=\"4\" height=\"1\" rx=\"0.3\" fill=\"currentColor\" stroke=\"none\" />\n            <rect x=\"11\" y=\"13\" width=\"4\" height=\"1\" rx=\"0.3\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Right panel -->\n            <circle cx=\"22\" cy=\"14\" r=\"1.5\" />\n            <rect x=\"18\" y=\"18\" width=\"10\" height=\"2\" rx=\"0.5\" />\n            <!-- Keyboard tray below -->\n            <path d=\"M4,22 h24 M4,24 h24\" stroke-dasharray=\"1.5 1\" stroke-width=\"0.8\" />"
+    },
+    "FMRDesktop": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- FMR series horizontal desktop -->\n            <rect x=\"2\" y=\"10\" width=\"28\" height=\"16\" rx=\"1\" />\n            <!-- 3.5\" FDD stacked -->\n            <rect x=\"4\" y=\"12\" width=\"8\" height=\"3\" />\n            <rect x=\"4\" y=\"16\" width=\"8\" height=\"3\" />\n            <!-- HDD indicator -->\n            <rect x=\"4\" y=\"21\" width=\"2\" height=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Power -->\n            <circle cx=\"20\" cy=\"14\" r=\"1.5\" />\n            <!-- Status display area -->\n            <rect x=\"16\" y=\"18\" width=\"12\" height=\"4\" rx=\"0.5\" />\n            <path d=\"M18,19.5 h8\" stroke-width=\"0.8\" />\n            <path d=\"M18,21\" stroke-width=\"0.8\" />\n            <!-- Badge area -->\n            <rect x=\"16\" y=\"24\" width=\"12\" height=\"1.5\" fill=\"currentColor\" stroke=\"none\" rx=\"0.3\" />"
+    },
+    "FM16Beta": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- FM-16β: large desktop workstation -->\n            <rect x=\"2\" y=\"8\" width=\"28\" height=\"20\" rx=\"1\" />\n            <!-- Twin 5.25\" FDD side-by-side (top) -->\n            <rect x=\"4\" y=\"10\" width=\"8\" height=\"5\" />\n            <rect x=\"13\" y=\"10\" width=\"8\" height=\"5\" />\n            <!-- Eject levers -->\n            <rect x=\"10\" y=\"11\" width=\"1\" height=\"3\" fill=\"currentColor\" stroke=\"none\" />\n            <rect x=\"19\" y=\"11\" width=\"1\" height=\"3\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Right panel controls -->\n            <circle cx=\"25\" cy=\"11\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"25\" cy=\"14\" r=\"1\" />\n            <!-- Ventilation -->\n            <path d=\"M4,18 h24 M4,21 h24 M4,24 h24\" stroke-dasharray=\"0.8 0.8\" stroke-width=\"0.5\" />\n            <!-- Badge -->\n            <rect x=\"22\" y=\"25\" width=\"6\" height=\"1.5\" fill=\"currentColor\" stroke=\"none\" rx=\"0.3\" />"
+    },
+    "FMTownsMarty": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- FM Towns Marty: compact game console form factor -->\n            <rect x=\"4\" y=\"10\" width=\"24\" height=\"14\" rx=\"3\" />\n            <!-- Top-loading CD slot -->\n            <circle cx=\"14\" cy=\"16\" r=\"4\" />\n            <circle cx=\"14\" cy=\"16\" r=\"1.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Controller ports -->\n            <rect x=\"6\" y=\"22\" width=\"4\" height=\"2\" rx=\"0.5\" />\n            <rect x=\"12\" y=\"22\" width=\"4\" height=\"2\" rx=\"0.5\" />\n            <!-- Power button -->\n            <circle cx=\"24\" cy=\"14\" r=\"1\" />\n            <!-- Eject button -->\n            <circle cx=\"24\" cy=\"18\" r=\"0.7\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- LED -->\n            <circle cx=\"22\" cy=\"22\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />"
+    }
+  },
+  "badges": {
+    "Database": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<ellipse cx=\"8\" cy=\"4\" rx=\"6\" ry=\"2\" />\n            <path d=\"M2,4 v4 a6,2 0 0,0 12,0 v-4\" />\n            <path d=\"M2,8 v4 a6,2 0 0,0 12,0 v-4\" />"
+    },
+    "Web": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<circle cx=\"8\" cy=\"8\" r=\"7\" />\n            <ellipse cx=\"8\" cy=\"8\" rx=\"3\" ry=\"7\" />\n            <line x1=\"1\" y1=\"8\" x2=\"15\" y2=\"8\" />"
+    },
+    "App": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<circle cx=\"8\" cy=\"8\" r=\"4\" />\n            \n            <path d=\"M8,1 v3 M8,12 v3 M1,8 h3 M12,8 h3 M3,3 l2,2 M11,11 l2,2 M3,13 l2,-2 M11,5 l2,-2\" />"
+    },
+    "Warning": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "\n            <path d=\"M8,1 L15,14 L1,14 Z\" />\n            \n            <line x1=\"8\" y1=\"5\" x2=\"8\" y2=\"10\" />\n            <circle cx=\"8\" cy=\"12.5\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "Test": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "\n            <path d=\"M10,2 h-4 v5 l-4,7 h12 l-4,-7 Z\" />\n            \n            <line x1=\"6\" y1=\"2\" x2=\"10\" y2=\"2\" />\n            \n            <path d=\"M4,11 h8\" stroke-dasharray=\"1 1\" />"
+    },
+    "Storage": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<path d=\"M2,4 h4 l2,2 h6 v7 a1,1 0 0,1 -1,1 h-10 a1,1 0 0,1 -1,-1 Z\" />"
+    },
+    "Secure": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<rect x=\"3\" y=\"7\" width=\"10\" height=\"8\" rx=\"1\" />\n            <path d=\"M5,7 v-3 a3,3 0 0,1 6,0 v3\" />\n            <circle cx=\"8\" cy=\"11\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "Firewall": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "\n            <rect x=\"1\" y=\"2\" width=\"14\" height=\"12\" rx=\"1\" />\n            \n            <line x1=\"1\" y1=\"6\" x2=\"15\" y2=\"6\" stroke-width=\"1\" />\n            <line x1=\"1\" y1=\"10\" x2=\"15\" y2=\"10\" stroke-width=\"1\" />\n            \n            <line x1=\"5\" y1=\"2\" x2=\"5\" y2=\"6\" stroke-width=\"1\" />\n            <line x1=\"11\" y1=\"2\" x2=\"11\" y2=\"6\" stroke-width=\"1\" />\n            <line x1=\"8\" y1=\"6\" x2=\"8\" y2=\"10\" stroke-width=\"1\" />\n            <line x1=\"4\" y1=\"10\" x2=\"4\" y2=\"14\" stroke-width=\"1\" />\n            <line x1=\"12\" y1=\"10\" x2=\"12\" y2=\"14\" stroke-width=\"1\" />"
+    },
+    "Maintenance": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "\n            <path d=\"M11,2 A4,4 0 0,0 7,6 C7,6 10,9 10,9 A4,4 0 0,0 14,5 L12,7 L9,4 Z\" />\n            \n            <path d=\"M8.5,7.5 L2.5,13.5 A1.5,1.5 0 0,0 4.5,15.5 L10.5,9.5\" />"
+    },
+    "Writing": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "\n            <path d=\"M12.5,3.5 L14,5 L5,14 L2,15 L3,12 Z\" />\n            \n            <line x1=\"10.5\" y1=\"2.5\" x2=\"13.5\" y2=\"5.5\" stroke-width=\"1\" />\n            \n            <line x1=\"4.5\" y1=\"10.5\" x2=\"7.5\" y2=\"13.5\" stroke-width=\"1\" />"
+    },
+    "Programming": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "\n            <polyline points=\"5,4 1,8 5,12\" />\n            <polyline points=\"11,4 15,8 11,12\" />\n            <line x1=\"10\" y1=\"2\" x2=\"6\" y2=\"14\" />"
+    },
+    "CAD": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "\n            <polygon points=\"8,2 14,5 14,11 8,14 2,11 2,5\" />\n            <polyline points=\"2,5 8,8 14,5\" />\n            <line x1=\"8\" y1=\"14\" x2=\"8\" y2=\"8\" />"
+    },
+    "Home": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "\n            <path d=\"M2,6 L8,1.5 L14,6\" />\n            <path d=\"M3,5.5 V14 H6 V10 H10 V14 H13 V5.5\" />"
+    },
+    "Lab": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "\n            <ellipse cx=\"8\" cy=\"8\" rx=\"6.5\" ry=\"2.5\" transform=\"rotate(45 8 8)\" />\n            <ellipse cx=\"8\" cy=\"8\" rx=\"6.5\" ry=\"2.5\" transform=\"rotate(-45 8 8)\" />\n            <circle cx=\"8\" cy=\"8\" r=\"1.5\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "Office": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "\n            <path d=\"M4,2 L9,2 L13,6 L13,13 A1,1 0 0,1 12,14 L4,14 A1,1 0 0,1 3,13 L3,3 A1,1 0 0,1 4,2 Z\" />\n            \n            <path d=\"M9,2 L9,6 L13,6\" />\n            \n            <line x1=\"6\" y1=\"9\" x2=\"10\" y2=\"9\" />\n            <line x1=\"6\" y1=\"11\" x2=\"8\" y2=\"11\" />"
+    },
+    "Building": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "\n            <rect x=\"3\" y=\"2\" width=\"10\" height=\"14\" rx=\"0.5\" />\n            \n            <rect x=\"5\" y=\"4\" width=\"2\" height=\"2\" />\n            <rect x=\"9\" y=\"4\" width=\"2\" height=\"2\" />\n            <rect x=\"5\" y=\"8\" width=\"2\" height=\"2\" />\n            <rect x=\"9\" y=\"8\" width=\"2\" height=\"2\" />\n            \n            <rect x=\"6\" y=\"12\" width=\"4\" height=\"4\" />"
+    },
+    "School": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "\n            <path d=\"M1,6 L8,1 L15,6\" />\n            <line x1=\"8\" y1=\"1\" x2=\"8\" y2=\"4\" />\n            \n            <rect x=\"3\" y=\"6\" width=\"10\" height=\"8\" />\n            \n            <rect x=\"6\" y=\"10\" width=\"4\" height=\"4\" />\n            \n            <rect x=\"4\" y=\"7\" width=\"2\" height=\"2\" stroke-width=\"1\" />\n            <rect x=\"10\" y=\"7\" width=\"2\" height=\"2\" stroke-width=\"1\" />"
+    },
+    "Shield": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<path d=\"M8,1 L2,3 v4 c0,4 6,7 6,7 c0,0 6,-3 6,-7 V3 Z\" />"
+    },
+    "Scroll": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "\n            <path d=\"M4,3 C4,2 6,2 6,3 V13 C6,14 4,14 4,13 Z\" />\n            <path d=\"M12,3 C12,2 14,2 14,3 V13 C14,14 12,14 12,13 Z\" />\n            \n            <line x1=\"6\" y1=\"4\" x2=\"12\" y2=\"4\" />\n            <line x1=\"6\" y1=\"12\" x2=\"12\" y2=\"12\" />\n            \n            <line x1=\"7\" y1=\"6\" x2=\"11\" y2=\"6\" stroke-width=\"1\" />\n            <line x1=\"7\" y1=\"8\" x2=\"11\" y2=\"8\" stroke-width=\"1\" />\n            <line x1=\"7\" y1=\"10\" x2=\"9\" y2=\"10\" stroke-width=\"1\" />"
+    },
+    "Student": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "\n            <path d=\"M1,6 L8,2 L15,6 L8,10 Z\" />\n            \n            <path d=\"M4,8.5 V11 C4,13 8,14 8,14 C8,14 12,13 12,11 V8.5\" />\n            \n            <line x1=\"14\" y1=\"6.5\" x2=\"14\" y2=\"10\" />\n            <circle cx=\"14\" cy=\"11\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "Factory": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "\n            <path d=\"M1,14 V8 L5,5 V8 L9,5 V8 L13,5 V14 Z\" />\n            \n            <line x1=\"11\" y1=\"5\" x2=\"11\" y2=\"2\" />\n            <line x1=\"13\" y1=\"5\" x2=\"13\" y2=\"2\" />\n            <line x1=\"10\" y1=\"2\" x2=\"14\" y2=\"2\" />"
+    },
+    "RobotArm": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "\n            <line x1=\"4\" y1=\"14\" x2=\"10\" y2=\"14\" stroke-width=\"2\" />\n            <line x1=\"7\" y1=\"14\" x2=\"7\" y2=\"12\" stroke-width=\"2\" />\n            \n            <line x1=\"7\" y1=\"12\" x2=\"11\" y2=\"7\" stroke-width=\"1.5\" />\n            <line x1=\"11\" y1=\"7\" x2=\"5\" y2=\"4\" stroke-width=\"1.5\" />\n            \n            <path d=\"M5,4 L3,2 M5,4 L7,2\" stroke-width=\"1\" />\n            \n            <circle cx=\"7\" cy=\"12\" r=\"1.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"11\" cy=\"7\" r=\"1.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"5\" cy=\"4\" r=\"1.5\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "Manipulator": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "\n            <path d=\"M8,1 v5\" />\n            <rect x=\"5\" y=\"6\" width=\"6\" height=\"3\" rx=\"0.5\" />\n            \n            <path d=\"M5,9 v2 l-2,2 M11,9 v2 l2,2\" />\n            \n            <circle cx=\"8\" cy=\"13\" r=\"1.5\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "MillingMachine": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "\n            <rect x=\"5\" y=\"1\" width=\"6\" height=\"4\" rx=\"0.5\" />\n            \n            <line x1=\"8\" y1=\"5\" x2=\"8\" y2=\"10\" />\n            <path d=\"M7,7 l2,1 M7,9 l2,1\" stroke-width=\"1\" />\n            \n            <rect\n                x=\"6\"\n                y=\"10\"\n                width=\"4\"\n                height=\"3\"\n                fill=\"currentColor\"\n                stroke=\"none\"\n            />\n            \n            <line x1=\"2\" y1=\"14\" x2=\"14\" y2=\"14\" stroke-width=\"2\" />"
+    },
+    "Printer3D": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "\n            <rect x=\"2\" y=\"2\" width=\"12\" height=\"12\" rx=\"1\" />\n            \n            <line x1=\"2\" y1=\"5\" x2=\"14\" y2=\"5\" />\n            \n            <polygon points=\"7,5 9,5 8,8\" fill=\"currentColor\" stroke=\"none\" />\n            \n            <line x1=\"5\" y1=\"14\" x2=\"11\" y2=\"14\" />\n            <line x1=\"6\" y1=\"12\" x2=\"10\" y2=\"12\" />\n            <line x1=\"7\" y1=\"10\" x2=\"9\" y2=\"10\" />"
+    },
+    "NCLathe": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "\n            <rect x=\"1\" y=\"4\" width=\"4\" height=\"8\" rx=\"0.5\" />\n            \n            <path d=\"M5,6 h4 l2,2 v0 l-2,2 h-4 z\" />\n            \n            <path d=\"M11,10 l2,-2 h2 v5 h-4 z\" />\n            <circle cx=\"13\" cy=\"11\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "Sensor": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "\n            <rect x=\"2\" y=\"10\" width=\"4\" height=\"4\" rx=\"1\" />\n            <circle cx=\"4\" cy=\"12\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            \n            <path d=\"M7,9 A3.5,3.5 0 0,1 10.5,12.5\" />\n            <path d=\"M10,6 A7.5,7.5 0 0,1 14.5,12.5\" />"
+    },
+    "Microscope": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Eyepiece -->\n            <rect x=\"7\" y=\"1\" width=\"3\" height=\"2\" rx=\"0.5\" />\n            <!-- Tube -->\n            <line x1=\"8.5\" y1=\"3\" x2=\"8.5\" y2=\"7\" stroke-width=\"1.5\" />\n            <!-- Objective -->\n            <rect x=\"7\" y=\"7\" width=\"3\" height=\"2\" rx=\"0.3\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Stage -->\n            <line x1=\"4\" y1=\"10\" x2=\"12\" y2=\"10\" stroke-width=\"1.5\" />\n            <!-- Stand -->\n            <line x1=\"8.5\" y1=\"10\" x2=\"8.5\" y2=\"14\" stroke-width=\"1.5\" />\n            <!-- Base -->\n            <line x1=\"5\" y1=\"14\" x2=\"12\" y2=\"14\" stroke-width=\"2\" />"
+    },
+    "DNA": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Double helix -->\n            <path d=\"M4,1 C4,4 12,4 12,7 C12,10 4,10 4,13 C4,15 8,15 8,15\" fill=\"none\" />\n            <path d=\"M12,1 C12,4 4,4 4,7 C4,10 12,10 12,13 C12,15 8,15 8,15\" fill=\"none\" />\n            <!-- Rungs -->\n            <line x1=\"5\" y1=\"4\" x2=\"11\" y2=\"4\" stroke-width=\"0.8\" />\n            <line x1=\"5\" y1=\"7\" x2=\"11\" y2=\"7\" stroke-width=\"0.8\" />\n            <line x1=\"5\" y1=\"10\" x2=\"11\" y2=\"10\" stroke-width=\"0.8\" />"
+    },
+    "Atom": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Nucleus -->\n            <circle cx=\"8\" cy=\"8\" r=\"1.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Electron orbits -->\n            <ellipse cx=\"8\" cy=\"8\" rx=\"6\" ry=\"2.5\" />\n            <ellipse cx=\"8\" cy=\"8\" rx=\"6\" ry=\"2.5\" transform=\"rotate(60 8 8)\" />\n            <ellipse cx=\"8\" cy=\"8\" rx=\"6\" ry=\"2.5\" transform=\"rotate(120 8 8)\" />"
+    },
+    "ChemFlask": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Erlenmeyer flask -->\n            <path d=\"M6,2 V6 L2,13 A1,1 0 0,0 3,14 H13 A1,1 0 0,0 14,13 L10,6 V2\" />\n            <!-- Neck -->\n            <line x1=\"6\" y1=\"2\" x2=\"10\" y2=\"2\" />\n            <!-- Liquid level -->\n            <path d=\"M4,10 h8\" stroke-dasharray=\"1 1\" />"
+    },
+    "Biohazard": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Biohazard symbol (simplified) -->\n            <circle cx=\"8\" cy=\"8\" r=\"1.5\" />\n            <circle cx=\"8\" cy=\"4\" r=\"3\" fill=\"none\" />\n            <circle cx=\"4.5\" cy=\"10.5\" r=\"3\" fill=\"none\" />\n            <circle cx=\"11.5\" cy=\"10.5\" r=\"3\" fill=\"none\" />"
+    },
+    "Gear": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Gear teeth -->\n            <path d=\"M7,1 h2 v1.5 l1,0.5 1,-1 1.5,1.5 -1,1 0.5,1 h1.5 v2 h-1.5 l-0.5,1 1,1 -1.5,1.5 -1,-1 -1,0.5 v1.5 h-2 v-1.5 l-1,-0.5 -1,1 -1.5,-1.5 1,-1 -0.5,-1 h-1.5 v-2 h1.5 l0.5,-1 -1,-1 1.5,-1.5 1,1 1,-0.5 z\" />\n            <!-- Center -->\n            <circle cx=\"8\" cy=\"8\" r=\"2\" />"
+    },
+    "Thermometer": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Bulb -->\n            <circle cx=\"8\" cy=\"12\" r=\"2.5\" />\n            <!-- Stem -->\n            <rect x=\"6.5\" y=\"2\" width=\"3\" height=\"8\" rx=\"1.5\" />\n            <!-- Mercury level -->\n            <line x1=\"8\" y1=\"6\" x2=\"8\" y2=\"12\" stroke-width=\"1.5\" stroke-linecap=\"round\" />\n            <!-- Scale marks -->\n            <path d=\"M10,4 h1 M10,6 h1 M10,8 h1\" stroke-width=\"0.8\" />"
+    },
+    "Oscilloscope": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Screen -->\n            <rect x=\"2\" y=\"2\" width=\"12\" height=\"10\" rx=\"1\" />\n            <!-- Waveform -->\n            <polyline points=\"3,7 5,4 7,10 9,4 11,10 13,7\" fill=\"none\" stroke-width=\"1\" />\n            <!-- Knobs -->\n            <circle cx=\"5\" cy=\"14\" r=\"1\" />\n            <circle cx=\"11\" cy=\"14\" r=\"1\" />"
+    },
+    "Circuit": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- IC chip -->\n            <rect x=\"4\" y=\"4\" width=\"8\" height=\"8\" rx=\"0.5\" />\n            <!-- Pins -->\n            <path d=\"M4,6 h-2 M4,8 h-2 M4,10 h-2 M12,6 h2 M12,8 h2 M12,10 h2\" stroke-width=\"1\" />\n            <path d=\"M6,4 v-2 M8,4 v-2 M10,4 v-2 M6,12 v2 M8,12 v2 M10,12 v2\" stroke-width=\"1\" />"
+    },
+    "Radiation": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Radiation symbol -->\n            <circle cx=\"8\" cy=\"8\" r=\"1.5\" />\n            <!-- Trefoil blades -->\n            <path d=\"M8,6.5 L5,2 A6,6 0 0,1 11,2 Z\" fill=\"currentColor\" stroke=\"none\" />\n            <path d=\"M9.3,8.7 L13.5,10.5 A6,6 0 0,1 8,15 Z\" fill=\"currentColor\" stroke=\"none\" />\n            <path d=\"M6.7,8.7 L8,15 A6,6 0 0,1 2.5,10.5 Z\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "Laser": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Laser emitter -->\n            <rect x=\"1\" y=\"6\" width=\"6\" height=\"4\" rx=\"0.5\" />\n            <!-- Beam -->\n            <line x1=\"7\" y1=\"8\" x2=\"15\" y2=\"8\" stroke-width=\"1.5\" />\n            <!-- Beam spread -->\n            <path d=\"M13,5 L15,8 L13,11\" fill=\"none\" stroke-width=\"0.8\" />"
+    },
+    "MedCross": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Medical cross -->\n            <rect x=\"5.5\" y=\"2\" width=\"5\" height=\"12\" rx=\"0.5\" />\n            <rect x=\"2\" y=\"5.5\" width=\"12\" height=\"5\" rx=\"0.5\" />"
+    },
+    "Pipette": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Pipette body -->\n            <line x1=\"10\" y1=\"2\" x2=\"5\" y2=\"12\" stroke-width=\"2\" stroke-linecap=\"round\" />\n            <!-- Tip -->\n            <line x1=\"5\" y1=\"12\" x2=\"4\" y2=\"14\" stroke-width=\"1\" />\n            <!-- Bulb -->\n            <circle cx=\"11\" cy=\"2\" r=\"1.5\" />\n            <!-- Drop -->\n            <circle cx=\"4\" cy=\"15\" r=\"0.7\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "Centrifuge": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Rotor -->\n            <circle cx=\"8\" cy=\"8\" r=\"5\" />\n            <!-- Center hub -->\n            <circle cx=\"8\" cy=\"8\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Sample tubes -->\n            <rect x=\"11\" y=\"7\" width=\"3\" height=\"2\" rx=\"0.5\" fill=\"currentColor\" stroke=\"none\" transform=\"rotate(0 8 8)\" />\n            <rect x=\"11\" y=\"7\" width=\"3\" height=\"2\" rx=\"0.5\" fill=\"currentColor\" stroke=\"none\" transform=\"rotate(120 8 8)\" />\n            <rect x=\"11\" y=\"7\" width=\"3\" height=\"2\" rx=\"0.5\" fill=\"currentColor\" stroke=\"none\" transform=\"rotate(240 8 8)\" />"
+    },
+    "Wrench": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Wrench -->\n            <path d=\"M4,3 A3,3 0 0,1 7,6 L11.5,10.5 A2,2 0 0,1 13,12 A2,2 0 0,1 11,14 A2,2 0 0,1 9,12 L5,8 A3,3 0 0,1 2,5 Z\" />\n            <!-- Jaw opening -->\n            <path d=\"M3,2 L5,4\" stroke-width=\"1\" />"
+    },
+    "Spectrum": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Prism -->\n            <polygon points=\"3,13 8,3 13,13\" />\n            <!-- Input beam -->\n            <line x1=\"1\" y1=\"7\" x2=\"5.5\" y2=\"7\" stroke-width=\"1\" />\n            <!-- Output spectrum -->\n            <line x1=\"10.5\" y1=\"6\" x2=\"15\" y2=\"4\" stroke-width=\"0.8\" />\n            <line x1=\"10.5\" y1=\"8\" x2=\"15\" y2=\"8\" stroke-width=\"0.8\" />\n            <line x1=\"10.5\" y1=\"10\" x2=\"15\" y2=\"12\" stroke-width=\"0.8\" />"
+    },
+    "Piston": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Cylinder -->\n            <rect x=\"4\" y=\"6\" width=\"8\" height=\"8\" rx=\"0.5\" />\n            <!-- Piston head -->\n            <rect x=\"5\" y=\"8\" width=\"6\" height=\"2\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Connecting rod -->\n            <line x1=\"8\" y1=\"6\" x2=\"8\" y2=\"2\" stroke-width=\"1.5\" />\n            <!-- Crank circle -->\n            <circle cx=\"8\" cy=\"2\" r=\"1.5\" />"
+    },
+    "Bearing": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Outer ring -->\n            <circle cx=\"8\" cy=\"8\" r=\"6.5\" />\n            <!-- Inner ring -->\n            <circle cx=\"8\" cy=\"8\" r=\"3\" />\n            <!-- Balls -->\n            <circle cx=\"8\" cy=\"1.5\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"14.5\" cy=\"8\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"8\" cy=\"14.5\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"1.5\" cy=\"8\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "Turbine": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Hub -->\n            <circle cx=\"8\" cy=\"8\" r=\"2\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Blades -->\n            <path d=\"M8,6 C6,2 4,1 3,2 C2,3 4,5 6,6\" />\n            <path d=\"M10,8 C14,6 15,4 14,3 C13,2 11,4 10,6\" />\n            <path d=\"M8,10 C10,14 12,15 13,14 C14,13 12,11 10,10\" />\n            <path d=\"M6,8 C2,10 1,12 2,13 C3,14 5,12 6,10\" />"
+    },
+    "GitBranch": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Main branch -->\n            <line x1=\"4\" y1=\"3\" x2=\"4\" y2=\"13\" stroke-width=\"1.5\" />\n            <!-- Branch -->\n            <line x1=\"12\" y1=\"3\" x2=\"12\" y2=\"8\" stroke-width=\"1.5\" />\n            <path d=\"M12,8 C12,11 4,10 4,13\" fill=\"none\" stroke-width=\"1.5\" />\n            <!-- Nodes -->\n            <circle cx=\"4\" cy=\"3\" r=\"1.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"4\" cy=\"13\" r=\"1.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"12\" cy=\"3\" r=\"1.5\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "API": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- API endpoint nodes -->\n            <rect x=\"1\" y=\"2\" width=\"5\" height=\"3\" rx=\"0.5\" />\n            <rect x=\"1\" y=\"7\" width=\"5\" height=\"3\" rx=\"0.5\" />\n            <rect x=\"1\" y=\"12\" width=\"5\" height=\"3\" rx=\"0.5\" />\n            <!-- Connection lines -->\n            <line x1=\"6\" y1=\"3.5\" x2=\"10\" y2=\"8\" stroke-width=\"1\" />\n            <line x1=\"6\" y1=\"8.5\" x2=\"10\" y2=\"8\" stroke-width=\"1\" />\n            <line x1=\"6\" y1=\"13.5\" x2=\"10\" y2=\"8\" stroke-width=\"1\" />\n            <!-- Server -->\n            <rect x=\"10\" y=\"5\" width=\"5\" height=\"6\" rx=\"1\" />\n            <circle cx=\"12.5\" cy=\"8\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "Terminal": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Terminal window -->\n            <rect x=\"1\" y=\"2\" width=\"14\" height=\"12\" rx=\"1\" />\n            <!-- Title bar -->\n            <line x1=\"1\" y1=\"5\" x2=\"15\" y2=\"5\" />\n            <!-- Prompt -->\n            <polyline points=\"3,7 5,9 3,11\" fill=\"none\" stroke-width=\"1.5\" />\n            <!-- Cursor -->\n            <line x1=\"7\" y1=\"9\" x2=\"11\" y2=\"9\" stroke-width=\"1\" />"
+    },
+    "Bug": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Body -->\n            <ellipse cx=\"8\" cy=\"10\" rx=\"4\" ry=\"4.5\" />\n            <!-- Head -->\n            <circle cx=\"8\" cy=\"5\" r=\"2\" />\n            <!-- Antennae -->\n            <path d=\"M7,3 L5,1 M9,3 L11,1\" stroke-width=\"1\" />\n            <!-- Legs -->\n            <path d=\"M4,8 L1,6 M4,10 L1,10 M4,12 L1,14 M12,8 L15,6 M12,10 L15,10 M12,12 L15,14\" stroke-width=\"0.8\" />"
+    },
+    "CloudUpload": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Cloud -->\n            <path d=\"M4,11 C2,11 1,9.5 1,8 C1,6.5 2.5,5.5 4,5.5 C4.5,3 6.5,2 9,2.5 C11,3 12,4.5 12,6 C14,6.2 15,7.5 15,9 C15,10.5 13.5,11 12,11\" fill=\"none\" />\n            <!-- Upload arrow -->\n            <line x1=\"8\" y1=\"14\" x2=\"8\" y2=\"8\" stroke-width=\"1.5\" />\n            <polyline points=\"5.5,10.5 8,8 10.5,10.5\" fill=\"none\" stroke-width=\"1.5\" />"
+    },
+    "Sigma": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Sigma symbol -->\n            <polyline points=\"12,2 3,2 8,8 3,14 12,14\" fill=\"none\" stroke-width=\"2\" />"
+    },
+    "Graph": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Axes -->\n            <line x1=\"2\" y1=\"14\" x2=\"14\" y2=\"14\" stroke-width=\"1\" />\n            <line x1=\"2\" y1=\"2\" x2=\"2\" y2=\"14\" stroke-width=\"1\" />\n            <!-- Curve -->\n            <path d=\"M2,12 C4,12 5,4 8,4 C11,4 10,10 14,2\" fill=\"none\" stroke-width=\"1.5\" />\n            <!-- Data points -->\n            <circle cx=\"5\" cy=\"6\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"8\" cy=\"4\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"12\" cy=\"5\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "Binary": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Binary digits -->\n            <path d=\"M2,4 h2 M6,4 h2 M10,4 h2\" stroke-width=\"2\" />\n            <circle cx=\"3\" cy=\"8\" r=\"1.5\" />\n            <path d=\"M7,8 h2\" stroke-width=\"2\" />\n            <circle cx=\"11\" cy=\"8\" r=\"1.5\" />\n            <path d=\"M2,12 h2 M6,12 h2\" stroke-width=\"2\" />\n            <circle cx=\"11\" cy=\"12\" r=\"1.5\" />"
+    },
+    "NeuralNet": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Input layer -->\n            <circle cx=\"2\" cy=\"4\" r=\"1.2\" />\n            <circle cx=\"2\" cy=\"8\" r=\"1.2\" />\n            <circle cx=\"2\" cy=\"12\" r=\"1.2\" />\n            <!-- Hidden layer -->\n            <circle cx=\"8\" cy=\"5\" r=\"1.2\" />\n            <circle cx=\"8\" cy=\"11\" r=\"1.2\" />\n            <!-- Output -->\n            <circle cx=\"14\" cy=\"8\" r=\"1.2\" />\n            <!-- Connections -->\n            <path d=\"M3.2,4 L6.8,5 M3.2,4 L6.8,11 M3.2,8 L6.8,5 M3.2,8 L6.8,11 M3.2,12 L6.8,5 M3.2,12 L6.8,11 M9.2,5 L12.8,8 M9.2,11 L12.8,8\" stroke-width=\"0.5\" />"
+    },
+    "Antibody": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Y-shaped antibody -->\n            <path d=\"M8,14 V8 M8,8 L4,3 M8,8 L12,3\" stroke-width=\"2\" stroke-linecap=\"round\" />\n            <!-- Binding sites -->\n            <circle cx=\"4\" cy=\"3\" r=\"1.5\" />\n            <circle cx=\"12\" cy=\"3\" r=\"1.5\" />\n            <!-- Fc region -->\n            <circle cx=\"8\" cy=\"14\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "Syringe": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Barrel -->\n            <rect x=\"4\" y=\"3\" width=\"6\" height=\"9\" rx=\"0.5\" />\n            <!-- Plunger -->\n            <line x1=\"7\" y1=\"1\" x2=\"7\" y2=\"3\" stroke-width=\"1.5\" />\n            <line x1=\"5\" y1=\"1\" x2=\"9\" y2=\"1\" stroke-width=\"1.5\" />\n            <!-- Needle -->\n            <line x1=\"7\" y1=\"12\" x2=\"7\" y2=\"15\" stroke-width=\"0.8\" />\n            <!-- Markings -->\n            <path d=\"M4,5 h2 M4,7 h2 M4,9 h2\" stroke-width=\"0.8\" />"
+    },
+    "Stethoscope": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Tubes -->\n            <path d=\"M5,2 V6 C5,10 8,10 8,10 C8,10 11,10 11,6 V2\" fill=\"none\" />\n            <!-- Earpieces -->\n            <circle cx=\"5\" cy=\"2\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"11\" cy=\"2\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Chest piece -->\n            <circle cx=\"8\" cy=\"12\" r=\"2.5\" />\n            <circle cx=\"8\" cy=\"12\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "Heartbeat": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- ECG line -->\n            <polyline points=\"1,8 4,8 5,4 6,12 7,6 8,10 9,8 12,8 13,5 14,8 15,8\" fill=\"none\" stroke-width=\"1.2\" />"
+    },
+    "PawPrint": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Main pad -->\n            <ellipse cx=\"8\" cy=\"11\" rx=\"3\" ry=\"2.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Toe pads -->\n            <ellipse cx=\"4.5\" cy=\"7\" rx=\"1.5\" ry=\"1.8\" fill=\"currentColor\" stroke=\"none\" />\n            <ellipse cx=\"7\" cy=\"5.5\" rx=\"1.3\" ry=\"1.8\" fill=\"currentColor\" stroke=\"none\" />\n            <ellipse cx=\"9.5\" cy=\"5.5\" rx=\"1.3\" ry=\"1.8\" fill=\"currentColor\" stroke=\"none\" />\n            <ellipse cx=\"12\" cy=\"7\" rx=\"1.5\" ry=\"1.8\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "Finance": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Dollar/Yen circle -->\n            <circle cx=\"8\" cy=\"8\" r=\"6.5\" />\n            <!-- Currency symbol (simplified ¥/$) -->\n            <line x1=\"8\" y1=\"3\" x2=\"8\" y2=\"13\" stroke-width=\"1.5\" />\n            <line x1=\"5\" y1=\"6\" x2=\"11\" y2=\"6\" stroke-width=\"1\" />\n            <line x1=\"5\" y1=\"9\" x2=\"11\" y2=\"9\" stroke-width=\"1\" />"
+    },
+    "ForexExchange": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Two currency circles -->\n            <circle cx=\"5\" cy=\"6\" r=\"4\" />\n            <circle cx=\"11\" cy=\"10\" r=\"4\" />\n            <!-- Exchange arrows -->\n            <path d=\"M9,4 L12,4\" stroke-width=\"1\" />\n            <polyline points=\"11,3 12,4 11,5\" fill=\"none\" stroke-width=\"1\" />\n            <path d=\"M7,12 L4,12\" stroke-width=\"1\" />\n            <polyline points=\"5,11 4,12 5,13\" fill=\"none\" stroke-width=\"1\" />"
+    },
+    "StockChart": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Axes -->\n            <line x1=\"1\" y1=\"14\" x2=\"15\" y2=\"14\" stroke-width=\"1\" />\n            <line x1=\"1\" y1=\"1\" x2=\"1\" y2=\"14\" stroke-width=\"1\" />\n            <!-- Line chart going up -->\n            <polyline points=\"2,12 4,10 6,11 8,7 10,9 12,4 14,2\" fill=\"none\" stroke-width=\"1.5\" />\n            <!-- Arrow tip -->\n            <polyline points=\"12,2 14,2 14,4\" fill=\"none\" stroke-width=\"1\" />"
+    },
+    "CandleChart": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Candlesticks -->\n            <line x1=\"3\" y1=\"2\" x2=\"3\" y2=\"14\" stroke-width=\"0.5\" />\n            <rect x=\"2\" y=\"4\" width=\"2\" height=\"5\" fill=\"currentColor\" stroke=\"none\" />\n            <line x1=\"7\" y1=\"3\" x2=\"7\" y2=\"13\" stroke-width=\"0.5\" />\n            <rect x=\"6\" y=\"6\" width=\"2\" height=\"4\" />\n            <line x1=\"11\" y1=\"1\" x2=\"11\" y2=\"12\" stroke-width=\"0.5\" />\n            <rect x=\"10\" y=\"3\" width=\"2\" height=\"6\" fill=\"currentColor\" stroke=\"none\" />\n            <line x1=\"14\" y1=\"4\" x2=\"14\" y2=\"14\" stroke-width=\"0.5\" />\n            <rect x=\"13\" y=\"5\" width=\"2\" height=\"5\" />"
+    },
+    "WaterTest": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Test tube -->\n            <rect x=\"6\" y=\"2\" width=\"4\" height=\"10\" rx=\"0\" />\n            <path d=\"M6,12 Q8,15 10,12\" />\n            <!-- Water drop -->\n            <path d=\"M3,5 C3,3 1,6 3,7 C5,6 3,3 3,5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- pH indicator marks -->\n            <line x1=\"11\" y1=\"4\" x2=\"13\" y2=\"4\" stroke-width=\"1\" />\n            <line x1=\"11\" y1=\"7\" x2=\"14\" y2=\"7\" stroke-width=\"1\" />\n            <line x1=\"11\" y1=\"10\" x2=\"13\" y2=\"10\" stroke-width=\"1\" />"
+    },
+    "FoodChem": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Apple shape (food) -->\n            <path d=\"M8,4 C5,4 3,6 3,9 C3,12 5,14 8,14 C11,14 13,12 13,9 C13,6 11,4 8,4\" />\n            <!-- Stem -->\n            <path d=\"M8,4 V2\" stroke-width=\"1\" />\n            <!-- Leaf -->\n            <path d=\"M8,3 C10,1 12,2 10,4\" fill=\"none\" stroke-width=\"0.8\" />\n            <!-- Molecular bond overlay -->\n            <circle cx=\"7\" cy=\"9\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"10\" cy=\"8\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <line x1=\"7\" y1=\"9\" x2=\"10\" y2=\"8\" stroke-width=\"0.8\" />"
+    },
+    "Nutrition": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Plate -->\n            <ellipse cx=\"8\" cy=\"10\" rx=\"6.5\" ry=\"4\" />\n            <!-- Fork -->\n            <path d=\"M4,1 V6 M3,1 V4 M5,1 V4\" stroke-width=\"0.8\" />\n            <!-- Knife -->\n            <path d=\"M12,1 V6\" stroke-width=\"1\" />\n            <path d=\"M12,1 C14,1 14,3 12,4\" fill=\"none\" stroke-width=\"0.8\" />"
+    },
+    "Scalpel": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Handle -->\n            <rect x=\"1\" y=\"7\" width=\"8\" height=\"2\" rx=\"0.5\" />\n            <!-- Blade -->\n            <path d=\"M9,7 L15,5 L14,8 L9,9 Z\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Reflection line -->\n            <line x1=\"10\" y1=\"7\" x2=\"13\" y2=\"6\" stroke-width=\"0.5\" />"
+    },
+    "Bone": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Bone shape -->\n            <path d=\"M4,3 C2,2 1,4 3,5 L3,5 L11,11 C9,12 10,14 12,13 C14,12 14,14 12,13\" />\n            <path d=\"M12,13 C14,14 15,12 13,11 L5,5 C7,4 6,2 4,3 C2,4 2,2 4,3\" />\n            <!-- Joint dots -->\n            <circle cx=\"3.5\" cy=\"3.5\" r=\"1.5\" />\n            <circle cx=\"12.5\" cy=\"12.5\" r=\"1.5\" />"
+    },
+    "Pediatric": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Child figure -->\n            <circle cx=\"8\" cy=\"3.5\" r=\"2.5\" />\n            <!-- Body -->\n            <line x1=\"8\" y1=\"6\" x2=\"8\" y2=\"10\" stroke-width=\"1.5\" />\n            <!-- Arms up (playful) -->\n            <path d=\"M8,7 L4,4 M8,7 L12,4\" stroke-width=\"1.5\" />\n            <!-- Legs -->\n            <path d=\"M8,10 L5,14 M8,10 L11,14\" stroke-width=\"1.5\" />"
+    },
+    "ExamSheet": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Paper -->\n            <rect x=\"3\" y=\"1\" width=\"10\" height=\"14\" rx=\"0.5\" />\n            <!-- Question lines -->\n            <line x1=\"5\" y1=\"4\" x2=\"11\" y2=\"4\" stroke-width=\"0.8\" />\n            <line x1=\"5\" y1=\"6.5\" x2=\"11\" y2=\"6.5\" stroke-width=\"0.8\" />\n            <line x1=\"5\" y1=\"9\" x2=\"11\" y2=\"9\" stroke-width=\"0.8\" />\n            <line x1=\"5\" y1=\"11.5\" x2=\"11\" y2=\"11.5\" stroke-width=\"0.8\" />\n            <!-- Checkmarks -->\n            <polyline points=\"5,4 5.5,4.5 6.5,3.5\" fill=\"none\" stroke-width=\"0.8\" />\n            <polyline points=\"5,6.5 5.5,7 6.5,6\" fill=\"none\" stroke-width=\"0.8\" />\n            <!-- X mark -->\n            <path d=\"M5,8.5 L6.5,10 M6.5,8.5 L5,10\" stroke-width=\"0.8\" />"
+    },
+    "GradCap": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Mortarboard -->\n            <polygon points=\"8,3 1,7 8,11 15,7\" />\n            <!-- Tassel -->\n            <line x1=\"13\" y1=\"7\" x2=\"13\" y2=\"12\" stroke-width=\"1\" />\n            <circle cx=\"13\" cy=\"12.5\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Band -->\n            <path d=\"M4,8 V11 C4,13 8,14 8,14 C8,14 12,13 12,11 V8\" fill=\"none\" />"
+    },
+    "InkjetPrinter": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Body -->\n            <rect x=\"1\" y=\"5\" width=\"14\" height=\"7\" rx=\"1\" />\n            <!-- Paper feed tray -->\n            <path d=\"M3,5 V3 h10 V5\" />\n            <!-- Output tray -->\n            <path d=\"M3,12 L2,14 h12 L13,12\" />\n            <!-- Paper coming out -->\n            <rect x=\"5\" y=\"12\" width=\"6\" height=\"3\" fill=\"none\" stroke-dasharray=\"1 1\" stroke-width=\"0.5\" />\n            <!-- Print head rail -->\n            <line x1=\"3\" y1=\"8\" x2=\"13\" y2=\"8\" stroke-width=\"0.8\" />\n            <!-- Print head -->\n            <rect x=\"6\" y=\"7\" width=\"3\" height=\"2\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "LaserPrinter": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Boxy body -->\n            <rect x=\"1\" y=\"4\" width=\"14\" height=\"8\" rx=\"0.5\" />\n            <!-- Paper input top -->\n            <path d=\"M4,4 V2 h8 V4\" />\n            <!-- Output slot -->\n            <line x1=\"3\" y1=\"12\" x2=\"13\" y2=\"12\" />\n            <!-- Paper out -->\n            <path d=\"M5,12 L4,15 h8 L11,12\" />\n            <!-- Control panel -->\n            <rect x=\"10\" y=\"5.5\" width=\"3\" height=\"2\" rx=\"0.3\" />\n            <!-- LED -->\n            <circle cx=\"12\" cy=\"9\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "PenPlotter": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Plotter bed -->\n            <rect x=\"1\" y=\"4\" width=\"14\" height=\"10\" rx=\"0.5\" />\n            <!-- Paper -->\n            <rect x=\"2\" y=\"5\" width=\"12\" height=\"8\" />\n            <!-- Pen carriage rail -->\n            <line x1=\"2\" y1=\"7\" x2=\"14\" y2=\"7\" stroke-width=\"0.8\" />\n            <!-- Pen (drawing) -->\n            <line x1=\"8\" y1=\"5.5\" x2=\"8\" y2=\"8.5\" stroke-width=\"1.5\" />\n            <circle cx=\"8\" cy=\"9\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Drawn path -->\n            <path d=\"M4,10 C5,8 7,11 10,9 L12,10\" fill=\"none\" stroke-width=\"0.8\" />"
+    },
+    "LargeFormatPrinter": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Wide body -->\n            <rect x=\"1\" y=\"3\" width=\"14\" height=\"6\" rx=\"0.5\" />\n            <!-- Roll paper feed -->\n            <circle cx=\"4\" cy=\"5\" r=\"1.5\" />\n            <circle cx=\"4\" cy=\"5\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Output paper roll -->\n            <path d=\"M3,9 V14 h10 V9\" />\n            <!-- Printed content lines -->\n            <path d=\"M5,11 h6 M5,12.5 h6\" stroke-width=\"0.5\" stroke-dasharray=\"1 0.5\" />"
+    },
+    "EyeExam": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Eye shape -->\n            <path d=\"M1,8 C3,4 6,3 8,3 C10,3 13,4 15,8 C13,12 10,13 8,13 C6,13 3,12 1,8\" />\n            <!-- Iris -->\n            <circle cx=\"8\" cy=\"8\" r=\"3\" />\n            <!-- Pupil -->\n            <circle cx=\"8\" cy=\"8\" r=\"1.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Reflection -->\n            <circle cx=\"9\" cy=\"7\" r=\"0.5\" fill=\"none\" />"
+    },
+    "VisualField": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Dome/bowl perimeter -->\n            <path d=\"M1,12 C1,5 4,2 8,2 C12,2 15,5 15,12\" fill=\"none\" />\n            <!-- Fixation point -->\n            <circle cx=\"8\" cy=\"8\" r=\"0.8\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Test spots (visual field map) -->\n            <circle cx=\"4\" cy=\"6\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"6\" cy=\"4\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"10\" cy=\"4\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"12\" cy=\"6\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"5\" cy=\"9\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"11\" cy=\"9\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Base -->\n            <line x1=\"2\" y1=\"12\" x2=\"14\" y2=\"12\" stroke-width=\"1.5\" />"
+    },
+    "Ophthalmoscope": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Handle -->\n            <rect x=\"7\" y=\"7\" width=\"2.5\" height=\"8\" rx=\"1\" />\n            <!-- Head -->\n            <circle cx=\"8.25\" cy=\"5\" r=\"3.5\" />\n            <!-- Lens aperture -->\n            <circle cx=\"8.25\" cy=\"5\" r=\"1.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Light beam -->\n            <path d=\"M5,3 L2,1 M11.5,3 L14,1\" stroke-width=\"0.8\" />"
+    },
+    "BloodTest": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Vial -->\n            <rect x=\"5\" y=\"3\" width=\"6\" height=\"10\" rx=\"0.5\" />\n            <!-- Cap -->\n            <rect x=\"5\" y=\"1\" width=\"6\" height=\"2.5\" rx=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Blood level -->\n            <rect x=\"6\" y=\"8\" width=\"4\" height=\"4\" fill=\"currentColor\" stroke=\"none\" rx=\"0.3\" />\n            <!-- Label -->\n            <line x1=\"6\" y1=\"5\" x2=\"10\" y2=\"5\" stroke-width=\"0.5\" />\n            <line x1=\"6\" y1=\"6.5\" x2=\"10\" y2=\"6.5\" stroke-width=\"0.5\" />"
+    },
+    "TestTubeRack": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Rack frame -->\n            <rect x=\"1\" y=\"3\" width=\"14\" height=\"2\" rx=\"0.3\" />\n            <rect x=\"1\" y=\"11\" width=\"14\" height=\"2\" rx=\"0.3\" />\n            <!-- Test tubes -->\n            <rect x=\"3\" y=\"2\" width=\"1.5\" height=\"12\" rx=\"0.5\" />\n            <rect x=\"6\" y=\"2\" width=\"1.5\" height=\"12\" rx=\"0.5\" />\n            <rect x=\"9\" y=\"2\" width=\"1.5\" height=\"12\" rx=\"0.5\" />\n            <rect x=\"12\" y=\"2\" width=\"1.5\" height=\"12\" rx=\"0.5\" />\n            <!-- Fluid levels -->\n            <rect x=\"3.2\" y=\"10\" width=\"1.1\" height=\"3\" fill=\"currentColor\" stroke=\"none\" />\n            <rect x=\"6.2\" y=\"8\" width=\"1.1\" height=\"5\" fill=\"currentColor\" stroke=\"none\" />\n            <rect x=\"9.2\" y=\"11\" width=\"1.1\" height=\"2\" fill=\"currentColor\" stroke=\"none\" />\n            <rect x=\"12.2\" y=\"9\" width=\"1.1\" height=\"4\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "PetriDish": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Dish (top view) -->\n            <ellipse cx=\"8\" cy=\"8\" rx=\"6.5\" ry=\"5\" />\n            <!-- Inner ring -->\n            <ellipse cx=\"8\" cy=\"8\" rx=\"5\" ry=\"3.5\" />\n            <!-- Colonies -->\n            <circle cx=\"6\" cy=\"7\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"9\" cy=\"6\" r=\"0.7\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"10\" cy=\"9\" r=\"1.2\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"7\" cy=\"10\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "VRHeadset": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Headset body -->\n            <rect x=\"1\" y=\"4\" width=\"14\" height=\"8\" rx=\"3\" />\n            <!-- Lenses -->\n            <circle cx=\"5.5\" cy=\"8\" r=\"2\" />\n            <circle cx=\"10.5\" cy=\"8\" r=\"2\" />\n            <!-- Nose bridge -->\n            <path d=\"M7.5,9 C8,11 8,11 8.5,9\" fill=\"none\" stroke-width=\"0.8\" />\n            <!-- Strap -->\n            <path d=\"M1,6 C0,4 0,3 1,4 M15,6 C16,4 16,3 15,4\" stroke-width=\"1\" />"
+    },
+    "VRController": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Controller body -->\n            <path d=\"M6,2 h4 v5 l3,6 a2,2 0 0,1 -2,2 h-6 a2,2 0 0,1 -2,-2 l3,-6 z\" />\n            <!-- Trackpad circle -->\n            <circle cx=\"8\" cy=\"5\" r=\"2\" />\n            <!-- Buttons -->\n            <circle cx=\"8\" cy=\"9\" r=\"0.7\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"8\" cy=\"11\" r=\"0.7\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Trigger -->\n            <path d=\"M6,3 L4,1\" stroke-width=\"1.5\" />"
+    },
+    "Camera": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Camera body -->\n            <rect x=\"1\" y=\"4\" width=\"14\" height=\"10\" rx=\"1\" />\n            <!-- Viewfinder bump -->\n            <rect x=\"5\" y=\"2\" width=\"6\" height=\"3\" rx=\"0.5\" />\n            <!-- Lens -->\n            <circle cx=\"8\" cy=\"9\" r=\"3\" />\n            <circle cx=\"8\" cy=\"9\" r=\"1.5\" />\n            <!-- Flash -->\n            <rect x=\"11\" y=\"3\" width=\"2\" height=\"1\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "CCTV": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Mounting bracket -->\n            <path d=\"M14,2 V6\" stroke-width=\"2\" />\n            <line x1=\"12\" y1=\"2\" x2=\"15\" y2=\"2\" stroke-width=\"1.5\" />\n            <!-- Camera body -->\n            <rect x=\"2\" y=\"4\" width=\"12\" height=\"5\" rx=\"1\" />\n            <!-- Lens -->\n            <circle cx=\"5\" cy=\"6.5\" r=\"2\" />\n            <circle cx=\"5\" cy=\"6.5\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- IR LEDs -->\n            <circle cx=\"10\" cy=\"5.5\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"12\" cy=\"5.5\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"10\" cy=\"7.5\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"12\" cy=\"7.5\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Cable -->\n            <path d=\"M14,7 C15,7 15,10 14,12\" stroke-width=\"0.8\" fill=\"none\" />"
+    },
+    "NightVision": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Goggles body -->\n            <rect x=\"1\" y=\"5\" width=\"14\" height=\"6\" rx=\"2\" />\n            <!-- Dual tubes -->\n            <circle cx=\"5\" cy=\"8\" r=\"2.5\" />\n            <circle cx=\"11\" cy=\"8\" r=\"2.5\" />\n            <!-- Intensifier glow -->\n            <circle cx=\"5\" cy=\"8\" r=\"1.2\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"11\" cy=\"8\" r=\"1.2\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Head strap -->\n            <path d=\"M1,7 L0,5 M15,7 L16,5\" stroke-width=\"1\" />"
+    },
+    "FaceID": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Face outline -->\n            <ellipse cx=\"8\" cy=\"8\" rx=\"5.5\" ry=\"6.5\" />\n            <!-- Eyes -->\n            <circle cx=\"6\" cy=\"7\" r=\"0.8\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"10\" cy=\"7\" r=\"0.8\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Nose -->\n            <path d=\"M8,8.5 V10\" stroke-width=\"0.8\" />\n            <!-- Mouth -->\n            <path d=\"M6.5,11.5 C7,12.5 9,12.5 9.5,11.5\" fill=\"none\" stroke-width=\"0.8\" />\n            <!-- Scan frame corners -->\n            <path d=\"M2,3 V1 H4 M12,1 H14 V3 M14,13 V15 H12 M4,15 H2 V13\" stroke-width=\"1\" fill=\"none\" />"
+    },
+    "Fingerprint": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Fingerprint ridges -->\n            <path d=\"M4,13 C4,7 6,4 8,4 C10,4 12,7 12,13\" fill=\"none\" />\n            <path d=\"M5.5,13 C5.5,8 7,5.5 8,5.5 C9,5.5 10.5,8 10.5,13\" fill=\"none\" />\n            <path d=\"M7,13 C7,9.5 7.5,7 8,7 C8.5,7 9,9.5 9,13\" fill=\"none\" />\n            <!-- Center dot -->\n            <circle cx=\"8\" cy=\"10\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "Microphone": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Mic head -->\n            <rect x=\"5.5\" y=\"1\" width=\"5\" height=\"7\" rx=\"2.5\" />\n            <!-- Stand arc -->\n            <path d=\"M4,7 C4,11 12,11 12,7\" fill=\"none\" />\n            <!-- Stand -->\n            <line x1=\"8\" y1=\"11\" x2=\"8\" y2=\"14\" stroke-width=\"1.5\" />\n            <!-- Base -->\n            <line x1=\"5\" y1=\"14\" x2=\"11\" y2=\"14\" stroke-width=\"1.5\" />"
+    },
+    "Speaker": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Speaker cone -->\n            <path d=\"M2,6 h3 l4,-4 v12 l-4,-4 h-3 z\" />\n            <!-- Sound waves -->\n            <path d=\"M11,5 C12,6.5 12,9.5 11,11\" fill=\"none\" stroke-width=\"1\" />\n            <path d=\"M13,3 C14.5,5.5 14.5,10.5 13,13\" fill=\"none\" stroke-width=\"1\" />"
+    },
+    "FlatbedScanner": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Scanner body -->\n            <rect x=\"1\" y=\"3\" width=\"14\" height=\"10\" rx=\"1\" />\n            <!-- Glass plate -->\n            <rect x=\"2\" y=\"4\" width=\"12\" height=\"8\" />\n            <!-- Scan bar -->\n            <line x1=\"2\" y1=\"7\" x2=\"14\" y2=\"7\" stroke-width=\"1.5\" />\n            <!-- Light glow -->\n            <line x1=\"3\" y1=\"7.5\" x2=\"13\" y2=\"7.5\" stroke-width=\"0.5\" stroke-dasharray=\"0.5 0.5\" />\n            <!-- Lid hinge -->\n            <line x1=\"1\" y1=\"3\" x2=\"15\" y2=\"3\" stroke-width=\"1.5\" />"
+    },
+    "BookScanner": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Open book -->\n            <path d=\"M8,3 L2,4 V14 L8,13 L14,14 V4 Z\" />\n            <line x1=\"8\" y1=\"3\" x2=\"8\" y2=\"13\" />\n            <!-- Spine -->\n            <path d=\"M5,6 h2 M5,8 h2 M5,10 h2\" stroke-width=\"0.5\" />\n            <path d=\"M9,6 h2 M9,8 h2 M9,10 h2\" stroke-width=\"0.5\" />\n            <!-- Overhead camera -->\n            <rect x=\"6\" y=\"0\" width=\"4\" height=\"2\" rx=\"0.5\" />\n            <line x1=\"8\" y1=\"2\" x2=\"8\" y2=\"3\" stroke-width=\"0.8\" />"
+    },
+    "Scanner3D": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Object (cube) -->\n            <path d=\"M8,4 L12,6 V10 L8,12 L4,10 V6 Z\" />\n            <line x1=\"8\" y1=\"4\" x2=\"8\" y2=\"8\" stroke-width=\"0.5\" />\n            <line x1=\"4\" y1=\"6\" x2=\"8\" y2=\"8\" stroke-width=\"0.5\" />\n            <line x1=\"12\" y1=\"6\" x2=\"8\" y2=\"8\" stroke-width=\"0.5\" />\n            <!-- Scan lines -->\n            <path d=\"M1,3 L4,6\" stroke-width=\"0.8\" stroke-dasharray=\"1 0.5\" />\n            <path d=\"M1,8 L4,8\" stroke-width=\"0.8\" stroke-dasharray=\"1 0.5\" />\n            <path d=\"M15,3 L12,6\" stroke-width=\"0.8\" stroke-dasharray=\"1 0.5\" />\n            <path d=\"M15,8 L12,8\" stroke-width=\"0.8\" stroke-dasharray=\"1 0.5\" />"
+    }
+  }
+}
