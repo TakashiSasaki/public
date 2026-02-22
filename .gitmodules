@@ -1,4 +1,4 @@
 [submodule "pictogram"]
 	path = pictogram
-	url = git@github.com:TakashiSasaki/public
+	url = https://github.com/TakashiSasaki/public
 	branch = pictogram
