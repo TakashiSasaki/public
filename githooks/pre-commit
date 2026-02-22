@@ -1,0 +1,37 @@
+#!/bin/sh
+
+# pre-commit hook
+# pyproject.tomlのパッチバージョンをバンプアップする
+
+# PowerShellやBash環境でPythonスクリプトを実行する
+if command -v uv >/dev/null 2>&1; then
+    uv run python scripts/bump_version.py
+else
+    # uvが見つからなければ通常のpythonで試行する
+    python scripts/bump_version.py
+fi
+
+# 戻り値チェック
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to bump version in pyproject.toml"
+    exit 1
+fi
+
+# 以前の変更をステージする
+git add pyproject.toml
+
+# gallery-app/package.jsonと同期させる
+if command -v uv >/dev/null 2>&1; then
+    uv run python scripts/sync_versions.py
+else
+    python scripts/sync_versions.py
+fi
+
+if [ $? -ne 0 ]; then
+    echo "Error: Failed to sync version to gallery-app/package.json"
+    exit 1
+fi
+
+git add gallery-app/package.json
+
+exit 0
