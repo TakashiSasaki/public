@@ -471,6 +471,86 @@
       "type": "badge",
       "viewBox": "0 0 16 16",
       "content": "\n            <rect x=\"2\" y=\"10\" width=\"4\" height=\"4\" rx=\"1\" />\n            <circle cx=\"4\" cy=\"12\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            \n            <path d=\"M7,9 A3.5,3.5 0 0,1 10.5,12.5\" />\n            <path d=\"M10,6 A7.5,7.5 0 0,1 14.5,12.5\" />"
+    },
+    "Microscope": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Eyepiece -->\n            <rect x=\"7\" y=\"1\" width=\"3\" height=\"2\" rx=\"0.5\" />\n            <!-- Tube -->\n            <line x1=\"8.5\" y1=\"3\" x2=\"8.5\" y2=\"7\" stroke-width=\"1.5\" />\n            <!-- Objective -->\n            <rect x=\"7\" y=\"7\" width=\"3\" height=\"2\" rx=\"0.3\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Stage -->\n            <line x1=\"4\" y1=\"10\" x2=\"12\" y2=\"10\" stroke-width=\"1.5\" />\n            <!-- Stand -->\n            <line x1=\"8.5\" y1=\"10\" x2=\"8.5\" y2=\"14\" stroke-width=\"1.5\" />\n            <!-- Base -->\n            <line x1=\"5\" y1=\"14\" x2=\"12\" y2=\"14\" stroke-width=\"2\" />"
+    },
+    "DNA": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Double helix -->\n            <path d=\"M4,1 C4,4 12,4 12,7 C12,10 4,10 4,13 C4,15 8,15 8,15\" fill=\"none\" />\n            <path d=\"M12,1 C12,4 4,4 4,7 C4,10 12,10 12,13 C12,15 8,15 8,15\" fill=\"none\" />\n            <!-- Rungs -->\n            <line x1=\"5\" y1=\"4\" x2=\"11\" y2=\"4\" stroke-width=\"0.8\" />\n            <line x1=\"5\" y1=\"7\" x2=\"11\" y2=\"7\" stroke-width=\"0.8\" />\n            <line x1=\"5\" y1=\"10\" x2=\"11\" y2=\"10\" stroke-width=\"0.8\" />"
+    },
+    "Atom": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Nucleus -->\n            <circle cx=\"8\" cy=\"8\" r=\"1.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Electron orbits -->\n            <ellipse cx=\"8\" cy=\"8\" rx=\"6\" ry=\"2.5\" />\n            <ellipse cx=\"8\" cy=\"8\" rx=\"6\" ry=\"2.5\" transform=\"rotate(60 8 8)\" />\n            <ellipse cx=\"8\" cy=\"8\" rx=\"6\" ry=\"2.5\" transform=\"rotate(120 8 8)\" />"
+    },
+    "ChemFlask": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Erlenmeyer flask -->\n            <path d=\"M6,2 V6 L2,13 A1,1 0 0,0 3,14 H13 A1,1 0 0,0 14,13 L10,6 V2\" />\n            <!-- Neck -->\n            <line x1=\"6\" y1=\"2\" x2=\"10\" y2=\"2\" />\n            <!-- Liquid level -->\n            <path d=\"M4,10 h8\" stroke-dasharray=\"1 1\" />"
+    },
+    "Biohazard": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Biohazard symbol (simplified) -->\n            <circle cx=\"8\" cy=\"8\" r=\"1.5\" />\n            <circle cx=\"8\" cy=\"4\" r=\"3\" fill=\"none\" />\n            <circle cx=\"4.5\" cy=\"10.5\" r=\"3\" fill=\"none\" />\n            <circle cx=\"11.5\" cy=\"10.5\" r=\"3\" fill=\"none\" />"
+    },
+    "Gear": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Gear teeth -->\n            <path d=\"M7,1 h2 v1.5 l1,0.5 1,-1 1.5,1.5 -1,1 0.5,1 h1.5 v2 h-1.5 l-0.5,1 1,1 -1.5,1.5 -1,-1 -1,0.5 v1.5 h-2 v-1.5 l-1,-0.5 -1,1 -1.5,-1.5 1,-1 -0.5,-1 h-1.5 v-2 h1.5 l0.5,-1 -1,-1 1.5,-1.5 1,1 1,-0.5 z\" />\n            <!-- Center -->\n            <circle cx=\"8\" cy=\"8\" r=\"2\" />"
+    },
+    "Thermometer": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Bulb -->\n            <circle cx=\"8\" cy=\"12\" r=\"2.5\" />\n            <!-- Stem -->\n            <rect x=\"6.5\" y=\"2\" width=\"3\" height=\"8\" rx=\"1.5\" />\n            <!-- Mercury level -->\n            <line x1=\"8\" y1=\"6\" x2=\"8\" y2=\"12\" stroke-width=\"1.5\" stroke-linecap=\"round\" />\n            <!-- Scale marks -->\n            <path d=\"M10,4 h1 M10,6 h1 M10,8 h1\" stroke-width=\"0.8\" />"
+    },
+    "Oscilloscope": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Screen -->\n            <rect x=\"2\" y=\"2\" width=\"12\" height=\"10\" rx=\"1\" />\n            <!-- Waveform -->\n            <polyline points=\"3,7 5,4 7,10 9,4 11,10 13,7\" fill=\"none\" stroke-width=\"1\" />\n            <!-- Knobs -->\n            <circle cx=\"5\" cy=\"14\" r=\"1\" />\n            <circle cx=\"11\" cy=\"14\" r=\"1\" />"
+    },
+    "Circuit": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- IC chip -->\n            <rect x=\"4\" y=\"4\" width=\"8\" height=\"8\" rx=\"0.5\" />\n            <!-- Pins -->\n            <path d=\"M4,6 h-2 M4,8 h-2 M4,10 h-2 M12,6 h2 M12,8 h2 M12,10 h2\" stroke-width=\"1\" />\n            <path d=\"M6,4 v-2 M8,4 v-2 M10,4 v-2 M6,12 v2 M8,12 v2 M10,12 v2\" stroke-width=\"1\" />"
+    },
+    "Radiation": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Radiation symbol -->\n            <circle cx=\"8\" cy=\"8\" r=\"1.5\" />\n            <!-- Trefoil blades -->\n            <path d=\"M8,6.5 L5,2 A6,6 0 0,1 11,2 Z\" fill=\"currentColor\" stroke=\"none\" />\n            <path d=\"M9.3,8.7 L13.5,10.5 A6,6 0 0,1 8,15 Z\" fill=\"currentColor\" stroke=\"none\" />\n            <path d=\"M6.7,8.7 L8,15 A6,6 0 0,1 2.5,10.5 Z\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "Laser": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Laser emitter -->\n            <rect x=\"1\" y=\"6\" width=\"6\" height=\"4\" rx=\"0.5\" />\n            <!-- Beam -->\n            <line x1=\"7\" y1=\"8\" x2=\"15\" y2=\"8\" stroke-width=\"1.5\" />\n            <!-- Beam spread -->\n            <path d=\"M13,5 L15,8 L13,11\" fill=\"none\" stroke-width=\"0.8\" />"
+    },
+    "MedCross": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Medical cross -->\n            <rect x=\"5.5\" y=\"2\" width=\"5\" height=\"12\" rx=\"0.5\" />\n            <rect x=\"2\" y=\"5.5\" width=\"12\" height=\"5\" rx=\"0.5\" />"
+    },
+    "Pipette": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Pipette body -->\n            <line x1=\"10\" y1=\"2\" x2=\"5\" y2=\"12\" stroke-width=\"2\" stroke-linecap=\"round\" />\n            <!-- Tip -->\n            <line x1=\"5\" y1=\"12\" x2=\"4\" y2=\"14\" stroke-width=\"1\" />\n            <!-- Bulb -->\n            <circle cx=\"11\" cy=\"2\" r=\"1.5\" />\n            <!-- Drop -->\n            <circle cx=\"4\" cy=\"15\" r=\"0.7\" fill=\"currentColor\" stroke=\"none\" />"
+    },
+    "Centrifuge": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Rotor -->\n            <circle cx=\"8\" cy=\"8\" r=\"5\" />\n            <!-- Center hub -->\n            <circle cx=\"8\" cy=\"8\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Sample tubes -->\n            <rect x=\"11\" y=\"7\" width=\"3\" height=\"2\" rx=\"0.5\" fill=\"currentColor\" stroke=\"none\" transform=\"rotate(0 8 8)\" />\n            <rect x=\"11\" y=\"7\" width=\"3\" height=\"2\" rx=\"0.5\" fill=\"currentColor\" stroke=\"none\" transform=\"rotate(120 8 8)\" />\n            <rect x=\"11\" y=\"7\" width=\"3\" height=\"2\" rx=\"0.5\" fill=\"currentColor\" stroke=\"none\" transform=\"rotate(240 8 8)\" />"
+    },
+    "Wrench": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Wrench -->\n            <path d=\"M4,3 A3,3 0 0,1 7,6 L11.5,10.5 A2,2 0 0,1 13,12 A2,2 0 0,1 11,14 A2,2 0 0,1 9,12 L5,8 A3,3 0 0,1 2,5 Z\" />\n            <!-- Jaw opening -->\n            <path d=\"M3,2 L5,4\" stroke-width=\"1\" />"
+    },
+    "Spectrum": {
+      "type": "badge",
+      "viewBox": "0 0 16 16",
+      "content": "<!-- Prism -->\n            <polygon points=\"3,13 8,3 13,13\" />\n            <!-- Input beam -->\n            <line x1=\"1\" y1=\"7\" x2=\"5.5\" y2=\"7\" stroke-width=\"1\" />\n            <!-- Output spectrum -->\n            <line x1=\"10.5\" y1=\"6\" x2=\"15\" y2=\"4\" stroke-width=\"0.8\" />\n            <line x1=\"10.5\" y1=\"8\" x2=\"15\" y2=\"8\" stroke-width=\"0.8\" />\n            <line x1=\"10.5\" y1=\"10\" x2=\"15\" y2=\"12\" stroke-width=\"0.8\" />"
     }
   }
 }
