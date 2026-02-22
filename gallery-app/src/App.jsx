@@ -5,11 +5,8 @@ import pictogramsData from "./assets/pictograms.json";
 // --- 1. SVG Component Definitions ---
 
 // Helper function to create a React component from raw SVG string
-const createSvgComponent = (svgHtml, defaultViewBox) => {
+const createSvgComponent = (svgContent, defaultViewBox) => {
     return (props) => {
-        const match = svgHtml.match(/<svg[^>]*>([\s\S]*?)<\/svg>/i);
-        const innerContent = match ? match[1] : "";
-
         return (
             <svg
                 viewBox={defaultViewBox}
@@ -19,7 +16,7 @@ const createSvgComponent = (svgHtml, defaultViewBox) => {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 {...props}
-                dangerouslySetInnerHTML={{ __html: innerContent }}
+                dangerouslySetInnerHTML={{ __html: svgContent }}
             />
         );
     };
