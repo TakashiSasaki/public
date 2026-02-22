@@ -229,6 +229,26 @@
       "type": "base",
       "viewBox": "0 0 32 32",
       "content": "<!-- Slim screen -->\n            <rect x=\"5\" y=\"5\" width=\"22\" height=\"12\" rx=\"1.5\" />\n            <!-- Chrome circle logo (simplified) -->\n            <circle cx=\"16\" cy=\"11\" r=\"2\" />\n            <!-- Slim base -->\n            <path d=\"M4,17 h24 l-1,7 h-22 z\" />\n            <!-- Full-width keyboard -->\n            <path d=\"M6,19 h20 M6,21 h20\" stroke-dasharray=\"1 1\" stroke-width=\"1\" />\n            <!-- Large touchpad -->\n            <rect x=\"10\" y=\"22\" width=\"12\" height=\"1.5\" rx=\"0.5\" />"
+    },
+    "HandheldPC": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Clamshell body -->\n            <rect x=\"2\" y=\"6\" width=\"28\" height=\"10\" rx=\"2\" />\n            <!-- Small screen -->\n            <rect x=\"4\" y=\"8\" width=\"12\" height=\"6\" rx=\"1\" />\n            <!-- Mini QWERTY keyboard -->\n            <path d=\"M18,8 h10 M18,10.5 h10 M18,13 h10\" stroke-dasharray=\"1 0.8\" stroke-width=\"0.8\" />\n            <!-- Hinge line -->\n            <line x1=\"2\" y1=\"16\" x2=\"30\" y2=\"16\" />\n            <!-- Lower half (keyboard side when open) -->\n            <rect x=\"2\" y=\"16\" width=\"28\" height=\"10\" rx=\"2\" />\n            <!-- Full keyboard area -->\n            <path d=\"M4,18 h24 M4,20.5 h24 M4,23 h24\" stroke-dasharray=\"1 0.8\" stroke-width=\"0.8\" />"
+    },
+    "HandheldGamePC": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Wide handheld body -->\n            <rect x=\"1\" y=\"8\" width=\"30\" height=\"16\" rx=\"3\" />\n            <!-- Central screen -->\n            <rect x=\"8\" y=\"10\" width=\"16\" height=\"12\" rx=\"1\" />\n            <!-- D-pad (left) -->\n            <line x1=\"3\" y1=\"14\" x2=\"3\" y2=\"18\" stroke-width=\"2\" />\n            <line x1=\"1.5\" y1=\"16\" x2=\"4.5\" y2=\"16\" stroke-width=\"2\" />\n            <!-- ABXY buttons (right) -->\n            <circle cx=\"28\" cy=\"14\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"28\" cy=\"18\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"26\" cy=\"16\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"30\" cy=\"16\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Analog sticks -->\n            <circle cx=\"5.5\" cy=\"20\" r=\"1.5\" />\n            <circle cx=\"26.5\" cy=\"20\" r=\"1.5\" />"
+    },
+    "MZ80C": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- All-in-one unit body -->\n            <rect x=\"2\" y=\"2\" width=\"28\" height=\"28\" rx=\"2\" />\n            <!-- Built-in CRT (upper half) -->\n            <rect x=\"5\" y=\"4\" width=\"22\" height=\"10\" rx=\"1\" />\n            <!-- Divider line -->\n            <line x1=\"2\" y1=\"16\" x2=\"30\" y2=\"16\" />\n            <!-- Built-in cassette deck -->\n            <rect x=\"5\" y=\"18\" width=\"10\" height=\"5\" />\n            <circle cx=\"8\" cy=\"20.5\" r=\"1.5\" />\n            <circle cx=\"13\" cy=\"20.5\" r=\"1.5\" />\n            <!-- Buttons/indicators -->\n            <circle cx=\"20\" cy=\"19\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <circle cx=\"24\" cy=\"19\" r=\"1\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Keyboard tray at bottom -->\n            <path d=\"M4,25 h24 M4,27 h24\" stroke-dasharray=\"1.5 1\" stroke-width=\"1\" />"
+    },
+    "FMTownsDesktop": {
+      "type": "base",
+      "viewBox": "0 0 32 32",
+      "content": "<!-- Horizontal desktop unit -->\n            <rect x=\"2\" y=\"10\" width=\"28\" height=\"16\" rx=\"1\" />\n            <!-- Front-loading CD-ROM tray (signature feature) -->\n            <rect x=\"4\" y=\"13\" width=\"14\" height=\"3\" />\n            <circle cx=\"11\" cy=\"14.5\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Floppy drive below CD -->\n            <rect x=\"4\" y=\"18\" width=\"10\" height=\"3\" />\n            <!-- Eject button -->\n            <circle cx=\"13\" cy=\"19.5\" r=\"0.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Power button + LEDs -->\n            <circle cx=\"22\" cy=\"14\" r=\"1.5\" />\n            <rect x=\"20\" y=\"18\" width=\"2\" height=\"1.5\" fill=\"currentColor\" stroke=\"none\" />\n            <rect x=\"24\" y=\"18\" width=\"2\" height=\"1.5\" fill=\"currentColor\" stroke=\"none\" />\n            <!-- Label area -->\n            <rect x=\"18\" y=\"22\" width=\"10\" height=\"2\" rx=\"0.5\" />"
     }
   },
   "badges": {
