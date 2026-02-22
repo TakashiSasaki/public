@@ -1,4 +1,4 @@
 [submodule "pictogram"]
 	path = pictogram
-	url = c:/Users/takashi/Desktop/mouse-pointer
+	url = git@github.com:TakashiSasaki/public
 	branch = pictogram
