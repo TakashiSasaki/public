@@ -170,6 +170,11 @@ class CursorGeneratorGUI(tk.Tk):
             thumb_size=40,
         )
 
+        # ---- Tab 4: Export Set ----
+        export_tab = ttk.Frame(self.notebook, padding=5)
+        self.notebook.add(export_tab, text="  Export Set  ")
+        self._build_export_tab(export_tab)
+
     # ------------------------------------------------------------------
     #  Tab 1 – Cursor Editor
     # ------------------------------------------------------------------
@@ -529,6 +534,163 @@ class CursorGeneratorGUI(tk.Tk):
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to save cursor:\n{str(e)}")
 
+    # ------------------------------------------------------------------
+    #  Tab 4 – Export Set
+    # ------------------------------------------------------------------
+
+    def _build_export_tab(self, parent):
+        """17種類のカーソルセットを一括出力するタブを構築する。"""
+        from mouse_pointer.generators.cursor_roles import CURSOR_ROLES
+
+        info = ttk.Label(
+            parent,
+            text=(
+                "Cursor Editor で設定したデザインを元に、Windows 標準の 17 種類のカーソルを"
+                " 一括で出力します。各ロールの右下ラベル (BR) を個別に編集できます。"
+            ),
+            wraplength=620,
+            justify=tk.LEFT,
+        )
+        info.pack(anchor=tk.W, pady=(0, 8))
+
+        # --- ロール一覧テーブル ---
+        cols = ("name", "filename", "label_br")
+        tree_frame = ttk.Frame(parent)
+        tree_frame.pack(fill=tk.BOTH, expand=True)
+
+        scrollbar = ttk.Scrollbar(tree_frame, orient=tk.VERTICAL)
+        self.export_tree = ttk.Treeview(
+            tree_frame,
+            columns=cols,
+            show="headings",
+            height=14,
+            yscrollcommand=scrollbar.set,
+        )
+        scrollbar.config(command=self.export_tree.yview)
+
+        self.export_tree.heading("name",     text="ロール名")
+        self.export_tree.heading("filename", text="出力ファイル名")
+        self.export_tree.heading("label_br", text="BR ラベル")
+        self.export_tree.column("name",     width=220, anchor=tk.W)
+        self.export_tree.column("filename", width=180, anchor=tk.W)
+        self.export_tree.column("label_br", width=80,  anchor=tk.CENTER)
+
+        for role in CURSOR_ROLES:
+            self.export_tree.insert(
+                "", tk.END,
+                values=(role["name"], role["filename"], role["label_br"]),
+                tags=(role["registry_key"],),
+            )
+
+        self.export_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # --- BRラベル編集エリア ---
+        edit_frame = ttk.LabelFrame(parent, text=" BR ラベル編集 ", padding=6)
+        edit_frame.pack(fill=tk.X, pady=(6, 0))
+
+        ttk.Label(edit_frame, text="選択したロールの BR ラベル:").pack(side=tk.LEFT)
+        self.var_export_br = tk.StringVar()
+        br_entry = ttk.Entry(edit_frame, textvariable=self.var_export_br, width=10)
+        br_entry.pack(side=tk.LEFT, padx=4)
+
+        def _apply_br_edit():
+            sel = self.export_tree.selection()
+            if not sel:
+                return
+            item = sel[0]
+            vals = list(self.export_tree.item(item, "values"))
+            vals[2] = self.var_export_br.get()
+            self.export_tree.item(item, values=vals)
+
+        ttk.Button(edit_frame, text="適用", command=_apply_br_edit).pack(side=tk.LEFT)
+
+        def _on_select(event):
+            sel = self.export_tree.selection()
+            if sel:
+                self.var_export_br.set(self.export_tree.item(sel[0], "values")[2])
+
+        self.export_tree.bind("<<TreeviewSelect>>", _on_select)
+
+        # --- 出力ボタン ---
+        btn_frame = ttk.Frame(parent)
+        btn_frame.pack(fill=tk.X, pady=(8, 0))
+        ttk.Button(
+            btn_frame,
+            text="📁  フォルダを選択して 17 種類を一括出力",
+            command=self._export_cursor_set,
+        ).pack(side=tk.RIGHT)
+
+    def _export_cursor_set(self):
+        """Export Set タブの設定を元に 17 種類のカーソルファイルを一括生成する。"""
+        from tkinter import filedialog as fd
+        import traceback
+
+        out_dir = fd.askdirectory(title="出力フォルダを選択")
+        if not out_dir:
+            return
+
+        try:
+            fill_rgba   = self.hex_to_rgba(self.var_color.get())
+            border_rgba = self.hex_to_rgba(self.var_border_color.get())
+            try:    tr_s = self.var_tr_size.get()
+            except tk.TclError: tr_s = 12
+            shape       = self.var_shape.get()
+            tr_text     = self.var_tr_text.get()
+            border_th   = self.var_border_thickness.get()
+            drop_shadow = self.var_drop_shadow.get()
+            base_name   = self.var_base_name.get()
+            badge1_name = self.var_badge1_name.get()
+            badge2_name = self.var_badge2_name.get()
+
+            sizes = [32, 48, 64]
+            errors = []
+
+            # Treeview から現在のロール設定を取得
+            rows = []
+            for iid in self.export_tree.get_children():
+                vals = self.export_tree.item(iid, "values")
+                rows.append({"name": vals[0], "filename": vals[1], "label_br": vals[2]})
+
+            for role in rows:
+                br_text = role["label_br"]
+                filename = role["filename"]
+                out_path = str(Path(out_dir) / filename)
+                try:
+                    multi_image_data = []
+                    for s in sizes:
+                        img, hotspot = create_cursor_image(
+                            size=s,
+                            color=fill_rgba,
+                            shape=shape,
+                            border_color=border_rgba,
+                            border_thickness=border_th,
+                            tr_text=tr_text,
+                            tr_text_size=tr_s,
+                            br_text=br_text,
+                            br_text_size=max(8, s // 4),
+                            drop_shadow=drop_shadow,
+                            base_name=base_name,
+                            badge1_name=badge1_name,
+                            badge2_name=badge2_name,
+                        )
+                        multi_image_data.append((img, hotspot))
+                    save_multi_cursor(multi_image_data, out_path)
+                except Exception as e:
+                    errors.append(f"{filename}: {e}")
+
+            if errors:
+                messagebox.showwarning(
+                    "一部エラー",
+                    f"{len(rows) - len(errors)} 個成功、{len(errors)} 個失敗:\n" + "\n".join(errors),
+                )
+            else:
+                messagebox.showinfo(
+                    "完了",
+                    f"17 種類のカーソルを以下に出力しました:\n{out_dir}",
+                )
+        except Exception as e:
+            messagebox.showerror("Error", f"一括出力に失敗しました:\n{traceback.format_exc()}")
 
 def run_gui():
     app = CursorGeneratorGUI()
