@@ -32,5 +32,11 @@
 - フックは `git config core.hooksPath .githooks` で有効化します。
 - 別のチェックアウト先でも同じ挙動にするため、チェックアウト後に `scripts/setup-hooks.ps1` または `scripts/setup-hooks.sh` を実行してください。
 
+## 新規クローン時の必須手順
+- このブランチを新しくクローンまたはチェックアウトした直後は、必ずフック設定を行ってください。
+- Windows (PowerShell): `./scripts/setup-hooks.ps1`
+- sh 環境: `./scripts/setup-hooks.sh`
+- この設定をしないと、コミット時の `manifest.webmanifest` バージョン自動バンプが動作しません。
+
 ## 運用ルール
 - 今後もプロジェクト運用に有効な知見は、継続的に `AGENTS.md` へ反映してください。
