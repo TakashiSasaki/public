@@ -236,37 +236,41 @@ def create_cursor_image(
                     base_pil = render_svg_to_pil(pictograms["bases"][base_name], size)
                     overlay.paste(base_pil, (0, 0), base_pil)
                     
-                # Badge 2 (Top Left)
+                # Badge 2 (Top Right)
                 if badge2_name and badge2_name in pictograms.get("badges", {}):
-                    badge2_size = size // 2
+                    badge2_size = size // 3
                     badge2_pil = render_svg_to_pil(pictograms["badges"][badge2_name], badge2_size)
-                    
-                    # Create a mask to blank out the base underneath
+
+                    # Clear the area under the badge
                     mask_draw = ImageDraw.Draw(overlay)
-                    offset = -size*0.125
+                    bx = size - badge2_size
+                    by = 0
                     mask_draw.ellipse(
-                        [(offset, offset), (offset + badge2_size*1.2, offset + badge2_size*1.2)], 
-                        fill=(0,0,0,0)
+                        [(bx - badge2_size * 0.1, by - badge2_size * 0.1),
+                         (bx + badge2_size * 1.1, by + badge2_size * 1.1)],
+                        fill=(0, 0, 0, 0)
                     )
-                    
+
                     temp_badge_layer = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-                    temp_badge_layer.paste(badge2_pil, (int(offset), int(offset)), badge2_pil)
+                    temp_badge_layer.paste(badge2_pil, (bx, by), badge2_pil)
                     overlay = Image.alpha_composite(overlay, temp_badge_layer)
 
                 # Badge 1 (Bottom Right)
                 if badge1_name and badge1_name in pictograms.get("badges", {}):
-                    badge1_size = size // 2
+                    badge1_size = size // 3
                     badge1_pil = render_svg_to_pil(pictograms["badges"][badge1_name], badge1_size)
-                    
+
                     mask_draw = ImageDraw.Draw(overlay)
-                    offset = size * 0.625
+                    bx = size - badge1_size
+                    by = size - badge1_size
                     mask_draw.ellipse(
-                        [(offset - badge1_size*0.1, offset - badge1_size*0.1), (size+size*0.1, size+size*0.1)], 
-                        fill=(0,0,0,0)
+                        [(bx - badge1_size * 0.1, by - badge1_size * 0.1),
+                         (bx + badge1_size * 1.1, by + badge1_size * 1.1)],
+                        fill=(0, 0, 0, 0)
                     )
-                    
+
                     temp_badge_layer = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-                    temp_badge_layer.paste(badge1_pil, (int(size - badge1_size + size*0.125), int(size - badge1_size + size*0.125)), badge1_pil)
+                    temp_badge_layer.paste(badge1_pil, (bx, by), badge1_pil)
                     overlay = Image.alpha_composite(overlay, temp_badge_layer)
                     
                 # Finally composite the overlay onto the main cursor image
