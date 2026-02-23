@@ -28,14 +28,14 @@
 ## バージョン運用（Manifest）
 - `manifest.webmanifest` の `version` はセマンティックバージョン（`major.minor.patch`）を使用します。
 - コミット時は少なくともパッチ番号を `+1` します。
-- pre-commit フック（`.githooks/pre-commit`）で `manifest.webmanifest` の `version` を自動バンプし、同ファイルを自動 `git add` します。
-- フックは `git config core.hooksPath .githooks` で有効化します。
-- 別のチェックアウト先でも同じ挙動にするため、チェックアウト後に `scripts/setup-hooks.ps1` または `scripts/setup-hooks.sh` を実行してください。
+- pre-commit フック（`githooks/pre-commit`）で `manifest.webmanifest` の `version` を自動バンプし、同ファイルを自動 `git add` します。
+- フックは `git config core.hooksPath githooks` で有効化します。
+- 別のチェックアウト先でも同じ挙動にするため、チェックアウト後に `githooks/setup-hooks.ps1` または `githooks/setup-hooks.sh` を実行してください。
 
 ## 新規クローン時の必須手順
 - このブランチを新しくクローンまたはチェックアウトした直後は、必ずフック設定を行ってください。
-- Windows (PowerShell): `./scripts/setup-hooks.ps1`
-- sh 環境: `./scripts/setup-hooks.sh`
+- Windows (PowerShell): `./githooks/setup-hooks.ps1`
+- sh 環境: `./githooks/setup-hooks.sh`
 - この設定をしないと、コミット時の `manifest.webmanifest` バージョン自動バンプが動作しません。
 
 ## 運用ルール
