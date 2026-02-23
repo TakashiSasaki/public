@@ -1,26 +1,26 @@
 [submodule "git-hangup-investigation"]
 	path = git-hangup-investigation
-	url = git@github.com:TakashiSasaki/public
+	url = https://github.com/TakashiSasaki/public.git
 	branch = git-hangup-investigation
 [submodule "llama-cpp-tk"]
 	path = llama-cpp-tk
-	url = git@github.com:TakashiSasaki/public
+	url = https://github.com/TakashiSasaki/public.git
 	branch = llama-cpp-tk
 [submodule "mouse-pointer"]
 	path = mouse-pointer
-	url = git@github.com:TakashiSasaki/public
+	url = https://github.com/TakashiSasaki/public.git
 	branch = mouse-pointer
 [submodule "pictogram"]
 	path = pictogram
-	url = git@github.com:TakashiSasaki/public
+	url = https://github.com/TakashiSasaki/public.git
 	branch = pictogram
 [submodule "shellex-rust"]
 	path = shellex-rust
-	url = git@github.com:TakashiSasaki/public
+	url = https://github.com/TakashiSasaki/public.git
 	branch = shellex-rust
 [submodule "githooks"]
 	path = githooks
-	url = git@github.com:TakashiSasaki/public
+	url = https://github.com/TakashiSasaki/public.git
 	branch = githooks
 [submodule "feat/mcp-filelist-server"]
 	path = feat/mcp-filelist-server
@@ -42,3 +42,4 @@
 	path = windows-moukaeritai-work
 	url = https://github.com/TakashiSasaki/windows-moukaeritai-work.git
 	branch = windows-moukaeritai-work
+
