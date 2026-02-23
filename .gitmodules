@@ -18,3 +18,7 @@
 	path = shellex-rust
 	url = git@github.com:TakashiSasaki/public
 	branch = shellex-rust
+[submodule "githooks"]
+	path = githooks
+	url = git@github.com:TakashiSasaki/public
+	branch = githooks
