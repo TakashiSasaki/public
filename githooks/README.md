@@ -21,3 +21,17 @@
    - `PYPROJECT_PATH`（既定: `pyproject.toml`）
    - `BUMP_PART`（既定: `patch`）
    - `BUMP_SCRIPT`（既定: `githooks/bump-pyproject-version.py`）
+
+## JavaScript / TypeScript プロジェクト向けテンプレート（このブランチでは未使用）
+- `pre-commit-packagejson.sh`
+- `bump-packagejson-version.py`
+
+これらは `package.json` の `version` をバンプするための再利用テンプレートです。
+このブランチの有効フックは manifest 対象のみであり、デフォルトでは実行されません。
+
+## 使い方（JavaScript / TypeScript プロジェクトで利用する場合）
+1. `githooks/pre-commit-packagejson.sh` を `pre-commit` として使用する。
+2. 必要に応じて環境変数を設定する。
+   - `PACKAGE_JSON_PATH`（既定: `package.json`）
+   - `BUMP_PART`（既定: `patch`）
+   - `BUMP_SCRIPT`（既定: `githooks/bump-packagejson-version.py`）

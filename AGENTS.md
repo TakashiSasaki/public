@@ -31,8 +31,9 @@
 - pre-commit フック（`githooks/pre-commit`）は `githooks/pre-commit-manifest-version.ps1` を呼び出し、`manifest.webmanifest` の `version` を自動バンプして同ファイルを自動 `git add` します。
 - フックは `git config core.hooksPath githooks` で有効化します。
 - 別のチェックアウト先でも同じ挙動にするため、チェックアウト後に `githooks/setup-hooks.ps1` または `githooks/setup-hooks.sh` を実行してください。
-- `githooks` には Python プロジェクト再利用用のテンプレート（`githooks/pre-commit-pyproject.sh`, `githooks/bump-pyproject-version.py`）も保管します。
+- `githooks` には Python プロジェクト再利用用のテンプレート（`githooks/pre-commit-pyproject.sh`, `githooks/bump-pyproject-version.py`）と JavaScript/TypeScript プロジェクト再利用用のテンプレート（`githooks/pre-commit-packagejson.sh`, `githooks/bump-packagejson-version.py`）も保管します。
 - このブランチでは `pyproject.toml` を対象とするテンプレートは実行しません。
+- このブランチでは `package.json` を対象とするテンプレートも実行しません。
 - プロジェクトごとにバージョンを管理するファイルは1つだけにし、同一コミットで複数ファイルを同時バンプしません。複数バージョン管理が必要な場合は別プロジェクトとして扱います。
 
 ## 新規クローン時の必須手順
