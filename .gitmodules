@@ -22,3 +22,23 @@
 	path = githooks
 	url = git@github.com:TakashiSasaki/public
 	branch = githooks
+[submodule "feat/mcp-filelist-server"]
+	path = feat/mcp-filelist-server
+	url = https://github.com/TakashiSasaki/windows-moukaeritai-work.git
+	branch = feat/mcp-filelist-server
+[submodule "mcp"]
+	path = mcp
+	url = https://github.com/TakashiSasaki/windows-moukaeritai-work.git
+	branch = mcp
+[submodule "remove-desktop-ini"]
+	path = remove-desktop-ini
+	url = https://github.com/TakashiSasaki/windows-moukaeritai-work.git
+	branch = remove-desktop-ini
+[submodule "test/add-http-tests-and-fix-stdio"]
+	path = test/add-http-tests-and-fix-stdio
+	url = https://github.com/TakashiSasaki/windows-moukaeritai-work.git
+	branch = test/add-http-tests-and-fix-stdio
+[submodule "windows-moukaeritai-work"]
+	path = windows-moukaeritai-work
+	url = https://github.com/TakashiSasaki/windows-moukaeritai-work.git
+	branch = windows-moukaeritai-work

@@ -13,6 +13,14 @@
 - 例: `pictogram` ブランチは `./pictogram` サブモジュールとして配置します。
 - サブモジュール URL は同一リポジトリ `git@github.com:TakashiSasaki/public` を使用し、`.gitmodules` の `branch` に対象ブランチ名を設定します。
 
+## 別リモートブランチの取り込み手順
+- `windows-moukaeritai-work` リモートの全ブランチを、このリポジトリのローカルブランチとして履歴ごと取り込む場合は追跡ブランチを作成します。
+- まず最新を取得します: `git fetch windows-moukaeritai-work --prune`
+- 1ブランチずつ作る場合: `git branch --track <branch-name> windows-moukaeritai-work/<branch-name>`
+- 例: `git branch --track mcp windows-moukaeritai-work/mcp`
+- 既存ブランチがある場合は作成をスキップしてください（重複作成は失敗します）。
+- 取り込み後は `git branch -vv` で upstream が `windows-moukaeritai-work/<branch-name>` になっていることを確認してください。
+
 ## AGENTS.md の目的
 - `AGENTS.md` は、他の開発者やコーディングエージェントも参照する共通指示ファイルです。
 
