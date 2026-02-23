@@ -31,6 +31,8 @@
 - pre-commit フック（`githooks/pre-commit`）で `manifest.webmanifest` の `version` を自動バンプし、同ファイルを自動 `git add` します。
 - フックは `git config core.hooksPath githooks` で有効化します。
 - 別のチェックアウト先でも同じ挙動にするため、チェックアウト後に `githooks/setup-hooks.ps1` または `githooks/setup-hooks.sh` を実行してください。
+- `githooks` には Python プロジェクト再利用用のテンプレート（`githooks/pre-commit-pyproject.sh`, `githooks/bump-pyproject-version.py`）も保管します。
+- このブランチでは `pyproject.toml` を対象とするテンプレートは実行しません。
 
 ## 新規クローン時の必須手順
 - このブランチを新しくクローンまたはチェックアウトした直後は、必ずフック設定を行ってください。
