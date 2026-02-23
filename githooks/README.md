@@ -4,7 +4,7 @@
 
 ## 現在このブランチで有効なフック
 - `pre-commit`
-- `pre-commit.ps1`
+- `pre-commit-manifest-version.ps1`
   
 `manifest.webmanifest` の `version` をコミット時に自動バンプします。
 
