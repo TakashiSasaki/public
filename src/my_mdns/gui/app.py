@@ -238,15 +238,29 @@ class MDNSApp:
         self.root.after(150, self._poll_events)
 
     def _append_log(self, level: str, message: str, time_text: str | None = None) -> None:
+        if not self._log_text.winfo_exists():
+            return
         prefix = f"[{time_text}] " if time_text else ""
         self._log_text.configure(state=tk.NORMAL)
         self._log_text.insert(tk.END, f"{prefix}{level} {message}\n")
         self._log_text.see(tk.END)
         self._log_text.configure(state=tk.DISABLED)
 
+    def shutdown(self) -> None:
+        try:
+            self._runtime.stop()
+        except Exception as exc:
+            self._append_log("ERROR", f"failed to stop runtime during shutdown: {exc}")
+        self._running = False
+        self._status.set("stopped")
+        self._render_interfaces()
+        self._update_run_toggle_ui()
+        if self.root.winfo_exists():
+            self.root.quit()
+            self.root.destroy()
+
     def _on_close(self) -> None:
-        self._stop()
-        self.root.destroy()
+        self.shutdown()
 
     def run(self) -> None:
         self.root.mainloop()

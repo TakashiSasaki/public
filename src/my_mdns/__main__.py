@@ -21,7 +21,10 @@ def main() -> None:
         return
 
     app = MDNSApp()
-    app.run()
+    try:
+        app.run()
+    except KeyboardInterrupt:
+        app.shutdown()
 
 
 if __name__ == "__main__":
