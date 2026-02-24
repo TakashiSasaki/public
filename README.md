@@ -1,37 +1,51 @@
 # githooks
 
-このディレクトリは、複数プロジェクトで再利用する Git hook と補助スクリプトを置く場所です。
+複数プロジェクトで再利用する Git hooks とバージョンバンプ用スクリプトです。
 
-## 現在このブランチで有効なフック
-- `pre-commit`
-- `pre-commit-manifest-version.ps1`
-  
-`manifest.webmanifest` の `version` をコミット時に自動バンプします。
+## 対応対象
+- `pyproject.toml`
+- `package.json`
+- `manifest.webmanifest`
 
-## Python プロジェクト向けテンプレート（このブランチでは未使用）
+`pre-commit` は上記ファイルを自動検出して `version` をバンプします。
+
+## セットアップ
+Linux/macOS:
+```sh
+sh githooks/setup-hooks.sh
+```
+
+Windows (PowerShell):
+```powershell
+pwsh -File githooks/setup-hooks.ps1
+```
+
+どちらも `core.hooksPath` をこのサブモジュールに設定します。
+
+## デフォルト動作
+- `BUMP_PART=patch`
+- `BUMP_TYPES=pyproject,packagejson,manifest`
+- 自動検出有効 (`BUMP_DISCOVER=1`)
+- 変更対象は自動で `git add` されます
+
+## 環境変数での制御
+- `BUMP_PART`
+  - `patch` / `minor` / `major`
+- `BUMP_TYPES`
+  - 例: `pyproject,packagejson`
+- `BUMP_DISCOVER`
+  - `1`: 自動検出
+  - `0`: 自動検出しない
+- `BUMP_PYPROJECT_PATHS`
+  - カンマ/セミコロン区切りで `pyproject.toml` パス指定
+- `BUMP_PACKAGE_JSON_PATHS`
+  - カンマ/セミコロン区切りで `package.json` パス指定
+- `BUMP_MANIFEST_PATHS`
+  - カンマ/セミコロン区切りで `manifest.webmanifest` パス指定
+
+## 互換ラッパー
 - `pre-commit-pyproject.sh`
-- `bump-pyproject-version.py`
-
-これらは `pyproject.toml` の `version` をバンプするための再利用テンプレートです。
-このブランチには `pyproject.toml` がないため、デフォルトでは実行されません。
-
-## 使い方（Python プロジェクトで利用する場合）
-1. `githooks/pre-commit-pyproject.sh` を `pre-commit` として使用する。
-2. 必要に応じて環境変数を設定する。
-   - `PYPROJECT_PATH`（既定: `pyproject.toml`）
-   - `BUMP_PART`（既定: `patch`）
-   - `BUMP_SCRIPT`（既定: `githooks/bump-pyproject-version.py`）
-
-## JavaScript / TypeScript プロジェクト向けテンプレート（このブランチでは未使用）
 - `pre-commit-packagejson.sh`
-- `bump-packagejson-version.py`
+- `pre-commit-manifest-version.ps1`
 
-これらは `package.json` の `version` をバンプするための再利用テンプレートです。
-このブランチの有効フックは manifest 対象のみであり、デフォルトでは実行されません。
-
-## 使い方（JavaScript / TypeScript プロジェクトで利用する場合）
-1. `githooks/pre-commit-packagejson.sh` を `pre-commit` として使用する。
-2. 必要に応じて環境変数を設定する。
-   - `PACKAGE_JSON_PATH`（既定: `package.json`）
-   - `BUMP_PART`（既定: `patch`）
-   - `BUMP_SCRIPT`（既定: `githooks/bump-packagejson-version.py`）
+上記は既存運用向けの互換ラッパーで、内部的には統合 `pre-commit` / `bump-version.py` を利用します。

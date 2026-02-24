@@ -1,32 +1,28 @@
 $ErrorActionPreference = "Stop"
 
-$manifestPath = Join-Path $PSScriptRoot "..\\manifest.webmanifest"
-
-if (-not (Test-Path $manifestPath)) {
-  Write-Error "pre-commit: manifest not found: $manifestPath"
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$bumpScript = Join-Path $scriptDir "bump-version.py"
+$manifestPath = $env:MANIFEST_PATH
+if ([string]::IsNullOrWhiteSpace($manifestPath)) {
+  $manifestPath = "manifest.webmanifest"
+}
+$part = $env:BUMP_PART
+if ([string]::IsNullOrWhiteSpace($part)) {
+  $part = "patch"
 }
 
-$manifestText = Get-Content -Raw -Encoding UTF8 $manifestPath
-$versionPattern = '"version"\s*:\s*"(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)"'
-$match = [regex]::Match($manifestText, $versionPattern)
-
-if (-not $match.Success) {
-  Write-Error "pre-commit: version field (x.y.z) not found in manifest.webmanifest"
+if (-not (Test-Path $bumpScript)) {
+  throw "pre-commit: bump script not found: $bumpScript"
 }
 
-$major = [int]$match.Groups["major"].Value
-$minor = [int]$match.Groups["minor"].Value
-$patch = [int]$match.Groups["patch"].Value + 1
-$nextVersion = "$major.$minor.$patch"
-
-$updatedText = [regex]::Replace(
-  $manifestText,
-  $versionPattern,
-  ('"version": "{0}"' -f $nextVersion),
-  1
-)
-
-Set-Content -Path $manifestPath -Value $updatedText -Encoding UTF8NoBOM
-git add -- $manifestPath
-
-Write-Host "pre-commit: manifest version bumped to $nextVersion"
+if (Get-Command python -ErrorAction SilentlyContinue) {
+  & python $bumpScript --part $part --type manifest --manifest-path $manifestPath --no-discover --stage
+} elseif (Get-Command py -ErrorAction SilentlyContinue) {
+  & py -3 $bumpScript --part $part --type manifest --manifest-path $manifestPath --no-discover --stage
+} elseif (Get-Command python3 -ErrorAction SilentlyContinue) {
+  & python3 $bumpScript --part $part --type manifest --manifest-path $manifestPath --no-discover --stage
+} elseif (Get-Command uv -ErrorAction SilentlyContinue) {
+  & uv run --no-sync python $bumpScript --part $part --type manifest --manifest-path $manifestPath --no-discover --stage
+} else {
+  throw "pre-commit: python runtime not found (python/py/python3/uv)."
+}

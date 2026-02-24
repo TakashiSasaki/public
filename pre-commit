@@ -2,12 +2,33 @@
 set -eu
 
 SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+BUMP_SCRIPT="${BUMP_SCRIPT:-$SCRIPT_DIR/bump-version.py}"
+BUMP_PART="${BUMP_PART:-patch}"
+BUMP_TYPES="${BUMP_TYPES:-pyproject,packagejson,manifest}"
+BUMP_DISCOVER="${BUMP_DISCOVER:-1}"
 
-if command -v pwsh >/dev/null 2>&1; then
-  pwsh -NoProfile -ExecutionPolicy Bypass -File "$SCRIPT_DIR/pre-commit-manifest-version.ps1"
-elif command -v powershell >/dev/null 2>&1; then
-  powershell -NoProfile -ExecutionPolicy Bypass -File "$SCRIPT_DIR/pre-commit-manifest-version.ps1"
-else
-  echo "pre-commit: PowerShell (pwsh/powershell) is required." >&2
+run_python() {
+  if command -v python >/dev/null 2>&1; then
+    python "$@"
+  elif command -v python3 >/dev/null 2>&1; then
+    python3 "$@"
+  elif command -v py >/dev/null 2>&1; then
+    py -3 "$@"
+  elif command -v uv >/dev/null 2>&1; then
+    uv run --no-sync python "$@"
+  else
+    echo "pre-commit: python runtime not found (python/python3/py/uv)." >&2
+    return 1
+  fi
+}
+
+if [ ! -f "$BUMP_SCRIPT" ]; then
+  echo "pre-commit: bump script not found: $BUMP_SCRIPT" >&2
   exit 1
+fi
+
+if [ "$BUMP_DISCOVER" = "0" ]; then
+  run_python "$BUMP_SCRIPT" --part "$BUMP_PART" --no-discover --stage
+else
+  run_python "$BUMP_SCRIPT" --part "$BUMP_PART" --stage
 fi
