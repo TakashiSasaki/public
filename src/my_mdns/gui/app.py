@@ -23,12 +23,14 @@ class MDNSApp:
         self._target_port = tk.StringVar(value="5353")
         self._status = tk.StringVar(value="stopped")
         self._interfaces: list[InterfaceInfo] = list_interfaces()
-        self._ip_only_filter = tk.BooleanVar(value=False)
-        self._ip_filter_button_text = tk.StringVar(value="Show IP-assigned only: OFF")
+        self._ip_only_filter = tk.BooleanVar(value=True)
+        self._ip_filter_button_text = tk.StringVar(value="Show IP-assigned only: ON")
+        self._run_toggle_button: tk.Button | None = None
 
         self._build_ui()
         self.root.protocol("WM_DELETE_WINDOW", self._on_close)
         self.root.after(150, self._poll_events)
+        self.root.after(0, self._start)
 
     def _build_ui(self) -> None:
         frame = ttk.Frame(self.root, padding=12)
@@ -51,10 +53,11 @@ class MDNSApp:
         ttk.Entry(ctrl, width=18, textvariable=self._target_host).grid(row=0, column=1, padx=6)
         ttk.Label(ctrl, text="Port").grid(row=0, column=2, sticky=tk.W)
         ttk.Entry(ctrl, width=8, textvariable=self._target_port).grid(row=0, column=3, padx=6)
-        ttk.Button(ctrl, text="Start", command=self._start).grid(row=0, column=4, padx=6)
-        ttk.Button(ctrl, text="Stop", command=self._stop).grid(row=0, column=5, padx=6)
-        ttk.Button(ctrl, text="Clear target", command=self._clear_target).grid(row=0, column=6, padx=6)
-        ttk.Label(ctrl, textvariable=self._status).grid(row=0, column=7, sticky=tk.E, padx=8)
+        self._run_toggle_button = tk.Button(ctrl, command=self._toggle_runtime)
+        self._run_toggle_button.grid(row=0, column=4, padx=6)
+        ttk.Button(ctrl, text="Clear target", command=self._clear_target).grid(row=0, column=5, padx=6)
+        ttk.Label(ctrl, textvariable=self._status).grid(row=0, column=6, sticky=tk.E, padx=8)
+        self._update_run_toggle_ui()
 
         listening_ctrl = ttk.Frame(listening_tab)
         listening_ctrl.pack(fill=tk.X, pady=(0, 8))
@@ -69,16 +72,18 @@ class MDNSApp:
         iface.pack(fill=tk.BOTH, expand=True)
         self._iface_status_tree = ttk.Treeview(
             iface,
-            columns=("name", "listening", "addresses"),
+            columns=("name", "listening", "ipv4", "ipv6"),
             show="headings",
             height=16,
         )
         self._iface_status_tree.heading("name", text="interface")
         self._iface_status_tree.heading("listening", text="listening")
-        self._iface_status_tree.heading("addresses", text="ip addresses")
-        self._iface_status_tree.column("name", width=280, anchor=tk.W)
-        self._iface_status_tree.column("listening", width=120, anchor=tk.W)
-        self._iface_status_tree.column("addresses", width=300, anchor=tk.W)
+        self._iface_status_tree.heading("ipv4", text="ipv4 addresses")
+        self._iface_status_tree.heading("ipv6", text="ipv6 addresses")
+        self._iface_status_tree.column("name", width=240, anchor=tk.W)
+        self._iface_status_tree.column("listening", width=100, anchor=tk.W)
+        self._iface_status_tree.column("ipv4", width=220, anchor=tk.W)
+        self._iface_status_tree.column("ipv6", width=300, anchor=tk.W)
         self._iface_status_tree.pack(fill=tk.BOTH, expand=True)
         self._render_interfaces()
 
@@ -109,19 +114,57 @@ class MDNSApp:
     def _start(self) -> None:
         if self._running:
             return
-        self._runtime.start()
-        self._running = True
-        self._status.set("running")
-        self._render_interfaces()
-        self._apply_target()
+        try:
+            self._runtime.start()
+            self._running = True
+            self._status.set("running")
+            self._apply_target()
+        except Exception as exc:
+            self._running = False
+            self._status.set("stopped")
+            self._append_log("ERROR", f"failed to start capture: {exc}")
+        finally:
+            self._render_interfaces()
+            self._update_run_toggle_ui()
 
     def _stop(self) -> None:
         if not self._running:
             return
-        self._runtime.stop()
-        self._running = False
-        self._status.set("stopped")
-        self._render_interfaces()
+        try:
+            self._runtime.stop()
+            self._running = False
+            self._status.set("stopped")
+        except Exception as exc:
+            self._append_log("ERROR", f"failed to stop capture: {exc}")
+        finally:
+            self._render_interfaces()
+            self._update_run_toggle_ui()
+
+    def _toggle_runtime(self) -> None:
+        if self._running:
+            self._stop()
+        else:
+            self._start()
+
+    def _update_run_toggle_ui(self) -> None:
+        if self._run_toggle_button is None:
+            return
+        if self._running:
+            self._run_toggle_button.configure(
+                text="Stop Listening",
+                bg="#16a34a",
+                fg="#ffffff",
+                activebackground="#15803d",
+                activeforeground="#ffffff",
+            )
+        else:
+            self._run_toggle_button.configure(
+                text="Start Listening",
+                bg="#9ca3af",
+                fg="#111827",
+                activebackground="#6b7280",
+                activeforeground="#111827",
+            )
 
     def _apply_target(self) -> None:
         host = self._target_host.get().strip()
@@ -158,14 +201,16 @@ class MDNSApp:
         for item in self._iface_status_tree.get_children():
             self._iface_status_tree.delete(item)
         for interface in self._interfaces:
-            if self._ip_only_filter.get() and not interface.addresses:
+            has_ip = bool(interface.ipv4_addresses or interface.ipv6_addresses)
+            if self._ip_only_filter.get() and not has_ip:
                 continue
             listening = "yes" if self._running else "no"
-            addresses = ", ".join(interface.addresses) if interface.addresses else "-"
+            ipv4 = ", ".join(interface.ipv4_addresses) if interface.ipv4_addresses else "-"
+            ipv6 = ", ".join(interface.ipv6_addresses) if interface.ipv6_addresses else "-"
             self._iface_status_tree.insert(
                 "",
                 tk.END,
-                values=(interface.name, listening, addresses),
+                values=(interface.name, listening, ipv4, ipv6),
             )
 
     def _poll_events(self) -> None:

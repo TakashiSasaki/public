@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import ipaddress
 import platform
 import re
 import socket
@@ -10,7 +11,12 @@ import subprocess
 @dataclass(frozen=True, slots=True)
 class InterfaceInfo:
     name: str
-    addresses: tuple[str, ...]
+    ipv4_addresses: tuple[str, ...]
+    ipv6_addresses: tuple[str, ...]
+
+    @property
+    def addresses(self) -> tuple[str, ...]:
+        return self.ipv4_addresses + self.ipv6_addresses
 
 
 def _dedupe_keep_order(values: list[str]) -> list[str]:
@@ -22,6 +28,21 @@ def _dedupe_keep_order(values: list[str]) -> list[str]:
         seen.add(value)
         deduped.append(value)
     return deduped
+
+
+def _split_ip_versions(values: list[str]) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    ipv4: list[str] = []
+    ipv6: list[str] = []
+    for value in values:
+        try:
+            parsed = ipaddress.ip_address(value)
+        except ValueError:
+            continue
+        if parsed.version == 4:
+            ipv4.append(value)
+        elif parsed.version == 6:
+            ipv6.append(value)
+    return tuple(_dedupe_keep_order(ipv4)), tuple(_dedupe_keep_order(ipv6))
 
 
 def _collect_ips_with_psutil() -> dict[str, list[str]] | None:
@@ -212,7 +233,7 @@ def list_interfaces() -> list[InterfaceInfo]:
     windows_index_map = _collect_ips_windows_by_index() if platform.system().lower() == "windows" else {}
 
     if not indexed_names:
-        return [InterfaceInfo(name="all (0.0.0.0)", addresses=("0.0.0.0",))]
+        return [InterfaceInfo(name="all (0.0.0.0)", ipv4_addresses=("0.0.0.0",), ipv6_addresses=())]
 
     deduped_names = _dedupe_keep_order([name for _, name in indexed_names])
     name_to_index: dict[str, int] = {}
@@ -233,5 +254,12 @@ def list_interfaces() -> list[InterfaceInfo]:
                 if lower_name in lower_key or lower_key in lower_name:
                     merged.extend(values)
             addresses = _dedupe_keep_order(merged)
-        resolved.append(InterfaceInfo(name=name, addresses=tuple(addresses)))
+        ipv4_addresses, ipv6_addresses = _split_ip_versions(addresses)
+        resolved.append(
+            InterfaceInfo(
+                name=name,
+                ipv4_addresses=ipv4_addresses,
+                ipv6_addresses=ipv6_addresses,
+            )
+        )
     return resolved
