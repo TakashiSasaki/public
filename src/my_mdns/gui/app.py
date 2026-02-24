@@ -5,7 +5,7 @@ import tkinter as tk
 from tkinter import ttk
 
 from my_mdns.core.events import LogEvent, PacketEvent
-from my_mdns.core.interfaces import list_interfaces
+from my_mdns.core.interfaces import InterfaceInfo, list_interfaces
 from my_mdns.core.runtime import CoreRuntime
 
 
@@ -22,7 +22,9 @@ class MDNSApp:
         self._target_host = tk.StringVar(value="127.0.0.1")
         self._target_port = tk.StringVar(value="5353")
         self._status = tk.StringVar(value="stopped")
-        self._interfaces = list_interfaces()
+        self._interfaces: list[InterfaceInfo] = list_interfaces()
+        self._ip_only_filter = tk.BooleanVar(value=False)
+        self._ip_filter_button_text = tk.StringVar(value="Show IP-assigned only: OFF")
 
         self._build_ui()
         self.root.protocol("WM_DELETE_WINDOW", self._on_close)
@@ -32,7 +34,17 @@ class MDNSApp:
         frame = ttk.Frame(self.root, padding=12)
         frame.pack(fill=tk.BOTH, expand=True)
 
-        ctrl = ttk.LabelFrame(frame, text="Control", padding=10)
+        notebook = ttk.Notebook(frame)
+        notebook.pack(fill=tk.BOTH, expand=True)
+
+        main_tab = ttk.Frame(notebook, padding=8)
+        listening_tab = ttk.Frame(notebook, padding=8)
+        logs_tab = ttk.Frame(notebook, padding=8)
+        notebook.add(main_tab, text="Main")
+        notebook.add(listening_tab, text="Listening")
+        notebook.add(logs_tab, text="Logs")
+
+        ctrl = ttk.LabelFrame(main_tab, text="Control", padding=10)
         ctrl.pack(fill=tk.X)
 
         ttk.Label(ctrl, text="Forward host").grid(row=0, column=0, sticky=tk.W)
@@ -42,43 +54,35 @@ class MDNSApp:
         ttk.Button(ctrl, text="Start", command=self._start).grid(row=0, column=4, padx=6)
         ttk.Button(ctrl, text="Stop", command=self._stop).grid(row=0, column=5, padx=6)
         ttk.Button(ctrl, text="Clear target", command=self._clear_target).grid(row=0, column=6, padx=6)
-        ttk.Button(ctrl, text="Refresh IFs", command=self._refresh_interfaces).grid(row=0, column=7, padx=6)
-        ttk.Label(ctrl, textvariable=self._status).grid(row=0, column=8, sticky=tk.E, padx=8)
+        ttk.Label(ctrl, textvariable=self._status).grid(row=0, column=7, sticky=tk.E, padx=8)
 
-        iface = ttk.LabelFrame(frame, text="Listen interfaces", padding=8)
-        iface.pack(fill=tk.BOTH, expand=False, pady=(10, 0))
-        iface_notebook = ttk.Notebook(iface)
-        iface_notebook.pack(fill=tk.BOTH, expand=True)
+        listening_ctrl = ttk.Frame(listening_tab)
+        listening_ctrl.pack(fill=tk.X, pady=(0, 8))
+        ttk.Button(listening_ctrl, text="Refresh IFs", command=self._refresh_interfaces).pack(side=tk.LEFT)
+        ttk.Button(
+            listening_ctrl,
+            textvariable=self._ip_filter_button_text,
+            command=self._toggle_ip_filter,
+        ).pack(side=tk.LEFT, padx=(8, 0))
 
-        iface_list_tab = ttk.Frame(iface_notebook)
-        iface_status_tab = ttk.Frame(iface_notebook)
-        iface_notebook.add(iface_list_tab, text="Interfaces")
-        iface_notebook.add(iface_status_tab, text="Listening")
-
-        self._iface_list_tree = ttk.Treeview(
-            iface_list_tab,
-            columns=("name",),
-            show="headings",
-            height=5,
-        )
-        self._iface_list_tree.heading("name", text="interface")
-        self._iface_list_tree.column("name", width=520, anchor=tk.W)
-        self._iface_list_tree.pack(fill=tk.BOTH, expand=True)
-
+        iface = ttk.LabelFrame(listening_tab, text="Listen interfaces", padding=8)
+        iface.pack(fill=tk.BOTH, expand=True)
         self._iface_status_tree = ttk.Treeview(
-            iface_status_tab,
-            columns=("name", "listening"),
+            iface,
+            columns=("name", "listening", "addresses"),
             show="headings",
-            height=5,
+            height=16,
         )
         self._iface_status_tree.heading("name", text="interface")
         self._iface_status_tree.heading("listening", text="listening")
-        self._iface_status_tree.column("name", width=420, anchor=tk.W)
+        self._iface_status_tree.heading("addresses", text="ip addresses")
+        self._iface_status_tree.column("name", width=280, anchor=tk.W)
         self._iface_status_tree.column("listening", width=120, anchor=tk.W)
+        self._iface_status_tree.column("addresses", width=300, anchor=tk.W)
         self._iface_status_tree.pack(fill=tk.BOTH, expand=True)
         self._render_interfaces()
 
-        table = ttk.LabelFrame(frame, text="Captured packets", padding=8)
+        table = ttk.LabelFrame(main_tab, text="Captured packets", padding=8)
         table.pack(fill=tk.BOTH, expand=True, pady=(10, 0))
         self._tree = ttk.Treeview(
             table,
@@ -97,8 +101,8 @@ class MDNSApp:
             self._tree.column(name, width=width, anchor=tk.W)
         self._tree.pack(fill=tk.BOTH, expand=True)
 
-        logs = ttk.LabelFrame(frame, text="Logs", padding=8)
-        logs.pack(fill=tk.BOTH, expand=True, pady=(10, 0))
+        logs = ttk.LabelFrame(logs_tab, text="Logs", padding=8)
+        logs.pack(fill=tk.BOTH, expand=True)
         self._log_text = tk.Text(logs, height=7, state=tk.DISABLED)
         self._log_text.pack(fill=tk.BOTH, expand=True)
 
@@ -141,15 +145,28 @@ class MDNSApp:
         self._render_interfaces()
         self._append_log("INFO", f"interfaces refreshed: {len(self._interfaces)} found")
 
+    def _toggle_ip_filter(self) -> None:
+        enabled = not self._ip_only_filter.get()
+        self._ip_only_filter.set(enabled)
+        self._ip_filter_button_text.set(
+            "Show IP-assigned only: ON" if enabled else "Show IP-assigned only: OFF"
+        )
+        self._render_interfaces()
+        self._append_log("INFO", f"ip-assigned filter {'enabled' if enabled else 'disabled'}")
+
     def _render_interfaces(self) -> None:
-        for item in self._iface_list_tree.get_children():
-            self._iface_list_tree.delete(item)
         for item in self._iface_status_tree.get_children():
             self._iface_status_tree.delete(item)
-        for name in self._interfaces:
+        for interface in self._interfaces:
+            if self._ip_only_filter.get() and not interface.addresses:
+                continue
             listening = "yes" if self._running else "no"
-            self._iface_list_tree.insert("", tk.END, values=(name,))
-            self._iface_status_tree.insert("", tk.END, values=(name, listening))
+            addresses = ", ".join(interface.addresses) if interface.addresses else "-"
+            self._iface_status_tree.insert(
+                "",
+                tk.END,
+                values=(interface.name, listening, addresses),
+            )
 
     def _poll_events(self) -> None:
         while True:
