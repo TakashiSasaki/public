@@ -49,3 +49,33 @@ pwsh -File githooks/setup-hooks.ps1
 - `pre-commit-manifest-version.ps1`
 
 上記は既存運用向けの互換ラッパーで、内部的には統合 `pre-commit` / `bump-version.py` を利用します。
+
+## スクリプト呼び出し関係
+コミット時の実行起点は `pre-commit` です。
+
+```text
+git commit
+  -> githooks/pre-commit
+     -> githooks/bump-version.py
+        -> pyproject.toml / package.json / manifest.webmanifest を更新
+        -> git add (変更ファイル)
+```
+
+互換ラッパー経由の呼び出しは次の通りです。
+
+```text
+githooks/pre-commit-pyproject.sh
+  -> (環境変数を設定)
+  -> githooks/pre-commit
+     -> githooks/bump-version.py
+
+githooks/pre-commit-packagejson.sh
+  -> (環境変数を設定)
+  -> githooks/pre-commit
+     -> githooks/bump-version.py
+
+githooks/pre-commit-manifest-version.ps1
+  -> githooks/bump-version.py (--type manifest --no-discover --stage)
+```
+
+`setup-hooks.sh` / `setup-hooks.ps1` は `core.hooksPath` を `githooks` に設定するためのセットアップスクリプトであり、バンプ処理自体は実行しません。
