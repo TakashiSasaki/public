@@ -1,0 +1,4 @@
+[submodule "githooks"]
+	path = githooks
+	url = git@github.com:TakashiSasaki/public
+	branch = githooks

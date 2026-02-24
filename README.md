@@ -15,8 +15,7 @@ my-mdns/
   README.md
   githooks/
     pre-commit
-  scripts/
-    bump_patch.py
+    bump-version.py
     setup-hooks.ps1
     setup-hooks.sh
   src/
@@ -51,12 +50,12 @@ uv run my-mdns --version
 
 ## バージョン運用（プロトタイプ）
 - バージョンは `pyproject.toml` に保持
-- `scripts/bump_patch.py` でパッチバージョンを1つ上げる
-- `githooks/pre-commit` でコミット前に自動実行する想定
+- `githooks/bump-version.py` で `pyproject.toml` / `package.json` / `manifest.webmanifest` の `version` をバンプ
+- `githooks/pre-commit` でコミット前に自動実行
 
 hooksPath設定:
 ```bash
-pwsh -File scripts/setup-hooks.ps1
+pwsh -File githooks/setup-hooks.ps1
 ```
 
 ## 作者
