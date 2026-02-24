@@ -47,17 +47,35 @@ class MDNSApp:
 
         iface = ttk.LabelFrame(frame, text="Listen interfaces", padding=8)
         iface.pack(fill=tk.BOTH, expand=False, pady=(10, 0))
-        self._iface_tree = ttk.Treeview(
-            iface,
+        iface_notebook = ttk.Notebook(iface)
+        iface_notebook.pack(fill=tk.BOTH, expand=True)
+
+        iface_list_tab = ttk.Frame(iface_notebook)
+        iface_status_tab = ttk.Frame(iface_notebook)
+        iface_notebook.add(iface_list_tab, text="Interfaces")
+        iface_notebook.add(iface_status_tab, text="Listening")
+
+        self._iface_list_tree = ttk.Treeview(
+            iface_list_tab,
+            columns=("name",),
+            show="headings",
+            height=5,
+        )
+        self._iface_list_tree.heading("name", text="interface")
+        self._iface_list_tree.column("name", width=520, anchor=tk.W)
+        self._iface_list_tree.pack(fill=tk.BOTH, expand=True)
+
+        self._iface_status_tree = ttk.Treeview(
+            iface_status_tab,
             columns=("name", "listening"),
             show="headings",
             height=5,
         )
-        self._iface_tree.heading("name", text="interface")
-        self._iface_tree.heading("listening", text="listening")
-        self._iface_tree.column("name", width=360, anchor=tk.W)
-        self._iface_tree.column("listening", width=120, anchor=tk.W)
-        self._iface_tree.pack(fill=tk.BOTH, expand=True)
+        self._iface_status_tree.heading("name", text="interface")
+        self._iface_status_tree.heading("listening", text="listening")
+        self._iface_status_tree.column("name", width=420, anchor=tk.W)
+        self._iface_status_tree.column("listening", width=120, anchor=tk.W)
+        self._iface_status_tree.pack(fill=tk.BOTH, expand=True)
         self._render_interfaces()
 
         table = ttk.LabelFrame(frame, text="Captured packets", padding=8)
@@ -124,11 +142,14 @@ class MDNSApp:
         self._append_log("INFO", f"interfaces refreshed: {len(self._interfaces)} found")
 
     def _render_interfaces(self) -> None:
-        for item in self._iface_tree.get_children():
-            self._iface_tree.delete(item)
+        for item in self._iface_list_tree.get_children():
+            self._iface_list_tree.delete(item)
+        for item in self._iface_status_tree.get_children():
+            self._iface_status_tree.delete(item)
         for name in self._interfaces:
             listening = "yes" if self._running else "no"
-            self._iface_tree.insert("", tk.END, values=(name, listening))
+            self._iface_list_tree.insert("", tk.END, values=(name,))
+            self._iface_status_tree.insert("", tk.END, values=(name, listening))
 
     def _poll_events(self) -> None:
         while True:
