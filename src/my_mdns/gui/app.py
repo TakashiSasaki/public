@@ -5,6 +5,7 @@ import tkinter as tk
 from tkinter import ttk
 
 from my_mdns.core.events import LogEvent, PacketEvent
+from my_mdns.core.interfaces import list_interfaces
 from my_mdns.core.runtime import CoreRuntime
 
 
@@ -21,6 +22,7 @@ class MDNSApp:
         self._target_host = tk.StringVar(value="127.0.0.1")
         self._target_port = tk.StringVar(value="5353")
         self._status = tk.StringVar(value="stopped")
+        self._interfaces = list_interfaces()
 
         self._build_ui()
         self.root.protocol("WM_DELETE_WINDOW", self._on_close)
@@ -40,7 +42,23 @@ class MDNSApp:
         ttk.Button(ctrl, text="Start", command=self._start).grid(row=0, column=4, padx=6)
         ttk.Button(ctrl, text="Stop", command=self._stop).grid(row=0, column=5, padx=6)
         ttk.Button(ctrl, text="Clear target", command=self._clear_target).grid(row=0, column=6, padx=6)
-        ttk.Label(ctrl, textvariable=self._status).grid(row=0, column=7, sticky=tk.E, padx=8)
+        ttk.Button(ctrl, text="Refresh IFs", command=self._refresh_interfaces).grid(row=0, column=7, padx=6)
+        ttk.Label(ctrl, textvariable=self._status).grid(row=0, column=8, sticky=tk.E, padx=8)
+
+        iface = ttk.LabelFrame(frame, text="Listen interfaces", padding=8)
+        iface.pack(fill=tk.BOTH, expand=False, pady=(10, 0))
+        self._iface_tree = ttk.Treeview(
+            iface,
+            columns=("name", "listening"),
+            show="headings",
+            height=5,
+        )
+        self._iface_tree.heading("name", text="interface")
+        self._iface_tree.heading("listening", text="listening")
+        self._iface_tree.column("name", width=360, anchor=tk.W)
+        self._iface_tree.column("listening", width=120, anchor=tk.W)
+        self._iface_tree.pack(fill=tk.BOTH, expand=True)
+        self._render_interfaces()
 
         table = ttk.LabelFrame(frame, text="Captured packets", padding=8)
         table.pack(fill=tk.BOTH, expand=True, pady=(10, 0))
@@ -72,6 +90,7 @@ class MDNSApp:
         self._runtime.start()
         self._running = True
         self._status.set("running")
+        self._render_interfaces()
         self._apply_target()
 
     def _stop(self) -> None:
@@ -80,6 +99,7 @@ class MDNSApp:
         self._runtime.stop()
         self._running = False
         self._status.set("stopped")
+        self._render_interfaces()
 
     def _apply_target(self) -> None:
         host = self._target_host.get().strip()
@@ -97,6 +117,18 @@ class MDNSApp:
     def _clear_target(self) -> None:
         self._runtime.clear_forward_target()
         self._append_log("INFO", "forward target cleared")
+
+    def _refresh_interfaces(self) -> None:
+        self._interfaces = list_interfaces()
+        self._render_interfaces()
+        self._append_log("INFO", f"interfaces refreshed: {len(self._interfaces)} found")
+
+    def _render_interfaces(self) -> None:
+        for item in self._iface_tree.get_children():
+            self._iface_tree.delete(item)
+        for name in self._interfaces:
+            listening = "yes" if self._running else "no"
+            self._iface_tree.insert("", tk.END, values=(name, listening))
 
     def _poll_events(self) -> None:
         while True:
