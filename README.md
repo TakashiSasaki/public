@@ -6,6 +6,7 @@ Python only (standard library) minimal Git LFS server implementation.
 
 - Batch API (`POST /info/lfs/objects/batch`)
   - request uses `transfers` (array). If omitted, server assumes `basic`
+  - if `basic` is not requested in `transfers`, server returns `501`
   - `Accept` must include `application/vnd.git-lfs+json` (or `*/*`)
   - `Content-Type` must be `application/vnd.git-lfs+json` (`charset=utf-8` is accepted)
   - `hash_algo` other than `sha256` returns per-object error `409`
@@ -23,6 +24,7 @@ Python only (standard library) minimal Git LFS server implementation.
   - none
   - Basic auth (single user/password)
   - 401 includes both `WWW-Authenticate` and `LFS-Authenticate`
+  - Batch actions include `Authorization` header and object `authenticated: true`
 - Source IP allow-list by CIDR
 
 ## Run

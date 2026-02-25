@@ -223,6 +223,12 @@ def build_handler(config: ServerConfig):
                 host = f"{config.host}:{config.port}"
             return f"{proto}://{host}{config.base_path}{path_suffix}"
 
+        def _action_auth_headers(self) -> dict[str, str]:
+            if config.auth_mode != "basic":
+                return {}
+            token = base64.b64encode(f"{config.basic_user}:{config.basic_pass}".encode("utf-8")).decode("ascii")
+            return {"Authorization": f"Basic {token}"}
+
         def _oid_path(self, oid: str) -> Path:
             return objects_root / oid[:2] / oid[2:4] / oid
 
@@ -311,11 +317,15 @@ def build_handler(config: ServerConfig):
             if not isinstance(transfers, list) or not all(isinstance(t, str) for t in transfers):
                 self._json_response(HTTPStatus.BAD_REQUEST, {"message": "transfers must be an array of strings"})
                 return
+            if "basic" not in transfers:
+                self._json_response(HTTPStatus.NOT_IMPLEMENTED, {"message": "no supported transfer adapter requested"})
+                return
             hash_algo = body.get("hash_algo", "sha256")
             if not isinstance(hash_algo, str):
                 self._json_response(HTTPStatus.BAD_REQUEST, {"message": "hash_algo must be a string"})
                 return
-            chosen_transfer = "basic" if "basic" in transfers else transfers[0] if transfers else "basic"
+            chosen_transfer = "basic"
+            auth_headers = self._action_auth_headers()
             if operation == "upload":
                 invalid_upload_object = any(
                     (not isinstance(obj, dict))
@@ -346,18 +356,24 @@ def build_handler(config: ServerConfig):
                     )
                     continue
                 item: dict[str, Any] = {"oid": oid, "size": size}
+                if config.auth_mode == "basic":
+                    item["authenticated"] = True
                 path = self._oid_path(oid)
                 exists = path.exists()
                 if operation == "upload":
                     if not exists:
+                        upload_headers = {"Content-Type": "application/octet-stream"}
+                        upload_headers.update(auth_headers)
+                        verify_headers = {"Content-Type": JSON_MIME}
+                        verify_headers.update(auth_headers)
                         item["actions"] = {
                             "upload": {
                                 "href": self._build_href(f"/objects/{oid}"),
-                                "header": {"Content-Type": "application/octet-stream"},
+                                "header": upload_headers,
                             },
                             "verify": {
                                 "href": self._build_href(f"/objects/{oid}/verify"),
-                                "header": {"Content-Type": JSON_MIME},
+                                "header": verify_headers,
                             },
                         }
                 else:
@@ -365,7 +381,7 @@ def build_handler(config: ServerConfig):
                         item["actions"] = {
                             "download": {
                                 "href": self._build_href(f"/objects/{oid}"),
-                                "header": {},
+                                "header": auth_headers,
                             }
                         }
                     else:
