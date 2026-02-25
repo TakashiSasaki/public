@@ -59,7 +59,7 @@ class LockStore:
             json.dump(data, f, ensure_ascii=True, indent=2)
         tmp.replace(self.path)
 
-    def create_lock(self, path: str, owner: str) -> tuple[bool, dict[str, Any]]:
+    def create_lock(self, path: str, owner: str, ref: dict[str, Any] | None = None) -> tuple[bool, dict[str, Any]]:
         with self._lock:
             data = self._read()
             for lock in data["locks"]:
@@ -71,6 +71,8 @@ class LockStore:
                 "locked_at": utc_now_iso(),
                 "owner": {"name": owner},
             }
+            if ref:
+                lock["ref"] = ref
             data["locks"].append(lock)
             self._write(data)
             return True, lock
@@ -84,7 +86,12 @@ class LockStore:
             return None
 
     def list_locks(
-        self, path: str | None, lock_id: str | None, cursor: str | None, limit: int
+        self,
+        path: str | None,
+        lock_id: str | None,
+        cursor: str | None,
+        limit: int,
+        refspec: str | None = None,
     ) -> tuple[list[dict[str, Any]], str]:
         with self._lock:
             data = self._read()
@@ -93,15 +100,21 @@ class LockStore:
                 locks = [l for l in locks if l["path"] == path]
             if lock_id:
                 locks = [l for l in locks if l["id"] == lock_id]
+            if refspec:
+                locks = [l for l in locks if l.get("ref", {}).get("name") == refspec]
             start = int(cursor) if cursor else 0
             sliced = locks[start : start + limit]
             next_cursor = str(start + limit) if (start + limit) < len(locks) else ""
             return sliced, next_cursor
 
-    def verify_locks(self, owner: str, cursor: str | None, limit: int) -> tuple[list[dict[str, Any]], list[dict[str, Any]], str]:
+    def verify_locks(
+        self, owner: str, cursor: str | None, limit: int, refspec: str | None = None
+    ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], str]:
         with self._lock:
             data = self._read()
             locks = data["locks"]
+            if refspec:
+                locks = [l for l in locks if l.get("ref", {}).get("name") == refspec]
             start = int(cursor) if cursor else 0
             sliced = locks[start : start + limit]
             ours = [l for l in sliced if l.get("owner", {}).get("name") == owner]
@@ -152,7 +165,7 @@ def build_handler(config: ServerConfig):
             if not accept or accept.strip() == "*/*":
                 return True
             values = [v.split(";", 1)[0].strip().lower() for v in accept.split(",")]
-            return (JSON_MIME in values) or ("application/json" in values)
+            return (JSON_MIME in values) or ("application/json" in values) or ("*/*" in values)
 
         def _json_response(self, status: HTTPStatus, payload: dict[str, Any]) -> None:
             raw = json.dumps(payload, ensure_ascii=True).encode("utf-8")
@@ -240,6 +253,15 @@ def build_handler(config: ServerConfig):
             rel = path[len(config.base_path) :]
             parts = [p for p in rel.split("/") if p]
             return parsed.query, parts
+
+        def _validate_lfs_headers(self, require_content_type: bool = True) -> bool:
+            if not self._accepts_lfs_json():
+                self._json_response(HTTPStatus.NOT_ACCEPTABLE, {"message": f"Accept must include {JSON_MIME}"})
+                return False
+            if require_content_type and not self._is_lfs_json_content_type():
+                self._json_response(HTTPStatus.UNPROCESSABLE_ENTITY, {"message": f"Content-Type must be {JSON_MIME}"})
+                return False
+            return True
 
         def _validate_common(self) -> str | None:
             if not self._check_ip_allowed():
@@ -472,48 +494,68 @@ def build_handler(config: ServerConfig):
             self.end_headers()
 
         def _locks_create(self, user: str) -> None:
+            if not self._validate_lfs_headers(require_content_type=True):
+                return
             body = self._json_body()
             if not body:
                 return
             path = body.get("path")
+            ref = body.get("ref")
             if not isinstance(path, str) or not path:
                 self._json_response(HTTPStatus.BAD_REQUEST, {"message": "path is required"})
                 return
-            ok, lock = lock_store.create_lock(path, user)
+            if ref is not None and not isinstance(ref, dict):
+                self._json_response(HTTPStatus.BAD_REQUEST, {"message": "ref must be an object"})
+                return
+            ok, lock = lock_store.create_lock(path, user, ref)
             if ok:
                 self._json_response(HTTPStatus.CREATED, {"lock": lock})
                 return
-            self._json_response(HTTPStatus.CONFLICT, {"message": "lock already exists", "lock": lock})
+            self._json_response(HTTPStatus.CONFLICT, {"message": "already created lock", "lock": lock})
 
         def _locks_list(self) -> None:
-            q = parse_qs(urlsplit(self.path).query)
+            if not self._validate_lfs_headers(require_content_type=False):
+                return
+            parsed = urlsplit(self.path)
+            q = parse_qs(parsed.query)
             path = q.get("path", [None])[0]
             lock_id = q.get("id", [None])[0]
             cursor = q.get("cursor", [None])[0]
-            limit = int(q.get("limit", ["100"])[0])
-            locks, next_cursor = lock_store.list_locks(path, lock_id, cursor, max(1, min(limit, 1000)))
+            refspec = q.get("refspec", [None])[0]
+            limit_str = q.get("limit", ["100"])[0]
+            try:
+                limit = int(limit_str)
+            except ValueError:
+                limit = 100
+            locks, next_cursor = lock_store.list_locks(path, lock_id, cursor, max(1, min(limit, 1000)), refspec)
             payload: dict[str, Any] = {"locks": locks}
             if next_cursor:
                 payload["next_cursor"] = next_cursor
             self._json_response(HTTPStatus.OK, payload)
 
         def _locks_verify(self, user: str) -> None:
+            if not self._validate_lfs_headers(require_content_type=True):
+                return
             body = self._json_body()
             if not isinstance(body, dict):
                 self._json_response(HTTPStatus.BAD_REQUEST, {"message": "invalid JSON"})
                 return
             cursor = body.get("cursor")
+            ref = body.get("ref")
+            refspec = ref.get("name") if isinstance(ref, dict) else None
             limit = body.get("limit", 100)
             if not isinstance(limit, int):
                 self._json_response(HTTPStatus.BAD_REQUEST, {"message": "limit must be int"})
                 return
-            ours, theirs, next_cursor = lock_store.verify_locks(user, cursor, max(1, min(limit, 1000)))
+            ours, theirs, next_cursor = lock_store.verify_locks(user, cursor, max(1, min(limit, 1000)), refspec)
             payload: dict[str, Any] = {"ours": ours, "theirs": theirs}
             if next_cursor:
                 payload["next_cursor"] = next_cursor
             self._json_response(HTTPStatus.OK, payload)
 
         def _locks_unlock(self, lock_id: str, user: str) -> None:
+            if not self._validate_lfs_headers(require_content_type=True):
+                return
             body = self._json_body()
             if not isinstance(body, dict):
                 self._json_response(HTTPStatus.BAD_REQUEST, {"message": "invalid JSON"})

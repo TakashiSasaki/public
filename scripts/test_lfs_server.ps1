@@ -186,9 +186,15 @@ function New-BasicAuthHeader {
 }
 
 function Get-LfsHeaders {
-  param([hashtable]$Extra = @{})
+  param(
+    [hashtable]$Extra = @{},
+    [switch]$NoDefaultContentType
+  )
   $h = @{
     Accept = "application/vnd.git-lfs+json"
+  }
+  if (-not $NoDefaultContentType) {
+    $h["Content-Type"] = "application/vnd.git-lfs+json"
   }
   foreach ($k in $Extra.Keys) {
     $h[$k] = $Extra[$k]
@@ -274,6 +280,22 @@ try {
   $lockVerify = Invoke-Http -Method POST -Url "$base1/locks/verify" -ContentType $baseMedia -Body $lockVerifyReq
   Assert-True ($lockVerify.Status -eq 200) "lock verify should be 200"
   Assert-True ($lockVerify.Body.ours.Count -ge 1) "ours should include created lock"
+
+  Write-Host "  - testing ref support"
+  $refId = "refs/heads/feature-x"
+  $lockWithRefReq = @{ path = "ref-test.bin"; ref = @{ name = $refId } } | ConvertTo-Json
+  $lockWithRef = Invoke-Http -Method POST -Url "$base1/locks" -Headers (Get-LfsHeaders) -Body $lockWithRefReq
+  Assert-True ($lockWithRef.Status -eq 201) "lock with ref should be 201"
+  Assert-True ($lockWithRef.Body.lock.ref.name -eq $refId) "lock ref name should match"
+
+  $lockListRef = Invoke-Http -Method GET -Url "$base1/locks?refspec=$refId" -Headers (Get-LfsHeaders)
+  Assert-True ($lockListRef.Status -eq 200) "lock list with refspec should be 200"
+  Assert-True ($lockListRef.Body.locks.Count -eq 1) "should find 1 lock with refspec"
+
+  $lockVerifyRefReq = @{ ref = @{ name = $refId } } | ConvertTo-Json
+  $lockVerifyRef = Invoke-Http -Method POST -Url "$base1/locks/verify" -Headers (Get-LfsHeaders) -Body $lockVerifyRefReq
+  Assert-True ($lockVerifyRef.Status -eq 200) "lock verify with ref should be 200"
+  Assert-True ($lockVerifyRef.Body.ours.Count -eq 1) "should find 1 our lock with ref"
 
   $unlockReq = @{ force = $false } | ConvertTo-Json
   $unlockResp = Invoke-Http -Method POST -Url "$base1/locks/$lockId/unlock" -ContentType $baseMedia -Body $unlockReq
