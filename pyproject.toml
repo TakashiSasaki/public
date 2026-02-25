@@ -1,0 +1,22 @@
+[project]
+name = "desktop-seiri"
+version = "0.1.1"
+description = "Desktop inventory and search tool for Windows."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "platformdirs>=4.0.0",
+]
+
+[project.scripts]
+desktop-seiri = "desktop_seiri.main:main"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
