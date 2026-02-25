@@ -51,12 +51,12 @@ function Invoke-Http {
   )
 
   $params = @{
-    Method = $Method
-    Uri = $Url
-    Headers = $Headers
+    Method             = $Method
+    Uri                = $Url
+    Headers            = $Headers
     SkipHttpErrorCheck = $true
   }
-  if ($Body -ne $null) {
+  if ($null -ne $Body) {
     $params["Body"] = $Body
   }
   if ($ContentType) {
@@ -84,8 +84,8 @@ function Invoke-Http {
 
   return @{
     Status = [int]$resp.StatusCode
-    Body = $parsed
-    Raw = $resp
+    Body   = $parsed
+    Raw    = $resp
   }
 }
 
@@ -120,14 +120,14 @@ function Start-LfsServer {
 
   $py = Get-PythonCommand
   $script = Join-Path $RepoRoot "lfs_server.py"
-  $args = @() + $py.PrefixArgs + @(
+  $processArgs = @() + $py.PrefixArgs + @(
     $script,
     "--host", "127.0.0.1",
     "--port", "$Port",
     "--storage-dir", $StorageDir
   ) + $ExtraArgs
 
-  $proc = Start-Process -FilePath $py.Executable -ArgumentList $args -PassThru -NoNewWindow -WorkingDirectory $RepoRoot
+  $proc = Start-Process -FilePath $py.Executable -ArgumentList $processArgs -PassThru -NoNewWindow -WorkingDirectory $RepoRoot
   Wait-ServerReady -BaseUrl "http://127.0.0.1:$Port/info/lfs"
   return $proc
 }
@@ -178,9 +178,10 @@ function Assert-True {
   }
 }
 
-function Make-BasicAuthHeader {
-  param([string]$User, [string]$Password)
-  $token = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes("$User`:$Password"))
+function New-BasicAuthHeader {
+  param([string]$User, [SecureString]$Password)
+  $plainPassword = [System.Net.NetworkCredential]::new("", $Password).Password
+  $token = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes("$User`:$plainPassword"))
   return @{ Authorization = "Basic $token" }
 }
 
@@ -222,7 +223,7 @@ try {
   $batchReq = @{
     operation = "upload"
     transfers = @("basic")
-    objects = @(@{ oid = $oid; size = $size })
+    objects   = @(@{ oid = $oid; size = $size })
   } | ConvertTo-Json -Depth 8
 
   $batchUpload = Invoke-Http -Method POST -Url "$base1/objects/batch" -Headers (Get-LfsHeaders) -ContentType $baseMedia -Body $batchReq
@@ -245,7 +246,7 @@ try {
   $batchDlReq = @{
     operation = "download"
     transfers = @("basic")
-    objects = @(@{ oid = $oid; size = $size })
+    objects   = @(@{ oid = $oid; size = $size })
   } | ConvertTo-Json -Depth 8
   $batchDownload = Invoke-Http -Method POST -Url "$base1/objects/batch" -Headers (Get-LfsHeaders) -ContentType $baseMedia -Body $batchDlReq
   Assert-True ($batchDownload.Status -eq 200) "download batch status should be 200"
@@ -292,7 +293,7 @@ try {
   $unauthResp = Invoke-Http -Method GET -Url "$base2/locks"
   Assert-True ($unauthResp.Status -eq 401) "without auth should be 401"
 
-  $authHeaders = Make-BasicAuthHeader -User "lfs" -Password "secret"
+  $authHeaders = New-BasicAuthHeader -User "lfs" -Password ("secret" | ConvertTo-SecureString -AsPlainText -Force)
   $authResp = Invoke-Http -Method GET -Url "$base2/locks" -Headers $authHeaders
   Assert-True ($authResp.Status -eq 200) "with basic auth should be 200"
   Stop-ProcIfRunning -Proc $proc2
