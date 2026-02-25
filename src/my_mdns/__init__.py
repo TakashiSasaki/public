@@ -1,4 +1,4 @@
-"""my-mdns package."""
+"""mdns-inspector package."""
 
 __all__ = ["__version__"]
 

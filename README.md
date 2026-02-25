@@ -1,4 +1,4 @@
-# my-mdns
+# mdns-inspector
 
 LAN内のmDNSトラフィックをキャプチャし、表示し、必要に応じて他ネットワークへ転送するPython製ツールのプロトタイプです。
 
@@ -10,7 +10,7 @@ LAN内のmDNSトラフィックをキャプチャし、表示し、必要に応�
 
 ## ディレクトリ構成
 ```text
-my-mdns/
+mdns-inspector/
   pyproject.toml
   README.md
   githooks/
@@ -66,12 +66,12 @@ my-mdns/
 
 ## 起動方法
 ```bash
-uv run my-mdns
+uv run mdns-inspector
 ```
 
 バージョン確認:
 ```bash
-uv run my-mdns --version
+uv run mdns-inspector --version
 ```
 
 ## バージョン運用（プロトタイプ）

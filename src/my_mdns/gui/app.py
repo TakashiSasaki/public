@@ -13,7 +13,7 @@ from my_mdns.core.runtime import CoreRuntime
 class MDNSApp:
     def __init__(self) -> None:
         self.root = tk.Tk()
-        self.root.title("my-mdns prototype")
+        self.root.title("mdns-inspector prototype")
         self.root.geometry("920x520")
 
         self._events: Queue[PacketEvent | LogEvent] = Queue()

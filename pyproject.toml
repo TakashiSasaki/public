@@ -1,6 +1,6 @@
 [project]
-name = "my-mdns"
-version = "0.1.12"
+name = "mdns-inspector"
+version = "0.1.13"
 description = "mDNS capture and forward tool prototype"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -13,7 +13,7 @@ dependencies = []
 Homepage = "https://x.com/TakashiSasaki"
 
 [project.scripts]
-my-mdns = "my_mdns.__main__:main"
+mdns-inspector = "my_mdns.__main__:main"
 
 [build-system]
 requires = ["hatchling"]

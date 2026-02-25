@@ -6,7 +6,7 @@ from my_mdns.gui.app import MDNSApp
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="my-mdns prototype")
+    parser = argparse.ArgumentParser(description="mdns-inspector prototype")
     parser.add_argument(
         "--version",
         action="store_true",

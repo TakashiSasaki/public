@@ -1,1 +1,1 @@
-"""Tk GUI for my-mdns."""
+"""Tk GUI for mdns-inspector."""
