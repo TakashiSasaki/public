@@ -23,8 +23,9 @@ class DesktopSearchApp:
         self.columns = (
             "item_type",
             "name",
+            "root",
             "path",
-            "target_path",
+            "target",
             "modified_at",
             "permissions",
             "size_bytes",
@@ -35,8 +36,9 @@ class DesktopSearchApp:
         self.column_headings = {
             "item_type": "Type",
             "name": "Name",
+            "root": "Root",
             "path": "Path",
-            "target_path": "Target Path",
+            "target": "Target",
             "modified_at": "Modified (UTC)",
             "permissions": "Perms",
             "size_bytes": "File Size",
@@ -47,8 +49,9 @@ class DesktopSearchApp:
         self.column_widths = {
             "item_type": 80,
             "name": 220,
+            "root": 150,
             "path": 360,
-            "target_path": 360,
+            "target": 360,
             "modified_at": 180,
             "permissions": 80,
             "size_bytes": 100,
@@ -189,8 +192,9 @@ class DesktopSearchApp:
                 values=(
                     row["item_type"],
                     row["name"],
+                    row["root"],
                     row["path"],
-                    row["target_path"] if row["target_path"] is not None else "",
+                    row["target"] if row["target"] is not None else "",
                     row["modified_at"],
                     row["permissions"],
                     row["size_bytes"] if row["size_bytes"] is not None else "",
