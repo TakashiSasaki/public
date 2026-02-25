@@ -25,8 +25,11 @@ my-mdns/
       core/
         __init__.py
         capture.py
+        dns_packet.py
         events.py
         forwarder.py
+        interfaces.py
+        query.py
         runtime.py
       gui/
         __init__.py
@@ -34,9 +37,32 @@ my-mdns/
 ```
 
 ## プロトタイプ機能
-- mDNS multicast (`224.0.0.251:5353`) を受信
+- mDNS multicast 受信
+  - IPv4: `224.0.0.251:5353`
+  - IPv6: `ff02::fb:5353`
+  - いずれもインターフェイスごとにjoinして受信
 - GUIで受信パケットを一覧表示
 - 指定した転送先（host:port）へ受信パケットをUDP転送
+- サービス問い合わせ送信
+  - Mainタブから全IFへ一括送信
+  - Listeningタブから選択IFへ IPv4/IPv6 別送信
+- 手動名前解決クエリ送信
+  - Resolveタブで `.local.` 前の名前入力 + QTYPE選択
+  - IP付与済みIFごとに IPv4/IPv6 送信ボタン
+- 統計表示（Statsタブ）
+  - Packet direction counts（Query/Response/Other）
+  - Query QTYPE counts
+  - Response RR TYPE counts
+  - 各行に `last received` を表示
+- ListeningタブでIFごとのカウンタ表示
+  - `rx4`, `tx4`, `rx6`, `tx6`
+
+## GUIタブ
+- Main: 実行トグル、サービス問い合わせ一括送信、転送先設定、受信パケット表示
+- Listening: インターフェイス一覧、IF選択問い合わせ、IF別送受信カウンタ
+- Stats: 受信パケット種別の集計表3種
+- Resolve: 手動クエリ送信（IFごと）
+- Logs: ログ表示
 
 ## 起動方法
 ```bash
@@ -61,4 +87,3 @@ pwsh -File githooks/setup-hooks.ps1
 ## 作者
 - Takashi Sasaki
 - https://x.com/TakashiSasaki
-AGENTS.mdは他の開発者やコーディングエージェントが共通して参照する指示であるので、コーディング上の注意点や試行錯誤の結果を積極的にAGENTS.mdに記載して他の開発者やエージェントと共有すること。

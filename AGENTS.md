@@ -1,17 +1,31 @@
 # Project Notes
 
-- Git hook and version bump scripts are centralized in the `githooks` submodule so they can be reused across repositories.
-- Use `githooks/setup-hooks.ps1` on Windows or `githooks/setup-hooks.sh` on Linux/macOS to set `core.hooksPath`.
-- `githooks/pre-commit` supports `pyproject.toml`, `package.json`, and `manifest.webmanifest` with auto discovery.
-- Repository-local `scripts/` hook helpers were removed to avoid duplication with the shared submodule.
-- Keep core application logic under `src/my_mdns/core/` as reusable modules, and keep GUI code in `src/my_mdns/gui/`.
-- mDNS受信実装では `0.0.0.0` / ifindex `0` の単発JOINに依存せず、IPv4/IPv6ともインターフェイスごとに multicast group join する方針を優先する（LAN内ホストの取りこぼし防止）。
+## ドキュメント運用
+- `README.md` はユーザー向けドキュメント、`AGENTS.md` は開発者/コーディングエージェント向け指示として運用する。
+- プロジェクト全体の方針・設計判断・試行錯誤の結果は、必要に応じて `AGENTS.md` に追記して共有する。
+- 特に Windows 環境でハマりやすい点と対処法は積極的に残す。
+
+## 開発環境
+- Python環境は `uv` で管理する。
+- Linux / Windows の両環境で開発される前提で実装・検証する。
+
+## 構成方針
+- コアロジックは `src/my_mdns/core/` に集約し、GUIロジックは `src/my_mdns/gui/` に分離する。
+- mDNS受信実装では `0.0.0.0` / ifindex `0` の単発JOINに依存せず、IPv4/IPv6ともインターフェイスごとに multicast group join を優先する（取りこぼし防止）。
+- インターフェイス向けソケットオプションは以下を基本方針とする。
+- 受信ソケット: `SO_REUSEADDR`（可能なら `SO_REUSEPORT` も）を設定し、IPv4は `IP_ADD_MEMBERSHIP`、IPv6は `IPV6_JOIN_GROUP` をインターフェイス単位で適用する。
+- 送信ソケット: IPv4は `IP_MULTICAST_IF`、IPv6は `IPV6_MULTICAST_IF` を明示して送信元インターフェイスを固定する。
+- `Listening` タブのインターフェイス表示は、各IFの `rx4/tx4/rx6/tx6` カウンタを扱う前提で実装・保守する。
+
+## フックとバージョン運用
+- バージョンのパッチレベルはコミット時に必ずバンプする。
+- Git hook とバンプ補助スクリプトは `githooks` サブモジュールに集約し、他プロジェクトと共有する。
+- `githooks/pre-commit` は `pyproject.toml` / `package.json` / `manifest.webmanifest` を自動検出してバンプ可能。
+- フック有効化は `githooks/setup-hooks.ps1`（Windows）または `githooks/setup-hooks.sh`（Linux/macOS）を使って `core.hooksPath` を設定する。
+- リポジトリ直下の旧 `scripts/` フック補助は使わず、`githooks` 側に一本化する。
+
+## コミット運用
+- コミットメッセージは常に具体的で、変更意図が分かる内容にする。
 
 # その他（このセクションは削除せず、このセクションの内容は他の適切なセクションに構造化することを強く推奨する）
-- AGENTS.md は他のコーディングエージェントや開発者も参照する指示なので、プロジェクト全体の方針にかかわることは積極的にAGENTS.mdに追記する
-- 特にWindows環境でうまくいかなかった作業を試行錯誤で成功させたときにはそのベストプラクティスをAGENTS.mdに記録する。
-- バージョンのパッチレベルはコミットの際に必ずバンプアップする。これはgitのフックによって実現することが好ましい。そのためのフック関係のスクリプトやそれを補助するスクリプトは githooks サブモジュールに格納している。 githooks サブモジュールは他のプロジェクトとも共有している。
-- このリポジトリにおける開発作業は Linux 環境と Windows 環境のどちらでも行う可能性がある。
-- Pythonの環境は uv で管理している。
-- コミットメッセージは常に詳細なコミットメッセージを書くこと。
-- README.md はユーザーが参照するドキュメントである。AGENTS.mdは他の開発者やコーディングエージェントが参照するドキュメントである。
+- このセクションの内容は上記セクションへ順次移管済み。新規ルールは該当セクションへ追加する。
