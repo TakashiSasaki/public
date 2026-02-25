@@ -5,6 +5,11 @@ Python only (standard library) minimal Git LFS server implementation.
 ## Supported features
 
 - Batch API (`POST /info/lfs/objects/batch`)
+  - request uses `transfers` (array). If omitted, server assumes `basic`
+  - `Accept` must include `application/vnd.git-lfs+json` (or `*/*`)
+  - `Content-Type` must be `application/vnd.git-lfs+json` (`charset=utf-8` is accepted)
+  - `hash_algo` other than `sha256` returns per-object error `409`
+  - invalid object (`size < 0`, invalid shape) returns validation error (`422`)
 - Basic transfer adapter
   - upload: `PUT /info/lfs/objects/{oid}`
   - verify: `POST /info/lfs/objects/{oid}/verify`
@@ -17,6 +22,7 @@ Python only (standard library) minimal Git LFS server implementation.
 - Auth mode:
   - none
   - Basic auth (single user/password)
+  - 401 includes both `WWW-Authenticate` and `LFS-Authenticate`
 - Source IP allow-list by CIDR
 
 ## Run
@@ -99,6 +105,7 @@ git push
 
 - Object files are stored at `data/objects/<oid-prefix>/.../<oid>`.
 - Lock metadata is stored in `data/locks.json`.
+- Routes are handled under `--base-path` (default: `/info/lfs`) and Batch API path is `/<base-path>/objects/batch`.
 - This is a minimal implementation for private/self-hosted use. Production deployment should be behind HTTPS reverse proxy and proper credential management.
 
 ## Spec references

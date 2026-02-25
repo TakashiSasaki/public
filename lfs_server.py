@@ -140,6 +140,20 @@ def build_handler(config: ServerConfig):
                 self._json_response(HTTPStatus.BAD_REQUEST, {"message": "invalid JSON"})
                 return {}
 
+        def _is_lfs_json_content_type(self) -> bool:
+            ctype = self.headers.get("Content-Type", "")
+            if not ctype:
+                return False
+            main = ctype.split(";", 1)[0].strip().lower()
+            return main == JSON_MIME
+
+        def _accepts_lfs_json(self) -> bool:
+            accept = self.headers.get("Accept", "")
+            if not accept or accept.strip() == "*/*":
+                return True
+            values = [v.split(";", 1)[0].strip().lower() for v in accept.split(",")]
+            return (JSON_MIME in values) or ("application/json" in values)
+
         def _json_response(self, status: HTTPStatus, payload: dict[str, Any]) -> None:
             raw = json.dumps(payload, ensure_ascii=True).encode("utf-8")
             self.send_response(status.value)
@@ -157,10 +171,15 @@ def build_handler(config: ServerConfig):
             self.wfile.write(raw)
 
         def _unauthorized(self) -> None:
+            payload = {"message": "Credentials needed"}
+            raw = json.dumps(payload, ensure_ascii=True).encode("utf-8")
             self.send_response(HTTPStatus.UNAUTHORIZED.value)
+            self.send_header("Content-Type", JSON_MIME)
             self.send_header("WWW-Authenticate", 'Basic realm="git-lfs-lite"')
-            self.send_header("Content-Length", "0")
+            self.send_header("LFS-Authenticate", 'Basic realm="git-lfs-lite"')
+            self.send_header("Content-Length", str(len(raw)))
             self.end_headers()
+            self.wfile.write(raw)
 
         def _client_ip(self) -> ipaddress._BaseAddress | None:
             try:
@@ -210,10 +229,9 @@ def build_handler(config: ServerConfig):
         def _read_path_parts(self) -> tuple[str, list[str]]:
             parsed = urlsplit(self.path)
             path = parsed.path
-            idx = path.find(config.base_path)
-            if idx == -1:
+            if not path.startswith(config.base_path):
                 return "", []
-            rel = path[idx + len(config.base_path) :]
+            rel = path[len(config.base_path) :]
             parts = [p for p in rel.split("/") if p]
             return parsed.query, parts
 
@@ -273,19 +291,59 @@ def build_handler(config: ServerConfig):
             self.send_error(HTTPStatus.NOT_FOUND.value)
 
         def _batch(self) -> None:
+            if not self._accepts_lfs_json():
+                self._json_response(HTTPStatus.NOT_ACCEPTABLE, {"message": f"Accept must include {JSON_MIME}"})
+                return
+            if not self._is_lfs_json_content_type():
+                self._json_response(HTTPStatus.UNPROCESSABLE_ENTITY, {"message": f"Content-Type must be {JSON_MIME}"})
+                return
             body = self._json_body()
             if not body:
                 return
             operation = body.get("operation")
             objects = body.get("objects")
+            transfers = body.get("transfers")
+            if transfers is None:
+                transfers = ["basic"]
             if operation not in {"upload", "download"} or not isinstance(objects, list):
                 self._json_response(HTTPStatus.BAD_REQUEST, {"message": "invalid batch payload"})
                 return
+            if not isinstance(transfers, list) or not all(isinstance(t, str) for t in transfers):
+                self._json_response(HTTPStatus.BAD_REQUEST, {"message": "transfers must be an array of strings"})
+                return
+            hash_algo = body.get("hash_algo", "sha256")
+            if not isinstance(hash_algo, str):
+                self._json_response(HTTPStatus.BAD_REQUEST, {"message": "hash_algo must be a string"})
+                return
+            chosen_transfer = "basic" if "basic" in transfers else transfers[0] if transfers else "basic"
+            if operation == "upload":
+                invalid_upload_object = any(
+                    (not isinstance(obj, dict))
+                    or (not isinstance(obj.get("oid"), str))
+                    or (not isinstance(obj.get("size"), int))
+                    or (obj.get("size", -1) < 0)
+                    for obj in objects
+                )
+                if invalid_upload_object:
+                    self._json_response(HTTPStatus.UNPROCESSABLE_ENTITY, {"message": "one or more objects are invalid"})
+                    return
             response_objects = []
             for obj in objects:
                 oid = obj.get("oid")
                 size = obj.get("size")
-                if not isinstance(oid, str) or not isinstance(size, int):
+                if (not isinstance(oid, str)) or (not isinstance(size, int)) or (size < 0):
+                    response_objects.append(
+                        {"oid": oid, "size": size, "error": {"code": 422, "message": "Validation error"}}
+                    )
+                    continue
+                if hash_algo.lower() != "sha256":
+                    response_objects.append(
+                        {
+                            "oid": oid,
+                            "size": size,
+                            "error": {"code": 409, "message": "Unsupported hash algorithm"},
+                        }
+                    )
                     continue
                 item: dict[str, Any] = {"oid": oid, "size": size}
                 path = self._oid_path(oid)
@@ -316,7 +374,7 @@ def build_handler(config: ServerConfig):
             self._json_response(
                 HTTPStatus.OK,
                 {
-                    "transfer": "basic",
+                    "transfer": chosen_transfer,
                     "objects": response_objects,
                     "hash_algo": "sha256",
                 },
