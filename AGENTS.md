@@ -77,6 +77,10 @@
   - `name` は区切り文字で始めない
   - `root` は区切り文字で終えない（相対パスの `.` は例外的に許容）
 - 一意制約: `UNIQUE(root, path, name)`
+- CHECK制約:
+  - `name` は空文字不可かつ先頭区切り文字不可
+  - `root` は空文字不可かつ末尾区切り文字不可（相対パスの `.` は許容）
+  - `path` は空文字不可かつ先頭/末尾が区切り文字
 - インデックス:
   - `idx_items_name` (`name`)
   - `idx_items_type` (`item_type`)

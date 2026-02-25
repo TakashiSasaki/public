@@ -1,6 +1,6 @@
 [project]
 name = "desktop-seiri"
-version = "0.1.6"
+version = "0.1.7"
 description = "Desktop inventory and search tool for Windows."
 readme = "README.md"
 requires-python = ">=3.10"

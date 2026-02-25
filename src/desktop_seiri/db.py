@@ -43,6 +43,16 @@ def init_db(conn: sqlite3.Connection) -> None:
             folder_total_size_bytes INTEGER,
             first_seen TEXT NOT NULL,
             last_seen TEXT NOT NULL,
+            CONSTRAINT chk_items_name_no_leading_sep
+                CHECK (name <> '' AND substr(name, 1, 1) NOT IN ('\\', '/')),
+            CONSTRAINT chk_items_root_valid
+                CHECK (root <> '' AND (root = '.' OR substr(root, length(root), 1) NOT IN ('\\', '/'))),
+            CONSTRAINT chk_items_path_wrapped_sep
+                CHECK (
+                    path <> ''
+                    AND substr(path, 1, 1) IN ('\\', '/')
+                    AND substr(path, length(path), 1) IN ('\\', '/')
+                ),
             UNIQUE(root, path, name)
         )
         """
@@ -56,6 +66,7 @@ def init_db(conn: sqlite3.Connection) -> None:
 
 def _migrate_items_schema(conn: sqlite3.Connection) -> None:
     columns = {row["name"] for row in conn.execute("PRAGMA table_info(items)")}
+    has_component_checks = _has_component_checks(conn, "items")
     target_source_col = "target" if "target" in columns else "target_path"
     has_seen_columns = {"first_seen", "last_seen"}.issubset(columns)
     path_is_legacy_unique = _has_unique_index_on(conn, "items", ["path"])
@@ -66,6 +77,7 @@ def _migrate_items_schema(conn: sqlite3.Connection) -> None:
         or "path" not in columns
         or target_rename_required
         or path_is_legacy_unique
+        or not has_component_checks
     )
     if not needs_rebuild:
         _backfill_components(conn)
@@ -87,6 +99,16 @@ def _migrate_items_schema(conn: sqlite3.Connection) -> None:
             folder_total_size_bytes INTEGER,
             first_seen TEXT NOT NULL,
             last_seen TEXT NOT NULL,
+            CONSTRAINT chk_items_name_no_leading_sep
+                CHECK (name <> '' AND substr(name, 1, 1) NOT IN ('\\', '/')),
+            CONSTRAINT chk_items_root_valid
+                CHECK (root <> '' AND (root = '.' OR substr(root, length(root), 1) NOT IN ('\\', '/'))),
+            CONSTRAINT chk_items_path_wrapped_sep
+                CHECK (
+                    path <> ''
+                    AND substr(path, 1, 1) IN ('\\', '/')
+                    AND substr(path, length(path), 1) IN ('\\', '/')
+                ),
             UNIQUE(root, path, name)
         )
         """
@@ -188,6 +210,22 @@ def _has_unique_index_on(conn: sqlite3.Connection, table: str, index_columns: li
         if cols == index_columns:
             return True
     return False
+
+
+def _has_component_checks(conn: sqlite3.Connection, table: str) -> bool:
+    row = conn.execute(
+        "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = ?",
+        (table,),
+    ).fetchone()
+    if not row or not row["sql"]:
+        return False
+    sql = row["sql"]
+    required_markers = (
+        "chk_items_name_no_leading_sep",
+        "chk_items_root_valid",
+        "chk_items_path_wrapped_sep",
+    )
+    return all(marker in sql for marker in required_markers)
 
 
 def _normalize_components(root: str, path_value: str, name: str) -> tuple[str, str, str]:
