@@ -2,6 +2,14 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 function Get-PythonCommand {
+  $uv = Get-Command uv -ErrorAction SilentlyContinue
+  if ($uv) {
+    return @{
+      Executable = $uv.Source
+      PrefixArgs = @("run", "python")
+    }
+  }
+
   $cmd = Get-Command python -ErrorAction SilentlyContinue
   if ($cmd) {
     return @{
@@ -18,7 +26,7 @@ function Get-PythonCommand {
     }
   }
 
-  throw "python/py command was not found in PATH."
+  throw "uv/python/py command was not found in PATH."
 }
 
 function Invoke-Http {
@@ -104,7 +112,7 @@ function Start-LfsServer {
     "--storage-dir", $StorageDir
   ) + $ExtraArgs
 
-  $proc = Start-Process -FilePath $py.Executable -ArgumentList $args -PassThru -NoNewWindow
+  $proc = Start-Process -FilePath $py.Executable -ArgumentList $args -PassThru -NoNewWindow -WorkingDirectory $RepoRoot
   Wait-ServerReady -BaseUrl "http://127.0.0.1:$Port/info/lfs"
   return $proc
 }
@@ -133,6 +141,17 @@ function Make-BasicAuthHeader {
   return @{ Authorization = "Basic $token" }
 }
 
+function Get-LfsHeaders {
+  param([hashtable]$Extra = @{})
+  $h = @{
+    Accept = "application/vnd.git-lfs+json"
+  }
+  foreach ($k in $Extra.Keys) {
+    $h[$k] = $Extra[$k]
+  }
+  return $h
+}
+
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 $baseMedia = "application/vnd.git-lfs+json"
 $tmpRoot = Join-Path $env:TEMP ("git-lfs-lite-test-" + [Guid]::NewGuid().ToString("N"))
@@ -159,11 +178,11 @@ try {
 
   $batchReq = @{
     operation = "upload"
-    transfer = @("basic")
+    transfers = @("basic")
     objects = @(@{ oid = $oid; size = $size })
   } | ConvertTo-Json -Depth 8
 
-  $batchUpload = Invoke-Http -Method POST -Url "$base1/objects/batch" -ContentType $baseMedia -Body $batchReq
+  $batchUpload = Invoke-Http -Method POST -Url "$base1/objects/batch" -Headers (Get-LfsHeaders) -ContentType $baseMedia -Body $batchReq
   Assert-True ($batchUpload.Status -eq 200) "upload batch status should be 200"
   $uploadHref = $batchUpload.Body.objects[0].actions.upload.href
   $verifyHref = $batchUpload.Body.objects[0].actions.verify.href
@@ -179,17 +198,19 @@ try {
 
   $batchDlReq = @{
     operation = "download"
-    transfer = @("basic")
+    transfers = @("basic")
     objects = @(@{ oid = $oid; size = $size })
   } | ConvertTo-Json -Depth 8
-  $batchDownload = Invoke-Http -Method POST -Url "$base1/objects/batch" -ContentType $baseMedia -Body $batchDlReq
+  $batchDownload = Invoke-Http -Method POST -Url "$base1/objects/batch" -Headers (Get-LfsHeaders) -ContentType $baseMedia -Body $batchDlReq
   Assert-True ($batchDownload.Status -eq 200) "download batch status should be 200"
   $downloadHref = $batchDownload.Body.objects[0].actions.download.href
   Assert-True ([string]::IsNullOrEmpty($downloadHref) -eq $false) "download href is required"
 
   $dlResp = Invoke-Http -Method GET -Url $downloadHref -Raw
   Assert-True ([int]$dlResp.StatusCode -eq 200) "download status should be 200"
-  Assert-True ([byte[]]$dlResp.Content -ceq $payload) "downloaded payload should match uploaded data"
+  $downloadBytes = [Text.Encoding]::UTF8.GetBytes([string]$dlResp.Content)
+  Assert-True ($downloadBytes.Length -eq $payload.Length) "downloaded payload length should match"
+  Assert-True ([System.Linq.Enumerable]::SequenceEqual($downloadBytes, $payload)) "downloaded payload should match uploaded data"
 
   $lockCreateReq = @{ path = "large.bin" } | ConvertTo-Json
   $lockCreate = Invoke-Http -Method POST -Url "$base1/locks" -ContentType $baseMedia -Body $lockCreateReq
