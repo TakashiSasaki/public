@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import asyncio
+import ipaddress
 import socket
 import threading
 from datetime import datetime
 from queue import Queue
 
 from my_mdns.core.capture import MDNSCapture
+from my_mdns.core.dns_packet import parse_mdns_packet
 from my_mdns.core.events import LogEvent, PacketEvent
 from my_mdns.core.forwarder import MDNSForwarder
 from my_mdns.core.query import build_query, build_services_ptr_query, send_mdns_query_ipv4, send_mdns_query_ipv6
@@ -122,12 +124,21 @@ class CoreRuntime:
                 forwarded = self._forwarder.forward(payload)
         except OSError as exc:
             self._log("ERROR", f"forward error: {exc}")
+        try:
+            family = "IPv6" if ipaddress.ip_address(addr[0]).version == 6 else "IPv4"
+        except ValueError:
+            family = "Other"
+        message_kind, query_types, answer_types = parse_mdns_packet(payload)
 
         self._event_queue.put(
             PacketEvent(
                 timestamp=datetime.now(),
                 source_host=addr[0],
                 source_port=addr[1],
+                address_family=family,
+                message_kind=message_kind,
+                query_types=query_types,
+                answer_types=answer_types,
                 byte_count=len(payload),
                 preview_hex=payload[:16].hex(" "),
                 forwarded_count=forwarded,

@@ -9,6 +9,10 @@ class PacketEvent:
     timestamp: datetime
     source_host: str
     source_port: int
+    address_family: str
+    message_kind: str
+    query_types: tuple[str, ...]
+    answer_types: tuple[str, ...]
     byte_count: int
     preview_hex: str
     forwarded_count: int

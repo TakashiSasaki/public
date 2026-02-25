@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from queue import Empty, Queue
 import tkinter as tk
 from tkinter import ttk
@@ -34,6 +35,15 @@ class MDNSApp:
         self._resolve_qtype = tk.StringVar(value="A")
         self._resolve_rows_frame: ttk.Frame | None = None
         self._resolve_query_buttons: list[tuple[str, ttk.Button, ttk.Button]] = []
+        self._direction_counts: dict[str, int] = {"Query": 0, "Response": 0, "Other": 0}
+        self._query_type_counts: dict[str, int] = {}
+        self._response_type_counts: dict[str, int] = {}
+        self._direction_last_received: dict[str, datetime] = {}
+        self._query_type_last_received: dict[str, datetime] = {}
+        self._response_type_last_received: dict[str, datetime] = {}
+        self._direction_tree: ttk.Treeview | None = None
+        self._query_type_tree: ttk.Treeview | None = None
+        self._response_type_tree: ttk.Treeview | None = None
 
         self._build_ui()
         self.root.protocol("WM_DELETE_WINDOW", self._on_close)
@@ -49,10 +59,12 @@ class MDNSApp:
 
         main_tab = ttk.Frame(notebook, padding=8)
         listening_tab = ttk.Frame(notebook, padding=8)
+        stats_tab = ttk.Frame(notebook, padding=8)
         resolve_tab = ttk.Frame(notebook, padding=8)
         logs_tab = ttk.Frame(notebook, padding=8)
         notebook.add(main_tab, text="Main")
         notebook.add(listening_tab, text="Listening")
+        notebook.add(stats_tab, text="Stats")
         notebook.add(resolve_tab, text="Resolve")
         notebook.add(logs_tab, text="Logs")
 
@@ -165,6 +177,55 @@ class MDNSApp:
             lambda _e: rows_canvas.configure(scrollregion=rows_canvas.bbox("all")),
         )
         self._render_resolve_interface_rows()
+
+        stats_summary = ttk.LabelFrame(stats_tab, text="Packet direction counts", padding=8)
+        stats_summary.pack(fill=tk.X)
+        self._direction_tree = ttk.Treeview(
+            stats_summary,
+            columns=("kind", "count", "last_received"),
+            show="headings",
+            height=3,
+        )
+        self._direction_tree.heading("kind", text="kind")
+        self._direction_tree.heading("count", text="count")
+        self._direction_tree.heading("last_received", text="last received")
+        self._direction_tree.column("kind", width=180, anchor=tk.W)
+        self._direction_tree.column("count", width=100, anchor=tk.E)
+        self._direction_tree.column("last_received", width=180, anchor=tk.W)
+        self._direction_tree.pack(fill=tk.X, expand=True)
+
+        stats_query = ttk.LabelFrame(stats_tab, text="Query QTYPE counts", padding=8)
+        stats_query.pack(fill=tk.BOTH, expand=True, pady=(8, 0))
+        self._query_type_tree = ttk.Treeview(
+            stats_query,
+            columns=("qtype", "count", "last_received"),
+            show="headings",
+            height=8,
+        )
+        self._query_type_tree.heading("qtype", text="qtype")
+        self._query_type_tree.heading("count", text="count")
+        self._query_type_tree.heading("last_received", text="last received")
+        self._query_type_tree.column("qtype", width=240, anchor=tk.W)
+        self._query_type_tree.column("count", width=100, anchor=tk.E)
+        self._query_type_tree.column("last_received", width=180, anchor=tk.W)
+        self._query_type_tree.pack(fill=tk.BOTH, expand=True)
+
+        stats_response = ttk.LabelFrame(stats_tab, text="Response RR TYPE counts", padding=8)
+        stats_response.pack(fill=tk.BOTH, expand=True, pady=(8, 0))
+        self._response_type_tree = ttk.Treeview(
+            stats_response,
+            columns=("rtype", "count", "last_received"),
+            show="headings",
+            height=8,
+        )
+        self._response_type_tree.heading("rtype", text="rr type")
+        self._response_type_tree.heading("count", text="count")
+        self._response_type_tree.heading("last_received", text="last received")
+        self._response_type_tree.column("rtype", width=240, anchor=tk.W)
+        self._response_type_tree.column("count", width=100, anchor=tk.E)
+        self._response_type_tree.column("last_received", width=180, anchor=tk.W)
+        self._response_type_tree.pack(fill=tk.BOTH, expand=True)
+        self._refresh_stats_views()
 
         table = ttk.LabelFrame(main_tab, text="Captured packets", padding=8)
         table.pack(fill=tk.BOTH, expand=True, pady=(10, 0))
@@ -483,6 +544,7 @@ class MDNSApp:
             except Empty:
                 break
             if isinstance(event, PacketEvent):
+                self._accumulate_stats(event)
                 self._tree.insert(
                     "",
                     0,
@@ -499,6 +561,57 @@ class MDNSApp:
             else:
                 self._append_log(event.level, event.message, event.timestamp.strftime("%H:%M:%S"))
         self.root.after(150, self._poll_events)
+
+    def _accumulate_stats(self, event: PacketEvent) -> None:
+        self._direction_counts[event.message_kind] = self._direction_counts.get(event.message_kind, 0) + 1
+        self._direction_last_received[event.message_kind] = event.timestamp
+        for qtype in event.query_types:
+            self._query_type_counts[qtype] = self._query_type_counts.get(qtype, 0) + 1
+            self._query_type_last_received[qtype] = event.timestamp
+        for rtype in event.answer_types:
+            self._response_type_counts[rtype] = self._response_type_counts.get(rtype, 0) + 1
+            self._response_type_last_received[rtype] = event.timestamp
+        self._refresh_stats_views()
+
+    def _refresh_stats_views(self) -> None:
+        def _format_last_received(ts: datetime | None) -> str:
+            if ts is None:
+                return "-"
+            return ts.strftime("%H:%M:%S.%f")[:-3]
+
+        if self._direction_tree is not None:
+            for item in self._direction_tree.get_children():
+                self._direction_tree.delete(item)
+            for kind in ("Query", "Response", "Other"):
+                self._direction_tree.insert(
+                    "",
+                    tk.END,
+                    values=(
+                        kind,
+                        self._direction_counts.get(kind, 0),
+                        _format_last_received(self._direction_last_received.get(kind)),
+                    ),
+                )
+
+        if self._query_type_tree is not None:
+            for item in self._query_type_tree.get_children():
+                self._query_type_tree.delete(item)
+            for qtype, count in sorted(self._query_type_counts.items(), key=lambda kv: (-kv[1], kv[0])):
+                self._query_type_tree.insert(
+                    "",
+                    tk.END,
+                    values=(qtype, count, _format_last_received(self._query_type_last_received.get(qtype))),
+                )
+
+        if self._response_type_tree is not None:
+            for item in self._response_type_tree.get_children():
+                self._response_type_tree.delete(item)
+            for rtype, count in sorted(self._response_type_counts.items(), key=lambda kv: (-kv[1], kv[0])):
+                self._response_type_tree.insert(
+                    "",
+                    tk.END,
+                    values=(rtype, count, _format_last_received(self._response_type_last_received.get(rtype))),
+                )
 
     def _append_log(self, level: str, message: str, time_text: str | None = None) -> None:
         if not self._log_text.winfo_exists():
