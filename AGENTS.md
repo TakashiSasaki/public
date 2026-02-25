@@ -5,6 +5,7 @@
 - `githooks/pre-commit` supports `pyproject.toml`, `package.json`, and `manifest.webmanifest` with auto discovery.
 - Repository-local `scripts/` hook helpers were removed to avoid duplication with the shared submodule.
 - Keep core application logic under `src/my_mdns/core/` as reusable modules, and keep GUI code in `src/my_mdns/gui/`.
+- mDNS受信実装では `0.0.0.0` / ifindex `0` の単発JOINに依存せず、IPv4/IPv6ともインターフェイスごとに multicast group join する方針を優先する（LAN内ホストの取りこぼし防止）。
 
 # その他（このセクションは削除せず、このセクションの内容は他の適切なセクションに構造化することを強く推奨する）
 - AGENTS.md は他のコーディングエージェントや開発者も参照する指示なので、プロジェクト全体の方針にかかわることは積極的にAGENTS.mdに追記する

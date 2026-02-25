@@ -26,6 +26,7 @@ class MDNSApp:
         self._ip_only_filter = tk.BooleanVar(value=True)
         self._ip_filter_button_text = tk.StringVar(value="Show IP-assigned only: ON")
         self._run_toggle_button: tk.Button | None = None
+        self._main_service_query_button: ttk.Button | None = None
         self._query_v4_button: ttk.Button | None = None
         self._query_v6_button: ttk.Button | None = None
         self._selected_interface_name: str | None = None
@@ -64,8 +65,15 @@ class MDNSApp:
         ttk.Entry(ctrl, width=8, textvariable=self._target_port).grid(row=0, column=3, padx=6)
         self._run_toggle_button = tk.Button(ctrl, command=self._toggle_runtime)
         self._run_toggle_button.grid(row=0, column=4, padx=6)
-        ttk.Button(ctrl, text="Clear target", command=self._clear_target).grid(row=0, column=5, padx=6)
-        ttk.Label(ctrl, textvariable=self._status).grid(row=0, column=6, sticky=tk.E, padx=8)
+        self._main_service_query_button = ttk.Button(
+            ctrl,
+            text="Send Services Query",
+            command=self._send_main_service_query,
+            state=tk.DISABLED,
+        )
+        self._main_service_query_button.grid(row=0, column=5, padx=6)
+        ttk.Button(ctrl, text="Clear target", command=self._clear_target).grid(row=0, column=6, padx=6)
+        ttk.Label(ctrl, textvariable=self._status).grid(row=0, column=7, sticky=tk.E, padx=8)
         self._update_run_toggle_ui()
 
         listening_ctrl = ttk.Frame(listening_tab)
@@ -197,6 +205,7 @@ class MDNSApp:
         finally:
             self._render_interfaces()
             self._update_run_toggle_ui()
+            self._update_main_service_query_button_state()
             self._update_query_buttons_state()
             self._update_manual_query_buttons_state()
 
@@ -212,6 +221,7 @@ class MDNSApp:
         finally:
             self._render_interfaces()
             self._update_run_toggle_ui()
+            self._update_main_service_query_button_state()
             self._update_query_buttons_state()
             self._update_manual_query_buttons_state()
 
@@ -220,6 +230,11 @@ class MDNSApp:
             self._stop()
         else:
             self._start()
+
+    def _update_main_service_query_button_state(self) -> None:
+        if self._main_service_query_button is None:
+            return
+        self._main_service_query_button.configure(state=tk.NORMAL if self._running else tk.DISABLED)
 
     def _update_run_toggle_ui(self) -> None:
         if self._run_toggle_button is None:
@@ -399,6 +414,27 @@ class MDNSApp:
         except OSError:
             self._append_log("ERROR", f"service query IPv6 failed on {selected.name}")
 
+    def _send_main_service_query(self) -> None:
+        if not self._running:
+            self._update_main_service_query_button_state()
+            return
+        sent_v4 = 0
+        sent_v6 = 0
+        for interface in self._interfaces:
+            if interface.ipv4_addresses:
+                try:
+                    self._runtime.send_service_query_ipv4(interface.ipv4_addresses[0])
+                    sent_v4 += 1
+                except OSError:
+                    self._append_log("ERROR", f"service query IPv4 failed on {interface.name}")
+            if interface.ipv6_addresses:
+                try:
+                    self._runtime.send_service_query_ipv6(interface.name)
+                    sent_v6 += 1
+                except OSError:
+                    self._append_log("ERROR", f"service query IPv6 failed on {interface.name}")
+        self._append_log("INFO", f"sent service query on interfaces: ipv4={sent_v4}, ipv6={sent_v6}")
+
     def _update_manual_query_buttons_state(self) -> None:
         has_name = bool(self._resolve_query_name.get().strip())
         for interface_name, btn_v4, btn_v6 in self._resolve_query_buttons:
@@ -482,6 +518,7 @@ class MDNSApp:
         self._status.set("stopped")
         self._render_interfaces()
         self._update_run_toggle_ui()
+        self._update_main_service_query_button_state()
         self._update_query_buttons_state()
         self._update_manual_query_buttons_state()
         if self.root.winfo_exists():
