@@ -26,6 +26,15 @@ class MDNSApp:
         self._ip_only_filter = tk.BooleanVar(value=True)
         self._ip_filter_button_text = tk.StringVar(value="Show IP-assigned only: ON")
         self._run_toggle_button: tk.Button | None = None
+        self._query_v4_button: ttk.Button | None = None
+        self._query_v6_button: ttk.Button | None = None
+        self._manual_query_v4_button: ttk.Button | None = None
+        self._manual_query_v6_button: ttk.Button | None = None
+        self._resolve_if_combobox: ttk.Combobox | None = None
+        self._selected_interface_name: str | None = None
+        self._resolve_query_name = tk.StringVar(value="localhost.local.")
+        self._resolve_qtype = tk.StringVar(value="A")
+        self._resolve_interface_name = tk.StringVar(value="")
 
         self._build_ui()
         self.root.protocol("WM_DELETE_WINDOW", self._on_close)
@@ -41,9 +50,11 @@ class MDNSApp:
 
         main_tab = ttk.Frame(notebook, padding=8)
         listening_tab = ttk.Frame(notebook, padding=8)
+        resolve_tab = ttk.Frame(notebook, padding=8)
         logs_tab = ttk.Frame(notebook, padding=8)
         notebook.add(main_tab, text="Main")
         notebook.add(listening_tab, text="Listening")
+        notebook.add(resolve_tab, text="Resolve")
         notebook.add(logs_tab, text="Logs")
 
         ctrl = ttk.LabelFrame(main_tab, text="Control", padding=10)
@@ -67,6 +78,20 @@ class MDNSApp:
             textvariable=self._ip_filter_button_text,
             command=self._toggle_ip_filter,
         ).pack(side=tk.LEFT, padx=(8, 0))
+        self._query_v4_button = ttk.Button(
+            listening_ctrl,
+            text="Send Query (IPv4)",
+            command=self._send_service_query_ipv4,
+            state=tk.DISABLED,
+        )
+        self._query_v4_button.pack(side=tk.LEFT, padx=(16, 0))
+        self._query_v6_button = ttk.Button(
+            listening_ctrl,
+            text="Send Query (IPv6)",
+            command=self._send_service_query_ipv6,
+            state=tk.DISABLED,
+        )
+        self._query_v6_button.pack(side=tk.LEFT, padx=(8, 0))
 
         iface = ttk.LabelFrame(listening_tab, text="Listen interfaces", padding=8)
         iface.pack(fill=tk.BOTH, expand=True)
@@ -85,7 +110,50 @@ class MDNSApp:
         self._iface_status_tree.column("ipv4", width=220, anchor=tk.W)
         self._iface_status_tree.column("ipv6", width=300, anchor=tk.W)
         self._iface_status_tree.pack(fill=tk.BOTH, expand=True)
+        self._iface_status_tree.bind("<<TreeviewSelect>>", self._on_interface_select)
         self._render_interfaces()
+
+        resolve_frame = ttk.LabelFrame(resolve_tab, text="Manual mDNS query", padding=10)
+        resolve_frame.pack(fill=tk.X)
+        ttk.Label(resolve_frame, text="Name").grid(row=0, column=0, sticky=tk.W)
+        name_entry = ttk.Entry(resolve_frame, width=38, textvariable=self._resolve_query_name)
+        name_entry.grid(row=0, column=1, padx=6, sticky=tk.W)
+        name_entry.bind("<KeyRelease>", lambda _e: self._update_manual_query_buttons_state())
+        ttk.Label(resolve_frame, text="Type").grid(row=0, column=2, sticky=tk.W)
+        qtype_combo = ttk.Combobox(
+            resolve_frame,
+            width=8,
+            textvariable=self._resolve_qtype,
+            state="readonly",
+            values=("A", "AAAA", "PTR", "SRV", "TXT"),
+        )
+        qtype_combo.grid(row=0, column=3, padx=6, sticky=tk.W)
+        qtype_combo.bind("<<ComboboxSelected>>", lambda _e: self._update_manual_query_buttons_state())
+        ttk.Label(resolve_frame, text="Interface").grid(row=1, column=0, sticky=tk.W, pady=(8, 0))
+        self._resolve_if_combobox = ttk.Combobox(
+            resolve_frame,
+            width=38,
+            textvariable=self._resolve_interface_name,
+            state="readonly",
+            values=[],
+        )
+        self._resolve_if_combobox.grid(row=1, column=1, padx=6, pady=(8, 0), sticky=tk.W)
+        self._resolve_if_combobox.bind("<<ComboboxSelected>>", lambda _e: self._update_manual_query_buttons_state())
+        self._manual_query_v4_button = ttk.Button(
+            resolve_frame,
+            text="Send Query (IPv4)",
+            command=self._send_manual_query_ipv4,
+            state=tk.DISABLED,
+        )
+        self._manual_query_v4_button.grid(row=1, column=2, padx=(6, 0), pady=(8, 0), sticky=tk.W)
+        self._manual_query_v6_button = ttk.Button(
+            resolve_frame,
+            text="Send Query (IPv6)",
+            command=self._send_manual_query_ipv6,
+            state=tk.DISABLED,
+        )
+        self._manual_query_v6_button.grid(row=1, column=3, padx=(6, 0), pady=(8, 0), sticky=tk.W)
+        self._refresh_resolve_interface_choices()
 
         table = ttk.LabelFrame(main_tab, text="Captured packets", padding=8)
         table.pack(fill=tk.BOTH, expand=True, pady=(10, 0))
@@ -126,6 +194,8 @@ class MDNSApp:
         finally:
             self._render_interfaces()
             self._update_run_toggle_ui()
+            self._update_query_buttons_state()
+            self._update_manual_query_buttons_state()
 
     def _stop(self) -> None:
         if not self._running:
@@ -139,6 +209,8 @@ class MDNSApp:
         finally:
             self._render_interfaces()
             self._update_run_toggle_ui()
+            self._update_query_buttons_state()
+            self._update_manual_query_buttons_state()
 
     def _toggle_runtime(self) -> None:
         if self._running:
@@ -186,6 +258,9 @@ class MDNSApp:
     def _refresh_interfaces(self) -> None:
         self._interfaces = list_interfaces()
         self._render_interfaces()
+        self._refresh_resolve_interface_choices()
+        self._update_query_buttons_state()
+        self._update_manual_query_buttons_state()
         self._append_log("INFO", f"interfaces refreshed: {len(self._interfaces)} found")
 
     def _toggle_ip_filter(self) -> None:
@@ -195,11 +270,15 @@ class MDNSApp:
             "Show IP-assigned only: ON" if enabled else "Show IP-assigned only: OFF"
         )
         self._render_interfaces()
+        self._update_query_buttons_state()
+        self._update_manual_query_buttons_state()
         self._append_log("INFO", f"ip-assigned filter {'enabled' if enabled else 'disabled'}")
 
     def _render_interfaces(self) -> None:
+        prev_selected = self._selected_interface_name
         for item in self._iface_status_tree.get_children():
             self._iface_status_tree.delete(item)
+        restored_item: str | None = None
         for interface in self._interfaces:
             has_ip = bool(interface.ipv4_addresses or interface.ipv6_addresses)
             if self._ip_only_filter.get() and not has_ip:
@@ -207,11 +286,123 @@ class MDNSApp:
             listening = "yes" if self._running else "no"
             ipv4 = ", ".join(interface.ipv4_addresses) if interface.ipv4_addresses else "-"
             ipv6 = ", ".join(interface.ipv6_addresses) if interface.ipv6_addresses else "-"
-            self._iface_status_tree.insert(
+            item_id = self._iface_status_tree.insert(
                 "",
                 tk.END,
                 values=(interface.name, listening, ipv4, ipv6),
             )
+            if prev_selected and interface.name == prev_selected:
+                restored_item = item_id
+        if restored_item is not None:
+            self._iface_status_tree.selection_set(restored_item)
+            self._iface_status_tree.focus(restored_item)
+            self._selected_interface_name = prev_selected
+        else:
+            self._selected_interface_name = None
+        self._update_query_buttons_state()
+
+    def _on_interface_select(self, _event: tk.Event[tk.Misc]) -> None:
+        selection = self._iface_status_tree.selection()
+        if not selection:
+            self._selected_interface_name = None
+            self._update_query_buttons_state()
+            return
+        values = self._iface_status_tree.item(selection[0], "values")
+        if not values:
+            self._selected_interface_name = None
+        else:
+            self._selected_interface_name = str(values[0])
+        self._update_query_buttons_state()
+
+    def _get_selected_interface(self) -> InterfaceInfo | None:
+        if self._selected_interface_name is None:
+            return None
+        for interface in self._interfaces:
+            if interface.name == self._selected_interface_name:
+                return interface
+        return None
+
+    def _get_interface_by_name(self, name: str) -> InterfaceInfo | None:
+        for interface in self._interfaces:
+            if interface.name == name:
+                return interface
+        return None
+
+    def _refresh_resolve_interface_choices(self) -> None:
+        if self._resolve_if_combobox is None:
+            return
+        current = self._resolve_interface_name.get()
+        names = [interface.name for interface in self._interfaces]
+        self._resolve_if_combobox.configure(values=names)
+        if current in names:
+            self._resolve_interface_name.set(current)
+        elif names:
+            self._resolve_interface_name.set(names[0])
+        else:
+            self._resolve_interface_name.set("")
+
+    def _update_query_buttons_state(self) -> None:
+        selected = self._get_selected_interface()
+        can_use_v4 = bool(self._running and selected and selected.ipv4_addresses)
+        can_use_v6 = bool(self._running and selected and selected.ipv6_addresses)
+        if self._query_v4_button is not None:
+            self._query_v4_button.configure(state=tk.NORMAL if can_use_v4 else tk.DISABLED)
+        if self._query_v6_button is not None:
+            self._query_v6_button.configure(state=tk.NORMAL if can_use_v6 else tk.DISABLED)
+
+    def _send_service_query_ipv4(self) -> None:
+        selected = self._get_selected_interface()
+        if not self._running or selected is None or not selected.ipv4_addresses:
+            self._update_query_buttons_state()
+            return
+        try:
+            self._runtime.send_service_query_ipv4(selected.ipv4_addresses[0])
+        except OSError:
+            self._append_log("ERROR", f"service query IPv4 failed on {selected.name}")
+
+    def _send_service_query_ipv6(self) -> None:
+        selected = self._get_selected_interface()
+        if not self._running or selected is None or not selected.ipv6_addresses:
+            self._update_query_buttons_state()
+            return
+        try:
+            self._runtime.send_service_query_ipv6(selected.name)
+        except OSError:
+            self._append_log("ERROR", f"service query IPv6 failed on {selected.name}")
+
+    def _update_manual_query_buttons_state(self) -> None:
+        selected = self._get_interface_by_name(self._resolve_interface_name.get())
+        has_name = bool(self._resolve_query_name.get().strip())
+        can_use_v4 = bool(self._running and has_name and selected and selected.ipv4_addresses)
+        can_use_v6 = bool(self._running and has_name and selected and selected.ipv6_addresses)
+        if self._manual_query_v4_button is not None:
+            self._manual_query_v4_button.configure(state=tk.NORMAL if can_use_v4 else tk.DISABLED)
+        if self._manual_query_v6_button is not None:
+            self._manual_query_v6_button.configure(state=tk.NORMAL if can_use_v6 else tk.DISABLED)
+
+    def _send_manual_query_ipv4(self) -> None:
+        qname = self._resolve_query_name.get().strip()
+        qtype = self._resolve_qtype.get().strip().upper()
+        selected = self._get_interface_by_name(self._resolve_interface_name.get())
+        if not self._running or not qname or selected is None or not selected.ipv4_addresses:
+            self._update_manual_query_buttons_state()
+            return
+        try:
+            self._runtime.send_manual_query_ipv4(selected.ipv4_addresses[0], qname, qtype)
+        except (OSError, ValueError):
+            self._append_log("ERROR", f"manual query IPv4 failed on {selected.name}")
+
+    def _send_manual_query_ipv6(self) -> None:
+        qname = self._resolve_query_name.get().strip()
+        qtype = self._resolve_qtype.get().strip().upper()
+        selected = self._get_interface_by_name(self._resolve_interface_name.get())
+        if not self._running or not qname or selected is None or not selected.ipv6_addresses:
+            self._update_manual_query_buttons_state()
+            return
+        try:
+            self._runtime.send_manual_query_ipv6(selected.name, qname, qtype)
+        except (OSError, ValueError):
+            self._append_log("ERROR", f"manual query IPv6 failed on {selected.name}")
 
     def _poll_events(self) -> None:
         while True:
@@ -255,6 +446,8 @@ class MDNSApp:
         self._status.set("stopped")
         self._render_interfaces()
         self._update_run_toggle_ui()
+        self._update_query_buttons_state()
+        self._update_manual_query_buttons_state()
         if self.root.winfo_exists():
             self.root.quit()
             self.root.destroy()

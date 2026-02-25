@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import socket
 import threading
 from datetime import datetime
 from queue import Queue
@@ -8,6 +9,7 @@ from queue import Queue
 from my_mdns.core.capture import MDNSCapture
 from my_mdns.core.events import LogEvent, PacketEvent
 from my_mdns.core.forwarder import MDNSForwarder
+from my_mdns.core.query import build_query, build_services_ptr_query, send_mdns_query_ipv4, send_mdns_query_ipv6
 
 
 class CoreRuntime:
@@ -67,6 +69,44 @@ class CoreRuntime:
         if self._forwarder is not None:
             self._forwarder.set_targets([])
         self._log("INFO", "forward target disabled")
+
+    def send_service_query_ipv4(self, interface_ip: str) -> None:
+        payload = build_services_ptr_query()
+        try:
+            send_mdns_query_ipv4(interface_ip, payload)
+            self._log("INFO", f"sent mDNS services query via IPv4 on {interface_ip}")
+        except OSError as exc:
+            self._log("ERROR", f"failed to send mDNS services query via IPv4 on {interface_ip}: {exc}")
+            raise
+
+    def send_service_query_ipv6(self, interface_name: str) -> None:
+        payload = build_services_ptr_query()
+        try:
+            interface_index = socket.if_nametoindex(interface_name)
+            send_mdns_query_ipv6(interface_index, payload)
+            self._log("INFO", f"sent mDNS services query via IPv6 on {interface_name}")
+        except OSError as exc:
+            self._log("ERROR", f"failed to send mDNS services query via IPv6 on {interface_name}: {exc}")
+            raise
+
+    def send_manual_query_ipv4(self, interface_ip: str, qname: str, qtype_name: str) -> None:
+        try:
+            payload = build_query(qname, qtype_name)
+            send_mdns_query_ipv4(interface_ip, payload)
+            self._log("INFO", f"sent mDNS query via IPv4 on {interface_ip}: {qname} {qtype_name.upper()}")
+        except (OSError, ValueError) as exc:
+            self._log("ERROR", f"failed to send mDNS query via IPv4 on {interface_ip}: {exc}")
+            raise
+
+    def send_manual_query_ipv6(self, interface_name: str, qname: str, qtype_name: str) -> None:
+        try:
+            payload = build_query(qname, qtype_name)
+            interface_index = socket.if_nametoindex(interface_name)
+            send_mdns_query_ipv6(interface_index, payload)
+            self._log("INFO", f"sent mDNS query via IPv6 on {interface_name}: {qname} {qtype_name.upper()}")
+        except (OSError, ValueError) as exc:
+            self._log("ERROR", f"failed to send mDNS query via IPv6 on {interface_name}: {exc}")
+            raise
 
     def _run_loop(self) -> None:
         if self._loop is None:
