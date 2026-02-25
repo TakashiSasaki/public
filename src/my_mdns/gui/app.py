@@ -28,13 +28,11 @@ class MDNSApp:
         self._run_toggle_button: tk.Button | None = None
         self._query_v4_button: ttk.Button | None = None
         self._query_v6_button: ttk.Button | None = None
-        self._manual_query_v4_button: ttk.Button | None = None
-        self._manual_query_v6_button: ttk.Button | None = None
-        self._resolve_if_combobox: ttk.Combobox | None = None
         self._selected_interface_name: str | None = None
-        self._resolve_query_name = tk.StringVar(value="localhost.local.")
+        self._resolve_query_name = tk.StringVar(value="localhost")
         self._resolve_qtype = tk.StringVar(value="A")
-        self._resolve_interface_name = tk.StringVar(value="")
+        self._resolve_rows_frame: ttk.Frame | None = None
+        self._resolve_query_buttons: list[tuple[str, ttk.Button, ttk.Button]] = []
 
         self._build_ui()
         self.root.protocol("WM_DELETE_WINDOW", self._on_close)
@@ -114,12 +112,13 @@ class MDNSApp:
         self._render_interfaces()
 
         resolve_frame = ttk.LabelFrame(resolve_tab, text="Manual mDNS query", padding=10)
-        resolve_frame.pack(fill=tk.X)
+        resolve_frame.pack(fill=tk.BOTH, expand=True)
         ttk.Label(resolve_frame, text="Name").grid(row=0, column=0, sticky=tk.W)
-        name_entry = ttk.Entry(resolve_frame, width=38, textvariable=self._resolve_query_name)
+        name_entry = ttk.Entry(resolve_frame, width=28, textvariable=self._resolve_query_name)
         name_entry.grid(row=0, column=1, padx=6, sticky=tk.W)
         name_entry.bind("<KeyRelease>", lambda _e: self._update_manual_query_buttons_state())
-        ttk.Label(resolve_frame, text="Type").grid(row=0, column=2, sticky=tk.W)
+        ttk.Label(resolve_frame, text=".local.").grid(row=0, column=2, sticky=tk.W)
+        ttk.Label(resolve_frame, text="Type").grid(row=0, column=3, sticky=tk.W)
         qtype_combo = ttk.Combobox(
             resolve_frame,
             width=8,
@@ -127,33 +126,37 @@ class MDNSApp:
             state="readonly",
             values=("A", "AAAA", "PTR", "SRV", "TXT"),
         )
-        qtype_combo.grid(row=0, column=3, padx=6, sticky=tk.W)
+        qtype_combo.grid(row=0, column=4, padx=6, sticky=tk.W)
         qtype_combo.bind("<<ComboboxSelected>>", lambda _e: self._update_manual_query_buttons_state())
-        ttk.Label(resolve_frame, text="Interface").grid(row=1, column=0, sticky=tk.W, pady=(8, 0))
-        self._resolve_if_combobox = ttk.Combobox(
-            resolve_frame,
-            width=38,
-            textvariable=self._resolve_interface_name,
-            state="readonly",
-            values=[],
+
+        ttk.Separator(resolve_frame, orient=tk.HORIZONTAL).grid(
+            row=1,
+            column=0,
+            columnspan=5,
+            sticky=tk.EW,
+            pady=(10, 8),
         )
-        self._resolve_if_combobox.grid(row=1, column=1, padx=6, pady=(8, 0), sticky=tk.W)
-        self._resolve_if_combobox.bind("<<ComboboxSelected>>", lambda _e: self._update_manual_query_buttons_state())
-        self._manual_query_v4_button = ttk.Button(
-            resolve_frame,
-            text="Send Query (IPv4)",
-            command=self._send_manual_query_ipv4,
-            state=tk.DISABLED,
+        ttk.Label(resolve_frame, text="Interface").grid(row=2, column=0, sticky=tk.W)
+        ttk.Label(resolve_frame, text="IPv4").grid(row=2, column=1, sticky=tk.W)
+        ttk.Label(resolve_frame, text="IPv6").grid(row=2, column=2, sticky=tk.W)
+        ttk.Label(resolve_frame, text="Send Query").grid(row=2, column=3, columnspan=2, sticky=tk.W)
+
+        rows_wrap = ttk.Frame(resolve_frame)
+        rows_wrap.grid(row=3, column=0, columnspan=5, sticky=tk.NSEW, pady=(6, 0))
+        resolve_frame.rowconfigure(3, weight=1)
+        resolve_frame.columnconfigure(1, weight=1)
+        rows_canvas = tk.Canvas(rows_wrap, highlightthickness=0)
+        rows_scroll = ttk.Scrollbar(rows_wrap, orient=tk.VERTICAL, command=rows_canvas.yview)
+        rows_canvas.configure(yscrollcommand=rows_scroll.set)
+        rows_canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        rows_scroll.pack(side=tk.RIGHT, fill=tk.Y)
+        self._resolve_rows_frame = ttk.Frame(rows_canvas)
+        rows_canvas.create_window((0, 0), window=self._resolve_rows_frame, anchor=tk.NW)
+        self._resolve_rows_frame.bind(
+            "<Configure>",
+            lambda _e: rows_canvas.configure(scrollregion=rows_canvas.bbox("all")),
         )
-        self._manual_query_v4_button.grid(row=1, column=2, padx=(6, 0), pady=(8, 0), sticky=tk.W)
-        self._manual_query_v6_button = ttk.Button(
-            resolve_frame,
-            text="Send Query (IPv6)",
-            command=self._send_manual_query_ipv6,
-            state=tk.DISABLED,
-        )
-        self._manual_query_v6_button.grid(row=1, column=3, padx=(6, 0), pady=(8, 0), sticky=tk.W)
-        self._refresh_resolve_interface_choices()
+        self._render_resolve_interface_rows()
 
         table = ttk.LabelFrame(main_tab, text="Captured packets", padding=8)
         table.pack(fill=tk.BOTH, expand=True, pady=(10, 0))
@@ -258,7 +261,7 @@ class MDNSApp:
     def _refresh_interfaces(self) -> None:
         self._interfaces = list_interfaces()
         self._render_interfaces()
-        self._refresh_resolve_interface_choices()
+        self._render_resolve_interface_rows()
         self._update_query_buttons_state()
         self._update_manual_query_buttons_state()
         self._append_log("INFO", f"interfaces refreshed: {len(self._interfaces)} found")
@@ -328,18 +331,44 @@ class MDNSApp:
                 return interface
         return None
 
-    def _refresh_resolve_interface_choices(self) -> None:
-        if self._resolve_if_combobox is None:
+    def _render_resolve_interface_rows(self) -> None:
+        if self._resolve_rows_frame is None:
             return
-        current = self._resolve_interface_name.get()
-        names = [interface.name for interface in self._interfaces]
-        self._resolve_if_combobox.configure(values=names)
-        if current in names:
-            self._resolve_interface_name.set(current)
-        elif names:
-            self._resolve_interface_name.set(names[0])
-        else:
-            self._resolve_interface_name.set("")
+        for child in self._resolve_rows_frame.winfo_children():
+            child.destroy()
+
+        self._resolve_query_buttons.clear()
+        row = 0
+        for interface in self._interfaces:
+            if not (interface.ipv4_addresses or interface.ipv6_addresses):
+                continue
+            ipv4_text = ", ".join(interface.ipv4_addresses) if interface.ipv4_addresses else "-"
+            ipv6_text = ", ".join(interface.ipv6_addresses) if interface.ipv6_addresses else "-"
+
+            ttk.Label(self._resolve_rows_frame, text=interface.name).grid(row=row, column=0, sticky=tk.W, padx=(0, 6), pady=2)
+            ttk.Label(self._resolve_rows_frame, text=ipv4_text).grid(row=row, column=1, sticky=tk.W, padx=(0, 6), pady=2)
+            ttk.Label(self._resolve_rows_frame, text=ipv6_text).grid(row=row, column=2, sticky=tk.W, padx=(0, 6), pady=2)
+
+            btn_v4 = ttk.Button(
+                self._resolve_rows_frame,
+                text="IPv4",
+                command=lambda name=interface.name: self._send_manual_query_ipv4(name),
+            )
+            btn_v4.grid(row=row, column=3, sticky=tk.W, padx=(0, 6), pady=2)
+            btn_v6 = ttk.Button(
+                self._resolve_rows_frame,
+                text="IPv6",
+                command=lambda name=interface.name: self._send_manual_query_ipv6(name),
+            )
+            btn_v6.grid(row=row, column=4, sticky=tk.W, pady=2)
+            self._resolve_query_buttons.append((interface.name, btn_v4, btn_v6))
+            row += 1
+
+        if row == 0:
+            ttk.Label(self._resolve_rows_frame, text="No interface has assigned IP addresses.").grid(
+                row=0, column=0, columnspan=5, sticky=tk.W
+            )
+        self._update_manual_query_buttons_state()
 
     def _update_query_buttons_state(self) -> None:
         selected = self._get_selected_interface()
@@ -371,20 +400,27 @@ class MDNSApp:
             self._append_log("ERROR", f"service query IPv6 failed on {selected.name}")
 
     def _update_manual_query_buttons_state(self) -> None:
-        selected = self._get_interface_by_name(self._resolve_interface_name.get())
         has_name = bool(self._resolve_query_name.get().strip())
-        can_use_v4 = bool(self._running and has_name and selected and selected.ipv4_addresses)
-        can_use_v6 = bool(self._running and has_name and selected and selected.ipv6_addresses)
-        if self._manual_query_v4_button is not None:
-            self._manual_query_v4_button.configure(state=tk.NORMAL if can_use_v4 else tk.DISABLED)
-        if self._manual_query_v6_button is not None:
-            self._manual_query_v6_button.configure(state=tk.NORMAL if can_use_v6 else tk.DISABLED)
+        for interface_name, btn_v4, btn_v6 in self._resolve_query_buttons:
+            selected = self._get_interface_by_name(interface_name)
+            can_use_v4 = bool(self._running and has_name and selected and selected.ipv4_addresses)
+            can_use_v6 = bool(self._running and has_name and selected and selected.ipv6_addresses)
+            btn_v4.configure(state=tk.NORMAL if can_use_v4 else tk.DISABLED)
+            btn_v6.configure(state=tk.NORMAL if can_use_v6 else tk.DISABLED)
 
-    def _send_manual_query_ipv4(self) -> None:
-        qname = self._resolve_query_name.get().strip()
+    def _build_resolve_fqdn(self) -> str | None:
+        base = self._resolve_query_name.get().strip().rstrip(".")
+        if not base:
+            return None
+        if base.endswith(".local"):
+            return base + "."
+        return base + ".local."
+
+    def _send_manual_query_ipv4(self, interface_name: str) -> None:
+        qname = self._build_resolve_fqdn()
         qtype = self._resolve_qtype.get().strip().upper()
-        selected = self._get_interface_by_name(self._resolve_interface_name.get())
-        if not self._running or not qname or selected is None or not selected.ipv4_addresses:
+        selected = self._get_interface_by_name(interface_name)
+        if not self._running or qname is None or selected is None or not selected.ipv4_addresses:
             self._update_manual_query_buttons_state()
             return
         try:
@@ -392,11 +428,11 @@ class MDNSApp:
         except (OSError, ValueError):
             self._append_log("ERROR", f"manual query IPv4 failed on {selected.name}")
 
-    def _send_manual_query_ipv6(self) -> None:
-        qname = self._resolve_query_name.get().strip()
+    def _send_manual_query_ipv6(self, interface_name: str) -> None:
+        qname = self._build_resolve_fqdn()
         qtype = self._resolve_qtype.get().strip().upper()
-        selected = self._get_interface_by_name(self._resolve_interface_name.get())
-        if not self._running or not qname or selected is None or not selected.ipv6_addresses:
+        selected = self._get_interface_by_name(interface_name)
+        if not self._running or qname is None or selected is None or not selected.ipv6_addresses:
             self._update_manual_query_buttons_state()
             return
         try:
