@@ -9,6 +9,7 @@ class PacketEvent:
     timestamp: datetime
     source_host: str
     source_port: int
+    capture_interface: str
     address_family: str
     message_kind: str
     query_types: tuple[str, ...]

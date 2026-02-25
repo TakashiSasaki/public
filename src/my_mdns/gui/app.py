@@ -35,6 +35,7 @@ class MDNSApp:
         self._resolve_qtype = tk.StringVar(value="A")
         self._resolve_rows_frame: ttk.Frame | None = None
         self._resolve_query_buttons: list[tuple[str, ttk.Button, ttk.Button]] = []
+        self._interface_packet_counts: dict[str, dict[str, int]] = {}
         self._direction_counts: dict[str, int] = {"Query": 0, "Response": 0, "Other": 0}
         self._query_type_counts: dict[str, int] = {}
         self._response_type_counts: dict[str, int] = {}
@@ -115,7 +116,7 @@ class MDNSApp:
         iface.pack(fill=tk.BOTH, expand=True)
         self._iface_status_tree = ttk.Treeview(
             iface,
-            columns=("name", "listening", "ipv4", "ipv6"),
+            columns=("name", "listening", "ipv4", "ipv6", "rx4", "tx4", "rx6", "tx6"),
             show="headings",
             height=16,
         )
@@ -123,10 +124,18 @@ class MDNSApp:
         self._iface_status_tree.heading("listening", text="listening")
         self._iface_status_tree.heading("ipv4", text="ipv4 addresses")
         self._iface_status_tree.heading("ipv6", text="ipv6 addresses")
+        self._iface_status_tree.heading("rx4", text="rx4")
+        self._iface_status_tree.heading("tx4", text="tx4")
+        self._iface_status_tree.heading("rx6", text="rx6")
+        self._iface_status_tree.heading("tx6", text="tx6")
         self._iface_status_tree.column("name", width=240, anchor=tk.W)
         self._iface_status_tree.column("listening", width=100, anchor=tk.W)
-        self._iface_status_tree.column("ipv4", width=220, anchor=tk.W)
-        self._iface_status_tree.column("ipv6", width=300, anchor=tk.W)
+        self._iface_status_tree.column("ipv4", width=180, anchor=tk.W)
+        self._iface_status_tree.column("ipv6", width=220, anchor=tk.W)
+        self._iface_status_tree.column("rx4", width=60, anchor=tk.E)
+        self._iface_status_tree.column("tx4", width=60, anchor=tk.E)
+        self._iface_status_tree.column("rx6", width=60, anchor=tk.E)
+        self._iface_status_tree.column("tx6", width=60, anchor=tk.E)
         self._iface_status_tree.pack(fill=tk.BOTH, expand=True)
         self._iface_status_tree.bind("<<TreeviewSelect>>", self._on_interface_select)
         self._render_interfaces()
@@ -336,6 +345,7 @@ class MDNSApp:
 
     def _refresh_interfaces(self) -> None:
         self._interfaces = list_interfaces()
+        self._ensure_interface_counters()
         self._render_interfaces()
         self._render_resolve_interface_rows()
         self._update_query_buttons_state()
@@ -354,6 +364,7 @@ class MDNSApp:
         self._append_log("INFO", f"ip-assigned filter {'enabled' if enabled else 'disabled'}")
 
     def _render_interfaces(self) -> None:
+        self._ensure_interface_counters()
         prev_selected = self._selected_interface_name
         for item in self._iface_status_tree.get_children():
             self._iface_status_tree.delete(item)
@@ -365,10 +376,20 @@ class MDNSApp:
             listening = "yes" if self._running else "no"
             ipv4 = ", ".join(interface.ipv4_addresses) if interface.ipv4_addresses else "-"
             ipv6 = ", ".join(interface.ipv6_addresses) if interface.ipv6_addresses else "-"
+            counters = self._interface_packet_counts.get(interface.name, {})
             item_id = self._iface_status_tree.insert(
                 "",
                 tk.END,
-                values=(interface.name, listening, ipv4, ipv6),
+                values=(
+                    interface.name,
+                    listening,
+                    ipv4,
+                    ipv6,
+                    counters.get("rx4", 0),
+                    counters.get("tx4", 0),
+                    counters.get("rx6", 0),
+                    counters.get("tx6", 0),
+                ),
             )
             if prev_selected and interface.name == prev_selected:
                 restored_item = item_id
@@ -446,6 +467,15 @@ class MDNSApp:
             )
         self._update_manual_query_buttons_state()
 
+    def _ensure_interface_counters(self) -> None:
+        for interface in self._interfaces:
+            self._interface_packet_counts.setdefault(interface.name, {"rx4": 0, "tx4": 0, "rx6": 0, "tx6": 0})
+
+    def _bump_interface_counter(self, interface_name: str, key: str) -> None:
+        if interface_name not in self._interface_packet_counts:
+            self._interface_packet_counts[interface_name] = {"rx4": 0, "tx4": 0, "rx6": 0, "tx6": 0}
+        self._interface_packet_counts[interface_name][key] = self._interface_packet_counts[interface_name].get(key, 0) + 1
+
     def _update_query_buttons_state(self) -> None:
         selected = self._get_selected_interface()
         can_use_v4 = bool(self._running and selected and selected.ipv4_addresses)
@@ -462,6 +492,8 @@ class MDNSApp:
             return
         try:
             self._runtime.send_service_query_ipv4(selected.ipv4_addresses[0])
+            self._bump_interface_counter(selected.name, "tx4")
+            self._render_interfaces()
         except OSError:
             self._append_log("ERROR", f"service query IPv4 failed on {selected.name}")
 
@@ -472,6 +504,8 @@ class MDNSApp:
             return
         try:
             self._runtime.send_service_query_ipv6(selected.name)
+            self._bump_interface_counter(selected.name, "tx6")
+            self._render_interfaces()
         except OSError:
             self._append_log("ERROR", f"service query IPv6 failed on {selected.name}")
 
@@ -486,14 +520,17 @@ class MDNSApp:
                 try:
                     self._runtime.send_service_query_ipv4(interface.ipv4_addresses[0])
                     sent_v4 += 1
+                    self._bump_interface_counter(interface.name, "tx4")
                 except OSError:
                     self._append_log("ERROR", f"service query IPv4 failed on {interface.name}")
             if interface.ipv6_addresses:
                 try:
                     self._runtime.send_service_query_ipv6(interface.name)
                     sent_v6 += 1
+                    self._bump_interface_counter(interface.name, "tx6")
                 except OSError:
                     self._append_log("ERROR", f"service query IPv6 failed on {interface.name}")
+        self._render_interfaces()
         self._append_log("INFO", f"sent service query on interfaces: ipv4={sent_v4}, ipv6={sent_v6}")
 
     def _update_manual_query_buttons_state(self) -> None:
@@ -522,6 +559,8 @@ class MDNSApp:
             return
         try:
             self._runtime.send_manual_query_ipv4(selected.ipv4_addresses[0], qname, qtype)
+            self._bump_interface_counter(selected.name, "tx4")
+            self._render_interfaces()
         except (OSError, ValueError):
             self._append_log("ERROR", f"manual query IPv4 failed on {selected.name}")
 
@@ -534,6 +573,8 @@ class MDNSApp:
             return
         try:
             self._runtime.send_manual_query_ipv6(selected.name, qname, qtype)
+            self._bump_interface_counter(selected.name, "tx6")
+            self._render_interfaces()
         except (OSError, ValueError):
             self._append_log("ERROR", f"manual query IPv6 failed on {selected.name}")
 
@@ -545,6 +586,10 @@ class MDNSApp:
                 break
             if isinstance(event, PacketEvent):
                 self._accumulate_stats(event)
+                if event.address_family == "IPv4":
+                    self._bump_interface_counter(event.capture_interface, "rx4")
+                elif event.address_family == "IPv6":
+                    self._bump_interface_counter(event.capture_interface, "rx6")
                 self._tree.insert(
                     "",
                     0,
@@ -558,6 +603,7 @@ class MDNSApp:
                 )
                 for item in self._tree.get_children()[300:]:
                     self._tree.delete(item)
+                self._render_interfaces()
             else:
                 self._append_log(event.level, event.message, event.timestamp.strftime("%H:%M:%S"))
         self.root.after(150, self._poll_events)

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import ipaddress
 import socket
 import threading
 from datetime import datetime
@@ -117,17 +116,13 @@ class CoreRuntime:
         self._loop_ready.set()
         self._loop.run_forever()
 
-    def _on_packet(self, payload: bytes, addr: tuple[str, int]) -> None:
+    def _on_packet(self, payload: bytes, addr: tuple[str, int], capture_interface: str, address_family: str) -> None:
         forwarded = 0
         try:
             if self._forwarder is not None:
                 forwarded = self._forwarder.forward(payload)
         except OSError as exc:
             self._log("ERROR", f"forward error: {exc}")
-        try:
-            family = "IPv6" if ipaddress.ip_address(addr[0]).version == 6 else "IPv4"
-        except ValueError:
-            family = "Other"
         message_kind, query_types, answer_types = parse_mdns_packet(payload)
 
         self._event_queue.put(
@@ -135,7 +130,8 @@ class CoreRuntime:
                 timestamp=datetime.now(),
                 source_host=addr[0],
                 source_port=addr[1],
-                address_family=family,
+                capture_interface=capture_interface,
+                address_family=address_family,
                 message_kind=message_kind,
                 query_types=query_types,
                 answer_types=answer_types,
