@@ -34,6 +34,7 @@ def init_db(conn: sqlite3.Connection) -> None:
             item_type TEXT NOT NULL CHECK(item_type IN ('file', 'folder')),
             name TEXT NOT NULL,
             path TEXT NOT NULL UNIQUE,
+            target_path TEXT,
             modified_at TEXT NOT NULL,
             permissions TEXT NOT NULL,
             size_bytes INTEGER,
@@ -52,55 +53,61 @@ def init_db(conn: sqlite3.Connection) -> None:
 
 def _migrate_items_schema(conn: sqlite3.Connection) -> None:
     columns = {row["name"] for row in conn.execute("PRAGMA table_info(items)")}
-    if {"first_seen", "last_seen"}.issubset(columns):
-        return
-    if "scanned_at" not in columns:
-        return
+    if not {"first_seen", "last_seen"}.issubset(columns):
+        if "scanned_at" not in columns:
+            return
 
-    conn.execute(
-        """
-        CREATE TABLE items_new (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            item_type TEXT NOT NULL CHECK(item_type IN ('file', 'folder')),
-            name TEXT NOT NULL,
-            path TEXT NOT NULL UNIQUE,
-            modified_at TEXT NOT NULL,
-            permissions TEXT NOT NULL,
-            size_bytes INTEGER,
-            folder_total_size_bytes INTEGER,
-            first_seen TEXT NOT NULL,
-            last_seen TEXT NOT NULL
+        conn.execute(
+            """
+            CREATE TABLE items_new (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                item_type TEXT NOT NULL CHECK(item_type IN ('file', 'folder')),
+                name TEXT NOT NULL,
+                path TEXT NOT NULL UNIQUE,
+                target_path TEXT,
+                modified_at TEXT NOT NULL,
+                permissions TEXT NOT NULL,
+                size_bytes INTEGER,
+                folder_total_size_bytes INTEGER,
+                first_seen TEXT NOT NULL,
+                last_seen TEXT NOT NULL
+            )
+            """
         )
-        """
-    )
-    conn.execute(
-        """
-        INSERT INTO items_new (
-            item_type,
-            name,
-            path,
-            modified_at,
-            permissions,
-            size_bytes,
-            folder_total_size_bytes,
-            first_seen,
-            last_seen
+        conn.execute(
+            """
+            INSERT INTO items_new (
+                item_type,
+                name,
+                path,
+                target_path,
+                modified_at,
+                permissions,
+                size_bytes,
+                folder_total_size_bytes,
+                first_seen,
+                last_seen
+            )
+            SELECT
+                item_type,
+                name,
+                path,
+                NULL,
+                modified_at,
+                permissions,
+                size_bytes,
+                folder_total_size_bytes,
+                scanned_at,
+                scanned_at
+            FROM items
+            """
         )
-        SELECT
-            item_type,
-            name,
-            path,
-            modified_at,
-            permissions,
-            size_bytes,
-            folder_total_size_bytes,
-            scanned_at,
-            scanned_at
-        FROM items
-        """
-    )
-    conn.execute("DROP TABLE items")
-    conn.execute("ALTER TABLE items_new RENAME TO items")
+        conn.execute("DROP TABLE items")
+        conn.execute("ALTER TABLE items_new RENAME TO items")
+        columns = {row["name"] for row in conn.execute("PRAGMA table_info(items)")}
+
+    if "target_path" not in columns:
+        conn.execute("ALTER TABLE items ADD COLUMN target_path TEXT")
 
 
 def upsert_items(conn: sqlite3.Connection, items: list[DesktopItem], seen_at: str) -> int:
@@ -110,16 +117,18 @@ def upsert_items(conn: sqlite3.Connection, items: list[DesktopItem], seen_at: st
             item_type,
             name,
             path,
+            target_path,
             modified_at,
             permissions,
             size_bytes,
             folder_total_size_bytes,
             first_seen,
             last_seen
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(path) DO UPDATE SET
             item_type=excluded.item_type,
             name=excluded.name,
+            target_path=excluded.target_path,
             modified_at=excluded.modified_at,
             permissions=excluded.permissions,
             size_bytes=excluded.size_bytes,
@@ -131,6 +140,7 @@ def upsert_items(conn: sqlite3.Connection, items: list[DesktopItem], seen_at: st
                 item.item_type,
                 item.name,
                 item.path,
+                item.target_path,
                 item.modified_at,
                 item.permissions,
                 item.size_bytes,
@@ -150,12 +160,14 @@ def search_items(
     query: str = "",
     item_type: str = "all",
     limit: int = 500,
+    offset: int = 0,
 ) -> list[sqlite3.Row]:
     sql = """
     SELECT
       item_type,
       name,
       path,
+      target_path,
       modified_at,
       permissions,
       size_bytes,
@@ -167,12 +179,34 @@ def search_items(
     """
     params: list[object] = []
     if query:
-        sql += " AND (name LIKE ? OR path LIKE ?)"
+        sql += " AND (name LIKE ? OR path LIKE ? OR target_path LIKE ?)"
         like_q = f"%{query}%"
-        params.extend([like_q, like_q])
+        params.extend([like_q, like_q, like_q])
     if item_type in {"file", "folder"}:
         sql += " AND item_type = ?"
         params.append(item_type)
-    sql += " ORDER BY name COLLATE NOCASE ASC LIMIT ?"
-    params.append(limit)
+    sql += " ORDER BY name COLLATE NOCASE ASC LIMIT ? OFFSET ?"
+    params.extend([limit, offset])
     return list(conn.execute(sql, params))
+
+
+def count_items(
+    conn: sqlite3.Connection,
+    query: str = "",
+    item_type: str = "all",
+) -> int:
+    sql = """
+    SELECT COUNT(*) AS cnt
+    FROM items
+    WHERE 1=1
+    """
+    params: list[object] = []
+    if query:
+        sql += " AND (name LIKE ? OR path LIKE ? OR target_path LIKE ?)"
+        like_q = f"%{query}%"
+        params.extend([like_q, like_q, like_q])
+    if item_type in {"file", "folder"}:
+        sql += " AND item_type = ?"
+        params.append(item_type)
+    row = conn.execute(sql, params).fetchone()
+    return int(row["cnt"]) if row else 0
