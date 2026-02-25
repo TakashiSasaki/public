@@ -142,9 +142,14 @@ class DesktopSearchApp:
         self.tree["displaycolumns"] = display_columns
 
     def refresh_inventory(self) -> None:
-        desktop_path, count = service.refresh_inventory(self.conn)
+        desktop_path, count, skipped = service.refresh_inventory(self.conn)
         self.current_page = 0
-        self.status_var.set(f"Scanned {count} items from {desktop_path}")
+        if skipped:
+            self.status_var.set(
+                f"Skipped rescan for {desktop_path} (latest Last Seen is within 1 hour)"
+            )
+        else:
+            self.status_var.set(f"Scanned {count} items from {desktop_path}")
         self.perform_search()
 
     def perform_search(self) -> None:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sqlite3
+from datetime import datetime, timezone
 from pathlib import Path
 
 from platformdirs import user_data_dir
@@ -210,3 +211,19 @@ def count_items(
         params.append(item_type)
     row = conn.execute(sql, params).fetchone()
     return int(row["cnt"]) if row else 0
+
+
+def latest_last_seen(conn: sqlite3.Connection) -> datetime | None:
+    row = conn.execute("SELECT MAX(last_seen) AS latest FROM items").fetchone()
+    if not row:
+        return None
+    value = row["latest"]
+    if not value:
+        return None
+    try:
+        dt = datetime.fromisoformat(value)
+    except ValueError:
+        return None
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt
