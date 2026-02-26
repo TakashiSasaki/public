@@ -125,10 +125,21 @@ class CoreRuntime:
                 forwarded = self._forwarder.forward(payload)
         except OSError as exc:
             self._log("ERROR", f"forward error: {exc}")
-        message_kind, query_types, answer_types, a_records, aaaa_records, srv_records, ptr_records, txt_records = parse_mdns_packet(payload)
+        message_kind, queries, answer_types, a_records, aaaa_records, srv_records, ptr_records, txt_records = parse_mdns_packet(payload)
         
         last_seen = datetime.now().isoformat()
         source_ip = addr[0]
+
+        # Queries
+        query_types = []
+        for qname, qtype in queries:
+            query_types.append(qtype)
+            try:
+                store.add_query(qname, qtype, last_seen, source_ip)
+                # We do not know the count exactly from this context, but setting to 1 implies an update event
+                self._event_queue.put(QueryEvent(name=qname, type=qtype, count=1, last_seen=last_seen, source_ip=source_ip))
+            except Exception as e:
+                self._log("ERROR", f"failed to store query: {e}")
 
         # Store A records and notify GUI
         for name, ip in a_records:
@@ -181,7 +192,7 @@ class CoreRuntime:
                 capture_interface=capture_interface,
                 address_family=address_family,
                 message_kind=message_kind,
-                query_types=query_types,
+                query_types=tuple(query_types),
                 answer_types=answer_types,
                 byte_count=len(payload),
                 preview_hex=payload[:16].hex(" "),

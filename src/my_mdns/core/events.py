@@ -67,3 +67,12 @@ class TXTRecordEvent:
     text: str
     last_seen: str
     source_ip: str
+
+
+@dataclass(slots=True)
+class QueryEvent:
+    name: str
+    type: str
+    count: int
+    last_seen: str
+    source_ip: str

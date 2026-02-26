@@ -77,6 +77,18 @@ def init_db() -> None:
             )
             """
         )
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS queries (
+                name TEXT,
+                type TEXT,
+                count INTEGER DEFAULT 1,
+                last_seen TEXT,
+                source_ip TEXT,
+                PRIMARY KEY (name, type)
+            )
+            """
+        )
         # Attempt to add columns to existing tables if they don't exist
         for table in ["a_records", "aaaa_records", "srv_records", "ptr_records", "txt_records"]:
             try:
@@ -184,6 +196,30 @@ def get_all_txt_records() -> list[tuple[str, str, str, str]]:
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT name, text, last_seen, source_ip FROM txt_records ORDER BY name ASC")
+        return cursor.fetchall()
+
+
+def add_query(name: str, qtype: str, last_seen: str, source_ip: str) -> None:
+    with _write_lock:
+        with sqlite3.connect(db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                INSERT INTO queries (name, type, count, last_seen, source_ip)
+                VALUES (?, ?, 1, ?, ?)
+                ON CONFLICT(name, type) DO UPDATE SET
+                    count = count + 1,
+                    last_seen = excluded.last_seen,
+                    source_ip = excluded.source_ip
+                """,
+                (name, qtype, last_seen, source_ip)
+            )
+            conn.commit()
+
+def get_all_queries() -> list[tuple[str, str, int, str, str]]:
+    with sqlite3.connect(db_path) as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT name, type, count, last_seen, source_ip FROM queries ORDER BY last_seen DESC")
         return cursor.fetchall()
 
 

@@ -67,7 +67,7 @@ def _read_name(payload: bytes, offset: int, depth: int = 0) -> tuple[str, int]:
 
 def parse_mdns_packet(payload: bytes) -> tuple[
     str,
-    tuple[str, ...],
+    tuple[tuple[str, str], ...],       # Queries (name, type)
     tuple[str, ...],
     list[tuple[str, str]],             # A
     list[tuple[str, str]],             # AAAA
@@ -86,7 +86,7 @@ def parse_mdns_packet(payload: bytes) -> tuple[
 
     message_kind = "Response" if (flags & 0x8000) else "Query"
     offset = 12
-    query_types: list[str] = []
+    queries: list[tuple[str, str]] = []
     answer_types: list[str] = []
     a_records: list[tuple[str, str]] = []
     aaaa_records: list[tuple[str, str]] = []
@@ -95,23 +95,24 @@ def parse_mdns_packet(payload: bytes) -> tuple[
     txt_records: list[tuple[str, str]] = []
 
     for _ in range(qdcount):
+        qname, _ = _read_name(payload, offset)
         offset = _skip_name(payload, offset)
         if offset + 4 > len(payload):
-            return ("Other", tuple(query_types), tuple(answer_types), a_records, aaaa_records, srv_records, ptr_records, txt_records)
+            return ("Other", tuple(queries), tuple(answer_types), a_records, aaaa_records, srv_records, ptr_records, txt_records)
         qtype = struct.unpack_from("!H", payload, offset)[0]
-        query_types.append(_type_name(qtype))
+        queries.append((qname, _type_name(qtype)))
         offset += 4  # qtype + qclass
 
     for _ in range(ancount):
         name, _ = _read_name(payload, offset)
         offset = _skip_name(payload, offset)
         if offset + 10 > len(payload):
-            return ("Other", tuple(query_types), tuple(answer_types), a_records, aaaa_records, srv_records, ptr_records, txt_records)
+            return ("Other", tuple(queries), tuple(answer_types), a_records, aaaa_records, srv_records, ptr_records, txt_records)
         rtype, _, _, rdlength = struct.unpack_from("!HHIH", payload, offset)
         answer_types.append(_type_name(rtype))
         offset += 10
         if offset + rdlength > len(payload):
-            return ("Other", tuple(query_types), tuple(answer_types), a_records, aaaa_records, srv_records, ptr_records, txt_records)
+            return ("Other", tuple(queries), tuple(answer_types), a_records, aaaa_records, srv_records, ptr_records, txt_records)
         
         if rtype == 1 and rdlength == 4: # A Record
             import socket
@@ -144,4 +145,4 @@ def parse_mdns_packet(payload: bytes) -> tuple[
 
         offset += rdlength
 
-    return (message_kind, tuple(query_types), tuple(answer_types), a_records, aaaa_records, srv_records, ptr_records, txt_records)
+    return (message_kind, tuple(queries), tuple(answer_types), a_records, aaaa_records, srv_records, ptr_records, txt_records)

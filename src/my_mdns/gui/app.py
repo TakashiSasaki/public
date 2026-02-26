@@ -13,6 +13,7 @@ from my_mdns.core.events import (
     SRVRecordEvent,
     PTRRecordEvent,
     TXTRecordEvent,
+    QueryEvent,
 )
 from my_mdns.core.interfaces import InterfaceInfo, list_interfaces
 from my_mdns.core.runtime import CoreRuntime
@@ -58,6 +59,7 @@ class MDNSApp:
         self._srv_records_tree: ttk.Treeview | None = None
         self._ptr_records_tree: ttk.Treeview | None = None
         self._txt_records_tree: ttk.Treeview | None = None
+        self._queries_tree: ttk.Treeview | None = None
 
         self._build_ui()
         self.root.protocol("WM_DELETE_WINDOW", self._on_close)
@@ -80,6 +82,7 @@ class MDNSApp:
         srv_records_tab = ttk.Frame(notebook, padding=8)
         ptr_records_tab = ttk.Frame(notebook, padding=8)
         txt_records_tab = ttk.Frame(notebook, padding=8)
+        queries_tab = ttk.Frame(notebook, padding=8)
         logs_tab = ttk.Frame(notebook, padding=8)
         notebook.add(main_tab, text="Main")
         notebook.add(listening_tab, text="Listening")
@@ -90,6 +93,7 @@ class MDNSApp:
         notebook.add(srv_records_tab, text="SRV Records")
         notebook.add(ptr_records_tab, text="PTR Records")
         notebook.add(txt_records_tab, text="TXT Records")
+        notebook.add(queries_tab, text="Queries")
         notebook.add(logs_tab, text="Logs")
 
         ctrl = ttk.LabelFrame(main_tab, text="Control", padding=10)
@@ -372,7 +376,25 @@ class MDNSApp:
         self._txt_records_tree.column("last_seen", width=180, minwidth=30, anchor=tk.W)
         self._txt_records_tree.column("source_ip", width=120, minwidth=30, anchor=tk.W)
         self._txt_records_tree.pack(fill=tk.BOTH, expand=True)
+        self._load_column_widths("records_txt", self._txt_records_tree)
         self._txt_records_tree.bind("<ButtonRelease-1>", lambda e: self._on_tree_release(e, "records_txt"))
+
+        queries_frame = ttk.LabelFrame(queries_tab, text="mDNS Queries (Requests)", padding=8)
+        queries_frame.pack(fill=tk.BOTH, expand=True)
+        self._queries_tree = ttk.Treeview(queries_frame, columns=("name", "type", "count", "last_seen", "source_ip"), show="headings")
+        self._queries_tree.heading("name", text="Name")
+        self._queries_tree.heading("type", text="Type")
+        self._queries_tree.heading("count", text="Count")
+        self._queries_tree.heading("last_seen", text="Last Seen")
+        self._queries_tree.heading("source_ip", text="Last Client IP")
+        self._queries_tree.column("name", width=250, minwidth=30, anchor=tk.W)
+        self._queries_tree.column("type", width=80, minwidth=30, anchor=tk.W)
+        self._queries_tree.column("count", width=80, minwidth=30, anchor=tk.E)
+        self._queries_tree.column("last_seen", width=180, minwidth=30, anchor=tk.W)
+        self._queries_tree.column("source_ip", width=120, minwidth=30, anchor=tk.W)
+        self._queries_tree.pack(fill=tk.BOTH, expand=True)
+        self._load_column_widths("queries", self._queries_tree)
+        self._queries_tree.bind("<ButtonRelease-1>", lambda e: self._on_tree_release(e, "queries"))
 
         self._load_all_records_from_db()
 
@@ -433,6 +455,16 @@ class MDNSApp:
                     self._txt_records_tree.insert("", tk.END, values=(name, text, last_seen, source_ip))
             except Exception as e:
                 self._append_log("ERROR", f"Failed to load TXT records: {e}")
+
+        # Load Queries
+        if self._queries_tree is not None:
+            for item in self._queries_tree.get_children():
+                self._queries_tree.delete(item)
+            try:
+                for name, qtype, count, last_seen, source_ip in store.get_all_queries():
+                    self._queries_tree.insert("", tk.END, values=(name, qtype, count, last_seen, source_ip))
+            except Exception as e:
+                self._append_log("ERROR", f"Failed to load queries: {e}")
 
     def _start(self) -> None:
         if self._running:
@@ -851,6 +883,21 @@ class MDNSApp:
                         self._txt_records_tree.item(found_item, values=(event.name, event.text, event.last_seen, event.source_ip))
                     else:
                         self._txt_records_tree.insert("", tk.END, values=(event.name, event.text, event.last_seen, event.source_ip))
+            elif isinstance(event, QueryEvent):
+                if self._queries_tree is not None:
+                    found_item = None
+                    for child in self._queries_tree.get_children():
+                        values = self._queries_tree.item(child, "values")
+                        if values and values[0] == event.name and values[1] == event.type:
+                            found_item = child
+                            break
+                    if found_item:
+                        # Increment count dynamically since self._event_queue receives 1 increment per query
+                        old_count = int(self._queries_tree.item(found_item, "values")[2])
+                        new_count = old_count + event.count
+                        self._queries_tree.item(found_item, values=(event.name, event.type, new_count, event.last_seen, event.source_ip))
+                    else:
+                        self._queries_tree.insert("", 0, values=(event.name, event.type, event.count, event.last_seen, event.source_ip))
             else:
                 self._append_log(event.level, event.message, event.timestamp.strftime("%H:%M:%S"))
         self.root.after(150, self._poll_events)
