@@ -1,6 +1,6 @@
 [project]
 name = "file-catalog"
-version = "0.1.16"
+version = "0.1.17"
 description = "Desktop inventory and search tool for Windows."
 readme = "README.md"
 requires-python = ">=3.10"

@@ -132,7 +132,8 @@ class DesktopSearchApp:
         self.tree = ttk.Treeview(tree_frame, columns=self.columns, show="headings")
         for col in self.columns:
             self.tree.heading(col, text=self.column_headings[col])
-            self.tree.column(col, width=self.column_widths[col], anchor=tk.W)
+            anchor = tk.E if col in {"size_bytes", "folder_total_size_bytes"} else tk.W
+            self.tree.column(col, width=self.column_widths[col], anchor=anchor)
         self._apply_display_columns()
 
         y_scroll = ttk.Scrollbar(tree_frame, orient=tk.VERTICAL, command=self.tree.yview)
@@ -314,10 +315,8 @@ class DesktopSearchApp:
                     row["target"] if row["target"] is not None else "",
                     filetime_to_iso8601(row["modified_filetime"]),
                     row["permissions"],
-                    row["size_bytes"] if row["size_bytes"] is not None else "",
-                    row["folder_total_size_bytes"]
-                    if row["folder_total_size_bytes"] is not None
-                    else "",
+                    self._format_size(row["size_bytes"]),
+                    self._format_size(row["folder_total_size_bytes"]),
                     filetime_to_iso8601(row["first_seen_filetime"]),
                     filetime_to_iso8601(row["last_seen_filetime"]),
                 ),
@@ -327,3 +326,9 @@ class DesktopSearchApp:
         self.status_var.set(
             f"Showing {start}-{end} of {self.total_rows} result(s), page {self.current_page + 1}"
         )
+
+    @staticmethod
+    def _format_size(value: int | None) -> str:
+        if value is None:
+            return ""
+        return f"{value:,}"
