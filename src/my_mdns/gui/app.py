@@ -240,16 +240,18 @@ class MDNSApp:
         table.pack(fill=tk.BOTH, expand=True, pady=(10, 0))
         self._tree = ttk.Treeview(
             table,
-            columns=("time", "source", "size", "forwarded", "preview"),
+            columns=("time", "source", "type", "rr_types", "size", "forwarded", "preview"),
             show="headings",
             height=12,
         )
         for name, title, width in (
-            ("time", "time", 130),
+            ("time", "time", 120),
             ("source", "source", 160),
-            ("size", "bytes", 70),
-            ("forwarded", "fwd", 60),
-            ("preview", "preview", 430),
+            ("type", "type", 80),
+            ("rr_types", "rr_types", 120),
+            ("size", "bytes", 60),
+            ("forwarded", "fwd", 50),
+            ("preview", "preview", 260),
         ):
             self._tree.heading(name, text=title)
             self._tree.column(name, width=width, anchor=tk.W)
@@ -590,12 +592,22 @@ class MDNSApp:
                     self._bump_interface_counter(event.capture_interface, "rx4")
                 elif event.address_family == "IPv6":
                     self._bump_interface_counter(event.capture_interface, "rx6")
+                rr_counts: dict[str, int] = {}
+                for rr in event.query_types + event.answer_types:
+                    rr_counts[rr] = rr_counts.get(rr, 0) + 1
+                formatted_rr_types = ", ".join(
+                    f"{rr}" if count == 1 else f"{rr}x{count}"
+                    for rr, count in rr_counts.items()
+                )
+
                 self._tree.insert(
                     "",
                     0,
                     values=(
                         event.timestamp.strftime("%H:%M:%S.%f")[:-3],
                         f"{event.source_host}:{event.source_port}",
+                        event.message_kind,
+                        formatted_rr_types,
                         event.byte_count,
                         event.forwarded_count,
                         event.preview_hex,
