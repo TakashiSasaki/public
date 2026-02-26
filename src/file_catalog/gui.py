@@ -9,7 +9,7 @@ import tkinter as tk
 from tkinter import filedialog, ttk
 import sqlite3
 
-from . import db, service
+from . import __version__, db, service
 from .filetime import filetime_to_iso8601
 from .paths import resolve_desktop_path
 
@@ -17,11 +17,11 @@ VISIBLE_COLUMNS_SETTING_KEY = "ui.visible_columns"
 COLUMN_WIDTHS_SETTING_KEY = "ui.column_widths"
 
 
-class DesktopSearchApp:
+class FileCatalogApp:
     def __init__(self, root: tk.Tk, conn: sqlite3.Connection) -> None:
         self.root = root
         self.conn = conn
-        self.root.title("Desktop Seiri")
+        self.root.title("File Catalog")
         self.root.geometry("1100x650")
 
         self.query_var = tk.StringVar()
@@ -152,8 +152,12 @@ class DesktopSearchApp:
         ttk.Button(pager, text="Next", command=self.next_page).pack(side=tk.RIGHT)
         ttk.Button(pager, text="Prev", command=self.prev_page).pack(side=tk.RIGHT, padx=(0, 8))
 
-        status = ttk.Label(self.root, textvariable=self.status_var, anchor=tk.W, padding=(12, 6))
-        status.pack(fill=tk.X)
+        footer = ttk.Frame(self.root, padding=(12, 6))
+        footer.pack(fill=tk.X)
+        status = ttk.Label(footer, textvariable=self.status_var, anchor=tk.W)
+        status.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        version_label = ttk.Label(footer, text=f"Version {__version__}", anchor=tk.E)
+        version_label.pack(side=tk.RIGHT)
 
     def toggle_column(self, column: str) -> None:
         if self.column_visibility[column].get():

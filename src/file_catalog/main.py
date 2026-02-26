@@ -4,7 +4,7 @@ import tkinter as tk
 import sqlite3
 
 from . import db, service
-from .gui import DesktopSearchApp
+from .gui import FileCatalogApp
 
 
 def main() -> None:
@@ -15,7 +15,7 @@ def main() -> None:
         service.initialize_database(conn)
 
         root = tk.Tk()
-        DesktopSearchApp(root, conn)
+        FileCatalogApp(root, conn)
         root.mainloop()
     except KeyboardInterrupt:
         return
