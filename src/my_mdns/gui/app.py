@@ -219,6 +219,8 @@ class MDNSApp:
         self._direction_tree.column("count", width=100, minwidth=30, anchor=tk.E)
         self._direction_tree.column("last_received", width=180, minwidth=30, anchor=tk.W)
         self._direction_tree.pack(fill=tk.X, expand=True)
+        self._load_column_widths("stats_direction", self._direction_tree)
+        self._direction_tree.bind("<ButtonRelease-1>", lambda e: self._on_tree_release(e, "stats_direction"))
 
         stats_query = ttk.LabelFrame(stats_tab, text="Query QTYPE counts", padding=8)
         stats_query.pack(fill=tk.BOTH, expand=True, pady=(8, 0))
@@ -235,6 +237,8 @@ class MDNSApp:
         self._query_type_tree.column("count", width=100, minwidth=30, anchor=tk.E)
         self._query_type_tree.column("last_received", width=180, minwidth=30, anchor=tk.W)
         self._query_type_tree.pack(fill=tk.BOTH, expand=True)
+        self._load_column_widths("stats_query", self._query_type_tree)
+        self._query_type_tree.bind("<ButtonRelease-1>", lambda e: self._on_tree_release(e, "stats_query"))
 
         stats_response = ttk.LabelFrame(stats_tab, text="Response RR TYPE counts", padding=8)
         stats_response.pack(fill=tk.BOTH, expand=True, pady=(8, 0))
@@ -251,6 +255,8 @@ class MDNSApp:
         self._response_type_tree.column("count", width=100, minwidth=30, anchor=tk.E)
         self._response_type_tree.column("last_received", width=180, minwidth=30, anchor=tk.W)
         self._response_type_tree.pack(fill=tk.BOTH, expand=True)
+        self._load_column_widths("stats_response", self._response_type_tree)
+        self._response_type_tree.bind("<ButtonRelease-1>", lambda e: self._on_tree_release(e, "stats_response"))
         self._refresh_stats_views()
 
         table = ttk.LabelFrame(main_tab, text="Captured packets", padding=8)
