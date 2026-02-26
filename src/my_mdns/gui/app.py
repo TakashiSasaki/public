@@ -791,7 +791,6 @@ class MDNSApp:
             self._append_log("ERROR", f"manual query IPv6 failed on {selected.name}")
 
     def _poll_events(self) -> None:
-        from my_mdns.core.events import ARecordEvent
         while True:
             try:
                 event = self._events.get_nowait()

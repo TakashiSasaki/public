@@ -8,7 +8,7 @@ from queue import Queue
 
 from my_mdns.core.capture import MDNSCapture
 from my_mdns.core.dns_packet import parse_mdns_packet
-from my_mdns.core.events import ARecordEvent, AAAARecordEvent, SRVRecordEvent, PTRRecordEvent, TXTRecordEvent, LogEvent, PacketEvent
+from my_mdns.core.events import ARecordEvent, AAAARecordEvent, SRVRecordEvent, PTRRecordEvent, TXTRecordEvent, QueryEvent, LogEvent, PacketEvent
 from my_mdns.core.forwarder import MDNSForwarder
 from my_mdns.core.query import build_query, build_services_ptr_query, send_mdns_query_ipv4, send_mdns_query_ipv6
 from my_mdns.core import store
