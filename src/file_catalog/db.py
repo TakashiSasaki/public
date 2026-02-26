@@ -8,11 +8,12 @@ from platformdirs import user_data_dir
 from .scanner import DesktopItem, extract_root, split_path_components
 from .filetime import iso8601_to_filetime
 
-APP_NAME = "work.moukaeritai.file-catalog"
+APP_NAME = "file_catalog"
+APP_AUTHOR = "work.moukaeritai"
 
 
 def _data_dir() -> Path:
-    path = Path(user_data_dir(appname=APP_NAME, appauthor=None))
+    path = Path(user_data_dir(appname=APP_NAME, appauthor=APP_AUTHOR))
     path.mkdir(parents=True, exist_ok=True)
     return path
 

@@ -1,4 +1,4 @@
-# desktop-seiri: Agent and Developer Guidelines
+# file-catalog: Agent and Developer Guidelines
 
 大量のファイルやフォルダが散らかってしまったデスクトップの整理を支援するPythonアプリケーションです。
 この `AGENTS.md` は、開発者やコーディングエージェントが従うべき指示、試行錯誤の結果、および共有情報を記録するリビングドキュメントです。
@@ -18,8 +18,8 @@
 - **GUIライブラリ**: `tkinter` (`ttk`)
 - **データベース**: SQLite
 - **データ保存先**: [`platformdirs`](https://pypi.org/project/platformdirs/) を使用
-  - `app_name`: `work.moukaeritai.desktop-seiri`
-  - `authorname`: `None`
+  - `app_name`: `file_catalog`
+  - `appauthor`: `work.moukaeritai`
 
 ## 設計原則
 
@@ -52,10 +52,13 @@
 - 2026-02-25: DB保存インターフェイスで `root/path/name` 形式のバリデーションを実施し、`path` が区切り文字で始まり区切り文字で終わるルール違反時は例外を送出するように変更。
 - 2026-02-25: 保存前バリデーションを追加強化し、`name` は区切り文字で開始不可、`root` は区切り文字で終了不可（ただし `root='.'` は許容）とした。
 - 2026-02-25: 日時保存をISO8601文字列からWindows FILETIME 64-bit整数へ統一し、Windows/Linuxの両環境で同一フォーマットで記録する方式に変更。
+- 2026-02-26: パッケージ名を `desktop_seiri` から `file_catalog`、プロジェクト名を `desktop-seiri` から `file-catalog` へ変更。
+- 2026-02-26: 起動時の自動スキャンを廃止し、GUI上の明示的な `Refresh Desktop Scan` 操作でのみスキャンを実行する方式に変更。
+- 2026-02-26: GUIにデータ保存ディレクトリをエクスプローラーで開く `Open Data Folder` ボタンを追加。
 
 ## 現在のデータベース設計
 
-- DBファイル: `platformdirs.user_data_dir(appname="work.moukaeritai.desktop-seiri", appauthor=None)` 配下の `desktop_items.sqlite3`
+- DBファイル: `platformdirs.user_data_dir(appname="file_catalog", appauthor="work.moukaeritai")` 配下の `desktop_items.sqlite3`
 - テーブル: `items`
 - カラム:
   - `id` (`INTEGER PRIMARY KEY AUTOINCREMENT`)
