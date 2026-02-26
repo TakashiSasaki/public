@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import os
+import subprocess
+import sys
 import tkinter as tk
 from tkinter import ttk
 import sqlite3
@@ -63,7 +66,7 @@ class DesktopSearchApp:
         self.column_visibility: dict[str, tk.BooleanVar] = {}
 
         self._build_ui()
-        self.refresh_inventory()
+        self.perform_search()
 
     def _build_ui(self) -> None:
         controls = ttk.Frame(self.root, padding=12)
@@ -87,6 +90,9 @@ class DesktopSearchApp:
 
         ttk.Button(controls, text="Search", command=self.perform_search).pack(side=tk.LEFT)
         ttk.Button(controls, text="Refresh Desktop Scan", command=self.refresh_inventory).pack(
+            side=tk.LEFT, padx=(8, 0)
+        )
+        ttk.Button(controls, text="Open Data Folder", command=self.open_data_folder).pack(
             side=tk.LEFT, padx=(8, 0)
         )
 
@@ -158,6 +164,19 @@ class DesktopSearchApp:
         else:
             self.status_var.set(f"Scanned {count} items from {desktop_path}")
         self.perform_search()
+
+    def open_data_folder(self) -> None:
+        data_dir = db.db_path().parent
+        try:
+            if sys.platform.startswith("win"):
+                os.startfile(str(data_dir))
+            elif sys.platform == "darwin":
+                subprocess.run(["open", str(data_dir)], check=False)
+            else:
+                subprocess.run(["xdg-open", str(data_dir)], check=False)
+            self.status_var.set(f"Opened data folder: {data_dir}")
+        except OSError as exc:
+            self.status_var.set(f"Failed to open data folder: {exc}")
 
     def perform_search(self) -> None:
         self.current_page = 0
