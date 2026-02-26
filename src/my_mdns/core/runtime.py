@@ -8,7 +8,7 @@ from queue import Queue
 
 from my_mdns.core.capture import MDNSCapture
 from my_mdns.core.dns_packet import parse_mdns_packet
-from my_mdns.core.events import ARecordEvent, LogEvent, PacketEvent
+from my_mdns.core.events import ARecordEvent, AAAARecordEvent, SRVRecordEvent, PTRRecordEvent, TXTRecordEvent, LogEvent, PacketEvent
 from my_mdns.core.forwarder import MDNSForwarder
 from my_mdns.core.query import build_query, build_services_ptr_query, send_mdns_query_ipv4, send_mdns_query_ipv6
 from my_mdns.core import store
@@ -125,7 +125,7 @@ class CoreRuntime:
                 forwarded = self._forwarder.forward(payload)
         except OSError as exc:
             self._log("ERROR", f"forward error: {exc}")
-        message_kind, query_types, answer_types, a_records = parse_mdns_packet(payload)
+        message_kind, query_types, answer_types, a_records, aaaa_records, srv_records, ptr_records, txt_records = parse_mdns_packet(payload)
 
         # Store A records and notify GUI
         for name, ip in a_records:
@@ -134,6 +134,38 @@ class CoreRuntime:
                 self._event_queue.put(ARecordEvent(name=name, ip=ip))
             except Exception as e:
                 self._log("ERROR", f"failed to store A record: {e}")
+
+        # AAAA records
+        for name, ip in aaaa_records:
+            try:
+                store.add_aaaa_record(name, ip)
+                self._event_queue.put(AAAARecordEvent(name=name, ip=ip))
+            except Exception as e:
+                self._log("ERROR", f"failed to store AAAA record: {e}")
+
+        # SRV records
+        for name, target, port, priority, weight in srv_records:
+            try:
+                store.add_srv_record(name, target, port, priority, weight)
+                self._event_queue.put(SRVRecordEvent(name=name, target=target, port=port, priority=priority, weight=weight))
+            except Exception as e:
+                self._log("ERROR", f"failed to store SRV record: {e}")
+
+        # PTR records
+        for name, ptrdname in ptr_records:
+            try:
+                store.add_ptr_record(name, ptrdname)
+                self._event_queue.put(PTRRecordEvent(name=name, ptrdname=ptrdname))
+            except Exception as e:
+                self._log("ERROR", f"failed to store PTR record: {e}")
+
+        # TXT records
+        for name, text in txt_records:
+            try:
+                store.add_txt_record(name, text)
+                self._event_queue.put(TXTRecordEvent(name=name, text=text))
+            except Exception as e:
+                self._log("ERROR", f"failed to store TXT record: {e}")
 
         self._event_queue.put(
             PacketEvent(

@@ -30,3 +30,30 @@ class LogEvent:
 class ARecordEvent:
     name: str
     ip: str
+
+
+@dataclass(slots=True)
+class AAAARecordEvent:
+    name: str
+    ip: str
+
+
+@dataclass(slots=True)
+class SRVRecordEvent:
+    name: str
+    target: str
+    port: int
+    priority: int
+    weight: int
+
+
+@dataclass(slots=True)
+class PTRRecordEvent:
+    name: str
+    ptrdname: str
+
+
+@dataclass(slots=True)
+class TXTRecordEvent:
+    name: str
+    text: str

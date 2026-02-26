@@ -65,25 +65,39 @@ def _read_name(payload: bytes, offset: int, depth: int = 0) -> tuple[str, int]:
     return ".".join(parts), offset
 
 
-def parse_mdns_packet(payload: bytes) -> tuple[str, tuple[str, ...], tuple[str, ...], list[tuple[str, str]]]:
+def parse_mdns_packet(payload: bytes) -> tuple[
+    str,
+    tuple[str, ...],
+    tuple[str, ...],
+    list[tuple[str, str]],             # A
+    list[tuple[str, str]],             # AAAA
+    list[tuple[str, str, int, int, int]], # SRV
+    list[tuple[str, str]],             # PTR
+    list[tuple[str, str]],             # TXT
+]:
+    empty_res = ("Other", (), (), [], [], [], [], [])
     if len(payload) < 12:
-        return ("Other", (), (), [])
+        return empty_res
 
     try:
         _, flags, qdcount, ancount, _, _ = struct.unpack_from("!HHHHHH", payload, 0)
     except struct.error:
-        return ("Other", (), (), [])
+        return empty_res
 
     message_kind = "Response" if (flags & 0x8000) else "Query"
     offset = 12
     query_types: list[str] = []
     answer_types: list[str] = []
     a_records: list[tuple[str, str]] = []
+    aaaa_records: list[tuple[str, str]] = []
+    srv_records: list[tuple[str, str, int, int, int]] = []
+    ptr_records: list[tuple[str, str]] = []
+    txt_records: list[tuple[str, str]] = []
 
     for _ in range(qdcount):
         offset = _skip_name(payload, offset)
         if offset + 4 > len(payload):
-            return ("Other", tuple(query_types), tuple(answer_types), a_records)
+            return ("Other", tuple(query_types), tuple(answer_types), a_records, aaaa_records, srv_records, ptr_records, txt_records)
         qtype = struct.unpack_from("!H", payload, offset)[0]
         query_types.append(_type_name(qtype))
         offset += 4  # qtype + qclass
@@ -92,19 +106,42 @@ def parse_mdns_packet(payload: bytes) -> tuple[str, tuple[str, ...], tuple[str, 
         name, _ = _read_name(payload, offset)
         offset = _skip_name(payload, offset)
         if offset + 10 > len(payload):
-            return ("Other", tuple(query_types), tuple(answer_types), a_records)
+            return ("Other", tuple(query_types), tuple(answer_types), a_records, aaaa_records, srv_records, ptr_records, txt_records)
         rtype, _, _, rdlength = struct.unpack_from("!HHIH", payload, offset)
         answer_types.append(_type_name(rtype))
         offset += 10
         if offset + rdlength > len(payload):
-            return ("Other", tuple(query_types), tuple(answer_types), a_records)
+            return ("Other", tuple(query_types), tuple(answer_types), a_records, aaaa_records, srv_records, ptr_records, txt_records)
         
         if rtype == 1 and rdlength == 4: # A Record
             import socket
             ip_data = payload[offset : offset + 4]
             ip_str = socket.inet_ntoa(ip_data)
             a_records.append((name, ip_str))
+        elif rtype == 28 and rdlength == 16: # AAAA Record
+            import socket
+            ip_data = payload[offset : offset + 16]
+            ip_str = socket.inet_ntop(socket.AF_INET6, ip_data)
+            aaaa_records.append((name, ip_str))
+        elif rtype == 33 and rdlength >= 6: # SRV Record
+            priority, weight, port = struct.unpack_from("!HHH", payload, offset)
+            target, _ = _read_name(payload, offset + 6)
+            srv_records.append((name, target, port, priority, weight))
+        elif rtype == 12: # PTR Record
+            ptrdname, _ = _read_name(payload, offset)
+            ptr_records.append((name, ptrdname))
+        elif rtype == 16: # TXT Record
+            txt_offset = offset
+            txt_end = offset + rdlength
+            while txt_offset < txt_end:
+                length = payload[txt_offset]
+                txt_offset += 1
+                if txt_offset + length > txt_end:
+                    break
+                text = payload[txt_offset : txt_offset + length].decode("utf-8", "replace")
+                txt_records.append((name, text))
+                txt_offset += length
 
         offset += rdlength
 
-    return (message_kind, tuple(query_types), tuple(answer_types), a_records)
+    return (message_kind, tuple(query_types), tuple(answer_types), a_records, aaaa_records, srv_records, ptr_records, txt_records)

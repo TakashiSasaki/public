@@ -46,6 +46,10 @@ class MDNSApp:
         self._query_type_tree: ttk.Treeview | None = None
         self._response_type_tree: ttk.Treeview | None = None
         self._a_records_tree: ttk.Treeview | None = None
+        self._aaaa_records_tree: ttk.Treeview | None = None
+        self._srv_records_tree: ttk.Treeview | None = None
+        self._ptr_records_tree: ttk.Treeview | None = None
+        self._txt_records_tree: ttk.Treeview | None = None
 
         self._build_ui()
         self.root.protocol("WM_DELETE_WINDOW", self._on_close)
@@ -64,12 +68,20 @@ class MDNSApp:
         stats_tab = ttk.Frame(notebook, padding=8)
         resolve_tab = ttk.Frame(notebook, padding=8)
         a_records_tab = ttk.Frame(notebook, padding=8)
+        aaaa_records_tab = ttk.Frame(notebook, padding=8)
+        srv_records_tab = ttk.Frame(notebook, padding=8)
+        ptr_records_tab = ttk.Frame(notebook, padding=8)
+        txt_records_tab = ttk.Frame(notebook, padding=8)
         logs_tab = ttk.Frame(notebook, padding=8)
         notebook.add(main_tab, text="Main")
         notebook.add(listening_tab, text="Listening")
         notebook.add(stats_tab, text="Stats")
         notebook.add(resolve_tab, text="Resolve")
         notebook.add(a_records_tab, text="A Records")
+        notebook.add(aaaa_records_tab, text="AAAA Records")
+        notebook.add(srv_records_tab, text="SRV Records")
+        notebook.add(ptr_records_tab, text="PTR Records")
+        notebook.add(txt_records_tab, text="TXT Records")
         notebook.add(logs_tab, text="Logs")
 
         ctrl = ttk.LabelFrame(main_tab, text="Control", padding=10)
@@ -273,27 +285,107 @@ class MDNSApp:
         self._a_records_tree.column("ip", width=200, anchor=tk.W)
         self._a_records_tree.pack(fill=tk.BOTH, expand=True)
 
-        self._load_a_records_from_db()
+        aaaa_records_frame = ttk.LabelFrame(aaaa_records_tab, text="AAAA Records (Name -> IPv6)", padding=8)
+        aaaa_records_frame.pack(fill=tk.BOTH, expand=True)
+        self._aaaa_records_tree = ttk.Treeview(aaaa_records_frame, columns=("name", "ip"), show="headings")
+        self._aaaa_records_tree.heading("name", text="Name")
+        self._aaaa_records_tree.heading("ip", text="IPv6 Address")
+        self._aaaa_records_tree.column("name", width=300, anchor=tk.W)
+        self._aaaa_records_tree.column("ip", width=300, anchor=tk.W)
+        self._aaaa_records_tree.pack(fill=tk.BOTH, expand=True)
+
+        srv_records_frame = ttk.LabelFrame(srv_records_tab, text="SRV Records", padding=8)
+        srv_records_frame.pack(fill=tk.BOTH, expand=True)
+        self._srv_records_tree = ttk.Treeview(srv_records_frame, columns=("name", "target", "port", "priority", "weight"), show="headings")
+        self._srv_records_tree.heading("name", text="Name")
+        self._srv_records_tree.heading("target", text="Target")
+        self._srv_records_tree.heading("port", text="Port")
+        self._srv_records_tree.heading("priority", text="Priority")
+        self._srv_records_tree.heading("weight", text="Weight")
+        self._srv_records_tree.column("name", width=250, anchor=tk.W)
+        self._srv_records_tree.column("target", width=250, anchor=tk.W)
+        self._srv_records_tree.column("port", width=60, anchor=tk.E)
+        self._srv_records_tree.column("priority", width=60, anchor=tk.E)
+        self._srv_records_tree.column("weight", width=60, anchor=tk.E)
+        self._srv_records_tree.pack(fill=tk.BOTH, expand=True)
+
+        ptr_records_frame = ttk.LabelFrame(ptr_records_tab, text="PTR Records", padding=8)
+        ptr_records_frame.pack(fill=tk.BOTH, expand=True)
+        self._ptr_records_tree = ttk.Treeview(ptr_records_frame, columns=("name", "ptrdname"), show="headings")
+        self._ptr_records_tree.heading("name", text="Name")
+        self._ptr_records_tree.heading("ptrdname", text="Target Domain Name (PTRDNAME)")
+        self._ptr_records_tree.column("name", width=250, anchor=tk.W)
+        self._ptr_records_tree.column("ptrdname", width=350, anchor=tk.W)
+        self._ptr_records_tree.pack(fill=tk.BOTH, expand=True)
+
+        txt_records_frame = ttk.LabelFrame(txt_records_tab, text="TXT Records", padding=8)
+        txt_records_frame.pack(fill=tk.BOTH, expand=True)
+        self._txt_records_tree = ttk.Treeview(txt_records_frame, columns=("name", "text"), show="headings")
+        self._txt_records_tree.heading("name", text="Name")
+        self._txt_records_tree.heading("text", text="Text Content")
+        self._txt_records_tree.column("name", width=250, anchor=tk.W)
+        self._txt_records_tree.column("text", width=350, anchor=tk.W)
+        self._txt_records_tree.pack(fill=tk.BOTH, expand=True)
+
+        self._load_all_records_from_db()
 
         logs = ttk.LabelFrame(logs_tab, text="Logs", padding=8)
         logs.pack(fill=tk.BOTH, expand=True)
         self._log_text = tk.Text(logs, height=7, state=tk.DISABLED)
         self._log_text.pack(fill=tk.BOTH, expand=True)
 
-    def _load_a_records_from_db(self) -> None:
+    def _load_all_records_from_db(self) -> None:
         from my_mdns.core import store
-        if self._a_records_tree is None:
-            return
         
-        for item in self._a_records_tree.get_children():
-            self._a_records_tree.delete(item)
-            
-        try:
-            records = store.get_all_a_records()
-            for name, ip in records:
-                self._a_records_tree.insert("", tk.END, values=(name, ip))
-        except Exception as e:
-            self._append_log("ERROR", f"Failed to load A records from DB: {e}")
+        # Load A Records
+        if self._a_records_tree is not None:
+            for item in self._a_records_tree.get_children():
+                self._a_records_tree.delete(item)
+            try:
+                for name, ip in store.get_all_a_records():
+                    self._a_records_tree.insert("", tk.END, values=(name, ip))
+            except Exception as e:
+                self._append_log("ERROR", f"Failed to load A records: {e}")
+
+        # Load AAAA Records
+        if self._aaaa_records_tree is not None:
+            for item in self._aaaa_records_tree.get_children():
+                self._aaaa_records_tree.delete(item)
+            try:
+                for name, ip in store.get_all_aaaa_records():
+                    self._aaaa_records_tree.insert("", tk.END, values=(name, ip))
+            except Exception as e:
+                self._append_log("ERROR", f"Failed to load AAAA records: {e}")
+
+        # Load SRV Records
+        if self._srv_records_tree is not None:
+            for item in self._srv_records_tree.get_children():
+                self._srv_records_tree.delete(item)
+            try:
+                for name, target, port, priority, weight in store.get_all_srv_records():
+                    self._srv_records_tree.insert("", tk.END, values=(name, target, port, priority, weight))
+            except Exception as e:
+                self._append_log("ERROR", f"Failed to load SRV records: {e}")
+
+        # Load PTR Records
+        if self._ptr_records_tree is not None:
+            for item in self._ptr_records_tree.get_children():
+                self._ptr_records_tree.delete(item)
+            try:
+                for name, ptrdname in store.get_all_ptr_records():
+                    self._ptr_records_tree.insert("", tk.END, values=(name, ptrdname))
+            except Exception as e:
+                self._append_log("ERROR", f"Failed to load PTR records: {e}")
+
+        # Load TXT Records
+        if self._txt_records_tree is not None:
+            for item in self._txt_records_tree.get_children():
+                self._txt_records_tree.delete(item)
+            try:
+                for name, text in store.get_all_txt_records():
+                    self._txt_records_tree.insert("", tk.END, values=(name, text))
+            except Exception as e:
+                self._append_log("ERROR", f"Failed to load TXT records: {e}")
 
     def _start(self) -> None:
         if self._running:
@@ -651,9 +743,7 @@ class MDNSApp:
                     self._tree.delete(item)
                 self._render_interfaces()
             elif isinstance(event, ARecordEvent):
-                # Update A record tree if it doesn't already have this exact pair
                 if self._a_records_tree is not None:
-                    # check if pair already exists
                     exists = False
                     for child in self._a_records_tree.get_children():
                         values = self._a_records_tree.item(child, "values")
@@ -662,6 +752,46 @@ class MDNSApp:
                             break
                     if not exists:
                         self._a_records_tree.insert("", tk.END, values=(event.name, event.ip))
+            elif type(event).__name__ == "AAAARecordEvent":
+                if self._aaaa_records_tree is not None:
+                    exists = False
+                    for child in self._aaaa_records_tree.get_children():
+                        values = self._aaaa_records_tree.item(child, "values")
+                        if values and values[0] == event.name and values[1] == event.ip:
+                            exists = True
+                            break
+                    if not exists:
+                        self._aaaa_records_tree.insert("", tk.END, values=(event.name, event.ip))
+            elif type(event).__name__ == "SRVRecordEvent":
+                if self._srv_records_tree is not None:
+                    exists = False
+                    for child in self._srv_records_tree.get_children():
+                        values = self._srv_records_tree.item(child, "values")
+                        if values and values[0] == event.name and values[1] == event.target and int(values[2]) == event.port:
+                            exists = True
+                            break
+                    if not exists:
+                        self._srv_records_tree.insert("", tk.END, values=(event.name, event.target, event.port, event.priority, event.weight))
+            elif type(event).__name__ == "PTRRecordEvent":
+                if self._ptr_records_tree is not None:
+                    exists = False
+                    for child in self._ptr_records_tree.get_children():
+                        values = self._ptr_records_tree.item(child, "values")
+                        if values and values[0] == event.name and values[1] == event.ptrdname:
+                            exists = True
+                            break
+                    if not exists:
+                        self._ptr_records_tree.insert("", tk.END, values=(event.name, event.ptrdname))
+            elif type(event).__name__ == "TXTRecordEvent":
+                if self._txt_records_tree is not None:
+                    exists = False
+                    for child in self._txt_records_tree.get_children():
+                        values = self._txt_records_tree.item(child, "values")
+                        if values and values[0] == event.name and values[1] == event.text:
+                            exists = True
+                            break
+                    if not exists:
+                        self._txt_records_tree.insert("", tk.END, values=(event.name, event.text))
             else:
                 self._append_log(event.level, event.message, event.timestamp.strftime("%H:%M:%S"))
         self.root.after(150, self._poll_events)
