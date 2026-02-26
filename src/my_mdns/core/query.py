@@ -52,6 +52,10 @@ def build_query(qname: str, qtype_name: str) -> bytes:
 def send_mdns_query_ipv4(interface_ip: str, payload: bytes) -> None:
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     try:
+        # RFC 6762: Multicast TTL must be 255
+        sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 255)
+        # Enable loopback so we can see our own queries
+        sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_LOOP, 1)
         sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_IF, socket.inet_aton(interface_ip))
         sock.sendto(payload, (MDNS_IPV4_GROUP, MDNS_PORT))
     finally:
@@ -61,6 +65,10 @@ def send_mdns_query_ipv4(interface_ip: str, payload: bytes) -> None:
 def send_mdns_query_ipv6(interface_index: int, payload: bytes) -> None:
     sock = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     try:
+        # RFC 6762: Multicast Hops must be 255
+        sock.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_MULTICAST_HOPS, 255)
+        # Enable loopback so we can see our own queries
+        sock.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_MULTICAST_LOOP, 1)
         sock.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_MULTICAST_IF, interface_index)
         sock.sendto(payload, (MDNS_IPV6_GROUP, MDNS_PORT, 0, interface_index))
     finally:

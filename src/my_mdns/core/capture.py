@@ -55,69 +55,90 @@ class MDNSCapture:
         errors: list[str] = []
         interfaces = list_interfaces()
 
-        # IPv4 mDNS receive: one socket per interface.
-        for interface in interfaces:
-            if self._interface_ip != "0.0.0.0":
-                if self._interface_ip not in interface.ipv4_addresses:
-                    continue
-                target_ipv4 = self._interface_ip
-            else:
-                if not interface.ipv4_addresses:
-                    continue
-                target_ipv4 = interface.ipv4_addresses[0]
+        # IPv4 mDNS receive: single socket for all interfaces
+        try:
+            sock_v4 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+            sock_v4.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            if hasattr(socket, "SO_REUSEPORT"):
+                try:
+                    sock_v4.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+                except OSError:
+                    pass
+            
+            # Bind to all interfaces
+            sock_v4.bind(("", self._listen_port))
+            
+            joined_any_v4 = False
+            for interface in interfaces:
+                if self._interface_ip != "0.0.0.0":
+                    if self._interface_ip not in interface.ipv4_addresses:
+                        continue
+                    target_ipv4s = [self._interface_ip]
+                else:
+                    target_ipv4s = interface.ipv4_addresses
 
-            try:
-                sock_v4 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-                sock_v4.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                if hasattr(socket, "SO_REUSEPORT"):
+                for addr in target_ipv4s:
                     try:
-                        sock_v4.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
-                    except OSError:
-                        pass
-                sock_v4.bind(("", self._listen_port))
-                membership_v4 = socket.inet_aton(self._multicast_ip) + socket.inet_aton(target_ipv4)
-                sock_v4.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, membership_v4)
-                sock_v4.setblocking(False)
+                        membership_v4 = socket.inet_aton(self._multicast_ip) + socket.inet_aton(addr)
+                        sock_v4.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, membership_v4)
+                        joined_any_v4 = True
+                    except OSError as exc:
+                        errors.append(f"ipv4 join fail if={interface.name} addr={addr}: {exc}")
 
+            if joined_any_v4:
+                sock_v4.setblocking(False)
                 transport_v4, _ = await self._loop.create_datagram_endpoint(
-                    lambda ifname=interface.name: _CaptureProtocol(self._on_packet, ifname, "IPv4"),
+                    lambda: _CaptureProtocol(self._on_packet, "IPv4", "IPv4"),
                     sock=sock_v4,
                 )
                 self._transports.append(transport_v4)
                 self._socks.append(sock_v4)
-            except OSError as exc:
-                errors.append(f"ipv4 if={interface.name} addr={target_ipv4}: {exc}")
+            else:
+                sock_v4.close()
+        except OSError as exc:
+            errors.append(f"ipv4 socket setup failed: {exc}")
 
-        # IPv6 mDNS receive: one socket per interface.
-        for interface in interfaces:
-            if not interface.ipv6_addresses:
-                continue
-            try:
-                idx = socket.if_nametoindex(interface.name)
-            except OSError as exc:
-                errors.append(f"ipv6 if={interface.name} index: {exc}")
-                continue
-            try:
-                sock_v6 = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-                sock_v6.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                if hasattr(socket, "SO_REUSEPORT"):
-                    try:
-                        sock_v6.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
-                    except OSError:
-                        pass
-                sock_v6.bind(("::", self._listen_port))
-                membership_v6 = socket.inet_pton(socket.AF_INET6, MDNS_MULTICAST_IPV6) + struct.pack("=I", idx)
-                sock_v6.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_JOIN_GROUP, membership_v6)
+        # IPv6 mDNS receive: single socket for all interfaces
+        try:
+            sock_v6 = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+            sock_v6.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            if hasattr(socket, "SO_REUSEPORT"):
+                try:
+                    sock_v6.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+                except OSError:
+                    pass
+            
+            # Bind to all interfaces
+            sock_v6.bind(("::", self._listen_port))
+            
+            joined_any_v6 = False
+            for interface in interfaces:
+                if not interface.ipv6_addresses:
+                    continue
+                try:
+                    idx = socket.if_nametoindex(interface.name)
+                except OSError:
+                    continue
+                    
+                try:
+                    membership_v6 = socket.inet_pton(socket.AF_INET6, MDNS_MULTICAST_IPV6) + struct.pack("=I", idx)
+                    sock_v6.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_JOIN_GROUP, membership_v6)
+                    joined_any_v6 = True
+                except OSError as exc:
+                    errors.append(f"ipv6 join fail if={interface.name} idx={idx}: {exc}")
+
+            if joined_any_v6:
                 sock_v6.setblocking(False)
-
                 transport_v6, _ = await self._loop.create_datagram_endpoint(
-                    lambda ifname=interface.name: _CaptureProtocol(self._on_packet, ifname, "IPv6"),
+                    lambda: _CaptureProtocol(self._on_packet, "IPv6", "IPv6"),
                     sock=sock_v6,
                 )
                 self._transports.append(transport_v6)
                 self._socks.append(sock_v6)
-            except OSError as exc:
-                errors.append(f"ipv6 if={interface.name} idx={idx}: {exc}")
+            else:
+                sock_v6.close()
+        except OSError as exc:
+            errors.append(f"ipv6 socket setup failed: {exc}")
 
         if not self._transports:
             raise OSError(f"failed to start mDNS capture ({'; '.join(errors)})")

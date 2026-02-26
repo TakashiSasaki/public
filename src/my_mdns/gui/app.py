@@ -907,6 +907,7 @@ class MDNSApp:
                         old_count = int(self._queries_tree.item(found_item, "values")[2])
                         new_count = old_count + event.count
                         self._queries_tree.item(found_item, values=(event.name, event.type, new_count, event.last_seen, event.source_ip))
+                        self._queries_tree.move(found_item, "", 0)
                     else:
                         self._queries_tree.insert("", 0, values=(event.name, event.type, event.count, event.last_seen, event.source_ip))
             else:
