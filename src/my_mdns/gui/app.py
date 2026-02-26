@@ -143,15 +143,17 @@ class MDNSApp:
         self._iface_status_tree.heading("tx4", text="tx4")
         self._iface_status_tree.heading("rx6", text="rx6")
         self._iface_status_tree.heading("tx6", text="tx6")
-        self._iface_status_tree.column("name", width=240, anchor=tk.W)
-        self._iface_status_tree.column("listening", width=100, anchor=tk.W)
-        self._iface_status_tree.column("ipv4", width=180, anchor=tk.W)
-        self._iface_status_tree.column("ipv6", width=220, anchor=tk.W)
-        self._iface_status_tree.column("rx4", width=60, anchor=tk.E)
-        self._iface_status_tree.column("tx4", width=60, anchor=tk.E)
-        self._iface_status_tree.column("rx6", width=60, anchor=tk.E)
-        self._iface_status_tree.column("tx6", width=60, anchor=tk.E)
+        self._iface_status_tree.column("name", width=120, minwidth=30, anchor=tk.W)
+        self._iface_status_tree.column("listening", width=30, minwidth=30, anchor=tk.W)
+        self._iface_status_tree.column("ipv4", width=100, minwidth=30, anchor=tk.W)
+        self._iface_status_tree.column("ipv6", width=220, minwidth=30, anchor=tk.W)
+        self._iface_status_tree.column("rx4", width=40, minwidth=30, anchor=tk.E)
+        self._iface_status_tree.column("tx4", width=40, minwidth=30, anchor=tk.E)
+        self._iface_status_tree.column("rx6", width=40, minwidth=30, anchor=tk.E)
+        self._iface_status_tree.column("tx6", width=20, minwidth=20, anchor=tk.E)
         self._iface_status_tree.pack(fill=tk.BOTH, expand=True)
+        self._load_column_widths("interfaces", self._iface_status_tree)
+        self._iface_status_tree.bind("<ButtonRelease-1>", lambda e: self._on_tree_release(e, "interfaces"))
         self._iface_status_tree.bind("<<TreeviewSelect>>", self._on_interface_select)
         self._render_interfaces()
 
@@ -213,9 +215,9 @@ class MDNSApp:
         self._direction_tree.heading("kind", text="kind")
         self._direction_tree.heading("count", text="count")
         self._direction_tree.heading("last_received", text="last received")
-        self._direction_tree.column("kind", width=180, anchor=tk.W)
-        self._direction_tree.column("count", width=100, anchor=tk.E)
-        self._direction_tree.column("last_received", width=180, anchor=tk.W)
+        self._direction_tree.column("kind", width=180, minwidth=30, anchor=tk.W)
+        self._direction_tree.column("count", width=100, minwidth=30, anchor=tk.E)
+        self._direction_tree.column("last_received", width=180, minwidth=30, anchor=tk.W)
         self._direction_tree.pack(fill=tk.X, expand=True)
 
         stats_query = ttk.LabelFrame(stats_tab, text="Query QTYPE counts", padding=8)
@@ -229,9 +231,9 @@ class MDNSApp:
         self._query_type_tree.heading("qtype", text="qtype")
         self._query_type_tree.heading("count", text="count")
         self._query_type_tree.heading("last_received", text="last received")
-        self._query_type_tree.column("qtype", width=240, anchor=tk.W)
-        self._query_type_tree.column("count", width=100, anchor=tk.E)
-        self._query_type_tree.column("last_received", width=180, anchor=tk.W)
+        self._query_type_tree.column("qtype", width=240, minwidth=30, anchor=tk.W)
+        self._query_type_tree.column("count", width=100, minwidth=30, anchor=tk.E)
+        self._query_type_tree.column("last_received", width=180, minwidth=30, anchor=tk.W)
         self._query_type_tree.pack(fill=tk.BOTH, expand=True)
 
         stats_response = ttk.LabelFrame(stats_tab, text="Response RR TYPE counts", padding=8)
@@ -245,9 +247,9 @@ class MDNSApp:
         self._response_type_tree.heading("rtype", text="rr type")
         self._response_type_tree.heading("count", text="count")
         self._response_type_tree.heading("last_received", text="last received")
-        self._response_type_tree.column("rtype", width=240, anchor=tk.W)
-        self._response_type_tree.column("count", width=100, anchor=tk.E)
-        self._response_type_tree.column("last_received", width=180, anchor=tk.W)
+        self._response_type_tree.column("rtype", width=240, minwidth=30, anchor=tk.W)
+        self._response_type_tree.column("count", width=100, minwidth=30, anchor=tk.E)
+        self._response_type_tree.column("last_received", width=180, minwidth=30, anchor=tk.W)
         self._response_type_tree.pack(fill=tk.BOTH, expand=True)
         self._refresh_stats_views()
 
@@ -260,7 +262,7 @@ class MDNSApp:
             height=12,
         )
         for name, title, width in (
-            ("time", "time", 120),
+            ("time", "time", 100),
             ("source", "source", 160),
             ("type", "type", 80),
             ("rr_types", "rr_types", 120),
@@ -269,8 +271,10 @@ class MDNSApp:
             ("preview", "preview", 260),
         ):
             self._tree.heading(name, text=title)
-            self._tree.column(name, width=width, anchor=tk.W)
+            self._tree.column(name, width=width, minwidth=30, anchor=tk.W)
         self._tree.pack(fill=tk.BOTH, expand=True)
+        self._load_column_widths("main", self._tree)
+        self._tree.bind("<ButtonRelease-1>", lambda e: self._on_tree_release(e, "main"))
 
         a_records_frame = ttk.LabelFrame(a_records_tab, text="A Records (Name -> IP)", padding=8)
         a_records_frame.pack(fill=tk.BOTH, expand=True)
@@ -281,18 +285,22 @@ class MDNSApp:
         )
         self._a_records_tree.heading("name", text="Name")
         self._a_records_tree.heading("ip", text="IP Address")
-        self._a_records_tree.column("name", width=300, anchor=tk.W)
-        self._a_records_tree.column("ip", width=200, anchor=tk.W)
+        self._a_records_tree.column("name", width=300, minwidth=30, anchor=tk.W)
+        self._a_records_tree.column("ip", width=200, minwidth=30, anchor=tk.W)
         self._a_records_tree.pack(fill=tk.BOTH, expand=True)
+        self._load_column_widths("records_a", self._a_records_tree)
+        self._a_records_tree.bind("<ButtonRelease-1>", lambda e: self._on_tree_release(e, "records_a"))
 
         aaaa_records_frame = ttk.LabelFrame(aaaa_records_tab, text="AAAA Records (Name -> IPv6)", padding=8)
         aaaa_records_frame.pack(fill=tk.BOTH, expand=True)
         self._aaaa_records_tree = ttk.Treeview(aaaa_records_frame, columns=("name", "ip"), show="headings")
         self._aaaa_records_tree.heading("name", text="Name")
         self._aaaa_records_tree.heading("ip", text="IPv6 Address")
-        self._aaaa_records_tree.column("name", width=300, anchor=tk.W)
-        self._aaaa_records_tree.column("ip", width=300, anchor=tk.W)
+        self._aaaa_records_tree.column("name", width=300, minwidth=30, anchor=tk.W)
+        self._aaaa_records_tree.column("ip", width=300, minwidth=30, anchor=tk.W)
         self._aaaa_records_tree.pack(fill=tk.BOTH, expand=True)
+        self._load_column_widths("records_aaaa", self._aaaa_records_tree)
+        self._aaaa_records_tree.bind("<ButtonRelease-1>", lambda e: self._on_tree_release(e, "records_aaaa"))
 
         srv_records_frame = ttk.LabelFrame(srv_records_tab, text="SRV Records", padding=8)
         srv_records_frame.pack(fill=tk.BOTH, expand=True)
@@ -302,30 +310,36 @@ class MDNSApp:
         self._srv_records_tree.heading("port", text="Port")
         self._srv_records_tree.heading("priority", text="Priority")
         self._srv_records_tree.heading("weight", text="Weight")
-        self._srv_records_tree.column("name", width=250, anchor=tk.W)
-        self._srv_records_tree.column("target", width=250, anchor=tk.W)
-        self._srv_records_tree.column("port", width=60, anchor=tk.E)
-        self._srv_records_tree.column("priority", width=60, anchor=tk.E)
-        self._srv_records_tree.column("weight", width=60, anchor=tk.E)
+        self._srv_records_tree.column("name", width=250, minwidth=30, anchor=tk.W)
+        self._srv_records_tree.column("target", width=250, minwidth=30, anchor=tk.W)
+        self._srv_records_tree.column("port", width=60, minwidth=30, anchor=tk.E)
+        self._srv_records_tree.column("priority", width=60, minwidth=30, anchor=tk.E)
+        self._srv_records_tree.column("weight", width=60, minwidth=30, anchor=tk.E)
         self._srv_records_tree.pack(fill=tk.BOTH, expand=True)
+        self._load_column_widths("records_srv", self._srv_records_tree)
+        self._srv_records_tree.bind("<ButtonRelease-1>", lambda e: self._on_tree_release(e, "records_srv"))
 
         ptr_records_frame = ttk.LabelFrame(ptr_records_tab, text="PTR Records", padding=8)
         ptr_records_frame.pack(fill=tk.BOTH, expand=True)
         self._ptr_records_tree = ttk.Treeview(ptr_records_frame, columns=("name", "ptrdname"), show="headings")
         self._ptr_records_tree.heading("name", text="Name")
         self._ptr_records_tree.heading("ptrdname", text="Target Domain Name (PTRDNAME)")
-        self._ptr_records_tree.column("name", width=250, anchor=tk.W)
-        self._ptr_records_tree.column("ptrdname", width=350, anchor=tk.W)
+        self._ptr_records_tree.column("name", width=250, minwidth=30, anchor=tk.W)
+        self._ptr_records_tree.column("ptrdname", width=350, minwidth=30, anchor=tk.W)
         self._ptr_records_tree.pack(fill=tk.BOTH, expand=True)
+        self._load_column_widths("records_ptr", self._ptr_records_tree)
+        self._ptr_records_tree.bind("<ButtonRelease-1>", lambda e: self._on_tree_release(e, "records_ptr"))
 
         txt_records_frame = ttk.LabelFrame(txt_records_tab, text="TXT Records", padding=8)
         txt_records_frame.pack(fill=tk.BOTH, expand=True)
         self._txt_records_tree = ttk.Treeview(txt_records_frame, columns=("name", "text"), show="headings")
         self._txt_records_tree.heading("name", text="Name")
         self._txt_records_tree.heading("text", text="Text Content")
-        self._txt_records_tree.column("name", width=250, anchor=tk.W)
-        self._txt_records_tree.column("text", width=350, anchor=tk.W)
+        self._txt_records_tree.column("name", width=250, minwidth=30, anchor=tk.W)
+        self._txt_records_tree.column("text", width=350, minwidth=30, anchor=tk.W)
         self._txt_records_tree.pack(fill=tk.BOTH, expand=True)
+        self._load_column_widths("records_txt", self._txt_records_tree)
+        self._txt_records_tree.bind("<ButtonRelease-1>", lambda e: self._on_tree_release(e, "records_txt"))
 
         self._load_all_records_from_db()
 
@@ -846,6 +860,34 @@ class MDNSApp:
                     tk.END,
                     values=(rtype, count, _format_last_received(self._response_type_last_received.get(rtype))),
                 )
+
+    def _save_column_widths(self, tree_id: str, tree: ttk.Treeview) -> None:
+        import json
+        from my_mdns.core import store
+        widths = {}
+        for col in tree["columns"]:
+            widths[col] = tree.column(col, "width")
+        store.set_ui_setting(f"column_widths_{tree_id}", json.dumps(widths))
+
+    def _load_column_widths(self, tree_id: str, tree: ttk.Treeview) -> None:
+        import json
+        from my_mdns.core import store
+        data = store.get_ui_setting(f"column_widths_{tree_id}")
+        if not data:
+            return
+        try:
+            widths = json.loads(data)
+            for col, width in widths.items():
+                if col in tree["columns"]:
+                    tree.column(col, width=width)
+        except Exception as e:
+            self._append_log("ERROR", f"Failed to load column widths for {tree_id}: {e}")
+
+    def _on_tree_release(self, event: tk.Event, tree_id: str) -> None:
+        # Check if resize occurred
+        tree = event.widget
+        if tree.identify_region(event.x, event.y) == "separator" or True: # Check on every release for now
+             self._save_column_widths(tree_id, tree)
 
     def _append_log(self, level: str, message: str, time_text: str | None = None) -> None:
         if not self._log_text.winfo_exists():

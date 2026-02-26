@@ -67,6 +67,14 @@ def init_db() -> None:
             )
             """
         )
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS ui_settings (
+                key TEXT PRIMARY KEY,
+                value TEXT
+            )
+            """
+        )
         conn.commit()
 
 # Ensure it's initialized
@@ -158,3 +166,22 @@ def get_all_txt_records() -> list[tuple[str, str]]:
         cursor = conn.cursor()
         cursor.execute("SELECT name, text FROM txt_records ORDER BY name ASC")
         return cursor.fetchall()
+
+
+def set_ui_setting(key: str, value: str) -> None:
+    with _write_lock:
+        with sqlite3.connect(db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "INSERT OR REPLACE INTO ui_settings (key, value) VALUES (?, ?)",
+                (key, value)
+            )
+            conn.commit()
+
+
+def get_ui_setting(key: str) -> str | None:
+    with sqlite3.connect(db_path) as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT value FROM ui_settings WHERE key = ?", (key,))
+        row = cursor.fetchone()
+        return row[0] if row else None
