@@ -11,11 +11,17 @@
 
 ## 構成方針
 - コアロジックは `src/my_mdns/core/` に集約し、GUIロジックは `src/my_mdns/gui/` に分離する。
-- mDNS受信実装では `0.0.0.0` / ifindex `0` の単発JOINに依存せず、IPv4/IPv6ともインターフェイスごとに multicast group join を優先する（取りこぼし防止）。
+- mDNS受信実装では、OS（特にWindows）の挙動を安定させるため、IPv4/IPv6それぞれで `0.0.0.0` または `::` にバインドした**単一のUDPソケット**を利用し、そこからすべてのネットワークインターフェイスのマルチキャストグループへ JOIN する方式を採用している。
 - インターフェイス向けソケットオプションは以下を基本方針とする。
-- 受信ソケット: `SO_REUSEADDR`（可能なら `SO_REUSEPORT` も）を設定し、IPv4は `IP_ADD_MEMBERSHIP`、IPv6は `IPV6_JOIN_GROUP` をインターフェイス単位で適用する。
-- 送信ソケット: IPv4は `IP_MULTICAST_IF`、IPv6は `IPV6_MULTICAST_IF` を明示して送信元インターフェイスを固定する。
-- `Listening` タブのインターフェイス表示は、各IFの `rx4/tx4/rx6/tx6` カウンタを扱う前提で実装・保守する。
+  - 受信ソケット: `SO_REUSEADDR`（可能なら `SO_REUSEPORT` も）を設定し、IPv4は `IP_ADD_MEMBERSHIP`、IPv6は `IPV6_JOIN_GROUP` を適用する。
+  - 送信ソケット: 
+    - IPv4は `IP_MULTICAST_IF`、IPv6は `IPV6_MULTICAST_IF` を明示して送信元インターフェイスを固定する。
+    - mDNSの規格 (RFC 6762) およびローカルループバックの安定した観測のため、マルチキャストの TTL/HOPS は `255` を指定し、ループバック (`IP_MULTICAST_LOOP` / `IPV6_MULTICAST_LOOP`) を有効にする。
+- `Listening` タブの表示について、パケット送信 (`tx4`/`tx6`) は各IFごとに計測可能だが、上記の単一ソケット化の都合上、パケット受信 (`rx4`/`rx6`) は個別のIFごとの追跡が困難なため、UI上では `* (All Interfaces)` というグローバル行で合計値を集計して表示する設計とする。
+
+## GUI・データ保存と復元の方針
+- 設定情報（カラム幅など）や直近の入力情報（手動クエリのName/Typeなど）は、`user_data_dir` 配下の SQLite データベース内 `ui_settings` テーブルを用いてKVS形式で随時永続化し、次回の起動時に自動復元する。
+- 収集したDNSレコードはDB上で記録し、UIでは常に最新のレコード（Last Seen で降順）が先頭に来るようにソート・更新する。
 
 ## フックとバージョン運用
 - バージョンのパッチレベルはコミット時に必ずバンプする。

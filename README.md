@@ -49,19 +49,25 @@ mdns-inspector/
 - 手動名前解決クエリ送信
   - Resolveタブで `.local.` 前の名前入力 + QTYPE選択
   - IP付与済みIFごとに IPv4/IPv6 送信ボタン
+- 個別のDNSレコード収集とリアルタイムソート表示
+  - A, AAAA, SRV, PTR, TXT レコードをタブ別に表示
+  - 受信時刻（Last Seen）、送信元IP、宛先種別（Multicast/Unicast）を記録
 - 統計表示（Statsタブ）
   - Packet direction counts（Query/Response/Other）
   - Query QTYPE counts
   - Response RR TYPE counts
   - 各行に `last received` を表示
-- ListeningタブでIFごとのカウンタ表示
-  - `rx4`, `tx4`, `rx6`, `tx6`
+- Listeningタブでインターフェイスごとの送信カウンタ表示
+  - `tx4`, `tx6`（受信パケットは単一ソケット化の都合上 `* (All Interfaces)` 行にて全IFの合計値を表示）
+- カラム幅と手動クエリの入力内容の永続化（自動保存・復元）
 
 ## GUIタブ
-- Main: 実行トグル、サービス問い合わせ一括送信、転送先設定、受信パケット表示
-- Listening: インターフェイス一覧、IF選択問い合わせ、IF別送受信カウンタ
+- Main: 実行トグル、サービス問い合わせ一括送信、転送先設定、受信パケット全体表示
+- Listening: インターフェイス一覧、IF選択問い合わせ、送受信カウンタ
+- Queries: ネットワーク上で観測されたmDNSクエリの一覧とリクエスト回数
+- A / AAAA / SRV / PTR / TXT: 各レコードの収集結果（最新受信順）
 - Stats: 受信パケット種別の集計表3種
-- Resolve: 手動クエリ送信（IFごと）
+- Resolve: 手動クエリ送信（IFごと、前回入力値を記憶）
 - Logs: ログ表示
 
 ## 起動方法
