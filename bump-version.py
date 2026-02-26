@@ -62,7 +62,8 @@ def next_version(version: str, part: str) -> str:
 
 
 def bump_pyproject(path: Path, part: str) -> BumpResult | None:
-    text = path.read_text(encoding="utf-8")
+    with open(path, "r", encoding="utf-8", newline="") as f:
+        text = f.read()
     match = PYPROJECT_RE.search(text)
     if not match:
         return None
@@ -71,12 +72,14 @@ def bump_pyproject(path: Path, part: str) -> BumpResult | None:
     current = next_version(previous, part)
     replacement = f'{match.group(1)}{current}{match.group(5)}'
     updated = PYPROJECT_RE.sub(replacement, text, count=1)
-    path.write_text(updated, encoding="utf-8")
+    with open(path, "w", encoding="utf-8", newline="") as f:
+        f.write(updated)
     return BumpResult(path=path, previous=previous, current=current)
 
 
 def bump_json_version(path: Path, part: str) -> BumpResult | None:
-    text = path.read_text(encoding="utf-8")
+    with open(path, "r", encoding="utf-8", newline="") as f:
+        text = f.read()
     match = JSON_VERSION_RE.search(text)
     if not match:
         return None
@@ -85,7 +88,8 @@ def bump_json_version(path: Path, part: str) -> BumpResult | None:
     current = next_version(previous, part)
     replacement = f'{match.group(1)}{current}{match.group(5)}'
     updated = JSON_VERSION_RE.sub(replacement, text, count=1)
-    path.write_text(updated, encoding="utf-8")
+    with open(path, "w", encoding="utf-8", newline="") as f:
+        f.write(updated)
     return BumpResult(path=path, previous=previous, current=current)
 
 

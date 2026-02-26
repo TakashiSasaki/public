@@ -6,7 +6,12 @@ if ([string]::IsNullOrWhiteSpace($repoRoot)) {
   throw "setup-hooks: failed to resolve repository root"
 }
 
-$hooksPath = [System.IO.Path]::GetRelativePath($repoRoot, $scriptDir)
+if ($scriptDir.StartsWith($repoRoot, [System.StringComparison]::OrdinalIgnoreCase)) {
+    $hooksPath = $scriptDir.Substring($repoRoot.Length).TrimStart("\", "/").Replace("\", "/")
+} else {
+    throw "setup-hooks: script is not inside the repo root"
+}
+
 if ([string]::IsNullOrWhiteSpace($hooksPath) -or $hooksPath -eq ".") {
   throw "setup-hooks: hooks path resolution failed"
 }
