@@ -69,11 +69,11 @@ def parse_mdns_packet(payload: bytes) -> tuple[
     str,
     tuple[tuple[str, str], ...],       # Queries (name, type)
     tuple[str, ...],
-    list[tuple[str, str]],             # A
-    list[tuple[str, str]],             # AAAA
+    list[tuple[str, str, bool]],          # A (name, ip, is_multicast)
+    list[tuple[str, str, bool]],          # AAAA (name, ip, is_multicast)
     list[tuple[str, str, int, int, int]], # SRV
-    list[tuple[str, str]],             # PTR
-    list[tuple[str, str]],             # TXT
+    list[tuple[str, str]],                # PTR
+    list[tuple[str, str]],                # TXT
 ]:
     empty_res = ("Other", (), (), [], [], [], [], [])
     if len(payload) < 12:
@@ -88,8 +88,8 @@ def parse_mdns_packet(payload: bytes) -> tuple[
     offset = 12
     queries: list[tuple[str, str]] = []
     answer_types: list[str] = []
-    a_records: list[tuple[str, str]] = []
-    aaaa_records: list[tuple[str, str]] = []
+    a_records: list[tuple[str, str, bool]] = []
+    aaaa_records: list[tuple[str, str, bool]] = []
     srv_records: list[tuple[str, str, int, int, int]] = []
     ptr_records: list[tuple[str, str]] = []
     txt_records: list[tuple[str, str]] = []
@@ -108,7 +108,8 @@ def parse_mdns_packet(payload: bytes) -> tuple[
         offset = _skip_name(payload, offset)
         if offset + 10 > len(payload):
             return ("Other", tuple(queries), tuple(answer_types), a_records, aaaa_records, srv_records, ptr_records, txt_records)
-        rtype, _, _, rdlength = struct.unpack_from("!HHIH", payload, offset)
+        rtype, rclass, _, rdlength = struct.unpack_from("!HHIH", payload, offset)
+        is_multicast = bool(rclass & 0x8000)
         answer_types.append(_type_name(rtype))
         offset += 10
         if offset + rdlength > len(payload):
@@ -118,12 +119,12 @@ def parse_mdns_packet(payload: bytes) -> tuple[
             import socket
             ip_data = payload[offset : offset + 4]
             ip_str = socket.inet_ntoa(ip_data)
-            a_records.append((name, ip_str))
+            a_records.append((name, ip_str, is_multicast))
         elif rtype == 28 and rdlength == 16: # AAAA Record
             import socket
             ip_data = payload[offset : offset + 16]
             ip_str = socket.inet_ntop(socket.AF_INET6, ip_data)
-            aaaa_records.append((name, ip_str))
+            aaaa_records.append((name, ip_str, is_multicast))
         elif rtype == 33 and rdlength >= 6: # SRV Record
             priority, weight, port = struct.unpack_from("!HHH", payload, offset)
             target, _ = _read_name(payload, offset + 6)

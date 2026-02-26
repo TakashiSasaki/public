@@ -298,15 +298,17 @@ class MDNSApp:
         a_records_frame.pack(fill=tk.BOTH, expand=True)
         self._a_records_tree = ttk.Treeview(
             a_records_frame,
-            columns=("name", "ip", "last_seen", "source_ip"),
+            columns=("name", "ip", "destination", "last_seen", "source_ip"),
             show="headings",
         )
         self._a_records_tree.heading("name", text="Name")
         self._a_records_tree.heading("ip", text="IP Address")
+        self._a_records_tree.heading("destination", text="Destination")
         self._a_records_tree.heading("last_seen", text="Last Seen")
         self._a_records_tree.heading("source_ip", text="Source IP")
         self._a_records_tree.column("name", width=250, minwidth=30, anchor=tk.W)
         self._a_records_tree.column("ip", width=150, minwidth=30, anchor=tk.W)
+        self._a_records_tree.column("destination", width=100, minwidth=30, anchor=tk.W)
         self._a_records_tree.column("last_seen", width=180, minwidth=30, anchor=tk.W)
         self._a_records_tree.column("source_ip", width=120, minwidth=30, anchor=tk.W)
         self._a_records_tree.pack(fill=tk.BOTH, expand=True)
@@ -315,13 +317,15 @@ class MDNSApp:
 
         aaaa_records_frame = ttk.LabelFrame(aaaa_records_tab, text="AAAA Records (Name -> IPv6)", padding=8)
         aaaa_records_frame.pack(fill=tk.BOTH, expand=True)
-        self._aaaa_records_tree = ttk.Treeview(aaaa_records_frame, columns=("name", "ip", "last_seen", "source_ip"), show="headings")
+        self._aaaa_records_tree = ttk.Treeview(aaaa_records_frame, columns=("name", "ip", "destination", "last_seen", "source_ip"), show="headings")
         self._aaaa_records_tree.heading("name", text="Name")
         self._aaaa_records_tree.heading("ip", text="IPv6 Address")
+        self._aaaa_records_tree.heading("destination", text="Destination")
         self._aaaa_records_tree.heading("last_seen", text="Last Seen")
         self._aaaa_records_tree.heading("source_ip", text="Source IP")
         self._aaaa_records_tree.column("name", width=250, minwidth=30, anchor=tk.W)
         self._aaaa_records_tree.column("ip", width=250, minwidth=30, anchor=tk.W)
+        self._aaaa_records_tree.column("destination", width=100, minwidth=30, anchor=tk.W)
         self._aaaa_records_tree.column("last_seen", width=180, minwidth=30, anchor=tk.W)
         self._aaaa_records_tree.column("source_ip", width=120, minwidth=30, anchor=tk.W)
         self._aaaa_records_tree.pack(fill=tk.BOTH, expand=True)
@@ -411,8 +415,9 @@ class MDNSApp:
             for item in self._a_records_tree.get_children():
                 self._a_records_tree.delete(item)
             try:
-                for name, ip, last_seen, source_ip in store.get_all_a_records():
-                    self._a_records_tree.insert("", tk.END, values=(name, ip, last_seen, source_ip))
+                for name, ip, last_seen, source_ip, is_multicast in store.get_all_a_records():
+                    dest = "Multicast" if is_multicast else "Unicast"
+                    self._a_records_tree.insert("", tk.END, values=(name, ip, dest, last_seen, source_ip))
             except Exception as e:
                 self._append_log("ERROR", f"Failed to load A records: {e}")
 
@@ -421,8 +426,9 @@ class MDNSApp:
             for item in self._aaaa_records_tree.get_children():
                 self._aaaa_records_tree.delete(item)
             try:
-                for name, ip, last_seen, source_ip in store.get_all_aaaa_records():
-                    self._aaaa_records_tree.insert("", tk.END, values=(name, ip, last_seen, source_ip))
+                for name, ip, last_seen, source_ip, is_multicast in store.get_all_aaaa_records():
+                    dest = "Multicast" if is_multicast else "Unicast"
+                    self._aaaa_records_tree.insert("", tk.END, values=(name, ip, dest, last_seen, source_ip))
             except Exception as e:
                 self._append_log("ERROR", f"Failed to load AAAA records: {e}")
 
@@ -830,9 +836,10 @@ class MDNSApp:
                             found_item = child
                             break
                     if found_item:
-                        self._a_records_tree.item(found_item, values=(event.name, event.ip, event.last_seen, event.source_ip))
+                        self._a_records_tree.item(found_item, values=(event.name, event.ip, "Multicast" if event.is_multicast else "Unicast", event.last_seen, event.source_ip))
+                        self._a_records_tree.move(found_item, "", 0)
                     else:
-                        self._a_records_tree.insert("", tk.END, values=(event.name, event.ip, event.last_seen, event.source_ip))
+                        self._a_records_tree.insert("", 0, values=(event.name, event.ip, "Multicast" if event.is_multicast else "Unicast", event.last_seen, event.source_ip))
             elif isinstance(event, AAAARecordEvent):
                 if self._aaaa_records_tree is not None:
                     found_item = None
@@ -842,9 +849,10 @@ class MDNSApp:
                             found_item = child
                             break
                     if found_item:
-                        self._aaaa_records_tree.item(found_item, values=(event.name, event.ip, event.last_seen, event.source_ip))
+                        self._aaaa_records_tree.item(found_item, values=(event.name, event.ip, "Multicast" if event.is_multicast else "Unicast", event.last_seen, event.source_ip))
+                        self._aaaa_records_tree.move(found_item, "", 0)
                     else:
-                        self._aaaa_records_tree.insert("", tk.END, values=(event.name, event.ip, event.last_seen, event.source_ip))
+                        self._aaaa_records_tree.insert("", 0, values=(event.name, event.ip, "Multicast" if event.is_multicast else "Unicast", event.last_seen, event.source_ip))
             elif isinstance(event, SRVRecordEvent):
                 if self._srv_records_tree is not None:
                     found_item = None
@@ -857,8 +865,9 @@ class MDNSApp:
                     new_values = (event.name, event.target, event.port, event.priority, event.weight, event.last_seen, event.source_ip)
                     if found_item:
                         self._srv_records_tree.item(found_item, values=new_values)
+                        self._srv_records_tree.move(found_item, "", 0)
                     else:
-                        self._srv_records_tree.insert("", tk.END, values=new_values)
+                        self._srv_records_tree.insert("", 0, values=new_values)
             elif isinstance(event, PTRRecordEvent):
                 if self._ptr_records_tree is not None:
                     found_item = None
@@ -869,8 +878,9 @@ class MDNSApp:
                             break
                     if found_item:
                         self._ptr_records_tree.item(found_item, values=(event.name, event.ptrdname, event.last_seen, event.source_ip))
+                        self._ptr_records_tree.move(found_item, "", 0)
                     else:
-                        self._ptr_records_tree.insert("", tk.END, values=(event.name, event.ptrdname, event.last_seen, event.source_ip))
+                        self._ptr_records_tree.insert("", 0, values=(event.name, event.ptrdname, event.last_seen, event.source_ip))
             elif isinstance(event, TXTRecordEvent):
                 if self._txt_records_tree is not None:
                     found_item = None
@@ -881,8 +891,9 @@ class MDNSApp:
                             break
                     if found_item:
                         self._txt_records_tree.item(found_item, values=(event.name, event.text, event.last_seen, event.source_ip))
+                        self._txt_records_tree.move(found_item, "", 0)
                     else:
-                        self._txt_records_tree.insert("", tk.END, values=(event.name, event.text, event.last_seen, event.source_ip))
+                        self._txt_records_tree.insert("", 0, values=(event.name, event.text, event.last_seen, event.source_ip))
             elif isinstance(event, QueryEvent):
                 if self._queries_tree is not None:
                     found_item = None

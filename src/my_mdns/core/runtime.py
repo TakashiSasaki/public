@@ -142,18 +142,18 @@ class CoreRuntime:
                 self._log("ERROR", f"failed to store query: {e}")
 
         # Store A records and notify GUI
-        for name, ip in a_records:
+        for name, ip, is_multicast in a_records:
             try:
-                store.add_a_record(name, ip, last_seen, source_ip)
-                self._event_queue.put(ARecordEvent(name=name, ip=ip, last_seen=last_seen, source_ip=source_ip))
+                store.add_a_record(name, ip, last_seen, source_ip, is_multicast)
+                self._event_queue.put(ARecordEvent(name=name, ip=ip, last_seen=last_seen, source_ip=source_ip, is_multicast=is_multicast))
             except Exception as e:
                 self._log("ERROR", f"failed to store A record: {e}")
 
         # AAAA records
-        for name, ip in aaaa_records:
+        for name, ip, is_multicast in aaaa_records:
             try:
-                store.add_aaaa_record(name, ip, last_seen, source_ip)
-                self._event_queue.put(AAAARecordEvent(name=name, ip=ip, last_seen=last_seen, source_ip=source_ip))
+                store.add_aaaa_record(name, ip, last_seen, source_ip, is_multicast)
+                self._event_queue.put(AAAARecordEvent(name=name, ip=ip, last_seen=last_seen, source_ip=source_ip, is_multicast=is_multicast))
             except Exception as e:
                 self._log("ERROR", f"failed to store AAAA record: {e}")
 

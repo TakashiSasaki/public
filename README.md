@@ -84,6 +84,11 @@ hooksPath設定:
 pwsh -File githooks/setup-hooks.ps1
 ```
 
+## その他
+- 開発者やコーディングエージェント向けの情報は AGENTS.md に記載する。
+- README.md は利用者向けのドキュメントである。
+- ライセンスは MIT ライセンス。
+
 ## 作者
 - Takashi Sasaki
 - https://x.com/TakashiSasaki

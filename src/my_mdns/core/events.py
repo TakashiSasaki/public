@@ -32,6 +32,7 @@ class ARecordEvent:
     ip: str
     last_seen: str
     source_ip: str
+    is_multicast: bool
 
 
 @dataclass(slots=True)
@@ -40,6 +41,7 @@ class AAAARecordEvent:
     ip: str
     last_seen: str
     source_ip: str
+    is_multicast: bool
 
 
 @dataclass(slots=True)

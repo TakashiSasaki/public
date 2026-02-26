@@ -26,6 +26,7 @@ def init_db() -> None:
                 ip TEXT,
                 last_seen TEXT,
                 source_ip TEXT,
+                is_multicast BOOLEAN,
                 PRIMARY KEY (name, ip)
             )
             """
@@ -37,6 +38,7 @@ def init_db() -> None:
                 ip TEXT,
                 last_seen TEXT,
                 source_ip TEXT,
+                is_multicast BOOLEAN,
                 PRIMARY KEY (name, ip)
             )
             """
@@ -97,6 +99,11 @@ def init_db() -> None:
             try:
                 cursor.execute(f"ALTER TABLE {table} ADD COLUMN source_ip TEXT")
             except sqlite3.OperationalError: pass
+        
+        for table in ["a_records", "aaaa_records"]:
+            try:
+                cursor.execute(f"ALTER TABLE {table} ADD COLUMN is_multicast BOOLEAN")
+            except sqlite3.OperationalError: pass
             
         cursor.execute(
             """
@@ -114,37 +121,37 @@ init_db()
 # We need a lock when writing specifically to avoid concurrent sqlite writes issues
 _write_lock = threading.Lock()
 
-def add_a_record(name: str, ip: str, last_seen: str, source_ip: str) -> None:
+def add_a_record(name: str, ip: str, last_seen: str, source_ip: str, is_multicast: bool) -> None:
     with _write_lock:
         with sqlite3.connect(db_path) as conn:
             cursor = conn.cursor()
             cursor.execute(
-                "INSERT OR REPLACE INTO a_records (name, ip, last_seen, source_ip) VALUES (?, ?, ?, ?)",
-                (name, ip, last_seen, source_ip)
+                "INSERT OR REPLACE INTO a_records (name, ip, last_seen, source_ip, is_multicast) VALUES (?, ?, ?, ?, ?)",
+                (name, ip, last_seen, source_ip, is_multicast)
             )
             conn.commit()
 
-def get_all_a_records() -> list[tuple[str, str, str, str]]:
+def get_all_a_records() -> list[tuple[str, str, str, str, bool]]:
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT name, ip, last_seen, source_ip FROM a_records ORDER BY name ASC")
+        cursor.execute("SELECT name, ip, last_seen, source_ip, is_multicast FROM a_records ORDER BY last_seen DESC")
         return cursor.fetchall()
 
 
-def add_aaaa_record(name: str, ip: str, last_seen: str, source_ip: str) -> None:
+def add_aaaa_record(name: str, ip: str, last_seen: str, source_ip: str, is_multicast: bool) -> None:
     with _write_lock:
         with sqlite3.connect(db_path) as conn:
             cursor = conn.cursor()
             cursor.execute(
-                "INSERT OR REPLACE INTO aaaa_records (name, ip, last_seen, source_ip) VALUES (?, ?, ?, ?)",
-                (name, ip, last_seen, source_ip)
+                "INSERT OR REPLACE INTO aaaa_records (name, ip, last_seen, source_ip, is_multicast) VALUES (?, ?, ?, ?, ?)",
+                (name, ip, last_seen, source_ip, is_multicast)
             )
             conn.commit()
 
-def get_all_aaaa_records() -> list[tuple[str, str, str, str]]:
+def get_all_aaaa_records() -> list[tuple[str, str, str, str, bool]]:
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT name, ip, last_seen, source_ip FROM aaaa_records ORDER BY name ASC")
+        cursor.execute("SELECT name, ip, last_seen, source_ip, is_multicast FROM aaaa_records ORDER BY last_seen DESC")
         return cursor.fetchall()
 
 
@@ -161,7 +168,7 @@ def add_srv_record(name: str, target: str, port: int, priority: int, weight: int
 def get_all_srv_records() -> list[tuple[str, str, int, int, int, str, str]]:
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT name, target, port, priority, weight, last_seen, source_ip FROM srv_records ORDER BY name ASC")
+        cursor.execute("SELECT name, target, port, priority, weight, last_seen, source_ip FROM srv_records ORDER BY last_seen DESC")
         return cursor.fetchall()
 
 
@@ -178,7 +185,7 @@ def add_ptr_record(name: str, ptrdname: str, last_seen: str, source_ip: str) -> 
 def get_all_ptr_records() -> list[tuple[str, str, str, str]]:
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT name, ptrdname, last_seen, source_ip FROM ptr_records ORDER BY name ASC")
+        cursor.execute("SELECT name, ptrdname, last_seen, source_ip FROM ptr_records ORDER BY last_seen DESC")
         return cursor.fetchall()
 
 
@@ -195,7 +202,7 @@ def add_txt_record(name: str, text: str, last_seen: str, source_ip: str) -> None
 def get_all_txt_records() -> list[tuple[str, str, str, str]]:
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT name, text, last_seen, source_ip FROM txt_records ORDER BY name ASC")
+        cursor.execute("SELECT name, text, last_seen, source_ip FROM txt_records ORDER BY last_seen DESC")
         return cursor.fetchall()
 
 

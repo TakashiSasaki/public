@@ -32,7 +32,15 @@
 - mdns-inspectorでは `user_data_dir(appname="work.moukaeritai.mdns-inspector", appauthor=None)` を使う。
 - このアプリケーションの主要な開発者は moukaeritai.work ドメインを所有しているので、ドメイン名の逆順にアプリケーション名を連接している。
 
+## OS-specific Notes (Windows)
+- Windows 上の Python (`asyncio` + `DatagramProtocol`) では、UDPパケットの宛先IP（Unicast か Multicast か）を標準機能で取得するための `recvmsg` がサポートされていない。
+- 代替案として、mDNSレスポンスパケット内の **Cache-flushビット**（RRのクラスフィールドの最高ビット）を流用して判定する。
+  - Cache-flushビットが `1`: マルチキャスト（またはブロードキャスト）配信を想定。
+  - Cache-flushビットが `0`: ユニキャストレスポンスを想定。
+- この判定ロジックにより、A/AAAAレコードの「宛先タイプ」を擬似的に表現する。
+
 # その他（このセクションは削除せず、このセクションの内容は他の適切なセクションに構造化することを強く推奨する）
 - このセクションの内容は上記セクションへ順次移管済み。新規ルールは該当セクションへ追加する。
 - コミットメッセージは英語で記述する。
 - AGENTS.md README.md は日本語で記述する。
+- Python 環境は uv で管理していることをわすれずに。もし uv を使っていないなら uv を使うように促してほしい。
