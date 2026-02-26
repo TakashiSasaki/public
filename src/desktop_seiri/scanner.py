@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timezone
 from pathlib import Path
 from pathlib import PureWindowsPath
 import os
 import re
 from urllib.parse import urlsplit
+
+from .filetime import unix_ns_to_filetime
 
 
 @dataclass(slots=True)
@@ -16,14 +17,10 @@ class DesktopItem:
     root: str
     path: str
     target: str | None
-    modified_at: str
+    modified_filetime: int
     permissions: str
     size_bytes: int | None
     folder_total_size_bytes: int | None
-
-
-def _iso_from_epoch(epoch_seconds: float) -> str:
-    return datetime.fromtimestamp(epoch_seconds, tz=timezone.utc).isoformat()
 
 
 def extract_root(path_text: str) -> str:
@@ -128,6 +125,7 @@ def scan_desktop_items(desktop_path: Path) -> list[DesktopItem]:
             except OSError:
                 continue
             file_size = stats.st_size
+            modified_filetime = unix_ns_to_filetime(stats.st_mtime_ns)
             absolute_path = _safe_absolute_path(file_path)
             root, middle_path, name = split_path_components(absolute_path)
             files.append(
@@ -137,7 +135,7 @@ def scan_desktop_items(desktop_path: Path) -> list[DesktopItem]:
                     root=root,
                     path=middle_path,
                     target=_safe_target(file_path),
-                    modified_at=_iso_from_epoch(stats.st_mtime),
+                    modified_filetime=modified_filetime,
                     permissions=oct(stats.st_mode & 0o777),
                     size_bytes=file_size,
                     folder_total_size_bytes=None,
@@ -152,6 +150,7 @@ def scan_desktop_items(desktop_path: Path) -> list[DesktopItem]:
             except OSError:
                 continue
             total_size = folder_sizes.get(folder_path, 0)
+            modified_filetime = unix_ns_to_filetime(stats.st_mtime_ns)
             absolute_path = _safe_absolute_path(folder_path)
             root, middle_path, name = split_path_components(absolute_path)
             folders.append(
@@ -161,7 +160,7 @@ def scan_desktop_items(desktop_path: Path) -> list[DesktopItem]:
                     root=root,
                     path=middle_path,
                     target=_safe_target(folder_path),
-                    modified_at=_iso_from_epoch(stats.st_mtime),
+                    modified_filetime=modified_filetime,
                     permissions=oct(stats.st_mode & 0o777),
                     size_bytes=None,
                     folder_total_size_bytes=total_size,

@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import sqlite3
-from datetime import datetime, timezone
 from pathlib import Path
 
 from platformdirs import user_data_dir
 
 from .scanner import DesktopItem, extract_root, split_path_components
+from .filetime import iso8601_to_filetime
 
 APP_NAME = "work.moukaeritai.desktop-seiri"
 
@@ -37,12 +37,12 @@ def init_db(conn: sqlite3.Connection) -> None:
             root TEXT NOT NULL,
             path TEXT NOT NULL,
             target TEXT,
-            modified_at TEXT NOT NULL,
+            modified_filetime INTEGER NOT NULL,
             permissions TEXT NOT NULL,
             size_bytes INTEGER,
             folder_total_size_bytes INTEGER,
-            first_seen TEXT NOT NULL,
-            last_seen TEXT NOT NULL,
+            first_seen_filetime INTEGER NOT NULL,
+            last_seen_filetime INTEGER NOT NULL,
             CONSTRAINT chk_items_name_no_leading_sep
                 CHECK (name <> '' AND substr(name, 1, 1) NOT IN ('\\', '/')),
             CONSTRAINT chk_items_root_valid
@@ -53,6 +53,14 @@ def init_db(conn: sqlite3.Connection) -> None:
                     AND substr(path, 1, 1) IN ('\\', '/')
                     AND substr(path, length(path), 1) IN ('\\', '/')
                 ),
+            CONSTRAINT chk_items_filetime_non_negative
+                CHECK (
+                    modified_filetime >= 0
+                    AND first_seen_filetime >= 0
+                    AND last_seen_filetime >= 0
+                ),
+            CONSTRAINT chk_items_seen_order
+                CHECK (last_seen_filetime >= first_seen_filetime),
             UNIQUE(root, path, name)
         )
         """
@@ -60,24 +68,34 @@ def init_db(conn: sqlite3.Connection) -> None:
     _migrate_items_schema(conn)
     conn.execute("CREATE INDEX IF NOT EXISTS idx_items_name ON items(name)")
     conn.execute("CREATE INDEX IF NOT EXISTS idx_items_type ON items(item_type)")
-    conn.execute("CREATE INDEX IF NOT EXISTS idx_items_last_seen ON items(last_seen)")
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_items_last_seen ON items(last_seen_filetime)")
     conn.commit()
 
 
 def _migrate_items_schema(conn: sqlite3.Connection) -> None:
     columns = {row["name"] for row in conn.execute("PRAGMA table_info(items)")}
     has_component_checks = _has_component_checks(conn, "items")
+    has_filetime_checks = _has_filetime_checks(conn, "items")
     target_source_col = "target" if "target" in columns else "target_path"
-    has_seen_columns = {"first_seen", "last_seen"}.issubset(columns)
+    has_filetime_columns = {
+        "modified_filetime",
+        "first_seen_filetime",
+        "last_seen_filetime",
+    }.issubset(columns)
     path_is_legacy_unique = _has_unique_index_on(conn, "items", ["path"])
     target_rename_required = "target" not in columns and "target_path" in columns
+    has_legacy_time_columns = {"modified_at", "first_seen", "last_seen", "scanned_at"}.intersection(
+        columns
+    )
     needs_rebuild = (
-        not has_seen_columns
+        not has_filetime_columns
         or "root" not in columns
         or "path" not in columns
         or target_rename_required
         or path_is_legacy_unique
         or not has_component_checks
+        or not has_filetime_checks
+        or bool(has_legacy_time_columns)
     )
     if not needs_rebuild:
         _backfill_components(conn)
@@ -93,12 +111,12 @@ def _migrate_items_schema(conn: sqlite3.Connection) -> None:
             root TEXT NOT NULL,
             path TEXT NOT NULL,
             target TEXT,
-            modified_at TEXT NOT NULL,
+            modified_filetime INTEGER NOT NULL,
             permissions TEXT NOT NULL,
             size_bytes INTEGER,
             folder_total_size_bytes INTEGER,
-            first_seen TEXT NOT NULL,
-            last_seen TEXT NOT NULL,
+            first_seen_filetime INTEGER NOT NULL,
+            last_seen_filetime INTEGER NOT NULL,
             CONSTRAINT chk_items_name_no_leading_sep
                 CHECK (name <> '' AND substr(name, 1, 1) NOT IN ('\\', '/')),
             CONSTRAINT chk_items_root_valid
@@ -109,18 +127,36 @@ def _migrate_items_schema(conn: sqlite3.Connection) -> None:
                     AND substr(path, 1, 1) IN ('\\', '/')
                     AND substr(path, length(path), 1) IN ('\\', '/')
                 ),
+            CONSTRAINT chk_items_filetime_non_negative
+                CHECK (
+                    modified_filetime >= 0
+                    AND first_seen_filetime >= 0
+                    AND last_seen_filetime >= 0
+                ),
+            CONSTRAINT chk_items_seen_order
+                CHECK (last_seen_filetime >= first_seen_filetime),
             UNIQUE(root, path, name)
         )
         """
     )
 
-    select_cols = ["id", "item_type", "name", "path", "modified_at", "permissions"]
+    select_cols = ["id", "item_type", "name", "path", "permissions"]
+    if "root" in columns:
+        select_cols.append("root")
     if target_source_col in columns:
         select_cols.append(target_source_col)
+    if "modified_filetime" in columns:
+        select_cols.append("modified_filetime")
+    if "modified_at" in columns:
+        select_cols.append("modified_at")
     if "size_bytes" in columns:
         select_cols.append("size_bytes")
     if "folder_total_size_bytes" in columns:
         select_cols.append("folder_total_size_bytes")
+    if "first_seen_filetime" in columns:
+        select_cols.append("first_seen_filetime")
+    if "last_seen_filetime" in columns:
+        select_cols.append("last_seen_filetime")
     if "first_seen" in columns:
         select_cols.append("first_seen")
     if "last_seen" in columns:
@@ -132,24 +168,27 @@ def _migrate_items_schema(conn: sqlite3.Connection) -> None:
     for row in rows:
         row_keys = set(row.keys())
         root, middle_path, normalized_name = _normalize_components(
-            root=row["root"] if "root" in row_keys else "",
+            root=row["root"] if "root" in row_keys else ".",
             path_value=row["path"],
             name=row["name"] if "name" in row_keys else "",
         )
         target_value = row[target_source_col] if target_source_col in row_keys else None
-        first_seen = (
-            row["first_seen"]
-            if "first_seen" in row_keys and row["first_seen"]
-            else row["scanned_at"]
-            if "scanned_at" in row_keys
-            else ""
+        modified_filetime = _row_to_filetime(
+            row,
+            preferred_key="modified_filetime",
+            fallback_keys=["modified_at", "scanned_at"],
         )
-        last_seen = (
-            row["last_seen"]
-            if "last_seen" in row_keys and row["last_seen"]
-            else row["scanned_at"]
-            if "scanned_at" in row_keys
-            else first_seen
+        first_seen_filetime = _row_to_filetime(
+            row,
+            preferred_key="first_seen_filetime",
+            fallback_keys=["first_seen", "scanned_at", "modified_filetime", "modified_at"],
+            default=modified_filetime,
+        )
+        last_seen_filetime = _row_to_filetime(
+            row,
+            preferred_key="last_seen_filetime",
+            fallback_keys=["last_seen", "scanned_at", "first_seen_filetime", "first_seen"],
+            default=first_seen_filetime,
         )
         conn.execute(
             """
@@ -159,27 +198,29 @@ def _migrate_items_schema(conn: sqlite3.Connection) -> None:
                 root,
                 path,
                 target,
-                modified_at,
+                modified_filetime,
                 permissions,
                 size_bytes,
                 folder_total_size_bytes,
-                first_seen,
-                last_seen
+                first_seen_filetime,
+                last_seen_filetime
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(root, path, name) DO UPDATE SET
                 item_type=excluded.item_type,
                 target=excluded.target,
-                modified_at=excluded.modified_at,
+                modified_filetime=excluded.modified_filetime,
                 permissions=excluded.permissions,
                 size_bytes=excluded.size_bytes,
                 folder_total_size_bytes=excluded.folder_total_size_bytes,
-                first_seen=CASE
-                    WHEN items_new.first_seen <= excluded.first_seen THEN items_new.first_seen
-                    ELSE excluded.first_seen
+                first_seen_filetime=CASE
+                    WHEN items_new.first_seen_filetime <= excluded.first_seen_filetime
+                    THEN items_new.first_seen_filetime
+                    ELSE excluded.first_seen_filetime
                 END,
-                last_seen=CASE
-                    WHEN items_new.last_seen >= excluded.last_seen THEN items_new.last_seen
-                    ELSE excluded.last_seen
+                last_seen_filetime=CASE
+                    WHEN items_new.last_seen_filetime >= excluded.last_seen_filetime
+                    THEN items_new.last_seen_filetime
+                    ELSE excluded.last_seen_filetime
                 END
             """,
             (
@@ -188,12 +229,12 @@ def _migrate_items_schema(conn: sqlite3.Connection) -> None:
                 root,
                 middle_path,
                 target_value,
-                row["modified_at"],
+                modified_filetime,
                 row["permissions"],
                 row["size_bytes"] if "size_bytes" in row_keys else None,
                 row["folder_total_size_bytes"] if "folder_total_size_bytes" in row_keys else None,
-                first_seen,
-                last_seen,
+                first_seen_filetime,
+                last_seen_filetime,
             ),
         )
 
@@ -225,6 +266,18 @@ def _has_component_checks(conn: sqlite3.Connection, table: str) -> bool:
         "chk_items_root_valid",
         "chk_items_path_wrapped_sep",
     )
+    return all(marker in sql for marker in required_markers)
+
+
+def _has_filetime_checks(conn: sqlite3.Connection, table: str) -> bool:
+    row = conn.execute(
+        "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = ?",
+        (table,),
+    ).fetchone()
+    if not row or not row["sql"]:
+        return False
+    sql = row["sql"]
+    required_markers = ("chk_items_filetime_non_negative", "chk_items_seen_order")
     return all(marker in sql for marker in required_markers)
 
 
@@ -281,6 +334,46 @@ def _backfill_components(conn: sqlite3.Connection) -> None:
     conn.executemany("UPDATE items SET root = ?, path = ?, name = ? WHERE id = ?", updates)
 
 
+def _to_filetime(value: object, default: int = 0) -> int:
+    if value is None:
+        return default
+    if isinstance(value, int):
+        return value if value >= 0 else default
+    if isinstance(value, float):
+        int_value = int(value)
+        return int_value if int_value >= 0 else default
+    if isinstance(value, str):
+        stripped = value.strip()
+        if not stripped:
+            return default
+        if stripped.isdigit():
+            return int(stripped)
+        try:
+            return iso8601_to_filetime(stripped)
+        except ValueError:
+            return default
+    return default
+
+
+def _row_to_filetime(
+    row: sqlite3.Row,
+    preferred_key: str,
+    fallback_keys: list[str],
+    default: int = 0,
+) -> int:
+    if preferred_key in row.keys():
+        converted = _to_filetime(row[preferred_key], default=default)
+        if converted:
+            return converted
+    for key in fallback_keys:
+        if key not in row.keys():
+            continue
+        converted = _to_filetime(row[key], default=default)
+        if converted:
+            return converted
+    return default
+
+
 def _validate_item_for_storage(item: DesktopItem) -> None:
     if not item.root:
         raise ValueError("Invalid item.root: root must not be empty. Use '.' for relative paths.")
@@ -304,9 +397,13 @@ def _validate_item_for_storage(item: DesktopItem) -> None:
         raise ValueError(
             f"Invalid item.path '{item.path}': path must end with a path separator."
         )
+    if item.modified_filetime < 0:
+        raise ValueError(
+            f"Invalid item.modified_filetime '{item.modified_filetime}': must be non-negative."
+        )
 
 
-def upsert_items(conn: sqlite3.Connection, items: list[DesktopItem], seen_at: str) -> int:
+def upsert_items(conn: sqlite3.Connection, items: list[DesktopItem], seen_at_filetime: int) -> int:
     for item in items:
         _validate_item_for_storage(item)
 
@@ -318,22 +415,22 @@ def upsert_items(conn: sqlite3.Connection, items: list[DesktopItem], seen_at: st
             root,
             path,
             target,
-            modified_at,
+            modified_filetime,
             permissions,
             size_bytes,
             folder_total_size_bytes,
-            first_seen,
-            last_seen
+            first_seen_filetime,
+            last_seen_filetime
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(root, path, name) DO UPDATE SET
             item_type=excluded.item_type,
             root=excluded.root,
             target=excluded.target,
-            modified_at=excluded.modified_at,
+            modified_filetime=excluded.modified_filetime,
             permissions=excluded.permissions,
             size_bytes=excluded.size_bytes,
             folder_total_size_bytes=excluded.folder_total_size_bytes,
-            last_seen=excluded.last_seen
+            last_seen_filetime=excluded.last_seen_filetime
         """,
         [
             (
@@ -342,12 +439,12 @@ def upsert_items(conn: sqlite3.Connection, items: list[DesktopItem], seen_at: st
                 item.root,
                 item.path,
                 item.target,
-                item.modified_at,
+                item.modified_filetime,
                 item.permissions,
                 item.size_bytes,
                 item.folder_total_size_bytes,
-                seen_at,
-                seen_at,
+                seen_at_filetime,
+                seen_at_filetime,
             )
             for item in items
         ],
@@ -370,12 +467,12 @@ def search_items(
       root,
       path,
       target,
-      modified_at,
+      modified_filetime,
       permissions,
       size_bytes,
       folder_total_size_bytes,
-      first_seen,
-      last_seen
+      first_seen_filetime,
+      last_seen_filetime
     FROM items
     WHERE 1=1
     """
@@ -414,17 +511,11 @@ def count_items(
     return int(row["cnt"]) if row else 0
 
 
-def latest_last_seen(conn: sqlite3.Connection) -> datetime | None:
-    row = conn.execute("SELECT MAX(last_seen) AS latest FROM items").fetchone()
+def latest_last_seen_filetime(conn: sqlite3.Connection) -> int | None:
+    row = conn.execute("SELECT MAX(last_seen_filetime) AS latest FROM items").fetchone()
     if not row:
         return None
     value = row["latest"]
-    if not value:
+    if value is None:
         return None
-    try:
-        dt = datetime.fromisoformat(value)
-    except ValueError:
-        return None
-    if dt.tzinfo is None:
-        return dt.replace(tzinfo=timezone.utc)
-    return dt
+    return _to_filetime(value, default=0)

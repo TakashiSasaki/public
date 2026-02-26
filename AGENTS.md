@@ -51,6 +51,7 @@
 - 2026-02-25: 重複情報を減らすため保存形式を `root` + `path` + `name` に再設計し、`path` は中間パスのみ保持する方式へ変更。あわせて `target_path` カラム名を `target` にリネーム。
 - 2026-02-25: DB保存インターフェイスで `root/path/name` 形式のバリデーションを実施し、`path` が区切り文字で始まり区切り文字で終わるルール違反時は例外を送出するように変更。
 - 2026-02-25: 保存前バリデーションを追加強化し、`name` は区切り文字で開始不可、`root` は区切り文字で終了不可（ただし `root='.'` は許容）とした。
+- 2026-02-25: 日時保存をISO8601文字列からWindows FILETIME 64-bit整数へ統一し、Windows/Linuxの両環境で同一フォーマットで記録する方式に変更。
 
 ## 現在のデータベース設計
 
@@ -63,12 +64,12 @@
   - `root` (`TEXT NOT NULL`): ルート要素（例: `C:`, `\\server\share`, `https://host`）。相対パスは `.` を使用
   - `path` (`TEXT NOT NULL`): 中間パス（`root` と `name` を除いた部分）
   - `target` (`TEXT NULL`): シンボリックリンク/ジャンクションのリンク先。通常は `NULL`
-  - `modified_at` (`TEXT NOT NULL`): 対象の更新日時（ISO 8601, UTC）
+  - `modified_filetime` (`INTEGER NOT NULL`): 対象の更新日時（Windows FILETIME 64-bit, 100ns刻み）
   - `permissions` (`TEXT NOT NULL`): パーミッション表現
   - `size_bytes` (`INTEGER NULL`): ファイルサイズ（ファイルのみ）
   - `folder_total_size_bytes` (`INTEGER NULL`): フォルダ配下合計サイズ（フォルダのみ）
-  - `first_seen` (`TEXT NOT NULL`): 初回発見日時（ISO 8601, UTC）
-  - `last_seen` (`TEXT NOT NULL`): 最終発見日時（ISO 8601, UTC）
+  - `first_seen_filetime` (`INTEGER NOT NULL`): 初回発見日時（Windows FILETIME 64-bit）
+  - `last_seen_filetime` (`INTEGER NOT NULL`): 最終発見日時（Windows FILETIME 64-bit）
 - 論理パス再構成: `root + path + name`
 - 正規化ルール:
   - `path` は必ず先頭文字が区切り文字（`/` または `\`）
@@ -84,8 +85,8 @@
 - インデックス:
   - `idx_items_name` (`name`)
   - `idx_items_type` (`item_type`)
-  - `idx_items_last_seen` (`last_seen`)
+  - `idx_items_last_seen` (`last_seen_filetime`)
 - 更新方針:
   - スキャン時は `ON CONFLICT(root, path, name)` でアップサート
-  - 既存行は `last_seen` のみ更新され、`first_seen` は保持
+  - 既存行は `last_seen_filetime` のみ更新され、`first_seen_filetime` は保持
   - スキャンで見つからなかった行は削除しない（履歴として残す）

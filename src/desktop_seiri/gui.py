@@ -5,6 +5,7 @@ from tkinter import ttk
 import sqlite3
 
 from . import db, service
+from .filetime import filetime_to_iso8601
 
 
 class DesktopSearchApp:
@@ -26,12 +27,12 @@ class DesktopSearchApp:
             "root",
             "path",
             "target",
-            "modified_at",
+            "modified_filetime",
             "permissions",
             "size_bytes",
             "folder_total_size_bytes",
-            "first_seen",
-            "last_seen",
+            "first_seen_filetime",
+            "last_seen_filetime",
         )
         self.column_headings = {
             "item_type": "Type",
@@ -39,12 +40,12 @@ class DesktopSearchApp:
             "root": "Root",
             "path": "Path",
             "target": "Target",
-            "modified_at": "Modified (UTC)",
+            "modified_filetime": "Modified (UTC)",
             "permissions": "Perms",
             "size_bytes": "File Size",
             "folder_total_size_bytes": "Folder Size",
-            "first_seen": "First Seen (UTC)",
-            "last_seen": "Last Seen (UTC)",
+            "first_seen_filetime": "First Seen (UTC)",
+            "last_seen_filetime": "Last Seen (UTC)",
         }
         self.column_widths = {
             "item_type": 80,
@@ -52,12 +53,12 @@ class DesktopSearchApp:
             "root": 150,
             "path": 360,
             "target": 360,
-            "modified_at": 180,
+            "modified_filetime": 180,
             "permissions": 80,
             "size_bytes": 100,
             "folder_total_size_bytes": 100,
-            "first_seen": 180,
-            "last_seen": 180,
+            "first_seen_filetime": 180,
+            "last_seen_filetime": 180,
         }
         self.column_visibility: dict[str, tk.BooleanVar] = {}
 
@@ -195,14 +196,14 @@ class DesktopSearchApp:
                     row["root"],
                     row["path"],
                     row["target"] if row["target"] is not None else "",
-                    row["modified_at"],
+                    filetime_to_iso8601(row["modified_filetime"]),
                     row["permissions"],
                     row["size_bytes"] if row["size_bytes"] is not None else "",
                     row["folder_total_size_bytes"]
                     if row["folder_total_size_bytes"] is not None
                     else "",
-                    row["first_seen"],
-                    row["last_seen"],
+                    filetime_to_iso8601(row["first_seen_filetime"]),
+                    filetime_to_iso8601(row["last_seen_filetime"]),
                 ),
             )
         start = offset + 1 if self.total_rows else 0
