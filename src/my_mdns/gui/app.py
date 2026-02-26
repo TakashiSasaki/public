@@ -608,14 +608,35 @@ class MDNSApp:
                     listening,
                     ipv4,
                     ipv6,
-                    counters.get("rx4", 0),
+                    "-",  # Per-interface rx4 not tracked in single-socket model
                     counters.get("tx4", 0),
-                    counters.get("rx6", 0),
+                    "-",  # Per-interface rx6 not tracked in single-socket model
                     counters.get("tx6", 0),
                 ),
             )
             if prev_selected and interface.name == prev_selected:
                 restored_item = item_id
+                
+        # Add a Global row to display aggregated receive counts
+        listening_g = "yes" if self._running else "no"
+        rx4_total = self._interface_packet_counts.get("IPv4", {}).get("rx4", 0)
+        rx6_total = self._interface_packet_counts.get("IPv6", {}).get("rx6", 0)
+        tx4_total = sum(self._interface_packet_counts.get(i.name, {}).get("tx4", 0) for i in self._interfaces)
+        tx6_total = sum(self._interface_packet_counts.get(i.name, {}).get("tx6", 0) for i in self._interfaces)
+        self._iface_status_tree.insert(
+            "",
+            tk.END,
+            values=(
+                "* (All Interfaces)",
+                listening_g,
+                "0.0.0.0",
+                "::",
+                rx4_total,
+                tx4_total,
+                rx6_total,
+                tx6_total,
+            ),
+        )
         if restored_item is not None:
             self._iface_status_tree.selection_set(restored_item)
             self._iface_status_tree.focus(restored_item)
@@ -631,7 +652,7 @@ class MDNSApp:
             self._update_query_buttons_state()
             return
         values = self._iface_status_tree.item(selection[0], "values")
-        if not values:
+        if not values or values[0] == "* (All Interfaces)":
             self._selected_interface_name = None
         else:
             self._selected_interface_name = str(values[0])
@@ -693,6 +714,8 @@ class MDNSApp:
     def _ensure_interface_counters(self) -> None:
         for interface in self._interfaces:
             self._interface_packet_counts.setdefault(interface.name, {"rx4": 0, "tx4": 0, "rx6": 0, "tx6": 0})
+        self._interface_packet_counts.setdefault("IPv4", {"rx4": 0, "tx4": 0, "rx6": 0, "tx6": 0})
+        self._interface_packet_counts.setdefault("IPv6", {"rx4": 0, "tx4": 0, "rx6": 0, "tx6": 0})
 
     def _bump_interface_counter(self, interface_name: str, key: str) -> None:
         if interface_name not in self._interface_packet_counts:
