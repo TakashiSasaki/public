@@ -24,6 +24,8 @@ def init_db() -> None:
             CREATE TABLE IF NOT EXISTS a_records (
                 name TEXT,
                 ip TEXT,
+                last_seen TEXT,
+                source_ip TEXT,
                 PRIMARY KEY (name, ip)
             )
             """
@@ -33,6 +35,8 @@ def init_db() -> None:
             CREATE TABLE IF NOT EXISTS aaaa_records (
                 name TEXT,
                 ip TEXT,
+                last_seen TEXT,
+                source_ip TEXT,
                 PRIMARY KEY (name, ip)
             )
             """
@@ -45,6 +49,8 @@ def init_db() -> None:
                 port INTEGER,
                 priority INTEGER,
                 weight INTEGER,
+                last_seen TEXT,
+                source_ip TEXT,
                 PRIMARY KEY (name, target, port)
             )
             """
@@ -54,6 +60,8 @@ def init_db() -> None:
             CREATE TABLE IF NOT EXISTS ptr_records (
                 name TEXT,
                 ptrdname TEXT,
+                last_seen TEXT,
+                source_ip TEXT,
                 PRIMARY KEY (name, ptrdname)
             )
             """
@@ -63,10 +71,21 @@ def init_db() -> None:
             CREATE TABLE IF NOT EXISTS txt_records (
                 name TEXT,
                 text TEXT,
+                last_seen TEXT,
+                source_ip TEXT,
                 PRIMARY KEY (name, text)
             )
             """
         )
+        # Attempt to add columns to existing tables if they don't exist
+        for table in ["a_records", "aaaa_records", "srv_records", "ptr_records", "txt_records"]:
+            try:
+                cursor.execute(f"ALTER TABLE {table} ADD COLUMN last_seen TEXT")
+            except sqlite3.OperationalError: pass
+            try:
+                cursor.execute(f"ALTER TABLE {table} ADD COLUMN source_ip TEXT")
+            except sqlite3.OperationalError: pass
+            
         cursor.execute(
             """
             CREATE TABLE IF NOT EXISTS ui_settings (
@@ -83,88 +102,88 @@ init_db()
 # We need a lock when writing specifically to avoid concurrent sqlite writes issues
 _write_lock = threading.Lock()
 
-def add_a_record(name: str, ip: str) -> None:
+def add_a_record(name: str, ip: str, last_seen: str, source_ip: str) -> None:
     with _write_lock:
         with sqlite3.connect(db_path) as conn:
             cursor = conn.cursor()
             cursor.execute(
-                "INSERT OR IGNORE INTO a_records (name, ip) VALUES (?, ?)",
-                (name, ip)
+                "INSERT OR REPLACE INTO a_records (name, ip, last_seen, source_ip) VALUES (?, ?, ?, ?)",
+                (name, ip, last_seen, source_ip)
             )
             conn.commit()
 
-def get_all_a_records() -> list[tuple[str, str]]:
+def get_all_a_records() -> list[tuple[str, str, str, str]]:
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT name, ip FROM a_records ORDER BY name ASC")
+        cursor.execute("SELECT name, ip, last_seen, source_ip FROM a_records ORDER BY name ASC")
         return cursor.fetchall()
 
 
-def add_aaaa_record(name: str, ip: str) -> None:
+def add_aaaa_record(name: str, ip: str, last_seen: str, source_ip: str) -> None:
     with _write_lock:
         with sqlite3.connect(db_path) as conn:
             cursor = conn.cursor()
             cursor.execute(
-                "INSERT OR IGNORE INTO aaaa_records (name, ip) VALUES (?, ?)",
-                (name, ip)
+                "INSERT OR REPLACE INTO aaaa_records (name, ip, last_seen, source_ip) VALUES (?, ?, ?, ?)",
+                (name, ip, last_seen, source_ip)
             )
             conn.commit()
 
-def get_all_aaaa_records() -> list[tuple[str, str]]:
+def get_all_aaaa_records() -> list[tuple[str, str, str, str]]:
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT name, ip FROM aaaa_records ORDER BY name ASC")
+        cursor.execute("SELECT name, ip, last_seen, source_ip FROM aaaa_records ORDER BY name ASC")
         return cursor.fetchall()
 
 
-def add_srv_record(name: str, target: str, port: int, priority: int, weight: int) -> None:
+def add_srv_record(name: str, target: str, port: int, priority: int, weight: int, last_seen: str, source_ip: str) -> None:
     with _write_lock:
         with sqlite3.connect(db_path) as conn:
             cursor = conn.cursor()
             cursor.execute(
-                "INSERT OR IGNORE INTO srv_records (name, target, port, priority, weight) VALUES (?, ?, ?, ?, ?)",
-                (name, target, port, priority, weight)
+                "INSERT OR REPLACE INTO srv_records (name, target, port, priority, weight, last_seen, source_ip) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (name, target, port, priority, weight, last_seen, source_ip)
             )
             conn.commit()
 
-def get_all_srv_records() -> list[tuple[str, str, int, int, int]]:
+def get_all_srv_records() -> list[tuple[str, str, int, int, int, str, str]]:
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT name, target, port, priority, weight FROM srv_records ORDER BY name ASC")
+        cursor.execute("SELECT name, target, port, priority, weight, last_seen, source_ip FROM srv_records ORDER BY name ASC")
         return cursor.fetchall()
 
 
-def add_ptr_record(name: str, ptrdname: str) -> None:
+def add_ptr_record(name: str, ptrdname: str, last_seen: str, source_ip: str) -> None:
     with _write_lock:
         with sqlite3.connect(db_path) as conn:
             cursor = conn.cursor()
             cursor.execute(
-                "INSERT OR IGNORE INTO ptr_records (name, ptrdname) VALUES (?, ?)",
-                (name, ptrdname)
+                "INSERT OR REPLACE INTO ptr_records (name, ptrdname, last_seen, source_ip) VALUES (?, ?, ?, ?)",
+                (name, ptrdname, last_seen, source_ip)
             )
             conn.commit()
 
-def get_all_ptr_records() -> list[tuple[str, str]]:
+def get_all_ptr_records() -> list[tuple[str, str, str, str]]:
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT name, ptrdname FROM ptr_records ORDER BY name ASC")
+        cursor.execute("SELECT name, ptrdname, last_seen, source_ip FROM ptr_records ORDER BY name ASC")
         return cursor.fetchall()
 
 
-def add_txt_record(name: str, text: str) -> None:
+def add_txt_record(name: str, text: str, last_seen: str, source_ip: str) -> None:
     with _write_lock:
         with sqlite3.connect(db_path) as conn:
             cursor = conn.cursor()
             cursor.execute(
-                "INSERT OR IGNORE INTO txt_records (name, text) VALUES (?, ?)",
-                (name, text)
+                "INSERT OR REPLACE INTO txt_records (name, text, last_seen, source_ip) VALUES (?, ?, ?, ?)",
+                (name, text, last_seen, source_ip)
             )
             conn.commit()
 
-def get_all_txt_records() -> list[tuple[str, str]]:
+def get_all_txt_records() -> list[tuple[str, str, str, str]]:
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT name, text FROM txt_records ORDER BY name ASC")
+        cursor.execute("SELECT name, text, last_seen, source_ip FROM txt_records ORDER BY name ASC")
         return cursor.fetchall()
 
 

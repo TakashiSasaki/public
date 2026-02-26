@@ -30,12 +30,16 @@ class LogEvent:
 class ARecordEvent:
     name: str
     ip: str
+    last_seen: str
+    source_ip: str
 
 
 @dataclass(slots=True)
 class AAAARecordEvent:
     name: str
     ip: str
+    last_seen: str
+    source_ip: str
 
 
 @dataclass(slots=True)
@@ -45,15 +49,21 @@ class SRVRecordEvent:
     port: int
     priority: int
     weight: int
+    last_seen: str
+    source_ip: str
 
 
 @dataclass(slots=True)
 class PTRRecordEvent:
     name: str
     ptrdname: str
+    last_seen: str
+    source_ip: str
 
 
 @dataclass(slots=True)
 class TXTRecordEvent:
     name: str
     text: str
+    last_seen: str
+    source_ip: str

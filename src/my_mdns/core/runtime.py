@@ -126,44 +126,50 @@ class CoreRuntime:
         except OSError as exc:
             self._log("ERROR", f"forward error: {exc}")
         message_kind, query_types, answer_types, a_records, aaaa_records, srv_records, ptr_records, txt_records = parse_mdns_packet(payload)
+        
+        last_seen = datetime.now().isoformat()
+        source_ip = addr[0]
 
         # Store A records and notify GUI
         for name, ip in a_records:
             try:
-                store.add_a_record(name, ip)
-                self._event_queue.put(ARecordEvent(name=name, ip=ip))
+                store.add_a_record(name, ip, last_seen, source_ip)
+                self._event_queue.put(ARecordEvent(name=name, ip=ip, last_seen=last_seen, source_ip=source_ip))
             except Exception as e:
                 self._log("ERROR", f"failed to store A record: {e}")
 
         # AAAA records
         for name, ip in aaaa_records:
             try:
-                store.add_aaaa_record(name, ip)
-                self._event_queue.put(AAAARecordEvent(name=name, ip=ip))
+                store.add_aaaa_record(name, ip, last_seen, source_ip)
+                self._event_queue.put(AAAARecordEvent(name=name, ip=ip, last_seen=last_seen, source_ip=source_ip))
             except Exception as e:
                 self._log("ERROR", f"failed to store AAAA record: {e}")
 
         # SRV records
         for name, target, port, priority, weight in srv_records:
             try:
-                store.add_srv_record(name, target, port, priority, weight)
-                self._event_queue.put(SRVRecordEvent(name=name, target=target, port=port, priority=priority, weight=weight))
+                store.add_srv_record(name, target, port, priority, weight, last_seen, source_ip)
+                self._event_queue.put(SRVRecordEvent(
+                    name=name, target=target, port=port, priority=priority, weight=weight,
+                    last_seen=last_seen, source_ip=source_ip
+                ))
             except Exception as e:
                 self._log("ERROR", f"failed to store SRV record: {e}")
 
         # PTR records
         for name, ptrdname in ptr_records:
             try:
-                store.add_ptr_record(name, ptrdname)
-                self._event_queue.put(PTRRecordEvent(name=name, ptrdname=ptrdname))
+                store.add_ptr_record(name, ptrdname, last_seen, source_ip)
+                self._event_queue.put(PTRRecordEvent(name=name, ptrdname=ptrdname, last_seen=last_seen, source_ip=source_ip))
             except Exception as e:
                 self._log("ERROR", f"failed to store PTR record: {e}")
 
         # TXT records
         for name, text in txt_records:
             try:
-                store.add_txt_record(name, text)
-                self._event_queue.put(TXTRecordEvent(name=name, text=text))
+                store.add_txt_record(name, text, last_seen, source_ip)
+                self._event_queue.put(TXTRecordEvent(name=name, text=text, last_seen=last_seen, source_ip=source_ip))
             except Exception as e:
                 self._log("ERROR", f"failed to store TXT record: {e}")
 
