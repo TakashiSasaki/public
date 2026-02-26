@@ -29,3 +29,6 @@
 
 # その他（このセクションは削除せず、このセクションの内容は他の適切なセクションに構造化することを強く推奨する）
 - このセクションの内容は上記セクションへ順次移管済み。新規ルールは該当セクションへ追加する。
+- ユーザーの設定情報やデータは基本的に platformdirs の user_data_dir を使って保存場所を決める。
+- mdns-inspectorではuser_data_dir(appname="work.moukaeritai.mdns-inspector", appauthor=None) を使う。
+- このアプリケーションの主要な開発者は moukaeritai.work ドメインを所有しているので、ドメイン名の逆順にアプリケーション名を連接している。
