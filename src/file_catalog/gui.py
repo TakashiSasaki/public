@@ -89,8 +89,6 @@ class DesktopSearchApp:
         ttk.Button(controls, text="Refresh Desktop Scan", command=self.refresh_inventory).pack(
             side=tk.LEFT, padx=(8, 0)
         )
-        ttk.Button(controls, text="Prev", command=self.prev_page).pack(side=tk.LEFT, padx=(16, 0))
-        ttk.Button(controls, text="Next", command=self.next_page).pack(side=tk.LEFT, padx=(8, 0))
 
         column_controls = ttk.Frame(self.root, padding=(12, 0, 12, 8))
         column_controls.pack(fill=tk.X)
@@ -122,6 +120,11 @@ class DesktopSearchApp:
         x_scroll.grid(row=1, column=0, sticky="ew")
         tree_frame.rowconfigure(0, weight=1)
         tree_frame.columnconfigure(0, weight=1)
+
+        pager = ttk.Frame(self.root, padding=(12, 0, 12, 6))
+        pager.pack(fill=tk.X)
+        ttk.Button(pager, text="Next", command=self.next_page).pack(side=tk.RIGHT)
+        ttk.Button(pager, text="Prev", command=self.prev_page).pack(side=tk.RIGHT, padx=(0, 8))
 
         status = ttk.Label(self.root, textvariable=self.status_var, anchor=tk.W, padding=(12, 6))
         status.pack(fill=tk.X)
