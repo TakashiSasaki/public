@@ -24,3 +24,9 @@ class LogEvent:
     timestamp: datetime
     level: str
     message: str
+
+
+@dataclass(slots=True)
+class ARecordEvent:
+    name: str
+    ip: str

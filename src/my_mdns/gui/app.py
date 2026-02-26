@@ -45,6 +45,7 @@ class MDNSApp:
         self._direction_tree: ttk.Treeview | None = None
         self._query_type_tree: ttk.Treeview | None = None
         self._response_type_tree: ttk.Treeview | None = None
+        self._a_records_tree: ttk.Treeview | None = None
 
         self._build_ui()
         self.root.protocol("WM_DELETE_WINDOW", self._on_close)
@@ -62,11 +63,13 @@ class MDNSApp:
         listening_tab = ttk.Frame(notebook, padding=8)
         stats_tab = ttk.Frame(notebook, padding=8)
         resolve_tab = ttk.Frame(notebook, padding=8)
+        a_records_tab = ttk.Frame(notebook, padding=8)
         logs_tab = ttk.Frame(notebook, padding=8)
         notebook.add(main_tab, text="Main")
         notebook.add(listening_tab, text="Listening")
         notebook.add(stats_tab, text="Stats")
         notebook.add(resolve_tab, text="Resolve")
+        notebook.add(a_records_tab, text="A Records")
         notebook.add(logs_tab, text="Logs")
 
         ctrl = ttk.LabelFrame(main_tab, text="Control", padding=10)
@@ -257,10 +260,40 @@ class MDNSApp:
             self._tree.column(name, width=width, anchor=tk.W)
         self._tree.pack(fill=tk.BOTH, expand=True)
 
+        a_records_frame = ttk.LabelFrame(a_records_tab, text="A Records (Name -> IP)", padding=8)
+        a_records_frame.pack(fill=tk.BOTH, expand=True)
+        self._a_records_tree = ttk.Treeview(
+            a_records_frame,
+            columns=("name", "ip"),
+            show="headings",
+        )
+        self._a_records_tree.heading("name", text="Name")
+        self._a_records_tree.heading("ip", text="IP Address")
+        self._a_records_tree.column("name", width=300, anchor=tk.W)
+        self._a_records_tree.column("ip", width=200, anchor=tk.W)
+        self._a_records_tree.pack(fill=tk.BOTH, expand=True)
+
+        self._load_a_records_from_db()
+
         logs = ttk.LabelFrame(logs_tab, text="Logs", padding=8)
         logs.pack(fill=tk.BOTH, expand=True)
         self._log_text = tk.Text(logs, height=7, state=tk.DISABLED)
         self._log_text.pack(fill=tk.BOTH, expand=True)
+
+    def _load_a_records_from_db(self) -> None:
+        from my_mdns.core import store
+        if self._a_records_tree is None:
+            return
+        
+        for item in self._a_records_tree.get_children():
+            self._a_records_tree.delete(item)
+            
+        try:
+            records = store.get_all_a_records()
+            for name, ip in records:
+                self._a_records_tree.insert("", tk.END, values=(name, ip))
+        except Exception as e:
+            self._append_log("ERROR", f"Failed to load A records from DB: {e}")
 
     def _start(self) -> None:
         if self._running:
@@ -581,6 +614,7 @@ class MDNSApp:
             self._append_log("ERROR", f"manual query IPv6 failed on {selected.name}")
 
     def _poll_events(self) -> None:
+        from my_mdns.core.events import ARecordEvent
         while True:
             try:
                 event = self._events.get_nowait()
@@ -616,6 +650,18 @@ class MDNSApp:
                 for item in self._tree.get_children()[300:]:
                     self._tree.delete(item)
                 self._render_interfaces()
+            elif isinstance(event, ARecordEvent):
+                # Update A record tree if it doesn't already have this exact pair
+                if self._a_records_tree is not None:
+                    # check if pair already exists
+                    exists = False
+                    for child in self._a_records_tree.get_children():
+                        values = self._a_records_tree.item(child, "values")
+                        if values and values[0] == event.name and values[1] == event.ip:
+                            exists = True
+                            break
+                    if not exists:
+                        self._a_records_tree.insert("", tk.END, values=(event.name, event.ip))
             else:
                 self._append_log(event.level, event.message, event.timestamp.strftime("%H:%M:%S"))
         self.root.after(150, self._poll_events)

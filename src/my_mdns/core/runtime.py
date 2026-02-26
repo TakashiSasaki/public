@@ -8,9 +8,11 @@ from queue import Queue
 
 from my_mdns.core.capture import MDNSCapture
 from my_mdns.core.dns_packet import parse_mdns_packet
-from my_mdns.core.events import LogEvent, PacketEvent
+from my_mdns.core.events import ARecordEvent, LogEvent, PacketEvent
 from my_mdns.core.forwarder import MDNSForwarder
 from my_mdns.core.query import build_query, build_services_ptr_query, send_mdns_query_ipv4, send_mdns_query_ipv6
+from my_mdns.core import store
+
 
 
 class CoreRuntime:
@@ -123,7 +125,15 @@ class CoreRuntime:
                 forwarded = self._forwarder.forward(payload)
         except OSError as exc:
             self._log("ERROR", f"forward error: {exc}")
-        message_kind, query_types, answer_types = parse_mdns_packet(payload)
+        message_kind, query_types, answer_types, a_records = parse_mdns_packet(payload)
+
+        # Store A records and notify GUI
+        for name, ip in a_records:
+            try:
+                store.add_a_record(name, ip)
+                self._event_queue.put(ARecordEvent(name=name, ip=ip))
+            except Exception as e:
+                self._log("ERROR", f"failed to store A record: {e}")
 
         self._event_queue.put(
             PacketEvent(
