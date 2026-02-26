@@ -40,8 +40,19 @@ class MDNSApp:
         self._query_v4_button: ttk.Button | None = None
         self._query_v6_button: ttk.Button | None = None
         self._selected_interface_name: str | None = None
-        self._resolve_query_name = tk.StringVar(value="localhost")
-        self._resolve_qtype = tk.StringVar(value="A")
+        from my_mdns.core import store
+        default_qname = store.get_ui_setting("resolve_query_name") or "localhost"
+        default_qtype = store.get_ui_setting("resolve_qtype") or "A"
+        
+        self._resolve_query_name = tk.StringVar(value=default_qname)
+        self._resolve_qtype = tk.StringVar(value=default_qtype)
+        
+        self._resolve_query_name.trace_add(
+            "write", lambda *_: store.set_ui_setting("resolve_query_name", self._resolve_query_name.get())
+        )
+        self._resolve_qtype.trace_add(
+            "write", lambda *_: store.set_ui_setting("resolve_qtype", self._resolve_qtype.get())
+        )
         self._resolve_rows_frame: ttk.Frame | None = None
         self._resolve_query_buttons: list[tuple[str, ttk.Button, ttk.Button]] = []
         self._interface_packet_counts: dict[str, dict[str, int]] = {}
