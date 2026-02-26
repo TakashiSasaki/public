@@ -22,11 +22,19 @@ def should_skip_rescan(conn: sqlite3.Connection, now_filetime_value: int | None 
 
 
 def refresh_inventory(
-    conn: sqlite3.Connection, desktop_path: Path | None = None
+    conn: sqlite3.Connection, scan_root: Path | None = None
 ) -> tuple[Path, int, bool]:
-    target = desktop_path or resolve_desktop_path()
-    if should_skip_rescan(conn):
+    target = scan_root or resolve_desktop_path()
+    target = target.expanduser()
+    if not target.exists():
+        raise ValueError(f"Scan root does not exist: {target}")
+    if not target.is_dir():
+        raise ValueError(f"Scan root is not a directory: {target}")
+
+    skip_allowed = scan_root is None
+    if skip_allowed and should_skip_rescan(conn):
         return target, 0, True
+
     items = scan_desktop_items(target)
     seen_at_filetime = now_filetime()
     count = db.upsert_items(conn, items, seen_at_filetime=seen_at_filetime)

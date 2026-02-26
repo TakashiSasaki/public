@@ -10,6 +10,7 @@ from .filetime import iso8601_to_filetime
 
 APP_NAME = "file_catalog"
 APP_AUTHOR = "work.moukaeritai"
+SETTINGS_TABLE = "app_settings"
 
 
 def _data_dir() -> Path:
@@ -70,6 +71,37 @@ def init_db(conn: sqlite3.Connection) -> None:
     conn.execute("CREATE INDEX IF NOT EXISTS idx_items_name ON items(name)")
     conn.execute("CREATE INDEX IF NOT EXISTS idx_items_type ON items(item_type)")
     conn.execute("CREATE INDEX IF NOT EXISTS idx_items_last_seen ON items(last_seen_filetime)")
+    conn.execute(
+        f"""
+        CREATE TABLE IF NOT EXISTS {SETTINGS_TABLE} (
+            key TEXT PRIMARY KEY,
+            value TEXT NOT NULL
+        )
+        """
+    )
+    conn.commit()
+
+
+def get_setting(conn: sqlite3.Connection, key: str) -> str | None:
+    row = conn.execute(
+        f"SELECT value FROM {SETTINGS_TABLE} WHERE key = ?",
+        (key,),
+    ).fetchone()
+    if not row:
+        return None
+    return str(row["value"])
+
+
+def set_setting(conn: sqlite3.Connection, key: str, value: str) -> None:
+    conn.execute(
+        f"""
+        INSERT INTO {SETTINGS_TABLE}(key, value)
+        VALUES (?, ?)
+        ON CONFLICT(key) DO UPDATE SET
+            value = excluded.value
+        """,
+        (key, value),
+    )
     conn.commit()
 
 
