@@ -8,7 +8,7 @@ from platformdirs import user_data_dir
 from .scanner import DesktopItem, extract_root, split_path_components
 from .filetime import iso8601_to_filetime
 
-APP_NAME = "work.moukaeritai.desktop-seiri"
+APP_NAME = "work.moukaeritai.file-catalog"
 
 
 def _data_dir() -> Path:

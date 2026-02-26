@@ -1,6 +1,6 @@
 [project]
-name = "desktop-seiri"
-version = "0.1.10"
+name = "file-catalog"
+version = "0.1.12"
 description = "Desktop inventory and search tool for Windows."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -9,7 +9,7 @@ dependencies = [
 ]
 
 [project.scripts]
-desktop-seiri = "desktop_seiri.main:main"
+file-catalog = "file_catalog.main:main"
 
 [build-system]
 requires = ["setuptools>=68", "wheel"]
@@ -20,3 +20,4 @@ package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
