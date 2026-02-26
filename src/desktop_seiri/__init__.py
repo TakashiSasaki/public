@@ -1,3 +1,8 @@
 """desktop-seiri package."""
 
-__version__ = "0.1.8"
+from importlib.metadata import PackageNotFoundError, version
+
+try:
+    __version__ = version("desktop-seiri")
+except PackageNotFoundError:
+    __version__ = "0+unknown"
