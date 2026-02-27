@@ -43,6 +43,14 @@
 	url = https://github.com/TakashiSasaki/windows-moukaeritai-work.git
 	branch = windows-moukaeritai-work
 
+[submodule "git-lfs-lite"]
+	path = git-lfs-lite
+	url = https://github.com/TakashiSasaki/public.git
+	branch = git-lfs-lite
+[submodule "mdns-inspector"]
+	path = mdns-inspector
+	url = https://github.com/TakashiSasaki/public.git
+	branch = mdns-inspector
 [submodule "hello"]
 	path = hello
 	url = https://github.com/TakashiSasaki/hello.git
