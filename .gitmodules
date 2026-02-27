@@ -43,3 +43,7 @@
 	url = https://github.com/TakashiSasaki/windows-moukaeritai-work.git
 	branch = windows-moukaeritai-work
 
+[submodule "hello"]
+	path = hello
+	url = https://github.com/TakashiSasaki/hello.git
+	branch = main
