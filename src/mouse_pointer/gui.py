@@ -41,6 +41,7 @@ class CursorGeneratorGUI(tk.Tk):
         self.var_caption_bg_color = tk.StringVar(value="#ffffff") # Default White
         self.var_caption_aa = tk.BooleanVar(value=True)
         self.var_caption_outline = tk.BooleanVar(value=False)
+        self.var_show_grid = tk.BooleanVar(value=True)
         self.var_drop_shadow = tk.BooleanVar(value=True)
 
         # SVG Overlay Variables
@@ -59,6 +60,11 @@ class CursorGeneratorGUI(tk.Tk):
         self.load_pictograms()
 
         self.create_widgets()
+        
+        # Bind events to preview canvas
+        self.preview_canvas.bind("<Motion>", self._on_mouse_move)
+        self.preview_canvas.bind("<Leave>", self._on_mouse_leave)
+        
         self.update_preview()
 
     def load_pictograms(self):
@@ -368,8 +374,9 @@ class CursorGeneratorGUI(tk.Tk):
             self.preview_image = img
             self.current_hotspot = hotspot
 
-            # Update info label
+            # Update info labels
             self.hotspot_label.config(text=f"Hotspot: {hotspot}")
+            self.coordinate_label.config(text="Coord: -")
 
             # Scale image so that the preview size is consistent (128x128) regardless of cursor resolution
             preview_scaled = img.resize((128, 128), Image.Resampling.NEAREST)
@@ -378,35 +385,82 @@ class CursorGeneratorGUI(tk.Tk):
 
             # Clear canvas and draw
             self.preview_canvas.delete("all")
-            # Draw checkerboard pattern for transparency
-            cw, ch = 150, 150
-            for i in range(0, cw, 10):
-                for j in range(0, ch, 10):
+            
+            cw, ch = 256, 256 # Updated canvas size
+            img_w, img_h = 128, 128
+            offset_x = (cw - img_w) // 2
+            offset_y = (ch - img_h) // 2
+
+            # 1. Draw restricted checkerboard pattern for transparency
+            # Center the checkerboard to exactly match the 128x128 image area
+            for i in range(0, img_w, 10):
+                for j in range(0, img_h, 10):
                     c = "#ffffff" if (i//10 + j//10) % 2 == 0 else "#cccccc"
-                    self.preview_canvas.create_rectangle(i, j, i+10, j+10, fill=c, outline=c)
+                    x1, y1 = offset_x + i, offset_y + j
+                    x2, y2 = min(x1 + 10, offset_x + img_w), min(y1 + 10, offset_y + img_h)
+                    self.preview_canvas.create_rectangle(x1, y1, x2, y2, fill=c, outline=c, tags="bg")
 
-            # Center the image
-            self.preview_canvas.create_image(cw//2, ch//2, image=self.img_tk, anchor=tk.CENTER)
+            # 2. Draw border around the image area
+            self.preview_canvas.create_rectangle(offset_x - 1, offset_y - 1, offset_x + img_w, offset_y + img_h, outline="#ff4444", width=1, tags="border")
 
-            # Draw hotspot crosshair marker
-            # Image is drawn 128x128 centered on the 150x150 canvas → top-left at (11, 11)
-            img_offset_x = cw // 2 - 64  # = 11
-            img_offset_y = ch // 2 - 64  # = 11
+            # 3. Draw the image
+            self.preview_canvas.create_image(cw//2, ch//2, image=self.img_tk, anchor=tk.CENTER, tags="cursor")
+
+            # 4. Draw Pixel Grid (if enabled)
+            if self.var_show_grid.get():
+                grid_scale = 128 / size
+                for i in range(size + 1):
+                    pos = i * grid_scale
+                    # Vertical lines
+                    self.preview_canvas.create_line(offset_x + pos, offset_y, offset_x + pos, offset_y + img_h, fill="#888888", dash=(1, 3), tags="grid")
+                    # Horizontal lines
+                    self.preview_canvas.create_line(offset_x, offset_y + pos, offset_x + img_w, offset_y + pos, fill="#888888", dash=(1, 3), tags="grid")
+
+            # 5. Draw hotspot crosshair marker
             scale = 128 / size
-            hx = img_offset_x + hotspot[0] * scale
-            hy = img_offset_y + hotspot[1] * scale
-            r = 4  # crosshair arm length
+            hx = offset_x + hotspot[0] * scale
+            hy = offset_y + hotspot[1] * scale
+            r = 6  # crosshair arm length
             # White outline for contrast
-            self.preview_canvas.create_line(hx - r - 1, hy, hx + r + 1, hy, fill="white", width=3)
-            self.preview_canvas.create_line(hx, hy - r - 1, hx, hy + r + 1, fill="white", width=3)
+            self.preview_canvas.create_line(hx - r - 1, hy, hx + r + 1, hy, fill="white", width=3, tags="hotspot")
+            self.preview_canvas.create_line(hx, hy - r - 1, hx, hy + r + 1, fill="white", width=3, tags="hotspot")
             # Red crosshair
-            self.preview_canvas.create_line(hx - r, hy, hx + r, hy, fill="#ff2222", width=1)
-            self.preview_canvas.create_line(hx, hy - r, hx, hy + r, fill="#ff2222", width=1)
+            self.preview_canvas.create_line(hx - r, hy, hx + r, hy, fill="#ff2222", width=1, tags="hotspot")
+            self.preview_canvas.create_line(hx, hy - r, hx, hy + r, fill="#ff2222", width=1, tags="hotspot")
             # Center dot
-            self.preview_canvas.create_oval(hx - 1.5, hy - 1.5, hx + 1.5, hy + 1.5, fill="#ff2222", outline="white")
+            self.preview_canvas.create_oval(hx - 1.5, hy - 1.5, hx + 1.5, hy + 1.5, fill="#ff2222", outline="white", tags="hotspot")
 
         except Exception as e:
             print(f"Preview update error: {e}")
+
+    def _on_mouse_move(self, event):
+        if not hasattr(self, "coordinate_label") or not hasattr(self, "var_size"):
+            return
+            
+        size = self.var_size.get()
+        cw, ch = 256, 256
+        img_w, img_h = 128, 128
+        offset_x = (cw - img_w) // 2
+        offset_y = (ch - img_h) // 2
+        
+        # Check if mouse is inside image area
+        rel_x = event.x - offset_x
+        rel_y = event.y - offset_y
+        
+        if 0 <= rel_x < img_w and 0 <= rel_y < img_h:
+            scale = 128 / size
+            px = int(rel_x / scale)
+            py = int(rel_y / scale)
+            # Ensure within bounds due to floating point
+            px = min(max(px, 0), size - 1)
+            py = min(max(py, 0), size - 1)
+            self.coordinate_label.config(text=f"Coord: ({px}, {py})")
+        else:
+            self.coordinate_label.config(text="Coord: -")
+
+    def _on_mouse_leave(self, event):
+        if hasattr(self, "coordinate_label"):
+            self.coordinate_label.config(text="Coord: -")
 
     def generate_cur(self):
         if not self.preview_image:

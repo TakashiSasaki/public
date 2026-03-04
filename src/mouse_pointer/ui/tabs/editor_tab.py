@@ -135,7 +135,10 @@ def build_editor_tab(app, parent):
     ttk.Separator(controls_frame, orient=tk.HORIZONTAL).grid(row=row, column=0, columnspan=3, sticky=tk.EW, pady=10)
     row += 1
     drop_shadow_chk = ttk.Checkbutton(controls_frame, text="Drop Shadow", variable=app.var_drop_shadow, command=app.on_change)
-    drop_shadow_chk.grid(row=row, column=0, columnspan=2, sticky=tk.W, pady=5)
+    drop_shadow_chk.grid(row=row, column=0, columnspan=2, sticky=tk.W, pady=2)
+    row += 1
+    show_grid_chk = ttk.Checkbutton(controls_frame, text="Show Grid", variable=app.var_show_grid, command=app.on_change)
+    show_grid_chk.grid(row=row, column=0, columnspan=2, sticky=tk.W, pady=2)
     row += 1
 
     # Add empty label for spacing
@@ -169,8 +172,14 @@ def build_editor_tab(app, parent):
     app.preview_canvas = tk.Canvas(canvas_frame, width=256, height=256, bg="#f0f0f0", relief=tk.SUNKEN, borderwidth=1)
     app.preview_canvas.pack(padx=10, pady=10, anchor=tk.CENTER)
 
-    app.hotspot_label = ttk.Label(canvas_frame, text="Hotspot: (0, 0)")
-    app.hotspot_label.pack(pady=(0, 10))
+    info_frame = ttk.Frame(canvas_frame)
+    info_frame.pack(pady=(0, 10))
+
+    app.hotspot_label = ttk.Label(info_frame, text="Hotspot: (0, 0)")
+    app.hotspot_label.pack(side=tk.LEFT, padx=10)
+
+    app.coordinate_label = ttk.Label(info_frame, text="Coord: -")
+    app.coordinate_label.pack(side=tk.LEFT, padx=10)
 
     # ピクトグラムビュアー（右側）枠
     picto_frame = ttk.LabelFrame(top_preview_container, text="Pictograms (Bases & Badges)")
