@@ -26,6 +26,8 @@ class CursorGeneratorGUI(tk.Tk):
         self.var_tr_size = tk.IntVar(value=12)
         self.var_br_text = tk.StringVar(value="")
         self.var_br_size = tk.IntVar(value=12)
+        self.var_caption_text = tk.StringVar(value="")
+        self.var_caption_size = tk.IntVar(value=12)
         self.var_drop_shadow = tk.BooleanVar(value=True)
 
         # SVG Overlay Variables
@@ -251,6 +253,20 @@ class CursorGeneratorGUI(tk.Tk):
         br_spin.bind("<FocusOut>", self.on_change)
         row += 1
 
+        # Caption Text
+        ttk.Label(controls_frame, text="Caption:").grid(row=row, column=0, sticky=tk.W, pady=5)
+        caption_frame = ttk.Frame(controls_frame)
+        caption_frame.grid(row=row, column=1, sticky=tk.EW, pady=5)
+        caption_entry = ttk.Entry(caption_frame, textvariable=self.var_caption_text, width=8)
+        caption_entry.pack(side=tk.LEFT)
+        caption_entry.bind("<KeyRelease>", self.on_change)
+        ttk.Label(caption_frame, text=" Size:").pack(side=tk.LEFT, padx=(5, 2))
+        caption_spin = ttk.Spinbox(caption_frame, from_=8, to=32, textvariable=self.var_caption_size, width=3, command=self.on_change)
+        caption_spin.pack(side=tk.LEFT)
+        caption_spin.bind("<Return>", self.on_change)
+        caption_spin.bind("<FocusOut>", self.on_change)
+        row += 1
+
         # --- SVG Overlays ---
         ttk.Separator(controls_frame, orient=tk.HORIZONTAL).grid(row=row, column=0, columnspan=3, sticky=tk.EW, pady=10)
         row += 1
@@ -424,6 +440,10 @@ class CursorGeneratorGUI(tk.Tk):
                 br_s = self.var_br_size.get()
             except tk.TclError:
                 br_s = 12
+            try:
+                cap_s = self.var_caption_size.get()
+            except tk.TclError:
+                cap_s = 12
 
             img, hotspot = create_cursor_image(
                 size=size,
@@ -435,6 +455,8 @@ class CursorGeneratorGUI(tk.Tk):
                 tr_text_size=tr_s,
                 br_text=self.var_br_text.get(),
                 br_text_size=br_s,
+                caption_text=self.var_caption_text.get(),
+                caption_text_size=cap_s,
                 drop_shadow=self.var_drop_shadow.get(),
                 base_name=self.var_base_name.get(),
                 badge1_name=self.var_badge1_name.get(),
@@ -506,6 +528,8 @@ class CursorGeneratorGUI(tk.Tk):
                 except tk.TclError: tr_s = 12
                 try: br_s = self.var_br_size.get()
                 except tk.TclError: br_s = 12
+                try: cap_s = self.var_caption_size.get()
+                except tk.TclError: cap_s = 12
 
                 multi_image_data = []
                 for s in sizes_to_generate:
@@ -520,6 +544,8 @@ class CursorGeneratorGUI(tk.Tk):
                         tr_text_size=tr_s,
                         br_text=self.var_br_text.get(),
                         br_text_size=br_s,
+                        caption_text=self.var_caption_text.get(),
+                        caption_text_size=cap_s,
                         drop_shadow=self.var_drop_shadow.get(),
                         base_name=self.var_base_name.get(),
                         badge1_name=self.var_badge1_name.get(),
@@ -635,8 +661,11 @@ class CursorGeneratorGUI(tk.Tk):
             border_rgba = self.hex_to_rgba(self.var_border_color.get())
             try:    tr_s = self.var_tr_size.get()
             except tk.TclError: tr_s = 12
+            try:    cap_s = self.var_caption_size.get()
+            except tk.TclError: cap_s = 12
             shape       = self.var_shape.get()
             tr_text     = self.var_tr_text.get()
+            cap_text    = self.var_caption_text.get()
             border_th   = self.var_border_thickness.get()
             drop_shadow = self.var_drop_shadow.get()
             base_name   = self.var_base_name.get()
@@ -669,6 +698,8 @@ class CursorGeneratorGUI(tk.Tk):
                             tr_text_size=tr_s,
                             br_text=br_text,
                             br_text_size=max(8, s // 4),
+                            caption_text=cap_text,
+                            caption_text_size=cap_s,
                             drop_shadow=drop_shadow,
                             base_name=base_name,
                             badge1_name=badge1_name,

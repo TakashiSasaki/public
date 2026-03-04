@@ -21,6 +21,8 @@ def main():
     gen_parser.add_argument("--tr-size", type=int, default=12, help="Font size for top-right text")
     gen_parser.add_argument("--br-text", type=str, default="", help="Text to display in the bottom-right corner")
     gen_parser.add_argument("--br-size", type=int, default=12, help="Font size for bottom-right text")
+    gen_parser.add_argument("--caption-text", "-c", type=str, default="", help="Text to display below the cursor")
+    gen_parser.add_argument("--caption-size", "-cs", type=int, default=12, help="Font size for caption text")
     gen_parser.add_argument("--drop-shadow", action="store_true", help="Enable drop shadow effect")
     
     args = parser.parse_args()
@@ -65,6 +67,8 @@ def main():
                 tr_text_size=args.tr_size,
                 br_text=args.br_text,
                 br_text_size=args.br_size,
+                caption_text=args.caption_text,
+                caption_text_size=args.caption_size,
                 drop_shadow=args.drop_shadow
             )
             multi_image_data.append((img, hotspot))

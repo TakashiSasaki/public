@@ -26,6 +26,8 @@ def create_cursor_image(
     tr_text_size=10,
     br_text="",
     br_text_size=10,
+    caption_text="",
+    caption_text_size=10,
     drop_shadow=False,
     base_name="",
     badge1_name="",
@@ -44,6 +46,8 @@ def create_cursor_image(
         tr_text_size (int): 右上の文字サイズ
         br_text (str): 右下に描画する文字
         br_text_size (int): 右下の文字サイズ
+        caption_text (str): 下部中央に描画するキャプション文字
+        caption_text_size (int): キャプション文字サイズ
         
     Returns:
         tuple: (Imageオブジェクト, (hotspot_x, hotspot_y))
@@ -159,6 +163,10 @@ def create_cursor_image(
     if br_text:
         br_font = get_default_font(br_text_size)
         draw_outlined_text(br_text, (size - 2, size - 2), br_font, anchor="rb")
+
+    if caption_text:
+        caption_font = get_default_font(caption_text_size)
+        draw_outlined_text(caption_text, (size // 2, size - 2), caption_font, anchor="mb")
 
     # 3. SVGオーバレイの合成 (Pictograms)
     if base_name or badge1_name or badge2_name:
