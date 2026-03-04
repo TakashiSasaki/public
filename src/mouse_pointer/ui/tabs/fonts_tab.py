@@ -154,7 +154,10 @@ def build_fonts_tab(app, parent):
                     # Probe for a working size (bitmap fonts usually support specific sizes like 12, 16, etc.)
                     working_font = None
                     working_size = size
-                    for s in [16, 12, 13, 15, 20, 24, 8, 10]: # Common bitmap sizes to try
+                    # Prioritize common sizes, then try a full range between 4 and 48
+                    probe_sizes = [16, 12, 13, 15, 20, 24, 8, 10, 11, 17, 18, 14, 19, 21, 22, 23] + list(range(4, 48))
+                    
+                    for s in probe_sizes:
                         try:
                             working_font = ImageFont.truetype(str(font_path), s)
                             working_size = s
