@@ -13,7 +13,7 @@
   - `*.cur`（静的カーソルファイル）の生成と、それを支援するツール。
   - `*.ani`（動的カーソルファイル）関連ツールの開発。
   - カスタマイズ作業を容易にするCLIおよびGUI（Tkinter）アプリケーション。
-- **GUI構成**: `src/mouse_pointer/gui.py` をエントリポイントとし、各タブのロジックは `src/mouse_pointer/ui/tabs/` (`editor_tab.py`, `export_tab.py`, `fonts_tab.py`) に分割されています。
+- **GUI構成**: `src/mouse_pointer/gui.py` をエントリポイントとし、各タブのロジックは `src/mouse_pointer/ui/tabs/` (`editor_tab.py`, `export_tab.py`, `fonts_tab.py`, `animation_tab.py`, etc.) に分割されています。
 
 ## 2. 開発環境と技術スタック (Environment & Stack)
 
@@ -21,6 +21,7 @@
 - **パッケージ・依存関係管理**: `uv`
   - パッケージの追加や同期には `uv add`, `uv sync` を使用してください。
   - Pythonスクリプトの実行は、標準的なPythonインタープリタを介して行うために `uv run python <script>` または `uv run <command>` を使用してください。
+  - サンプルファイルの生成には `uv run generate-examples` を使用してください (`src/mouse_pointer/examples.py` を呼び出します)。
 
 ## 3. バージョン管理とコミットのルール (Version Control & Commits)
 
