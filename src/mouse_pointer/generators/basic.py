@@ -133,21 +133,21 @@ def create_cursor_image(
 
     if caption_text:
         caption_font = get_default_font(caption_text_size)
-        cx, cy = size // 2, size - 2
+        cx, cy = size // 2, size  # Move to the very bottom
         
         # 背景色が透明(Alpha 0)でなければ、矩形を描画する
         if len(caption_bg_color) == 4 and caption_bg_color[3] > 0:
             # Pillow >= 8.0.0 の draw.textbbox をサポート、古い場合は textsize にフォールバック
             try:
                 left, top, right, bottom = draw.textbbox((cx, cy), caption_text, font=caption_font, anchor="mb")
-                # 少しマージンを持たせる
-                margin = 2
-                draw.rectangle([left - margin, top - margin, right + margin, bottom + margin], fill=caption_bg_color)
+                # 隙間をなくすためマージンを最小限(1)にし、下端を画像サイズに合わせる
+                margin = 1
+                draw.rectangle([left - margin, top - margin, right + margin, min(bottom + margin, size)], fill=caption_bg_color)
             except AttributeError:
                 # 非常に古いPillow向けフォールバック
                 tw, th = draw.textsize(caption_text, font=caption_font)
-                margin = 2
-                draw.rectangle([cx - tw/2 - margin, cy - th - margin, cx + tw/2 + margin, cy + margin], fill=caption_bg_color)
+                margin = 1
+                draw.rectangle([cx - tw/2 - margin, cy - th - margin, cx + tw/2 + margin, cy], fill=caption_bg_color)
 
         draw.text((cx, cy), caption_text, font=caption_font, fill=caption_color, anchor="mb")
 
