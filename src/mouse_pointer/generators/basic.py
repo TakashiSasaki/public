@@ -332,14 +332,14 @@ def create_cursor_image(
                     temp_badge_layer.paste(badge2_pil, (bx, by), badge2_pil)
                     overlay = Image.alpha_composite(overlay, temp_badge_layer)
 
-                # Badge 1 (Bottom Right)
+                # Badge 1 (Middle Right)
                 if badge1_name and badge1_name in pictograms.get("badges", {}):
                     badge1_size = size // 3
                     badge1_pil = render_svg_to_pil(pictograms["badges"][badge1_name], badge1_size)
 
                     mask_draw = ImageDraw.Draw(overlay)
                     bx = size - badge1_size
-                    by = size - badge1_size
+                    by = (size - badge1_size) // 2
                     mask_draw.ellipse(
                         [(bx - badge1_size * 0.1, by - badge1_size * 0.1),
                          (bx + badge1_size * 1.1, by + badge1_size * 1.1)],
