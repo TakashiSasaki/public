@@ -133,6 +133,8 @@ def build_export_tab(app, parent):
             cap_bg_rgba = app.hex_to_rgba(app.var_caption_bg_color.get())
             try:    tr_s = app.var_tr_size.get()
             except tk.TclError: tr_s = 12
+            try:    mr_s = app.var_mr_size.get()
+            except tk.TclError: mr_s = 12
             try:    cap_s = app.var_caption_size.get()
             except tk.TclError: cap_s = 12
             shape       = app.var_shape.get()
@@ -169,7 +171,7 @@ def build_export_tab(app, parent):
                             tr_text=tr_text,
                             tr_text_size=tr_s,
                             mr_text=mr_text,
-                            mr_text_size=max(8, s // 4),
+                            mr_text_size=mr_s,
                             caption_text=cap_text,
                             caption_text_size=cap_s,
                             caption_color=cap_rgba,

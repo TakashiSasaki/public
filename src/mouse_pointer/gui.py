@@ -540,7 +540,7 @@ class CursorGeneratorGUI(tk.Tk):
                             border_color=border_rgba,
                             border_thickness=self.var_border_thickness.get(),
                             tr_text=self.var_tr_text.get(),
-                            tr_text_size=max(8, s // 4), # Scale font slightly with size if needed
+                            tr_text_size=tr_s,
                             mr_text=self.var_mr_text.get(),
                             mr_text_size=mr_s,
                             caption_text=self.var_caption_text.get(),
