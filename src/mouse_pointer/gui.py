@@ -9,6 +9,7 @@ from tkinter import ttk
 
 from mouse_pointer.ui.tabs.editor_tab import build_editor_tab
 from mouse_pointer.ui.tabs.bases_tab import build_bases_tab
+from mouse_pointer.ui.tabs.badges_tab import build_badges_tab
 from mouse_pointer.ui.tabs.export_tab import build_export_tab
 from mouse_pointer.ui.tabs.fonts_tab import build_fonts_tab
 
@@ -192,6 +193,11 @@ class CursorGeneratorGUI(tk.Tk):
         bases_tab = ttk.Frame(self.notebook, padding=5)
         self.notebook.add(bases_tab, text="  Bases  ")
         build_bases_tab(self, bases_tab)
+
+        # ---- Tab 3: Badges Selection ----
+        badges_tab = ttk.Frame(self.notebook, padding=5)
+        self.notebook.add(badges_tab, text="  Badges  ")
+        build_badges_tab(self, badges_tab)
 
         # ---- Tab 3: Vector Font List ----
         vector_fonts_tab = ttk.Frame(self.notebook, padding=5)
