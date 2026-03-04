@@ -112,6 +112,7 @@ def create_cursor_image(
     svg_aa: bool = True,
     gradient_shift: float = 0.0, # 0.0 to 1.0 for waving effect
     caption_x_offset: int = 0,
+    caption_wrap_width: int = 0, # If > 0, text wraps/loops
 ) -> Tuple[Image.Image, Tuple[int, int]]:
     """指定されたパラメータでカーソル画像を生成する。"""
     img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
@@ -235,6 +236,10 @@ def create_cursor_image(
         # If caption scrolls, adjust its center position
         cx = (size // 2) - caption_x_offset
         _render_text(draw, caption_text, get_default_font(caption_text_size), (cx, size - 1), caption_color, caption_bg_color, caption_aa, caption_outline, "mb")
+        
+        # Wrapping effect: Draw second copy following the first
+        if caption_wrap_width > 0:
+            _render_text(draw, caption_text, get_default_font(caption_text_size), (cx + caption_wrap_width, size - 1), caption_color, caption_bg_color, caption_aa, caption_outline, "mb")
 
     if tr_text:
         _render_text(draw, tr_text, get_default_font(tr_text_size), (size - 2, 2), tr_color, tr_bg_color, tr_aa, tr_outline, "rt")
@@ -305,22 +310,22 @@ def create_animated_cursor_frames(
     for i in range(total_frames):
         g_shift = (i / total_frames) if anim_gradient else 0.0
         
-        # Calculate scroll offset
-        # We want to scroll from starting at center to moving left until the right edge of text is at the right edge of cursor area
-        # Actually, let's just scroll it across the whole width if it's too wide
+        # Calculate scroll offset for wrapping loop
         c_off = 0
-        if anim_scroll and text_width > size:
-            # Scroll amount: total distance is text_width + size (to completely pass by)
-            # but user probably wants it to just scroll enough to see it.
-            # Let's scroll it back and forth or loop it.
-            # Loop from 0 to text_width - size/2
-            max_scroll = text_width - size + 4
-            c_off = int((i / total_frames) * max_scroll) if max_scroll > 0 else 0
+        wrap_w = 0
+        if anim_scroll and caption_text:
+            # Spacing between loop iterations (e.g. 1/3 of size)
+            spacing = max(10, size // 3)
+            wrap_w = text_width + spacing
+            
+            # Smoothly shift from 0 to wrap_w over total_frames
+            c_off = int((i / total_frames) * wrap_w)
 
         frame_img, hotspot = create_cursor_image(
             size=size,
             gradient_shift=g_shift,
             caption_x_offset=c_off,
+            caption_wrap_width=wrap_w,
             **kwargs
         )
         frames.append((frame_img, hotspot))
