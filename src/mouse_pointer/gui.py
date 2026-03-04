@@ -1,6 +1,7 @@
 import io
 import tkinter as tk
 import json
+import importlib.metadata
 from pathlib import Path
 from tkinter import ttk, colorchooser, filedialog, messagebox
 from PIL import Image, ImageTk
@@ -15,7 +16,12 @@ class CursorGeneratorGUI(tk.Tk):
     def __init__(self):
         super().__init__()
 
-        self.title("Mouse Cursor Generator")
+        try:
+            version = importlib.metadata.version("mouse-pointer")
+        except importlib.metadata.PackageNotFoundError:
+            version = "unknown"
+
+        self.title(f"Mouse Cursor Generator v{version}")
         self.geometry("680x560")
         self.configure(padx=10, pady=10)
 
