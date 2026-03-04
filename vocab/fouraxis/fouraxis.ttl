@@ -1,0 +1,293 @@
+@prefix :        [https://takashisasaki.org/vocab/4axis#](https://takashisasaki.org/vocab/4axis#) .
+@prefix vocab:   [https://takashisasaki.org/vocab/4axis/](https://takashisasaki.org/vocab/4axis/) .
+
+@prefix rdf:     [http://www.w3.org/1999/02/22-rdf-syntax-ns#](http://www.w3.org/1999/02/22-rdf-syntax-ns#) .
+@prefix rdfs:    [http://www.w3.org/2000/01/rdf-schema#](http://www.w3.org/2000/01/rdf-schema#) .
+@prefix owl:     [http://www.w3.org/2002/07/owl#](http://www.w3.org/2002/07/owl#) .
+@prefix xsd:     [http://www.w3.org/2001/XMLSchema#](http://www.w3.org/2001/XMLSchema#) .
+
+@prefix skos:    [http://www.w3.org/2004/02/skos/core#](http://www.w3.org/2004/02/skos/core#) .
+@prefix dcterms: [http://purl.org/dc/terms/](http://purl.org/dc/terms/) .
+@prefix prov:    [http://www.w3.org/ns/prov#](http://www.w3.org/ns/prov#) .
+@prefix foaf:    [http://xmlns.com/foaf/0.1/](http://xmlns.com/foaf/0.1/) .
+
+@prefix modsrdf: [https://www.loc.gov/mods/modsrdf/v1#](https://www.loc.gov/mods/modsrdf/v1#) .
+@prefix premis:  [http://www.loc.gov/premis/rdf/v3/](http://www.loc.gov/premis/rdf/v3/) .
+@prefix rico:    [https://www.ica.org/standards/RiC/ontology#](https://www.ica.org/standards/RiC/ontology#) .
+
+# Vocabulary metadata (VOAF)
+
+@prefix voaf:    [http://purl.org/vocommons/voaf#](http://purl.org/vocommons/voaf#) .
+
+#################################################################
+
+# Vocabulary URI design
+
+#################################################################
+
+# Base vocabulary URI
+
+# [https://takashisasaki.org/vocab/4axis](https://takashisasaki.org/vocab/4axis)
+
+# Term URI pattern
+
+# [https://takashisasaki.org/vocab/4axis#term](https://takashisasaki.org/vocab/4axis#term)
+
+# Version URI pattern
+
+# [https://takashisasaki.org/vocab/4axis/x.y.z](https://takashisasaki.org/vocab/4axis/x.y.z)
+
+#################################################################
+
+# Ontology definition
+
+#################################################################
+
+vocab: a owl:Ontology , voaf:Vocabulary ;
+
+```
+rdfs:label "Four Axis Document Classification Vocabulary"@en ;
+rdfs:label "四軸文書分類語彙"@ja ;
+
+dcterms:creator "Takashi Sasaki" ;
+dcterms:created "2026-03-04"^^xsd:date ;
+
+dcterms:description """
+```
+
+Vocabulary defining four orthogonal document classification axes.
+
+provenance  — document origin
+activity    — human activity context
+genre       — documentary form
+subject     — topical content
+
+The model is designed for heterogeneous document collections such as
+research archives, laboratory document management, university
+administrative records, and personal academic archives.
+"""@en ;
+
+#################################################################
+
+# Version metadata
+
+#################################################################
+
+```
+owl:versionInfo "0.20260304.0" ;
+
+owl:versionIRI <https://takashisasaki.org/vocab/4axis/0.20260304.0> ;
+
+dcterms:issued "2026-03-04"^^xsd:date ;
+dcterms:modified "2026-03-04"^^xsd:date ;
+
+:versionMajor 0 ;
+:versionDate 20260304 ;
+:versionSequence 0 .
+```
+
+#################################################################
+
+# Version components
+
+#################################################################
+
+:versionMajor a rdf:Property ;
+rdfs:label "version major component" ;
+rdfs:range xsd:integer .
+
+:versionDate a rdf:Property ;
+rdfs:label "version date component" ;
+rdfs:range xsd:integer .
+
+:versionSequence a rdf:Property ;
+rdfs:label "version sequence component" ;
+rdfs:range xsd:integer .
+
+#################################################################
+
+# Change log vocabulary
+
+#################################################################
+
+:VocabularyChange a owl:Class ;
+rdfs:label "Vocabulary change event" .
+
+:affectsVocabulary a rdf:Property ;
+rdfs:label "affects vocabulary" .
+
+:versionString a rdf:Property ;
+rdfs:label "version string" ;
+rdfs:range xsd:string .
+
+#################################################################
+
+# Change log example
+
+#################################################################
+
+:Change_0_20260304_0
+a :VocabularyChange ;
+:affectsVocabulary vocab: ;
+:versionString "0.20260304.0" ;
+dcterms:creator "Takashi Sasaki" ;
+dcterms:created "2026-03-04"^^xsd:date ;
+dcterms:description "Initial release of four-axis document classification vocabulary." .
+
+#################################################################
+
+# Classes
+
+#################################################################
+
+:Genre a owl:Class ;
+rdfs:label "Document genre" ;
+rdfs:comment "Conventional documentary form." .
+
+:Activity a owl:Class ;
+rdfs:label "Human activity context" .
+
+:SubjectConcept a owl:Class ;
+rdfs:label "Subject concept" .
+
+#################################################################
+
+# Provenance
+
+#################################################################
+
+:provenance a owl:ObjectProperty ;
+rdfs:label "provenance" ;
+rdfs:range foaf:Agent ;
+rdfs:subPropertyOf prov:wasAttributedTo ;
+skos:closeMatch dcterms:creator .
+
+:provenanceLiteral a owl:DatatypeProperty ;
+rdfs:label "provenance literal" ;
+rdfs:range xsd:string .
+
+#################################################################
+
+# Activity
+
+#################################################################
+
+:activity a owl:ObjectProperty ;
+rdfs:label "activity" ;
+rdfs:range :Activity ;
+skos:closeMatch rico:Activity .
+
+:activityLiteral a owl:DatatypeProperty ;
+rdfs:label "activity literal" ;
+rdfs:range xsd:string .
+
+#################################################################
+
+# Genre
+
+#################################################################
+
+:genre a owl:ObjectProperty ;
+rdfs:label "genre" ;
+rdfs:range :Genre ;
+skos:closeMatch modsrdf:genre .
+
+:genreLiteral a owl:DatatypeProperty ;
+rdfs:label "genre literal" ;
+rdfs:range xsd:string .
+
+#################################################################
+
+# Subject
+
+#################################################################
+
+:subject a owl:ObjectProperty ;
+rdfs:label "subject" ;
+rdfs:range :SubjectConcept ;
+rdfs:subPropertyOf dcterms:subject ;
+skos:closeMatch modsrdf:subject .
+
+:subjectLiteral a owl:DatatypeProperty ;
+rdfs:label "subject literal" ;
+rdfs:range xsd:string .
+
+#################################################################
+
+# Literal / normalized property relation
+
+#################################################################
+
+:literalPropertyOf a owl:AnnotationProperty ;
+rdfs:label "literal property of" ;
+rdfs:comment "Indicates that a datatype property is the literal ingestion form of an object property." .
+
+:normalizedPropertyOf a owl:AnnotationProperty ;
+rdfs:label "normalized property of" ;
+rdfs:comment "Indicates that an object property represents the normalized form of a literal ingestion property." .
+
+:genreLiteral :literalPropertyOf :genre .
+:activityLiteral :literalPropertyOf :activity .
+:subjectLiteral :literalPropertyOf :subject .
+:provenanceLiteral :literalPropertyOf :provenance .
+
+:genre :normalizedPropertyOf :genreLiteral .
+:activity :normalizedPropertyOf :activityLiteral .
+:subject :normalizedPropertyOf :subjectLiteral .
+:provenance :normalizedPropertyOf :provenanceLiteral .
+
+#################################################################
+
+# Concept schemes
+
+#################################################################
+
+:ActivityScheme a skos:ConceptScheme ;
+skos:prefLabel "Activity vocabulary scheme" .
+
+:GenreScheme a skos:ConceptScheme ;
+skos:prefLabel "Genre vocabulary scheme" .
+
+:SubjectScheme a skos:ConceptScheme ;
+skos:prefLabel "Subject vocabulary scheme" .
+
+#################################################################
+
+# Example concepts
+
+#################################################################
+
+:research a skos:Concept ;
+skos:inScheme :ActivityScheme ;
+skos:prefLabel "research"@en .
+
+:teaching a skos:Concept ;
+skos:inScheme :ActivityScheme ;
+skos:prefLabel "teaching"@en .
+
+:journal_article a skos:Concept ;
+skos:inScheme :GenreScheme ;
+skos:prefLabel "journal article"@en ;
+skos:altLabel "journal_article" .
+
+:receipt a skos:Concept ;
+skos:inScheme :GenreScheme ;
+skos:prefLabel "receipt"@en .
+
+:machine_learning a skos:Concept ;
+skos:inScheme :SubjectScheme ;
+skos:prefLabel "machine learning"@en ;
+skos:altLabel "machine_learning" .
+
+#################################################################
+
+# Example resource
+
+#################################################################
+
+:doc001 a foaf:Document ;
+rdfs:label "Example document" ;
+:genreLiteral "journal_article" ;
+:activityLiteral "research" ;
+:subjectLiteral "machine_learning" ;
+:provenanceLiteral "self" .
