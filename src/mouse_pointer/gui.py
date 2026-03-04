@@ -241,8 +241,44 @@ class CursorGeneratorGUI(tk.Tk):
         except Exception:
             pass
 
+        # ---- Status Bar (Footer) ----
+        self.status_bar = ttk.Frame(self)
+        self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
+        
+        try:
+            app_version = importlib.metadata.version("mouse-pointer")
+        except Exception:
+            app_version = "Unknown"
+            
+        author = "Takashi SASAKI"
+        code_url = "https://github.com/TakashiSasaki/public/tree/mouse-pointer"
+        x_url = "https://x.com/TakashiSasaki"
+        
+        lbl_info = ttk.Label(self.status_bar, text=f"Created by {author} | Version {app_version}")
+        lbl_info.pack(side=tk.LEFT, padx=10, pady=4)
+        
+        import webbrowser
+        import tkinter.font as tkFont
+
+        # X (Twitter) Link
+        lbl_x = tk.Label(self.status_bar, text="X.com", fg="blue", cursor="hand2")
+        lbl_x.pack(side=tk.RIGHT, padx=10, pady=4)
+        f_x = tkFont.Font(lbl_x, lbl_x.cget("font"))
+        f_x.configure(underline=True)
+        lbl_x.configure(font=f_x)
+        lbl_x.bind("<Button-1>", lambda e: webbrowser.open(x_url))
+
+        # Github Link
+        lbl_code = tk.Label(self.status_bar, text="Github", fg="blue", cursor="hand2")
+        lbl_code.pack(side=tk.RIGHT, padx=5, pady=4)
+        f_code = tkFont.Font(lbl_code, lbl_code.cget("font"))
+        f_code.configure(underline=True)
+        lbl_code.configure(font=f_code)
+        lbl_code.bind("<Button-1>", lambda e: webbrowser.open(code_url))
+        # -----------------------------
+
         self.notebook = ttk.Notebook(self)
-        self.notebook.pack(fill=tk.BOTH, expand=True)
+        self.notebook.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
         self.notebook.add(build_editor_tab(self, self.notebook), text="Cursor Editor")
         self.notebook.add(build_bases_tab(self, self.notebook), text="Bases")
