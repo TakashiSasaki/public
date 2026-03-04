@@ -16,6 +16,7 @@ dependencies = [
 
 [project.scripts]
 mouse-pointer = "mouse_pointer.cli:main"
+generate-examples = "mouse_pointer.examples:main"
 
 [build-system]
 requires = ["uv_build>=0.10.4,<0.11.0"]
