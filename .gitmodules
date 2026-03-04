@@ -55,3 +55,7 @@
 	path = hello
 	url = https://github.com/TakashiSasaki/hello.git
 	branch = main
+[submodule "static-lunr"]
+	path = static-lunr
+	url = https://github.com/TakashiSasaki/public.git
+	branch = static-lunr
