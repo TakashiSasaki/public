@@ -33,8 +33,8 @@ class CursorGeneratorGUI(tk.Tk):
         self.var_border_thickness = tk.IntVar(value=1)
         self.var_tr_text = tk.StringVar(value="")
         self.var_tr_size = tk.IntVar(value=12)
-        self.var_br_text = tk.StringVar(value="")
-        self.var_br_size = tk.IntVar(value=12)
+        self.var_mr_text = tk.StringVar(value="")
+        self.var_mr_size = tk.IntVar(value=12)
         self.var_caption_text = tk.StringVar(value="")
         self.var_caption_size = tk.IntVar(value=12)
         self.var_caption_color = tk.StringVar(value="#000000") # Default Black
@@ -341,9 +341,9 @@ class CursorGeneratorGUI(tk.Tk):
             except tk.TclError:
                 tr_s = 12
             try:
-                br_s = self.var_br_size.get()
+                mr_s = self.var_mr_size.get()
             except tk.TclError:
-                br_s = 12
+                mr_s = 12
             try:
                 cap_s = self.var_caption_size.get()
             except tk.TclError:
@@ -357,8 +357,8 @@ class CursorGeneratorGUI(tk.Tk):
                 border_thickness=self.var_border_thickness.get(),
                 tr_text=self.var_tr_text.get(),
                 tr_text_size=tr_s,
-                br_text=self.var_br_text.get(),
-                br_text_size=br_s,
+                mr_text=self.var_mr_text.get(),
+                mr_text_size=mr_s,
                 caption_text=self.var_caption_text.get(),
                 caption_text_size=cap_s,
                 caption_color=cap_rgba,
@@ -484,8 +484,8 @@ class CursorGeneratorGUI(tk.Tk):
 
                 try: tr_s = self.var_tr_size.get()
                 except tk.TclError: tr_s = 12
-                try: br_s = self.var_br_size.get()
-                except tk.TclError: br_s = 12
+                try: mr_s = self.var_mr_size.get()
+                except tk.TclError: mr_s = 12
                 try: cap_s = self.var_caption_size.get()
                 except tk.TclError: cap_s = 12
 
@@ -500,8 +500,8 @@ class CursorGeneratorGUI(tk.Tk):
                         border_thickness=self.var_border_thickness.get(),
                         tr_text=self.var_tr_text.get(),
                         tr_text_size=tr_s,
-                        br_text=self.var_br_text.get(),
-                        br_text_size=br_s,
+                        mr_text=self.var_mr_text.get(),
+                        mr_text_size=mr_s,
                         caption_text=self.var_caption_text.get(),
                         caption_text_size=cap_s,
                         caption_color=cap_rgba,

@@ -24,8 +24,8 @@ def create_cursor_image(
     border_thickness=1,
     tr_text="",
     tr_text_size=10,
-    br_text="",
-    br_text_size=10,
+    mr_text="",
+    mr_text_size=10,
     caption_text="",
     caption_text_size=10,
     caption_color=(0, 0, 0, 255),
@@ -48,8 +48,8 @@ def create_cursor_image(
         border_thickness (int): 枠線の太さ
         tr_text (str): 右上に描画する文字
         tr_text_size (int): 右上の文字サイズ
-        br_text (str): 右下に描画する文字
-        br_text_size (int): 右下の文字サイズ
+        mr_text (str): 右中央に描画する文字
+        mr_text_size (int): 右中央の文字サイズ
         caption_text (str): 下部中央に描画するキャプション文字
         caption_text_size (int): キャプション文字サイズ
         caption_color (tuple): キャプション文字色 (R, G, B, A)
@@ -231,9 +231,10 @@ def create_cursor_image(
     if tr_text:
         tr_font = get_default_font(tr_text_size)
         draw_outlined_text(tr_text, (size - 2, 2), tr_font, anchor="rt")
-        
-        br_font = get_default_font(br_text_size)
-        draw_outlined_text(br_text, (size - 2, size - 2), br_font, anchor="rb")
+
+    if mr_text:
+        mr_font = get_default_font(mr_text_size)
+        draw_outlined_text(mr_text, (size - 2, size // 2), mr_font, anchor="rm")
 
     # 3. SVGオーバレイの合成 (Pictograms)
     if base_name or badge1_name or badge2_name:

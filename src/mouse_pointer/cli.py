@@ -19,8 +19,8 @@ def main():
     gen_parser.add_argument("--shape", type=str, default="arrow", choices=["arrow", "triangle", "cross"], help="Shape of the cursor")
     gen_parser.add_argument("--tr-text", type=str, default="", help="Text to display in the top-right corner")
     gen_parser.add_argument("--tr-size", type=int, default=12, help="Font size for top-right text")
-    gen_parser.add_argument("--br-text", type=str, default="", help="Text to display in the bottom-right corner")
-    gen_parser.add_argument("--br-size", type=int, default=12, help="Font size for bottom-right text")
+    gen_parser.add_argument("--mr-text", type=str, default="", help="Text to display in the middle-right area")
+    gen_parser.add_argument("--mr-size", type=int, default=12, help="Font size for middle-right text")
     gen_parser.add_argument("--caption-text", "-c", type=str, default="", help="Text to display below the cursor")
     gen_parser.add_argument("--caption-size", "-cs", type=int, default=12, help="Font size for caption text")
     gen_parser.add_argument("--caption-color", "-cc", type=str, default="black", help="Color of the caption text (name or hex)")
@@ -76,8 +76,8 @@ def main():
                 shape=args.shape,
                 tr_text=args.tr_text,
                 tr_text_size=args.tr_size,
-                br_text=args.br_text,
-                br_text_size=args.br_size,
+                mr_text=args.mr_text,
+                mr_text_size=args.mr_size,
                 caption_text=args.caption_text,
                 caption_text_size=args.caption_size,
                 caption_color=cap_color,

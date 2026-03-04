@@ -59,19 +59,19 @@ def build_editor_tab(app, parent):
     tr_spin.bind("<FocusOut>", app.on_change)
     row += 1
 
-    # BR Text
+    # MR Text
     ttk.Separator(controls_frame, orient=tk.HORIZONTAL).grid(row=row, column=0, columnspan=3, sticky=tk.EW, pady=5)
     row += 1
-    ttk.Label(controls_frame, text=" BR Text:").grid(row=row, column=0, sticky=tk.W, pady=5)
-    br_entry = ttk.Entry(controls_frame, textvariable=app.var_br_text, width=10)
-    br_entry.grid(row=row, column=1, sticky=tk.EW, pady=5)
-    br_entry.bind("<KeyRelease>", app.on_change)
+    ttk.Label(controls_frame, text=" MR Text:").grid(row=row, column=0, sticky=tk.W, pady=5)
+    mr_entry = ttk.Entry(controls_frame, textvariable=app.var_mr_text, width=10)
+    mr_entry.grid(row=row, column=1, sticky=tk.EW, pady=5)
+    mr_entry.bind("<KeyRelease>", app.on_change)
     row += 1
 
-    ttk.Label(controls_frame, text=" BR Size:").grid(row=row, column=0, sticky=tk.W, pady=5)
-    br_spin = ttk.Spinbox(controls_frame, from_=8, to=72, textvariable=app.var_br_size, width=5)
-    br_spin.grid(row=row, column=1, sticky=tk.EW, pady=5)
-    br_spin.bind("<FocusOut>", app.on_change)
+    ttk.Label(controls_frame, text=" MR Size:").grid(row=row, column=0, sticky=tk.W, pady=5)
+    mr_spin = ttk.Spinbox(controls_frame, from_=8, to=72, textvariable=app.var_mr_size, width=5)
+    mr_spin.grid(row=row, column=1, sticky=tk.EW, pady=5)
+    mr_spin.bind("<FocusOut>", app.on_change)
     row += 1
 
     # Caption Text
@@ -119,7 +119,7 @@ def build_editor_tab(app, parent):
     base_cb.bind("<<ComboboxSelected>>", app.on_change)
     row += 1
 
-    ttk.Label(controls_frame, text=" Badge 1 (BR):").grid(row=row, column=0, sticky=tk.W, pady=5)
+    ttk.Label(controls_frame, text=" Badge 1 (MR):").grid(row=row, column=0, sticky=tk.W, pady=5)
     badge1_cb = ttk.Combobox(controls_frame, textvariable=app.var_badge1_name, values=[""] + list(app.pictograms_data.get("badges", {}).keys()), state="readonly", width=10)
     badge1_cb.grid(row=row, column=1, sticky=tk.EW, pady=5)
     badge1_cb.bind("<<ComboboxSelected>>", app.on_change)
@@ -155,10 +155,10 @@ def build_editor_tab(app, parent):
 
     app.var_size.trace_add("write", _on_var_changed)
     app.var_tr_text.trace_add("write", _on_var_changed)
-    app.var_br_text.trace_add("write", _on_var_changed)
+    app.var_mr_text.trace_add("write", _on_var_changed)
     app.var_caption_text.trace_add("write", _on_var_changed)
     app.var_tr_size.trace_add("write", _on_var_changed)
-    app.var_br_size.trace_add("write", _on_var_changed)
+    app.var_mr_size.trace_add("write", _on_var_changed)
     app.var_caption_size.trace_add("write", _on_var_changed)
     
     # --- Container for Top row (Preview Canvas & Pictograms) ---
