@@ -4,6 +4,97 @@ import os
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont, ImageTk
 
+CHARSET_MAP = {
+    0: "0 (ANSI)",
+    1: "1 (Default)",
+    2: "2 (Symbol)",
+    77: "77 (Mac)",
+    128: "128 (ShiftJIS)",
+    129: "129 (Hangeul)",
+    130: "130 (Johab)",
+    134: "134 (GB2312)",
+    136: "136 (CHINESEBIG5)",
+    161: "161 (Greek)",
+    162: "162 (Turkish)",
+    163: "163 (Vietnamese)",
+    177: "177 (Hebrew)",
+    178: "178 (Arabic)",
+    186: "186 (Baltic)",
+    204: "204 (Russian)",
+    222: "222 (Thai)",
+    238: "238 (EastEurope)",
+    255: "255 (OEM)",
+}
+
+def parse_fnt_charset(filepath):
+    """
+    NE/PE ヘッダを持つ .fon または直接の .fnt ファイルから dfCharSet と CodePage を取得する
+    戻り値: (charset: int|None, codepage: int|None)
+    """
+    try:
+        with open(filepath, "rb") as f:
+            data = f.read()
+            if len(data) < 2: return None, None
+            
+            def extract_from_fnt(fnt_data):
+                cs = None
+                cp = None
+                if len(fnt_data) > 85:
+                    cs = fnt_data[85]
+                # Windows 3.0+ FNT header length is at least 148.
+                # dfReserved (offset 135, 16 bytes) sometimes contains a codepage in the first 4 bytes for some custom bitmap fonts
+                if len(fnt_data) >= 139:
+                    # In some (mainly unofficial/localized) fonts, this field holds the code page.
+                    potential_cp = int.from_bytes(fnt_data[135:139], byteorder='little')
+                    if potential_cp > 0 and potential_cp < 65535: # Plausible code page
+                        cp = potential_cp
+                return cs, cp
+
+            # .fnt (raw)
+            if data[0:2] in (b'\x00\x02', b'\x00\x03'):
+                return extract_from_fnt(data)
+                    
+            # .fon (MZ header)
+            if data[0:2] != b'MZ':
+                return None, None
+                
+            pe_ne_offset = int.from_bytes(data[0x3C:0x3E], byteorder='little')
+            if pe_ne_offset >= len(data): return None, None
+                
+            signature = data[pe_ne_offset:pe_ne_offset+2]
+            
+            if signature == b'NE':
+                # NE Header Parsing
+                res_table_offset_rel = int.from_bytes(data[pe_ne_offset + 0x24: pe_ne_offset + 0x26], byteorder='little')
+                res_table_offset = pe_ne_offset + res_table_offset_rel
+                
+                shift_count = int.from_bytes(data[res_table_offset:res_table_offset+2], byteorder='little')
+                p = res_table_offset + 2
+                
+                while p < len(data):
+                    type_id = int.from_bytes(data[p:p+2], byteorder='little')
+                    if type_id == 0: break
+                        
+                    res_count = int.from_bytes(data[p+2:p+4], byteorder='little')
+                    
+                    if type_id == 0x8008: # RT_FONT
+                        entry_p = p + 8
+                        res_data_offset = int.from_bytes(data[entry_p:entry_p+2], byteorder='little') << shift_count
+                        res_length = int.from_bytes(data[entry_p+2:entry_p+4], byteorder='little') << shift_count
+                        
+                        if res_data_offset + res_length <= len(data):
+                            fnt_data = data[res_data_offset: res_data_offset + res_length]
+                            return extract_from_fnt(fnt_data)
+                        return None, None
+                        
+                    p += 8 + (res_count * 12)
+                    
+            # PE is more complex and less common for basic 16-bit .fon, ignoring for now
+            
+    except Exception:
+        pass
+    return None
+
 def build_fonts_tab(app, parent):
     """
     Builds the Fonts tab to preview available system fonts.
@@ -57,7 +148,7 @@ def build_fonts_tab(app, parent):
             return
         
         # Extensions to look for
-        exts = [".ttf", ".ttc", ".fon"]
+        exts = [".ttf", ".ttc", ".fon", ".fnt"]
         files = []
         for ext in exts:
             files.extend(font_dir.glob(f"*{ext}"))
@@ -69,7 +160,7 @@ def build_fonts_tab(app, parent):
             is_bitmap = False
 
             # Bitmap heuristic 1: extension
-            if name_lower.endswith(".fon"):
+            if name_lower.endswith(".fon") or name_lower.endswith(".fnt"):
                 is_bitmap = True
             
             # Bitmap heuristic 2: keywords
@@ -119,6 +210,8 @@ def build_fonts_tab(app, parent):
 
     var_font_path = tk.StringVar(value="-")
     var_font_size = tk.StringVar(value="-")
+    var_font_charset = tk.StringVar(value="-")
+    var_font_codepage = tk.StringVar(value="-")
 
     path_row = ttk.Frame(info_frame)
     path_row.pack(fill=tk.X)
@@ -129,6 +222,13 @@ def build_fonts_tab(app, parent):
     size_row.pack(fill=tk.X, pady=(5, 0))
     ttk.Label(size_row, text="File Size:", width=10).pack(side=tk.LEFT)
     ttk.Label(size_row, textvariable=var_font_size, font=("Segoe UI", 9, "bold")).pack(side=tk.LEFT)
+
+    attr_row = ttk.Frame(info_frame)
+    attr_row.pack(fill=tk.X, pady=(5, 0))
+    ttk.Label(attr_row, text="CharSet:", width=10).pack(side=tk.LEFT)
+    ttk.Label(attr_row, textvariable=var_font_charset, font=("Segoe UI", 9, "bold"), width=15).pack(side=tk.LEFT)
+    ttk.Label(attr_row, text="CodePage:", width=10).pack(side=tk.LEFT)
+    ttk.Label(attr_row, textvariable=var_font_codepage, font=("Segoe UI", 9, "bold")).pack(side=tk.LEFT)
 
     # Preview Area
     preview_lbl = ttk.LabelFrame(right_frame, text=" Font Preview ", padding=10)
@@ -165,6 +265,18 @@ def build_fonts_tab(app, parent):
             var_font_size.set(f"{sz_bytes / 1024:,.1f} KB ({sz_bytes:,} bytes)")
         except:
             var_font_size.set("Unknown")
+
+        var_font_charset.set("N/A")
+        var_font_codepage.set("N/A")
+        if font_name.lower().endswith((".fon", ".fnt")):
+            cs, cp = parse_fnt_charset(str(font_path))
+            if cs is not None:
+                cs_name = CHARSET_MAP.get(cs, f"{cs} (Unknown)")
+                var_font_charset.set(cs_name)
+            if cp is not None:
+                var_font_codepage.set(str(cp))
+            else:
+                var_font_codepage.set("Not specified")
 
         text = preview_text_var.get()
         size = preview_size_var.get()
