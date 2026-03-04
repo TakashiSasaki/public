@@ -2,7 +2,11 @@ import tkinter as tk
 from tkinter import ttk
 import os
 from pathlib import Path
+from typing import Optional, Dict, Any, List, Tuple, Union, TYPE_CHECKING
 from PIL import Image, ImageDraw, ImageFont, ImageTk
+
+if TYPE_CHECKING:
+    from mouse_pointer.gui import CursorGeneratorGUI
 
 CHARSET_MAP = {
     0: "0 (ANSI)",
@@ -26,7 +30,7 @@ CHARSET_MAP = {
     255: "255 (OEM)",
 }
 
-def parse_fnt_charset(filepath):
+def parse_fnt_charset(filepath: Union[str, Path]) -> Tuple[Optional[int], Optional[int]]:
     """
     NE/PE ヘッダを持つ .fon または直接の .fnt ファイルから dfCharSet と CodePage を取得する
     戻り値: (charset: int|None, codepage: int|None)
@@ -95,7 +99,7 @@ def parse_fnt_charset(filepath):
         pass
     return None
 
-def build_fonts_tab(app, parent, tab_type="vector"):
+def build_fonts_tab(app: "CursorGeneratorGUI", parent: tk.Widget, tab_type: str = "vector") -> ttk.Frame:
     """
     Builds the Fonts tab to preview available system fonts.
     'app' is the CursorGeneratorGUI instance (controller).

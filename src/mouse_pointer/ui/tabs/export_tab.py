@@ -3,11 +3,15 @@ from tkinter import ttk, messagebox, filedialog
 import os
 import io
 from pathlib import Path
+from typing import TYPE_CHECKING, Any, List, Dict
 from PIL import Image
 from mouse_pointer.generators.basic import create_cursor_image
 from mouse_pointer.core.cursor import save_multi_cursor
 
-def build_export_tab(app, parent):
+if TYPE_CHECKING:
+    from mouse_pointer.gui import CursorGeneratorGUI
+
+def build_export_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
     """
     Builds the Export Set tab.
     'app' is the CursorGeneratorGUI instance.
@@ -32,7 +36,7 @@ def build_export_tab(app, parent):
     dir_entry = ttk.Entry(dir_frame, textvariable=out_dir_var, width=50)
     dir_entry.pack(side=tk.LEFT, padx=5, fill=tk.X, expand=True)
     
-    def browse_dir():
+    def browse_dir() -> None:
         d = filedialog.askdirectory(initialdir=out_dir_var.get())
         if d:
             out_dir_var.set(d)
@@ -94,7 +98,7 @@ def build_export_tab(app, parent):
     edit_entry = ttk.Entry(edit_frame, textvariable=edit_mr_var, width=10)
     edit_entry.pack(side=tk.LEFT, padx=5)
     
-    def _apply_mr_edit():
+    def _apply_mr_edit() -> None:
         selected = tree.selection()
         if not selected: return
         new_val = edit_mr_var.get()
@@ -105,7 +109,7 @@ def build_export_tab(app, parent):
             
     ttk.Button(edit_frame, text="Apply", command=_apply_mr_edit).pack(side=tk.LEFT, padx=5)
     
-    def _on_select(event):
+    def _on_select(event: Any) -> None:
         selected = tree.selection()
         if selected:
             vals = tree.item(selected[0], "values")
@@ -121,8 +125,8 @@ def build_export_tab(app, parent):
     app.export_tree = tree
     app.out_dir_var = out_dir_var
     
-    def _run_export():
-        out_dir = fd.askdirectory(title="出力フォルダを選択")
+    def _run_export() -> None:
+        out_dir = filedialog.askdirectory(title="出力フォルダを選択")
         if not out_dir:
             return
 

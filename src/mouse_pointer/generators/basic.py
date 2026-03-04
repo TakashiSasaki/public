@@ -3,9 +3,10 @@ import io
 import json
 import os
 from pathlib import Path
+from typing import Tuple, Optional, Any, List, Dict
 from PIL import Image, ImageDraw, ImageFont
 
-def get_default_font(size):
+def get_default_font(size: int) -> ImageFont.ImageFont:
     """シンプルなフォントを取得する（フォントがない場合のフォールバック用）"""
     try:
         # Windowsの代表的なフォントを試す
@@ -17,26 +18,26 @@ def get_default_font(size):
             return ImageFont.load_default()
 
 def create_cursor_image(
-    size=32, 
-    color=(128, 0, 128, 255), 
-    shape="arrow", 
-    border_color=(0, 0, 0, 255), 
-    border_thickness=1,
-    tr_text="",
-    tr_text_size=10,
-    mr_text="",
-    mr_text_size=10,
-    caption_text="",
-    caption_text_size=10,
-    caption_color=(0, 0, 0, 255),
-    caption_bg_color=(255, 255, 255, 255),
-    caption_aa=True,
-    caption_outline=False,
-    drop_shadow=False,
-    base_name="",
-    badge1_name="",
-    badge2_name="",
-):
+    size: int = 32, 
+    color: Tuple[int, int, int, int] = (128, 0, 128, 255), 
+    shape: str = "arrow", 
+    border_color: Tuple[int, int, int, int] = (0, 0, 0, 255), 
+    border_thickness: int = 1,
+    tr_text: str = "",
+    tr_text_size: int = 10,
+    mr_text: str = "",
+    mr_text_size: int = 10,
+    caption_text: str = "",
+    caption_text_size: int = 10,
+    caption_color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+    caption_bg_color: Tuple[int, int, int, int] = (255, 255, 255, 255),
+    caption_aa: bool = True,
+    caption_outline: bool = False,
+    drop_shadow: bool = False,
+    base_name: str = "",
+    badge1_name: str = "",
+    badge2_name: str = "",
+) -> Tuple[Image.Image, Tuple[int, int]]:
     """
     指定されたパラメータでカーソル画像を生成する。
     

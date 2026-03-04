@@ -1,3 +1,5 @@
+from typing import List, Dict, Any
+
 """
 cursor_roles.py
 Windows の標準カーソルロール (17種類) の定義。
@@ -6,10 +8,10 @@ Windows の標準カーソルロール (17種類) の定義。
     name        : ロールの表示名（日本語）
     filename    : 出力する .cur ファイル名
     registry_key: レジストリキー名（参考情報）
-    label_br    : 右下コーナーに描画する識別ラベル（空文字 = なし）
+    label_mr    : 右中央コーナーに描画する識別ラベル（空文字 = なし）
 """
 
-CURSOR_ROLES = [
+CURSOR_ROLES: List[Dict[str, Any]] = [
     {
         "name": "通常選択",
         "filename": "arrow.cur",

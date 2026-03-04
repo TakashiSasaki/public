@@ -1,8 +1,10 @@
 import struct
 import io
+from typing import List, Tuple, Union
+from pathlib import Path
 from PIL import Image
 
-def build_multi_cursor_binary(image_data_list) -> bytes:
+def build_multi_cursor_binary(image_data_list: List[Tuple[Image.Image, Tuple[int, int]]]) -> bytes:
     """複数の画像（ペア: Image, (hx, hy)）を1つのWindowsの.cur形式のバイナリデータに変換する"""
     
     # 1. 画像をPNGとしてバイト配列に変換し、データを準備
@@ -15,7 +17,7 @@ def build_multi_cursor_binary(image_data_list) -> bytes:
         width, height = img.size
         w = 0 if width == 256 else width
         # カーソルフォーマットでは、PNGを含める場合でも height は 2倍 (XOR + AND マスク分) に設定するのが本来の仕様とされる場合があるが、
-        # 近年のWindowsではPNGの場合はそのままのheightでも認識される。念のため画像高さをそのまま使用。
+        # 近年のWindowsではPNGの場合はそのままのheightでも認識される。念のため画像高さはそのまま使用。
         h = 0 if height == 256 else height
         
         encoded_images.append({
@@ -51,11 +53,11 @@ def build_multi_cursor_binary(image_data_list) -> bytes:
         
     return header + entries_binary + image_data_binary
 
-def save_cursor(image: Image.Image, filename: str, hotspot=(0, 0)):
+def save_cursor(image: Image.Image, filename: Union[str, Path], hotspot: Tuple[int, int] = (0, 0)) -> None:
     """単一の画像を.curファイルとして保存する（後方互換用）"""
     save_multi_cursor([(image, hotspot)], filename)
 
-def save_multi_cursor(image_data_list, filename: str):
+def save_multi_cursor(image_data_list: List[Tuple[Image.Image, Tuple[int, int]]], filename: Union[str, Path]) -> None:
     """複数の画像を1つの.curファイルとして保存する"""
     if not image_data_list:
         raise ValueError("image_data_list cannot be empty")

@@ -1,10 +1,11 @@
 import argparse
 import sys
+from typing import Tuple, Any, Dict
 from mouse_pointer.core.cursor import save_cursor
 from mouse_pointer.generators.basic import create_cursor_image
 from mouse_pointer.gui import run_gui
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Generate Windows mouse cursors.")
     subparsers = parser.add_subparsers(dest="command", help="Sub-commands")
     
@@ -45,7 +46,7 @@ def main():
             "white": (255, 255, 255, 255),
         }
         
-        def parse_color(c_str, default_rgba):
+        def parse_color(c_str: str, default_rgba: Tuple[int, int, int, int]) -> Tuple[int, int, int, int]:
             if c_str.lower() == "none" or c_str == "":
                 return (0, 0, 0, 0) # Transparent
             if c_str.startswith("#"):

@@ -4,6 +4,7 @@ import json
 import importlib.metadata
 import platformdirs
 from pathlib import Path
+from typing import Optional, Dict, Any, List, Tuple, Union, Callable
 from tkinter import ttk, colorchooser, filedialog, messagebox
 from PIL import Image, ImageTk
 from mouse_pointer.generators.basic import create_cursor_image
@@ -108,16 +109,16 @@ class CursorGeneratorGUI(tk.Tk):
         except Exception as e:
             print(f"Failed to save settings: {e}")
 
-    def load_settings(self):
+    def load_settings(self) -> None:
         """保存されているエディタ設定を読み込んで反映する"""
         path = self.get_settings_path()
         if not path.exists():
             return
         try:
             with open(path, "r", encoding="utf-8") as f:
-                settings = json.load(f)
+                settings: Dict[str, Any] = json.load(f)
                 
-                def set_val(var, key, type_cast=None):
+                def set_val(var: Union[tk.StringVar, tk.IntVar, tk.BooleanVar], key: str, type_cast: Optional[Callable[[Any], Any]] = None) -> None:
                     if key in settings:
                         val = settings[key]
                         if type_cast:
@@ -171,7 +172,7 @@ class CursorGeneratorGUI(tk.Tk):
             except Exception as e:
                 print(f"Failed to load pictograms.json: {e}")
 
-    def hex_to_rgba(self, hex_color):
+    def hex_to_rgba(self, hex_color: str) -> Tuple[int, int, int, int]:
         hex_color = hex_color.lstrip('#')
         # Handle short hex format like #f00
         if len(hex_color) == 3:
@@ -181,14 +182,14 @@ class CursorGeneratorGUI(tk.Tk):
         b = int(hex_color[4:6], 16)
         return (r, g, b, 255)
 
-    def render_svg_thumbnail(self, svg_data, size=48, stroke_color="#800080"):
+    def render_svg_thumbnail(self, svg_data: Dict[str, Any], size: int = 48, stroke_color: str = "#800080") -> Optional[Image.Image]:
         """SVGデータをPIL Imageとしてレンダリングして返す（透明背景）。失敗時はNone。"""
         try:
             from svglib.svglib import svg2rlg
             from reportlab.graphics import renderPM
 
-            content = svg_data.get("content", "")
-            viewBox = svg_data.get("viewBox", "0 0 32 32")
+            content: str = svg_data.get("content", "")
+            viewBox: str = svg_data.get("viewBox", "0 0 32 32")
             stroke_w = 1.5 if viewBox == "0 0 16 16" else 2
 
             full_svg = f'''<?xml version="1.0" encoding="utf-8"?>
@@ -219,7 +220,7 @@ class CursorGeneratorGUI(tk.Tk):
 
             pw = list(img_w.getdata())
             pb = list(img_b.getdata())
-            out = []
+            out: List[Tuple[int, int, int, int]] = []
             for (rw, gw, bw), (rb, gb, bb) in zip(pw, pb):
                 # アルファ: 各チャンネルで計算し最大値を採用
                 a = max(
