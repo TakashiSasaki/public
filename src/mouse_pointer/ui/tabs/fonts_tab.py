@@ -284,6 +284,7 @@ def build_fonts_tab(app, parent, tab_type="vector"):
     var_font_size = tk.StringVar(value="-")
     var_font_charset = tk.StringVar(value="-")
     var_font_codepage = tk.StringVar(value="-")
+    var_font_hint = tk.StringVar(value="")
 
     path_row = ttk.Frame(info_frame)
     path_row.pack(fill=tk.X)
@@ -302,6 +303,9 @@ def build_fonts_tab(app, parent, tab_type="vector"):
         ttk.Label(attr_row, textvariable=var_font_charset, font=("Segoe UI", 9, "bold"), width=15).pack(side=tk.LEFT)
         ttk.Label(attr_row, text="CodePage:", width=10).pack(side=tk.LEFT)
         ttk.Label(attr_row, textvariable=var_font_codepage, font=("Segoe UI", 9, "bold")).pack(side=tk.LEFT)
+
+        hint_label = ttk.Label(info_frame, textvariable=var_font_hint, foreground="blue", wraplength=400, font=("Segoe UI", 9, "italic"))
+        hint_label.pack(fill=tk.X, pady=(5, 0))
 
     # Preview Area
     preview_lbl = ttk.LabelFrame(right_frame, text=" Font Preview ", padding=10)
@@ -341,11 +345,14 @@ def build_fonts_tab(app, parent, tab_type="vector"):
 
         var_font_charset.set("N/A")
         var_font_codepage.set("N/A")
+        var_font_hint.set("")
         if font_name.lower().endswith((".fon", ".fnt")):
             cs, cp = parse_fnt_charset(str(font_path))
             if cs is not None:
                 cs_name = CHARSET_MAP.get(cs, f"{cs} (Unknown)")
                 var_font_charset.set(cs_name)
+                if cs == 128:
+                    var_font_hint.set("※ ShiftJIS形式の .fon は半角文字のみ表示可能です。漢字は Vector Fonts タブの TTF 版ピクセルフォント（美咲ゴシック等）をご利用ください。")
             if cp is not None:
                 var_font_codepage.set(str(cp))
             else:
