@@ -135,7 +135,7 @@ def create_cursor_image(
 
     if caption_text:
         caption_font = get_default_font(caption_text_size)
-        cx, cy = size // 2, size  # Move to the very bottom
+        cx, cy = size // 2, size - 1  # 1px gap from bottom
         
         def _draw_caption_text(target_draw, pos_x, pos_y, text, font, fill, is_aa):
             if is_aa:
@@ -179,18 +179,22 @@ def create_cursor_image(
             _draw_caption_text(draw, cx - offset, cy, caption_text, caption_font, caption_bg_color, caption_aa)
             _draw_caption_text(draw, cx + offset, cy, caption_text, caption_font, caption_bg_color, caption_aa)
             _draw_caption_text(draw, cx, cy - offset, caption_text, caption_font, caption_bg_color, caption_aa)
-            _draw_caption_text(draw, cx, cy + offset, caption_text, caption_font, caption_bg_color, caption_aa)
+            # 下側のフチドリも画像端を越えないようにする
+            # anchor="mb" で 座標 y が y_max なら row y_max-1 まで描画される。
+            # row size-1 を空けたい（row size-2 までにしたい）ので、y=size-1 が上限。
+            _draw_caption_text(draw, cx, min(cy + offset, size - 1), caption_text, caption_font, caption_bg_color, caption_aa)
         else:
             # Draw Background Rectangle (if visible)
             if len(caption_bg_color) == 4 and caption_bg_color[3] > 0:
                 try:
                     left, top, right, bottom = draw.textbbox((cx, cy), caption_text, font=caption_font, anchor="mb")
                     margin = 1
-                    draw.rectangle([left - margin, top - margin, right + margin, min(bottom + margin, size)], fill=caption_bg_color)
+                    # 下端に1ドットの空きを作るため、row size-2 まで（座標 size-2）に制限する
+                    draw.rectangle([left - margin, top - margin, right + margin, min(bottom + margin, size - 2)], fill=caption_bg_color)
                 except AttributeError:
                     tw, th = draw.textsize(caption_text, font=caption_font)
                     margin = 1
-                    draw.rectangle([cx - tw/2 - margin, cy - th - margin, cx + tw/2 + margin, cy], fill=caption_bg_color)
+                    draw.rectangle([cx - tw/2 - margin, cy - th - margin, cx + tw/2 + margin, cy - 1], fill=caption_bg_color)
 
         # Draw Main Text
         _draw_caption_text(draw, cx, cy, caption_text, caption_font, caption_color, caption_aa)
