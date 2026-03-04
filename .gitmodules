@@ -59,3 +59,7 @@
 	path = static-lunr
 	url = https://github.com/TakashiSasaki/public.git
 	branch = static-lunr
+[submodule "9b7310d2-2d5c-4b70-8fd3-f286f3cfc61b"]
+	path = 9b7310d2-2d5c-4b70-8fd3-f286f3cfc61b
+	url = git@github.com:TakashiSasaki/public.git
+	branch = 9b7310d2-2d5c-4b70-8fd3-f286f3cfc61b
