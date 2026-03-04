@@ -139,6 +139,18 @@ def build_editor_tab(app, parent):
     preview_frame = ttk.Frame(editor_frame)
     preview_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10)
 
+    # Add traces to all relevant variables for real-time Live Preview updates
+    def _on_var_changed(*args):
+        app.on_change()
+
+    app.var_size.trace_add("write", _on_var_changed)
+    app.var_tr_text.trace_add("write", _on_var_changed)
+    app.var_br_text.trace_add("write", _on_var_changed)
+    app.var_caption_text.trace_add("write", _on_var_changed)
+    app.var_tr_size.trace_add("write", _on_var_changed)
+    app.var_br_size.trace_add("write", _on_var_changed)
+    app.var_caption_size.trace_add("write", _on_var_changed)
+    
     # --- Container for Top row (Preview Canvas & Pictograms) ---
     top_preview_container = ttk.Frame(preview_frame)
     top_preview_container.pack(fill=tk.BOTH, expand=True)
