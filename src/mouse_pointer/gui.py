@@ -11,6 +11,7 @@ from mouse_pointer.ui.tabs.editor_tab import build_editor_tab
 from mouse_pointer.ui.tabs.bases_tab import build_bases_tab
 from mouse_pointer.ui.tabs.badges_tab import build_badges_tab
 from mouse_pointer.ui.tabs.texts_tab import build_texts_tab
+from mouse_pointer.ui.tabs.animation_tab import build_animation_tab
 from mouse_pointer.ui.tabs.export_tab import build_export_tab
 from mouse_pointer.ui.tabs.fonts_tab import build_fonts_tab
 
@@ -65,6 +66,12 @@ class CursorGeneratorGUI(tk.Tk):
         self.var_badge2_name = tk.StringVar(value="")
         self.var_svg_aa = tk.BooleanVar(value=True)
 
+        # Animation Settings
+        self.var_anim_gradient = tk.BooleanVar(value=True)
+        self.var_anim_scroll = tk.BooleanVar(value=True)
+        self.var_anim_frames = tk.IntVar(value=15)
+        self.var_anim_speed = tk.IntVar(value=10) # 1/60s jiffies
+
         # Pictograms data
         self.pictograms_data = {}
 
@@ -116,6 +123,10 @@ class CursorGeneratorGUI(tk.Tk):
             "badge1_name": self.var_badge1_name.get(),
             "badge2_name": self.var_badge2_name.get(),
             "svg_aa": self.var_svg_aa.get(),
+            "anim_gradient": self.var_anim_gradient.get(),
+            "anim_scroll": self.var_anim_scroll.get(),
+            "anim_frames": self.var_anim_frames.get(),
+            "anim_speed": self.var_anim_speed.get(),
             "window_width": self.winfo_width(),
             "window_height": self.winfo_height(),
         }
@@ -186,6 +197,10 @@ class CursorGeneratorGUI(tk.Tk):
                 set_val(self.var_badge1_name, "badge1_name")
                 set_val(self.var_badge2_name, "badge2_name")
                 set_val(self.var_svg_aa, "svg_aa", bool)
+                set_val(self.var_anim_gradient, "anim_gradient", bool)
+                set_val(self.var_anim_scroll, "anim_scroll", bool)
+                set_val(self.var_anim_frames, "anim_frames", int)
+                set_val(self.var_anim_speed, "anim_speed", int)
 
                 if "window_width" in settings and "window_height" in settings:
                     w, h = settings["window_width"], settings["window_height"]
@@ -232,6 +247,7 @@ class CursorGeneratorGUI(tk.Tk):
         self.notebook.add(build_bases_tab(self, self.notebook), text="Bases")
         self.notebook.add(build_badges_tab(self, self.notebook), text="Badges")
         self.notebook.add(build_texts_tab(self, self.notebook), text="Texts")
+        self.notebook.add(build_animation_tab(self, self.notebook), text="Animation")
 
         # ---- Tab: Vector Font List ----
         vector_fonts_tab = ttk.Frame(self.notebook, padding=5)

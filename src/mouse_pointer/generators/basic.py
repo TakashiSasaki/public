@@ -110,6 +110,8 @@ def create_cursor_image(
     badge1_name: str = "",
     badge2_name: str = "",
     svg_aa: bool = True,
+    gradient_shift: float = 0.0, # 0.0 to 1.0 for waving effect
+    caption_x_offset: int = 0,
 ) -> Tuple[Image.Image, Tuple[int, int]]:
     """指定されたパラメータでカーソル画像を生成する。"""
     img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
@@ -133,18 +135,51 @@ def create_cursor_image(
         points = [(ox+0, oy+0), (ox+0, oy+22*s), (ox+6*s, oy+16*s), (ox+16*s, oy+14*s)]
         hotspot = (int(ox+0), int(oy+0))
         
-    if drop_shadow:
-        from PIL import ImageFilter
-        shadow_img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-        shadow_draw = ImageDraw.Draw(shadow_img)
-        shadow_offset_x, shadow_offset_y = int(size * 0.05), int(size * 0.05)
-        shadow_points = [(p[0] + shadow_offset_x, p[1] + shadow_offset_y) for p in points]
-        shadow_draw.polygon(shadow_points, fill=(0, 0, 0, 150))
-        shadow_blur_radius = max(1, size // 16)
-        shadow_img = shadow_img.filter(ImageFilter.GaussianBlur(shadow_blur_radius))
         img.paste(shadow_img, (0, 0), shadow_img)
         
+    # Preparation for drawing the body (Fill)
     draw = ImageDraw.Draw(img)
+    
+    # Handle Gradient Fill if we wanted to support it as an option, 
+    # but for now we'll just implement a simple two-color wave if color1!=color2
+    # For now, let's just stick to the requested "waving gradient"
+    # We'll use a linear gradient from the primary 'color' to a slightly lighter/darker version
+    
+    def _create_gradient_mask(size, points, shift):
+        # Create a mask of the polygon
+        mask = Image.new("L", (size, size), 0)
+        ImageDraw.Draw(mask).polygon(points, fill=255)
+        
+        # Create gradient
+        grad = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+        g_draw = ImageDraw.Draw(grad)
+        
+        r, g, b, a = color
+        # Secondary color for gradient (e.g. 50% lighter)
+        c2 = (min(r+60, 255), min(g+60, 255), min(b+60, 255), a)
+        
+        for x in range(size):
+            # Oscillate the gradient stop over time (0 to 1)
+            # We'll use a sine wave based on x and shift
+            t = (x / size + shift) % 1.0
+            # Simple linear interp
+            curr_r = int(r + (c2[0] - r) * (0.5 + 0.5 * math.sin(t * 2 * math.pi)))
+            curr_g = int(g + (c2[1] - g) * (0.5 + 0.5 * math.sin(t * 2 * math.pi)))
+            curr_b = int(b + (c2[2] - b) * (0.5 + 0.5 * math.sin(t * 2 * math.pi)))
+            g_draw.line([(x, 0), (x, size)], fill=(curr_r, curr_g, curr_b, a))
+        
+        return grad, mask
+
+    # Draw the main cursor body
+    if gradient_shift != 0:
+        grad_img, poly_mask = _create_gradient_mask(size, points, gradient_shift)
+        img.paste(grad_img, (0, 0), poly_mask)
+        # Still need the border
+        try: draw.polygon(points, outline=border_color, width=border_thickness)
+        except TypeError: draw.polygon(points, outline=border_color)
+    else:
+        try: draw.polygon(points, fill=color, outline=border_color, width=border_thickness)
+        except TypeError: draw.polygon(points, fill=color, outline=border_color)
 
     def _render_text(draw_obj, text, font, pos, fill, bg, is_aa, is_outline, anchor):
         if not text: return
@@ -197,10 +232,9 @@ def create_cursor_image(
         _draw_core(draw_obj, pos[0], pos[1], fill)
 
     if caption_text:
-        _render_text(draw, caption_text, get_default_font(caption_text_size), (size // 2, size - 1), caption_color, caption_bg_color, caption_aa, caption_outline, "mb")
-
-    try: draw.polygon(points, fill=color, outline=border_color, width=border_thickness)
-    except TypeError: draw.polygon(points, fill=color, outline=border_color)
+        # If caption scrolls, adjust its center position
+        cx = (size // 2) - caption_x_offset
+        _render_text(draw, caption_text, get_default_font(caption_text_size), (cx, size - 1), caption_color, caption_bg_color, caption_aa, caption_outline, "mb")
 
     if tr_text:
         _render_text(draw, tr_text, get_default_font(tr_text_size), (size - 2, 2), tr_color, tr_bg_color, tr_aa, tr_outline, "rt")
@@ -244,3 +278,51 @@ def create_cursor_image(
                 img = Image.alpha_composite(img, overlay)
         except Exception as e: print(f"Error rendering SVG overlay: {e}")
     return img, hotspot
+
+def create_animated_cursor_frames(
+    size: int = 32,
+    total_frames: int = 15,
+    anim_gradient: bool = True,
+    anim_scroll: bool = True,
+    **kwargs
+) -> List[Tuple[Image.Image, Tuple[int, int]]]:
+    """ANI用のフレームリストを生成する"""
+    frames = []
+    
+    caption_text = kwargs.get("caption_text", "")
+    cap_size = kwargs.get("caption_text_size", 10)
+    
+    # Measure caption width for scrolling
+    text_width = 0
+    if caption_text:
+        font = get_default_font(cap_size)
+        try:
+            left, top, right, bottom = ImageDraw.Draw(Image.new("L", (1, 1))).textbbox((0, 0), caption_text, font=font)
+            text_width = right - left
+        except AttributeError:
+            text_width, _ = ImageDraw.Draw(Image.new("L", (1, 1))).textsize(caption_text, font=font)
+    
+    for i in range(total_frames):
+        g_shift = (i / total_frames) if anim_gradient else 0.0
+        
+        # Calculate scroll offset
+        # We want to scroll from starting at center to moving left until the right edge of text is at the right edge of cursor area
+        # Actually, let's just scroll it across the whole width if it's too wide
+        c_off = 0
+        if anim_scroll and text_width > size:
+            # Scroll amount: total distance is text_width + size (to completely pass by)
+            # but user probably wants it to just scroll enough to see it.
+            # Let's scroll it back and forth or loop it.
+            # Loop from 0 to text_width - size/2
+            max_scroll = text_width - size + 4
+            c_off = int((i / total_frames) * max_scroll) if max_scroll > 0 else 0
+
+        frame_img, hotspot = create_cursor_image(
+            size=size,
+            gradient_shift=g_shift,
+            caption_x_offset=c_off,
+            **kwargs
+        )
+        frames.append((frame_img, hotspot))
+        
+    return frames
