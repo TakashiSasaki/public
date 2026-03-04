@@ -151,8 +151,8 @@ def build_editor_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
     # Reusable Preview Component
     preview = PreviewPanel(app, right_panel)
 
-    # Assets cache for thumbnails
-    assets: Dict[str, Any] = {
+    # Assets cache for thumbnails (attach to frame to prevent GC)
+    editor_frame.assets = {
         "thumb_cache": [],
     }
 
@@ -175,7 +175,7 @@ def build_editor_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
             cell.grid(row=idx // 6, column=idx % 6, padx=4, pady=4)
             pil_img = render_svg_to_pil(svg_data, target_size=thumb_size, color_hex=stroke_color, anti_alias=True)
             img_tk = ImageTk.PhotoImage(pil_img if pil_img else Image.new("RGBA", (thumb_size, thumb_size), (0, 0, 0, 0)))
-            assets["thumb_cache"].append(img_tk)
+            editor_frame.assets["thumb_cache"].append(img_tk)
             tk.Button(cell, image=img_tk, relief=tk.FLAT, bd=0, cursor="hand2", command=lambda n=name: click_cb(n)).pack()
             ttk.Label(cell, text=name, font=("Segoe UI", 7), wraplength=thumb_size + 16, justify=tk.CENTER).pack()
 
