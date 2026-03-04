@@ -1,5 +1,6 @@
 import tkinter as tk
 import json
+import socket
 import importlib.metadata
 import platformdirs
 from pathlib import Path
@@ -208,7 +209,23 @@ class CursorGeneratorGUI(tk.Tk):
         build_export_tab(self, export_tab)
 
 def run_gui():
+    # Single instance check using a socket
+    lock_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        # Use a reasonably high port number
+        lock_socket.bind(("127.0.0.1", 49501))
+    except socket.error:
+        # Another instance is already running
+        from tkinter import messagebox
+        root = tk.Tk()
+        root.withdraw()
+        messagebox.showwarning("Already Running", "Another instance of Mouse Cursor Generator is already running.\nPlease close it before starting a new one.")
+        root.destroy()
+        return
+
     app = CursorGeneratorGUI()
+    # Keep a reference to the socket to prevent it from being closed prematurely
+    app._lock_socket = lock_socket 
     app.mainloop()
 
 if __name__ == "__main__":
