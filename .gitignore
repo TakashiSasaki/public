@@ -2,3 +2,6 @@ uv.lock
 *.pyc
 __pycache__
 .venv/
+dist/
+build/
+*.spec
