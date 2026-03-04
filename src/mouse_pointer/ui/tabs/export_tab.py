@@ -144,7 +144,7 @@ def build_export_tab(app, parent):
             badge1_name = app.var_badge1_name.get()
             badge2_name = app.var_badge2_name.get()
 
-            sizes = [32, 48, 64]
+            sizes = [32, 48, 64, 96, 128]
             errors = []
 
             # Treeview から現在のロール設定を取得
