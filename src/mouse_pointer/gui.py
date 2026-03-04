@@ -21,7 +21,7 @@ class CursorGeneratorGUI(tk.Tk):
             version = "unknown"
 
         self.title(f"Mouse Cursor Generator v{version}")
-        self.geometry("680x560")
+        self.geometry("800x640")
         self.configure(padx=10, pady=10)
 
         # Variables
@@ -89,6 +89,8 @@ class CursorGeneratorGUI(tk.Tk):
             "badge1_name": self.var_badge1_name.get(),
             "badge2_name": self.var_badge2_name.get(),
             "svg_aa": self.var_svg_aa.get(),
+            "window_width": self.winfo_width(),
+            "window_height": self.winfo_height(),
         }
         try:
             with open(self.get_settings_path(), "w", encoding="utf-8") as f:
@@ -138,6 +140,10 @@ class CursorGeneratorGUI(tk.Tk):
                 set_val(self.var_badge1_name, "badge1_name")
                 set_val(self.var_badge2_name, "badge2_name")
                 set_val(self.var_svg_aa, "svg_aa", bool)
+
+                if "window_width" in settings and "window_height" in settings:
+                    w, h = settings["window_width"], settings["window_height"]
+                    self.geometry(f"{w}x{h}")
         except Exception as e:
             print(f"Failed to load settings: {e}")
 
