@@ -28,6 +28,8 @@ def create_cursor_image(
     br_text_size=10,
     caption_text="",
     caption_text_size=10,
+    caption_color=(0, 0, 0, 255),
+    caption_bg_color=(255, 255, 255, 255),
     drop_shadow=False,
     base_name="",
     badge1_name="",
@@ -48,6 +50,8 @@ def create_cursor_image(
         br_text_size (int): 右下の文字サイズ
         caption_text (str): 下部中央に描画するキャプション文字
         caption_text_size (int): キャプション文字サイズ
+        caption_color (tuple): キャプション文字色 (R, G, B, A)
+        caption_bg_color (tuple): キャプションの背景色 (R, G, B, A)
         
     Returns:
         tuple: (Imageオブジェクト, (hotspot_x, hotspot_y))
@@ -166,7 +170,23 @@ def create_cursor_image(
 
     if caption_text:
         caption_font = get_default_font(caption_text_size)
-        draw_outlined_text(caption_text, (size // 2, size - 2), caption_font, anchor="mb")
+        cx, cy = size // 2, size - 2
+        
+        # 背景色が透明(Alpha 0)でなければ、矩形を描画する
+        if len(caption_bg_color) == 4 and caption_bg_color[3] > 0:
+            # Pillow >= 8.0.0 の draw.textbbox をサポート、古い場合は textsize にフォールバック
+            try:
+                left, top, right, bottom = draw.textbbox((cx, cy), caption_text, font=caption_font, anchor="mb")
+                # 少しマージンを持たせる
+                margin = 2
+                draw.rectangle([left - margin, top - margin, right + margin, bottom + margin], fill=caption_bg_color)
+            except AttributeError:
+                # 非常に古いPillow向けフォールバック
+                tw, th = draw.textsize(caption_text, font=caption_font)
+                margin = 2
+                draw.rectangle([cx - tw/2 - margin, cy - th - margin, cx + tw/2 + margin, cy + margin], fill=caption_bg_color)
+
+        draw.text((cx, cy), caption_text, font=caption_font, fill=caption_color, anchor="mb")
 
     # 3. SVGオーバレイの合成 (Pictograms)
     if base_name or badge1_name or badge2_name:

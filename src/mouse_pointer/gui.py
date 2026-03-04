@@ -28,6 +28,8 @@ class CursorGeneratorGUI(tk.Tk):
         self.var_br_size = tk.IntVar(value=12)
         self.var_caption_text = tk.StringVar(value="")
         self.var_caption_size = tk.IntVar(value=12)
+        self.var_caption_color = tk.StringVar(value="#000000") # Default Black
+        self.var_caption_bg_color = tk.StringVar(value="#ffffff") # Default White
         self.var_drop_shadow = tk.BooleanVar(value=True)
 
         # SVG Overlay Variables
@@ -267,6 +269,20 @@ class CursorGeneratorGUI(tk.Tk):
         caption_spin.bind("<FocusOut>", self.on_change)
         row += 1
 
+        ttk.Label(controls_frame, text=" Cap Color:").grid(row=row, column=0, sticky=tk.W, pady=5)
+        cap_color_btn = ttk.Button(controls_frame, text="Text Color", command=lambda: self.choose_color("caption_text"))
+        cap_color_btn.grid(row=row, column=1, sticky=tk.EW, pady=5)
+        self.cap_color_preview = tk.Label(controls_frame, bg=self.var_caption_color.get(), width=3)
+        self.cap_color_preview.grid(row=row, column=2, padx=5)
+        row += 1
+
+        ttk.Label(controls_frame, text=" Cap BG:").grid(row=row, column=0, sticky=tk.W, pady=5)
+        cap_bg_btn = ttk.Button(controls_frame, text="BG Color", command=lambda: self.choose_color("caption_bg"))
+        cap_bg_btn.grid(row=row, column=1, sticky=tk.EW, pady=5)
+        self.cap_bg_preview = tk.Label(controls_frame, bg=self.var_caption_bg_color.get(), width=3)
+        self.cap_bg_preview.grid(row=row, column=2, padx=5)
+        row += 1
+
         # --- SVG Overlays ---
         ttk.Separator(controls_frame, orient=tk.HORIZONTAL).grid(row=row, column=0, columnspan=3, sticky=tk.EW, pady=10)
         row += 1
@@ -422,6 +438,20 @@ class CursorGeneratorGUI(tk.Tk):
                 self.var_border_color.set(color[1])
                 self.border_preview.config(bg=color[1])
                 self.update_preview()
+        elif target == "caption_text":
+            init_color = self.var_caption_color.get()
+            color = colorchooser.askcolor(initialcolor=init_color, title="Select Caption Text Color")
+            if color[1]:
+                self.var_caption_color.set(color[1])
+                self.cap_color_preview.config(bg=color[1])
+                self.update_preview()
+        elif target == "caption_bg":
+            init_color = self.var_caption_bg_color.get()
+            color = colorchooser.askcolor(initialcolor=init_color, title="Select Caption Background Color")
+            if color[1]:
+                self.var_caption_bg_color.set(color[1])
+                self.cap_bg_preview.config(bg=color[1])
+                self.update_preview()
 
     def on_change(self, event=None):
         self.update_preview()
@@ -431,6 +461,8 @@ class CursorGeneratorGUI(tk.Tk):
             size = self.var_size.get()
             fill_rgba = self.hex_to_rgba(self.var_color.get())
             border_rgba = self.hex_to_rgba(self.var_border_color.get())
+            cap_rgba = self.hex_to_rgba(self.var_caption_color.get())
+            cap_bg_rgba = self.hex_to_rgba(self.var_caption_bg_color.get())
 
             try:
                 tr_s = self.var_tr_size.get()
@@ -457,6 +489,8 @@ class CursorGeneratorGUI(tk.Tk):
                 br_text_size=br_s,
                 caption_text=self.var_caption_text.get(),
                 caption_text_size=cap_s,
+                caption_color=cap_rgba,
+                caption_bg_color=cap_bg_rgba,
                 drop_shadow=self.var_drop_shadow.get(),
                 base_name=self.var_base_name.get(),
                 badge1_name=self.var_badge1_name.get(),
@@ -523,6 +557,8 @@ class CursorGeneratorGUI(tk.Tk):
                 sizes_to_generate = [32, 48, 64]
                 fill_rgba = self.hex_to_rgba(self.var_color.get())
                 border_rgba = self.hex_to_rgba(self.var_border_color.get())
+                cap_rgba = self.hex_to_rgba(self.var_caption_color.get())
+                cap_bg_rgba = self.hex_to_rgba(self.var_caption_bg_color.get())
 
                 try: tr_s = self.var_tr_size.get()
                 except tk.TclError: tr_s = 12
@@ -546,6 +582,8 @@ class CursorGeneratorGUI(tk.Tk):
                         br_text_size=br_s,
                         caption_text=self.var_caption_text.get(),
                         caption_text_size=cap_s,
+                        caption_color=cap_rgba,
+                        caption_bg_color=cap_bg_rgba,
                         drop_shadow=self.var_drop_shadow.get(),
                         base_name=self.var_base_name.get(),
                         badge1_name=self.var_badge1_name.get(),
@@ -659,6 +697,8 @@ class CursorGeneratorGUI(tk.Tk):
         try:
             fill_rgba   = self.hex_to_rgba(self.var_color.get())
             border_rgba = self.hex_to_rgba(self.var_border_color.get())
+            cap_rgba    = self.hex_to_rgba(self.var_caption_color.get())
+            cap_bg_rgba = self.hex_to_rgba(self.var_caption_bg_color.get())
             try:    tr_s = self.var_tr_size.get()
             except tk.TclError: tr_s = 12
             try:    cap_s = self.var_caption_size.get()
@@ -700,6 +740,8 @@ class CursorGeneratorGUI(tk.Tk):
                             br_text_size=max(8, s // 4),
                             caption_text=cap_text,
                             caption_text_size=cap_s,
+                            caption_color=cap_rgba,
+                            caption_bg_color=cap_bg_rgba,
                             drop_shadow=drop_shadow,
                             base_name=base_name,
                             badge1_name=badge1_name,

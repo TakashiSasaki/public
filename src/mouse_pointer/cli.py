@@ -23,6 +23,8 @@ def main():
     gen_parser.add_argument("--br-size", type=int, default=12, help="Font size for bottom-right text")
     gen_parser.add_argument("--caption-text", "-c", type=str, default="", help="Text to display below the cursor")
     gen_parser.add_argument("--caption-size", "-cs", type=int, default=12, help="Font size for caption text")
+    gen_parser.add_argument("--caption-color", "-cc", type=str, default="black", help="Color of the caption text (name or hex)")
+    gen_parser.add_argument("--caption-bg-color", "-cbc", type=str, default="white", help="Background color of the caption (name or hex, 'none' for transparent)")
     gen_parser.add_argument("--drop-shadow", action="store_true", help="Enable drop shadow effect")
     
     args = parser.parse_args()
@@ -43,13 +45,22 @@ def main():
             "white": (255, 255, 255, 255),
         }
         
-        # 16進数カラー対応の簡易ヘルパー
-        if args.color.startswith("#"):
-            hex_c = args.color.lstrip('#')
-            if len(hex_c) == 3: hex_c = ''.join(c*2 for c in hex_c)
-            color = (int(hex_c[0:2], 16), int(hex_c[2:4], 16), int(hex_c[4:6], 16), 255)
-        else:
-            color = color_map.get(args.color.lower(), (128, 0, 128, 255))
+        def parse_color(c_str, default_rgba):
+            if c_str.lower() == "none" or c_str == "":
+                return (0, 0, 0, 0) # Transparent
+            if c_str.startswith("#"):
+                hex_c = c_str.lstrip('#')
+                if len(hex_c) == 3: hex_c = ''.join(c*2 for c in hex_c)
+                try:
+                    return (int(hex_c[0:2], 16), int(hex_c[2:4], 16), int(hex_c[4:6], 16), 255)
+                except ValueError:
+                    return default_rgba
+            return color_map.get(c_str.lower(), default_rgba)
+
+        # Parse colors
+        color = parse_color(args.color, (128, 0, 128, 255))
+        cap_color = parse_color(args.caption_color, (0, 0, 0, 255))
+        cap_bg_color = parse_color(args.caption_bg_color, (255, 255, 255, 255))
         
         print(f"Generating multi-resolution (32, 48, 64) {args.color} {args.shape} cursor at {args.output}...")
         
@@ -69,6 +80,8 @@ def main():
                 br_text_size=args.br_size,
                 caption_text=args.caption_text,
                 caption_text_size=args.caption_size,
+                caption_color=cap_color,
+                caption_bg_color=cap_bg_color,
                 drop_shadow=args.drop_shadow
             )
             multi_image_data.append((img, hotspot))
