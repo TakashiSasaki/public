@@ -2,6 +2,7 @@ import io
 import tkinter as tk
 import json
 import importlib.metadata
+import platformdirs
 from pathlib import Path
 from tkinter import ttk, colorchooser, filedialog, messagebox
 from PIL import Image, ImageTk
@@ -53,10 +54,12 @@ class CursorGeneratorGUI(tk.Tk):
         self.img_tk = None
         self.current_hotspot = (0, 0)
 
-        # Load JSON data
+        # Pictograms data
         self.base_choices = [""]
         self.badge_choices = [""]
         self.pictograms_data = {}
+
+        self.load_settings()
         self.load_pictograms()
 
         self.create_widgets()
@@ -65,7 +68,94 @@ class CursorGeneratorGUI(tk.Tk):
         self.preview_canvas.bind("<Motion>", self._on_mouse_move)
         self.preview_canvas.bind("<Leave>", self._on_mouse_leave)
         
+        self.protocol("WM_DELETE_WINDOW", self.on_close)
         self.update_preview()
+
+    def get_settings_path(self) -> Path:
+        """プラットフォーム固有の設定ファイルパスを返す"""
+        config_dir = Path(platformdirs.user_config_dir(appname="work.moukaeritai/mouse-pointer", appauthor=False))
+        config_dir.mkdir(parents=True, exist_ok=True)
+        return config_dir / "editor_settings.json"
+
+    def save_settings(self):
+        """現在のエディタ設定をJSONファイルに保存する"""
+        settings = {
+            "shape": self.var_shape.get(),
+            "size": self.var_size.get(),
+            "color": self.var_color.get(),
+            "border_color": self.var_border_color.get(),
+            "border_thickness": self.var_border_thickness.get(),
+            "tr_text": self.var_tr_text.get(),
+            "tr_size": self.var_tr_size.get(),
+            "mr_text": self.var_mr_text.get(),
+            "mr_size": self.var_mr_size.get(),
+            "caption_text": self.var_caption_text.get(),
+            "caption_size": self.var_caption_size.get(),
+            "caption_color": self.var_caption_color.get(),
+            "caption_bg_color": self.var_caption_bg_color.get(),
+            "caption_aa": self.var_caption_aa.get(),
+            "caption_outline": self.var_caption_outline.get(),
+            "show_grid": self.var_show_grid.get(),
+            "drop_shadow": self.var_drop_shadow.get(),
+            "base_name": self.var_base_name.get(),
+            "badge1_name": self.var_badge1_name.get(),
+            "badge2_name": self.var_badge2_name.get(),
+        }
+        try:
+            with open(self.get_settings_path(), "w", encoding="utf-8") as f:
+                json.dump(settings, f, indent=4, ensure_ascii=False)
+        except Exception as e:
+            print(f"Failed to save settings: {e}")
+
+    def load_settings(self):
+        """保存されているエディタ設定を読み込んで反映する"""
+        path = self.get_settings_path()
+        if not path.exists():
+            return
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                settings = json.load(f)
+                
+                def set_val(var, key, type_cast=None):
+                    if key in settings:
+                        val = settings[key]
+                        if type_cast:
+                            try:
+                                # Special case for bool in JSON
+                                if type_cast is bool and isinstance(val, str):
+                                    val = val.lower() == "true"
+                                else:
+                                    val = type_cast(val)
+                            except: return
+                        var.set(val)
+
+                set_val(self.var_shape, "shape")
+                set_val(self.var_size, "size", int)
+                set_val(self.var_color, "color")
+                set_val(self.var_border_color, "border_color")
+                set_val(self.var_border_thickness, "border_thickness", int)
+                set_val(self.var_tr_text, "tr_text")
+                set_val(self.var_tr_size, "tr_size", int)
+                set_val(self.var_mr_text, "mr_text")
+                set_val(self.var_mr_size, "mr_size", int)
+                set_val(self.var_caption_text, "caption_text")
+                set_val(self.var_caption_size, "caption_size", int)
+                set_val(self.var_caption_color, "caption_color")
+                set_val(self.var_caption_bg_color, "caption_bg_color")
+                set_val(self.var_caption_aa, "caption_aa", bool)
+                set_val(self.var_caption_outline, "caption_outline", bool)
+                set_val(self.var_show_grid, "show_grid", bool)
+                set_val(self.var_drop_shadow, "drop_shadow", bool)
+                set_val(self.var_base_name, "base_name")
+                set_val(self.var_badge1_name, "badge1_name")
+                set_val(self.var_badge2_name, "badge2_name")
+        except Exception as e:
+            print(f"Failed to load settings: {e}")
+
+    def on_close(self):
+        """終了時に設定を保存して終了する"""
+        self.save_settings()
+        self.destroy()
 
     def load_pictograms(self):
         assets_dir = Path(__file__).parent.parent.parent / "pictogram" / "src" / "assets"
