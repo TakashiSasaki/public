@@ -128,11 +128,22 @@ def build_fonts_tab(app, parent, tab_type="vector"):
     ttk.Checkbutton(filter_frame, text="等幅のみ", variable=var_mono, command=on_filter_toggle).pack(anchor=tk.W)
     if tab_type == "bitmap":
         ttk.Checkbutton(filter_frame, text="ビットマップのみ", variable=var_bitmap, command=on_filter_toggle).pack(anchor=tk.W)
+        
+        charset_frame = ttk.Frame(filter_frame)
+        charset_frame.pack(fill=tk.X, pady=(5, 0))
+        ttk.Label(charset_frame, text="文字セット (CharSet):").pack(anchor=tk.W)
+        
+        var_charset = tk.StringVar(value="すべて (No Filter)")
+        charset_combo = ttk.Combobox(charset_frame, textvariable=var_charset, state="readonly", width=18)
+        charset_combo.pack(fill=tk.X)
+        charset_combo.bind("<<ComboboxSelected>>", lambda e: on_filter_toggle())
     else:
         var_bitmap.set(False)
+        var_charset = None
+        charset_combo = None
 
-    list_label = "Vector Fonts:" if tab_type == "vector" else "Bitmap Fonts:"
-    ttk.Label(left_frame, text=list_label).pack(anchor=tk.W)
+    var_font_count = tk.StringVar(value=f"{'Vector' if tab_type == 'vector' else 'Bitmap'} Fonts:")
+    ttk.Label(left_frame, textvariable=var_font_count).pack(anchor=tk.W, pady=(5, 0))
 
     list_frame = ttk.Frame(left_frame)
     list_frame.pack(fill=tk.BOTH, expand=True)
@@ -212,21 +223,53 @@ def build_fonts_tab(app, parent, tab_type="vector"):
                 except:
                     is_supported = False
             
-            all_fonts_info.append((f_path.name, is_mono, is_bitmap, is_supported))
+            cs = None
+            if tab_type == "bitmap" and name_lower.endswith((".fon", ".fnt")):
+                parsed_cs, _ = parse_fnt_charset(str(f_path))
+                if parsed_cs is not None:
+                    cs = parsed_cs
+            
+            all_fonts_info.append((f_path.name, is_mono, is_bitmap, is_supported, cs))
+
+        if tab_type == "bitmap" and charset_combo is not None:
+            # Collect unique charsets
+            unique_cs = set(info[4] for info in all_fonts_info if info[4] is not None)
+            cs_values = ["すべて (No Filter)"]
+            for c in sorted(unique_cs):
+                cs_name = CHARSET_MAP.get(c, f"{c}")
+                cs_values.append(f"{c} ({cs_name})")
+            charset_combo["values"] = cs_values
+
 
     def refresh_listbox():
         font_listbox.delete(0, tk.END)
         only_mono = var_mono.get()
         only_bitmap = var_bitmap.get()
 
-        for name, is_m, is_b, is_s in all_fonts_info:
+        selected_cs = None
+        if var_charset is not None:
+            val = var_charset.get()
+            if val != "すべて (No Filter)":
+                try:
+                    selected_cs = int(val.split(" ")[0])
+                except:
+                    pass
+
+        count = 0
+        for name, is_m, is_b, is_s, cs in all_fonts_info:
             if tab_type == "vector" and not is_s:
                 continue
             if only_mono and not is_m:
                 continue
             if only_bitmap and not is_b:
                 continue
+            if selected_cs is not None and cs != selected_cs:
+                continue
+                
             font_listbox.insert(tk.END, name)
+            count += 1
+            
+        var_font_count.set(f"{'Vector' if tab_type == 'vector' else 'Bitmap'} Fonts ({count})")
 
     # Initialize
     scan_fonts()
