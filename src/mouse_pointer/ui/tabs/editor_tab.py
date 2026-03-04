@@ -1,7 +1,11 @@
 import tkinter as tk
 from tkinter import ttk
+from typing import TYPE_CHECKING, Any
 
-def build_editor_tab(app, parent):
+if TYPE_CHECKING:
+    from mouse_pointer.gui import CursorGeneratorGUI
+
+def build_editor_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
     """
     Builds the main cursor editor tab.
     'app' is the CursorGeneratorGUI instance (acts as the controller).
@@ -150,7 +154,7 @@ def build_editor_tab(app, parent):
     preview_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10)
 
     # Add traces to all relevant variables for real-time Live Preview updates
-    def _on_var_changed(*args):
+    def _on_var_changed(*args: Any) -> None:
         app.on_change()
 
     app.var_size.trace_add("write", _on_var_changed)
