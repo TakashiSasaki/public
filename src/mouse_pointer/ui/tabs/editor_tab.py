@@ -60,56 +60,6 @@ def build_editor_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
     app.var_border_color.trace_add("write", lambda *a: border_preview.config(bg=app.var_border_color.get()))
     row += 1
 
-    # --- Text Settings Helper ---
-    def add_text_controls(parent, label_prefix, text_var, size_var, color_var, bg_var, alpha_var, aa_var, outline_var):
-        nonlocal row
-        ttk.Separator(parent, orient=tk.HORIZONTAL).grid(row=row, column=0, columnspan=3, sticky=tk.EW, pady=10)
-        row += 1
-        
-        ttk.Label(parent, text=f" {label_prefix} Text:").grid(row=row, column=0, sticky=tk.W, pady=2)
-        ttk.Entry(parent, textvariable=text_var, width=10).grid(row=row, column=1, sticky=tk.EW, pady=2)
-        row += 1
-        
-        ttk.Label(parent, text=f" {label_prefix} Size:").grid(row=row, column=0, sticky=tk.W, pady=2)
-        ttk.Spinbox(parent, from_=8, to=72, textvariable=size_var, width=5).grid(row=row, column=1, sticky=tk.EW, pady=2)
-        row += 1
-        
-        # Color & BG
-        color_frame = ttk.Frame(parent)
-        color_frame.grid(row=row, column=0, columnspan=3, sticky=tk.W, pady=2)
-        
-        def pick_c(var, lbl):
-            c = colorchooser.askcolor(initialcolor=var.get(), title=f"Select {lbl} Color")
-            if c[1]: var.set(c[1])
-            
-        btn_c = ttk.Button(color_frame, text="Clr", width=4, command=lambda: pick_c(color_var, f"{label_prefix} Text"))
-        btn_c.pack(side=tk.LEFT, padx=2)
-        pre_c = tk.Label(color_frame, bg=color_var.get(), width=2)
-        pre_c.pack(side=tk.LEFT, padx=2)
-        color_var.trace_add("write", lambda *a: pre_c.config(bg=color_var.get()))
-        
-        btn_bg = ttk.Button(color_frame, text="BG", width=4, command=lambda: pick_c(bg_var, f"{label_prefix} BG"))
-        btn_bg.pack(side=tk.LEFT, padx=2)
-        pre_bg = tk.Label(color_frame, bg=bg_var.get(), width=2)
-        pre_bg.pack(side=tk.LEFT, padx=2)
-        bg_var.trace_add("write", lambda *a: pre_bg.config(bg=bg_var.get()))
-        
-        ttk.Label(color_frame, text=" α:").pack(side=tk.LEFT, padx=(5, 0))
-        ttk.Spinbox(color_frame, from_=0, to=255, textvariable=alpha_var, width=4).pack(side=tk.LEFT, padx=2)
-        row += 1
-        
-        # Options
-        opt_frame = ttk.Frame(parent)
-        opt_frame.grid(row=row, column=0, columnspan=3, sticky=tk.W, pady=2)
-        ttk.Checkbutton(opt_frame, text="AA", variable=aa_var).pack(side=tk.LEFT, padx=2)
-        ttk.Checkbutton(opt_frame, text="Out", variable=outline_var).pack(side=tk.LEFT, padx=2)
-        row += 1
-
-    # Apply Text controls
-    add_text_controls(controls_frame, "TR", app.var_tr_text, app.var_tr_size, app.var_tr_color, app.var_tr_bg_color, app.var_tr_bg_alpha, app.var_tr_aa, app.var_tr_outline)
-    add_text_controls(controls_frame, "MR", app.var_mr_text, app.var_mr_size, app.var_mr_color, app.var_mr_bg_color, app.var_mr_bg_alpha, app.var_mr_aa, app.var_mr_outline)
-    add_text_controls(controls_frame, "Cap", app.var_caption_text, app.var_caption_size, app.var_caption_color, app.var_caption_bg_color, app.var_caption_bg_alpha, app.var_caption_aa, app.var_caption_outline)
-
     # Effects
     ttk.Separator(controls_frame, orient=tk.HORIZONTAL).grid(row=row, column=0, columnspan=3, sticky=tk.EW, pady=10)
     row += 1
@@ -145,12 +95,16 @@ def build_editor_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
                 mr_c, mr_bg = get_text_data(app.var_mr_color, app.var_mr_bg_color, app.var_mr_bg_alpha)
                 cap_c, cap_bg = get_text_data(app.var_caption_color, app.var_caption_bg_color, app.var_caption_bg_alpha)
 
-                try: tr_s = app.var_tr_size.get()
-                except: tr_s = 12
-                try: mr_s = app.var_mr_size.get()
-                except: mr_s = 12
-                try: cap_s = app.var_caption_size.get()
-                except: cap_s = 12
+                def safe_int(var, default):
+                    try:
+                        v = var.get()
+                        return int(v) if v else default
+                    except (ValueError, tk.TclError):
+                        return default
+
+                tr_s = safe_int(app.var_tr_size, 12)
+                mr_s = safe_int(app.var_mr_size, 12)
+                cap_s = safe_int(app.var_caption_size, 12)
 
                 multi_image_data = []
                 for s in [32, 48, 64]:

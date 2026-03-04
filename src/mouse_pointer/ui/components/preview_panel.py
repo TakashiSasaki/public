@@ -93,12 +93,16 @@ class PreviewPanel:
             cap_rgba = self.app.hex_to_rgba(self.app.var_caption_color.get())
             cap_bg_rgba = self.app.hex_to_rgba(self.app.var_caption_bg_color.get())
             
-            try: tr_s = self.app.var_tr_size.get()
-            except: tr_s = 12
-            try: mr_s = self.app.var_mr_size.get()
-            except: mr_s = 12
-            try: cap_s = self.app.var_caption_size.get()
-            except: cap_s = 12
+            def safe_int(var, default):
+                try: 
+                    v = var.get()
+                    return int(v) if v else default
+                except (ValueError, tk.TclError): 
+                    return default
+
+            tr_s = safe_int(self.app.var_tr_size, 12)
+            mr_s = safe_int(self.app.var_mr_size, 12)
+            cap_s = safe_int(self.app.var_caption_size, 12)
 
             def get_text_data(color_var, bg_var, alpha_var):
                 rgb = self.app.hex_to_rgba(color_var.get())[:3]
