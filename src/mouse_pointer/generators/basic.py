@@ -30,6 +30,8 @@ def create_cursor_image(
     caption_text_size=10,
     caption_color=(0, 0, 0, 255),
     caption_bg_color=(255, 255, 255, 255),
+    caption_aa=True,
+    caption_outline=False,
     drop_shadow=False,
     base_name="",
     badge1_name="",
@@ -135,21 +137,63 @@ def create_cursor_image(
         caption_font = get_default_font(caption_text_size)
         cx, cy = size // 2, size  # Move to the very bottom
         
-        # 背景色が透明(Alpha 0)でなければ、矩形を描画する
-        if len(caption_bg_color) == 4 and caption_bg_color[3] > 0:
-            # Pillow >= 8.0.0 の draw.textbbox をサポート、古い場合は textsize にフォールバック
-            try:
-                left, top, right, bottom = draw.textbbox((cx, cy), caption_text, font=caption_font, anchor="mb")
-                # 隙間をなくすためマージンを最小限(1)にし、下端を画像サイズに合わせる
-                margin = 1
-                draw.rectangle([left - margin, top - margin, right + margin, min(bottom + margin, size)], fill=caption_bg_color)
-            except AttributeError:
-                # 非常に古いPillow向けフォールバック
-                tw, th = draw.textsize(caption_text, font=caption_font)
-                margin = 1
-                draw.rectangle([cx - tw/2 - margin, cy - th - margin, cx + tw/2 + margin, cy], fill=caption_bg_color)
+        def _draw_caption_text(target_draw, pos_x, pos_y, text, font, fill, is_aa):
+            if is_aa:
+                target_draw.text((pos_x, pos_y), text, font=font, fill=fill, anchor="mb")
+            else:
+                # 1-bit mask approach for crisp, aliased rendering
+                # Calculate bounding box to create a right-sized mask
+                try:
+                    left, top, right, bottom = target_draw.textbbox((pos_x, pos_y), text, font=font, anchor="mb")
+                except AttributeError:
+                    tw, th = target_draw.textsize(text, font=font)
+                    left, top, right, bottom = pos_x - tw/2, pos_y - th, pos_x + tw/2, pos_y
+                
+                w, h = int(right - left) + 4, int(bottom - top) + 4
+                if w <= 0 or h <= 0: return
+                
+                # Draw white text on black 1-bit background
+                mask = Image.new("1", (w, h), 0)
+                mask_draw = ImageDraw.Draw(mask)
+                # We use anchor="lt" here and adjust paste position to match "mb" anchor
+                mask_draw.text((2, 2), text, font=font, fill=1, anchor="lt")
+                
+                # Create a solid color image for the text
+                color_img = Image.new("RGBA", (w, h), fill)
+                # Paste using the 1-bit mask
+                paste_x = int(left) - 2
+                # Calculate top-left Y based on how getmask handles anchors
+                try:
+                    # 'mb' means x is middle, y is bottom
+                    # If we draw at (2,2) with 'lt', the top-left of the text is exactly at 2.
+                    # This means we need to paste the mask such that its top-left (2,2) aligns with `top`
+                    paste_y = int(top) - 2
+                    target_draw._image.paste(color_img, (paste_x, paste_y), mask)
+                except Exception:
+                    # Fallback if paste fails
+                    target_draw.text((pos_x, pos_y), text, font=font, fill=fill, anchor="mb")
 
-        draw.text((cx, cy), caption_text, font=caption_font, fill=caption_color, anchor="mb")
+        if caption_outline:
+            # Draw Outline (4 offsets)
+            offset = max(1, int(size * 0.03))
+            _draw_caption_text(draw, cx - offset, cy, caption_text, caption_font, caption_bg_color, caption_aa)
+            _draw_caption_text(draw, cx + offset, cy, caption_text, caption_font, caption_bg_color, caption_aa)
+            _draw_caption_text(draw, cx, cy - offset, caption_text, caption_font, caption_bg_color, caption_aa)
+            _draw_caption_text(draw, cx, cy + offset, caption_text, caption_font, caption_bg_color, caption_aa)
+        else:
+            # Draw Background Rectangle (if visible)
+            if len(caption_bg_color) == 4 and caption_bg_color[3] > 0:
+                try:
+                    left, top, right, bottom = draw.textbbox((cx, cy), caption_text, font=caption_font, anchor="mb")
+                    margin = 1
+                    draw.rectangle([left - margin, top - margin, right + margin, min(bottom + margin, size)], fill=caption_bg_color)
+                except AttributeError:
+                    tw, th = draw.textsize(caption_text, font=caption_font)
+                    margin = 1
+                    draw.rectangle([cx - tw/2 - margin, cy - th - margin, cx + tw/2 + margin, cy], fill=caption_bg_color)
+
+        # Draw Main Text
+        _draw_caption_text(draw, cx, cy, caption_text, caption_font, caption_color, caption_aa)
 
     # 1. 枠線の描画
     try:

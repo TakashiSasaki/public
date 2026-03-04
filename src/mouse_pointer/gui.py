@@ -39,6 +39,8 @@ class CursorGeneratorGUI(tk.Tk):
         self.var_caption_size = tk.IntVar(value=12)
         self.var_caption_color = tk.StringVar(value="#000000") # Default Black
         self.var_caption_bg_color = tk.StringVar(value="#ffffff") # Default White
+        self.var_caption_aa = tk.BooleanVar(value=True)
+        self.var_caption_outline = tk.BooleanVar(value=False)
         self.var_drop_shadow = tk.BooleanVar(value=True)
 
         # SVG Overlay Variables
@@ -448,6 +450,8 @@ class CursorGeneratorGUI(tk.Tk):
                         caption_text_size=cap_s,
                         caption_color=cap_rgba,
                         caption_bg_color=cap_bg_rgba,
+                        caption_aa=self.var_caption_aa.get(),
+                        caption_outline=self.var_caption_outline.get(),
                         drop_shadow=self.var_drop_shadow.get(),
                         base_name=self.var_base_name.get(),
                         badge1_name=self.var_badge1_name.get(),

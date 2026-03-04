@@ -103,6 +103,13 @@ def build_editor_tab(app, parent):
     app.cap_bg_preview.grid(row=row, column=2, padx=5)
     row += 1
 
+    # Caption Render Options
+    cap_opt_frame = ttk.Frame(controls_frame)
+    cap_opt_frame.grid(row=row, column=1, columnspan=2, sticky=tk.W, pady=2)
+    ttk.Checkbutton(cap_opt_frame, text="Anti-alias", variable=app.var_caption_aa, command=app.on_change).pack(side=tk.LEFT, padx=(0, 5))
+    ttk.Checkbutton(cap_opt_frame, text="Outline", variable=app.var_caption_outline, command=app.on_change).pack(side=tk.LEFT)
+    row += 1
+
     # --- SVG Overlays ---
     ttk.Separator(controls_frame, orient=tk.HORIZONTAL).grid(row=row, column=0, columnspan=3, sticky=tk.EW, pady=10)
     row += 1
