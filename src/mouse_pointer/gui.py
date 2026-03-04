@@ -53,6 +53,7 @@ class CursorGeneratorGUI(tk.Tk):
         self.preview_image = None
         self.img_tk = None
         self.current_hotspot = (0, 0)
+        self._unscaled_preview_cache = [] # To prevent GC
 
         # Pictograms data
         self.base_choices = [""]
@@ -524,6 +525,38 @@ class CursorGeneratorGUI(tk.Tk):
             self.preview_canvas.create_line(hx, hy - r, hx, hy + r, fill="#ff2222", width=1, tags="hotspot")
             # Center dot
             self.preview_canvas.create_oval(hx - 1.5, hy - 1.5, hx + 1.5, hy + 1.5, fill="#ff2222", outline="white", tags="hotspot")
+
+            # 6. Update Unscaled Previews
+            if hasattr(self, 'unscaled_preview_labels'):
+                self._unscaled_preview_cache = []
+                preview_sizes = [32, 48, 64, 96, 128]
+                for s in preview_sizes:
+                    if s in self.unscaled_preview_labels:
+                        # Generate at native size
+                        native_img, _ = create_cursor_image(
+                            size=s,
+                            color=fill_rgba,
+                            shape=self.var_shape.get(),
+                            border_color=border_rgba,
+                            border_thickness=self.var_border_thickness.get(),
+                            tr_text=self.var_tr_text.get(),
+                            tr_text_size=max(8, s // 4), # Scale font slightly with size if needed
+                            mr_text=self.var_mr_text.get(),
+                            mr_text_size=mr_s,
+                            caption_text=self.var_caption_text.get(),
+                            caption_text_size=cap_s,
+                            caption_color=cap_rgba,
+                            caption_bg_color=cap_bg_rgba,
+                            caption_aa=self.var_caption_aa.get(),
+                            caption_outline=self.var_caption_outline.get(),
+                            drop_shadow=self.var_drop_shadow.get(),
+                            base_name=self.var_base_name.get(),
+                            badge1_name=self.var_badge1_name.get(),
+                            badge2_name=self.var_badge2_name.get()
+                        )
+                        tk_native = ImageTk.PhotoImage(native_img)
+                        self._unscaled_preview_cache.append(tk_native)
+                        self.unscaled_preview_labels[s].config(image=tk_native)
 
         except Exception as e:
             print(f"Preview update error: {e}")

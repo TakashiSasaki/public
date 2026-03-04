@@ -198,6 +198,30 @@ def build_editor_tab(app, parent):
     app._build_pictogram_list(tab_bases, app.pictograms_data.get("bases", {}), app._on_base_selected)
     app._build_pictogram_list(tab_badges, app.pictograms_data.get("badges", {}), app._on_badge_selected)
 
+    # --- Unscaled Native Sizes Preview (Bottom row) ---
+    native_preview_frame = ttk.LabelFrame(preview_frame, text="Native Sizes Preview (Unscaled 1:1)")
+    native_preview_frame.pack(fill=tk.X, pady=(10, 0))
+
+    preview_container = ttk.Frame(native_preview_frame, padding=5)
+    preview_container.pack(fill=tk.X)
+
+    app.unscaled_preview_labels = {}
+    preview_sizes = [32, 48, 64, 96, 128]
+    
+    for s in preview_sizes:
+        cell = ttk.Frame(preview_container)
+        cell.pack(side=tk.LEFT, padx=10, fill=tk.Y)
+        
+        ttk.Label(cell, text=f"{s}px", font=("Segoe UI", 8)).pack()
+        
+        # We'll use a label to show the raw image. 
+        # Using a canvas might be better for transparency grid, 
+        # but for simplicity let's start with a Label on a gray background or with a small checkerboard if possible.
+        # Actually, let's use a Label and we'll handle the images in gui.py
+        lbl = tk.Label(cell, bg="#cccccc", width=0, height=0, bd=1, relief=tk.SOLID)
+        lbl.pack(pady=2)
+        app.unscaled_preview_labels[s] = lbl
+
     # Output Actions (Bottom)
     action_frame = ttk.Frame(preview_frame)
     action_frame.pack(fill=tk.X, pady=(10, 0))
