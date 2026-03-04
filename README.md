@@ -55,7 +55,7 @@ PythonがインストールされていないWidnows環境でも動作する、�
 uv run build-exe
 ```
 
-ビルドが完了すると、`dist/MousePointerGenerator.exe` が生成されます。このファイル単体で配布・実行が可能です。
+ビルドが完了すると、`dist/MousePointerGenerator_vX.Y.Z.exe` （例: `MousePointerGenerator_v0.3.1.exe`）が生成されます。このファイル単体で配布・実行が可能です。
 
 ## 開発
 

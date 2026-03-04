@@ -60,7 +60,7 @@ AIエージェントとしてこのプロジェクトでコードの修正や機
     - `src/mouse_pointer/generators/basic.py` (`render_svg_to_pil`)
 
 - **注意点**:
-- 新規に SVG レンダリング処理を追加・修正する場合は、必ずこの技法が適用されているか確認してください。単に `bg=None` や `bg=0x00000000` を指定するだけでは背景が透過されず、黒または白の矩形が残ってしまいます。
+  - 新規に SVG レンダリング処理を追加・修正する場合は、必ずこの技法が適用されているか確認してください。単に `bg=None` や `bg=0x00000000` を指定するだけでは背景が透過されず、黒または白の矩形が残ってしまいます。
 
 ## 6. アセットのパス解決 (Asset Path Resolution)
 
@@ -68,8 +68,9 @@ AIエージェントとしてこのプロジェクトでコードの修正や機
 
 - **`get_assets_dir()` の使用**: `pictograms.json` やその他のリソースを読み込む際は、直接 `Path(__file__)` から辿らず、`src/mouse_pointer/core/utils.py` の `get_assets_dir()` を使用してください。
 - **PyInstaller 対応**: この関数は実行環境（凍結された exe か通常の Python か）を自動判定し、適切なパス（`_MEIPASS` またはリポジトリ内のパス）を返します。
+- **実行ファイル名生成**: `builder.py` はビルド時に `pyproject.toml` からバージョン番号を読み取り、`MousePointerGenerator_v{version}.exe` のようにバージョン付きのファイル名を自動生成します。
 
-## 6. フォント処理とフィルタリング (Font Processing & Filtering)
+## 7. フォント処理とフィルタリング (Font Processing & Filtering)
 
 フォント一覧タブでは、システムフォントの特性に応じた高度な処理を行っています。
 
@@ -86,12 +87,12 @@ AIエージェントとしてこのプロジェクトでコードの修正や機
 - **件数表示**:
   - 各タブの見出しに、現在のフィルタ条件に合致するフォント件数が表示されます。
 
-## 7. バージョン情報の取得 (Version Retrieval)
+## 8. バージョン情報の取得 (Version Retrieval)
 
 - アプリケーションのバージョンは `pyproject.toml` に定義されています。
 - GUI等の実行時には `importlib.metadata.version("mouse-pointer")` を優先して参照するように実装してください。
 
-## 8. 設定の永続化 (Persistent Settings)
+## 9. 設定の永続化 (Persistent Settings)
 
 - **ライブラリ**: `platformdirs` を使用して、OSごとの適切なユーザー設定ディレクトリを取得します。
 - **保存先**: `editor_settings.json` (アプリケーション名: `work.moukaeritai/mouse-pointer`)
