@@ -95,10 +95,11 @@ def parse_fnt_charset(filepath):
         pass
     return None
 
-def build_fonts_tab(app, parent):
+def build_fonts_tab(app, parent, tab_type="vector"):
     """
     Builds the Fonts tab to preview available system fonts.
     'app' is the CursorGeneratorGUI instance (controller).
+    'tab_type' is either "vector" (TTF/TTC) or "bitmap" (FON/FNT).
     """
     fonts_frame = ttk.Frame(parent)
     fonts_frame.pack(fill=tk.BOTH, expand=True)
@@ -125,9 +126,13 @@ def build_fonts_tab(app, parent):
         refresh_listbox()
 
     ttk.Checkbutton(filter_frame, text="等幅のみ", variable=var_mono, command=on_filter_toggle).pack(anchor=tk.W)
-    ttk.Checkbutton(filter_frame, text="ビットマップのみ", variable=var_bitmap, command=on_filter_toggle).pack(anchor=tk.W)
+    if tab_type == "bitmap":
+        ttk.Checkbutton(filter_frame, text="ビットマップのみ", variable=var_bitmap, command=on_filter_toggle).pack(anchor=tk.W)
+    else:
+        var_bitmap.set(False)
 
-    ttk.Label(left_frame, text="System Fonts:").pack(anchor=tk.W)
+    list_label = "Vector Fonts:" if tab_type == "vector" else "Bitmap Fonts:"
+    ttk.Label(left_frame, text=list_label).pack(anchor=tk.W)
 
     list_frame = ttk.Frame(left_frame)
     list_frame.pack(fill=tk.BOTH, expand=True)
@@ -148,7 +153,11 @@ def build_fonts_tab(app, parent):
             return
         
         # Extensions to look for
-        exts = [".ttf", ".ttc", ".fon", ".fnt"]
+        if tab_type == "vector":
+            exts = [".ttf", ".ttc", ".otf"]
+        else:
+            exts = [".fon", ".fnt"]
+            
         files = []
         for ext in exts:
             files.extend(font_dir.glob(f"*{ext}"))
@@ -223,12 +232,13 @@ def build_fonts_tab(app, parent):
     ttk.Label(size_row, text="File Size:", width=10).pack(side=tk.LEFT)
     ttk.Label(size_row, textvariable=var_font_size, font=("Segoe UI", 9, "bold")).pack(side=tk.LEFT)
 
-    attr_row = ttk.Frame(info_frame)
-    attr_row.pack(fill=tk.X, pady=(5, 0))
-    ttk.Label(attr_row, text="CharSet:", width=10).pack(side=tk.LEFT)
-    ttk.Label(attr_row, textvariable=var_font_charset, font=("Segoe UI", 9, "bold"), width=15).pack(side=tk.LEFT)
-    ttk.Label(attr_row, text="CodePage:", width=10).pack(side=tk.LEFT)
-    ttk.Label(attr_row, textvariable=var_font_codepage, font=("Segoe UI", 9, "bold")).pack(side=tk.LEFT)
+    if tab_type == "bitmap":
+        attr_row = ttk.Frame(info_frame)
+        attr_row.pack(fill=tk.X, pady=(5, 0))
+        ttk.Label(attr_row, text="CharSet:", width=10).pack(side=tk.LEFT)
+        ttk.Label(attr_row, textvariable=var_font_charset, font=("Segoe UI", 9, "bold"), width=15).pack(side=tk.LEFT)
+        ttk.Label(attr_row, text="CodePage:", width=10).pack(side=tk.LEFT)
+        ttk.Label(attr_row, textvariable=var_font_codepage, font=("Segoe UI", 9, "bold")).pack(side=tk.LEFT)
 
     # Preview Area
     preview_lbl = ttk.LabelFrame(right_frame, text=" Font Preview ", padding=10)

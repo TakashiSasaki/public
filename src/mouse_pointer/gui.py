@@ -281,12 +281,17 @@ class CursorGeneratorGUI(tk.Tk):
             thumb_size=40,
         )
 
-        # ---- Tab 4: Font List ----
-        fonts_tab = ttk.Frame(self.notebook, padding=5)
-        self.notebook.add(fonts_tab, text="  System Fonts  ")
-        build_fonts_tab(self, fonts_tab)
+        # ---- Tab 4: Vector Font List ----
+        vector_fonts_tab = ttk.Frame(self.notebook, padding=5)
+        self.notebook.add(vector_fonts_tab, text="  Vector Fonts  ")
+        build_fonts_tab(self, vector_fonts_tab, tab_type="vector")
 
-        # ---- Tab 5: Export Set ----
+        # ---- Tab 5: Bitmap Font List ----
+        bitmap_fonts_tab = ttk.Frame(self.notebook, padding=5)
+        self.notebook.add(bitmap_fonts_tab, text="  Bitmap Fonts  ")
+        build_fonts_tab(self, bitmap_fonts_tab, tab_type="bitmap")
+
+        # ---- Tab 6: Export Set ----
         export_tab = ttk.Frame(self.notebook, padding=5)
         self.notebook.add(export_tab, text="  Export Set  ")
         build_export_tab(self, export_tab)
