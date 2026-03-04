@@ -7,6 +7,7 @@ from typing import Optional, Dict, Any, List, Tuple, Union, Callable
 from tkinter import ttk
 
 from mouse_pointer.ui.tabs.editor_tab import build_editor_tab
+from mouse_pointer.ui.tabs.bases_tab import build_bases_tab
 from mouse_pointer.ui.tabs.export_tab import build_export_tab
 from mouse_pointer.ui.tabs.fonts_tab import build_fonts_tab
 
@@ -46,6 +47,7 @@ class CursorGeneratorGUI(tk.Tk):
         self.var_base_name = tk.StringVar(value="")
         self.var_badge1_name = tk.StringVar(value="")
         self.var_badge2_name = tk.StringVar(value="")
+        self.var_svg_aa = tk.BooleanVar(value=True)
 
         # Pictograms data
         self.pictograms_data = {}
@@ -86,6 +88,7 @@ class CursorGeneratorGUI(tk.Tk):
             "base_name": self.var_base_name.get(),
             "badge1_name": self.var_badge1_name.get(),
             "badge2_name": self.var_badge2_name.get(),
+            "svg_aa": self.var_svg_aa.get(),
         }
         try:
             with open(self.get_settings_path(), "w", encoding="utf-8") as f:
@@ -134,6 +137,7 @@ class CursorGeneratorGUI(tk.Tk):
                 set_val(self.var_base_name, "base_name")
                 set_val(self.var_badge1_name, "badge1_name")
                 set_val(self.var_badge2_name, "badge2_name")
+                set_val(self.var_svg_aa, "svg_aa", bool)
         except Exception as e:
             print(f"Failed to load settings: {e}")
 
@@ -177,12 +181,17 @@ class CursorGeneratorGUI(tk.Tk):
         self.notebook.add(editor_tab, text="  Cursor Editor  ")
         build_editor_tab(self, editor_tab)
 
-        # ---- Tab 2: Vector Font List ----
+        # ---- Tab 2: Bases Selection ----
+        bases_tab = ttk.Frame(self.notebook, padding=5)
+        self.notebook.add(bases_tab, text="  Bases  ")
+        build_bases_tab(self, bases_tab)
+
+        # ---- Tab 3: Vector Font List ----
         vector_fonts_tab = ttk.Frame(self.notebook, padding=5)
         self.notebook.add(vector_fonts_tab, text="  Vector Fonts  ")
         build_fonts_tab(self, vector_fonts_tab, tab_type="vector")
 
-        # ---- Tab 3: Bitmap Font List ----
+        # ---- Tab 4: Bitmap Font List ----
         bitmap_fonts_tab = ttk.Frame(self.notebook, padding=5)
         self.notebook.add(bitmap_fonts_tab, text="  Bitmap Fonts  ")
         build_fonts_tab(self, bitmap_fonts_tab, tab_type="bitmap")
