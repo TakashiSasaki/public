@@ -112,8 +112,26 @@ def build_fonts_tab(app, parent):
     scan_fonts()
     refresh_listbox()
 
-    # --- Right Panel: Preview ---
-    preview_lbl = ttk.LabelFrame(right_frame, text="Font Preview", padding=10)
+    # --- Right Panel: Preview & Info ---
+    # Info Area
+    info_frame = ttk.LabelFrame(right_frame, text=" Font Details ", padding=10)
+    info_frame.pack(fill=tk.X, pady=(0, 10))
+
+    var_font_path = tk.StringVar(value="-")
+    var_font_size = tk.StringVar(value="-")
+
+    path_row = ttk.Frame(info_frame)
+    path_row.pack(fill=tk.X)
+    ttk.Label(path_row, text="Full Path:", width=10).pack(side=tk.LEFT)
+    ttk.Entry(path_row, textvariable=var_font_path, state="readonly").pack(side=tk.LEFT, fill=tk.X, expand=True)
+
+    size_row = ttk.Frame(info_frame)
+    size_row.pack(fill=tk.X, pady=(5, 0))
+    ttk.Label(size_row, text="File Size:", width=10).pack(side=tk.LEFT)
+    ttk.Label(size_row, textvariable=var_font_size, font=("Segoe UI", 9, "bold")).pack(side=tk.LEFT)
+
+    # Preview Area
+    preview_lbl = ttk.LabelFrame(right_frame, text=" Font Preview ", padding=10)
     preview_lbl.pack(fill=tk.BOTH, expand=True)
 
     # Controls inside preview
@@ -140,6 +158,14 @@ def build_fonts_tab(app, parent):
         font_name = font_listbox.get(selection[0])
         font_path = font_dir / font_name
         
+        # Update Info
+        var_font_path.set(str(font_path))
+        try:
+            sz_bytes = font_path.stat().st_size
+            var_font_size.set(f"{sz_bytes / 1024:,.1f} KB ({sz_bytes:,} bytes)")
+        except:
+            var_font_size.set("Unknown")
+
         text = preview_text_var.get()
         size = preview_size_var.get()
         
@@ -150,12 +176,15 @@ def build_fonts_tab(app, parent):
                 scale_factor = 1.0
                 native_size = size
             except OSError as e:
-                if "invalid pixel size" in str(e).lower() or "unimplemented feature" in str(e).lower():
+                err_msg = str(e).lower()
+                if "invalid pixel size" in err_msg or "unimplemented feature" in err_msg:
                     # Probe for a working size (bitmap fonts usually support specific sizes like 12, 16, etc.)
                     working_font = None
                     working_size = size
-                    # Prioritize common sizes, then try a full range between 4 and 48
-                    probe_sizes = [16, 12, 13, 15, 20, 24, 8, 10, 11, 17, 18, 14, 19, 21, 22, 23] + list(range(4, 48))
+                    
+                    # Range for common bitmap pixels. Expanding to 48.
+                    probe_sizes = [16, 12, 13, 15, 20, 24, 8, 10, 11, 14, 17, 18, 19, 21, 22, 23, 25, 26, 27, 28, 29, 30, 31, 32]
+                    probe_sizes += list(range(4, 49))
                     
                     for s in probe_sizes:
                         try:
@@ -170,7 +199,8 @@ def build_fonts_tab(app, parent):
                         scale_factor = size / working_size
                         native_size = working_size
                     else:
-                        raise e
+                        # If still no luck, it's likely an unsupported vector font or corrupted
+                        raise ValueError("This font format (e.g., Windows legacy vector font) is not supported by the rendering engine.")
                 else:
                     raise e
 
