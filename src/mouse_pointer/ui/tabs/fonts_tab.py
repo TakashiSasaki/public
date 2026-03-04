@@ -143,27 +143,63 @@ def build_fonts_tab(app, parent):
         text = preview_text_var.get()
         size = preview_size_var.get()
         
-        # Draw on PIL Image
-        img = Image.new("RGBA", (1200, 600), (255, 255, 255, 255))
-        draw = ImageDraw.Draw(img)
-        
         try:
-            # Note: .fon files might require specific sizes or fail to load with .truetype
-            # We'll try to load it.
-            font = ImageFont.truetype(str(font_path), size)
+            # Flexible font loading for fixed-size/bitmap fonts (.fon)
+            try:
+                font = ImageFont.truetype(str(font_path), size)
+                scale_factor = 1.0
+                native_size = size
+            except OSError as e:
+                if "invalid pixel size" in str(e).lower() or "unimplemented feature" in str(e).lower():
+                    # Probe for a working size (bitmap fonts usually support specific sizes like 12, 16, etc.)
+                    working_font = None
+                    working_size = size
+                    for s in [16, 12, 13, 15, 20, 24, 8, 10]: # Common bitmap sizes to try
+                        try:
+                            working_font = ImageFont.truetype(str(font_path), s)
+                            working_size = s
+                            break
+                        except OSError:
+                            continue
+                    
+                    if working_font:
+                        font = working_font
+                        scale_factor = size / working_size
+                        native_size = working_size
+                    else:
+                        raise e
+                else:
+                    raise e
+
+            # Create an image at the 'native' size of the font (or requested size if scalable)
+            # We use a large enough margin.
+            temp_w, temp_h = 1200, 600
+            img = Image.new("RGBA", (temp_w, temp_h), (255, 255, 255, 255))
+            draw = ImageDraw.Draw(img)
             
             # Draw grid/baseline
-            draw.line([(0, 300), (1200, 300)], fill=(220, 220, 220, 255)) # Baseline
-            draw.line([(600, 0), (600, 600)], fill=(220, 220, 220, 255)) # Center axis
+            draw.line([(0, temp_h//2), (temp_w, temp_h//2)], fill=(220, 220, 220, 255))
+            draw.line([(temp_w//2, 0), (temp_w//2, temp_h)], fill=(220, 220, 220, 255))
             
-            # Draw text centered
-            draw.text((600, 300), text, font=font, fill=(0, 0, 0, 255), anchor="mm")
+            # Draw text
+            draw.text((temp_w//2, temp_h//2), text, font=font, fill=(0, 0, 0, 255), anchor="mm")
+
+            # Scale if necessary (e.g. for .fon files)
+            if scale_factor != 1.0:
+                # We crop to the relevant part before scaling to avoid huge images and keep it centered
+                # But for simplicity in a preview, we can just scale the whole thing or a sufficient chunk.
+                # Let's scale around the center.
+                final_w = int(temp_w * scale_factor)
+                final_h = int(temp_h * scale_factor)
+                img = img.resize((final_w, final_h), Image.Resampling.NEAREST)
+            else:
+                final_w, final_h = temp_w, temp_h
 
             photo = ImageTk.PhotoImage(img)
             preview_canvas.delete("all")
             preview_canvas.image = photo 
             
-            # Re-center based on canvas size
+            # Re-center
             cw = preview_canvas.winfo_width()
             ch = preview_canvas.winfo_height()
             preview_canvas.create_image(cw / 2, ch / 2, image=photo, anchor=tk.CENTER)
