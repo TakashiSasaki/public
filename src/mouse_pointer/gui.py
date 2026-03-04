@@ -7,6 +7,9 @@ from PIL import Image, ImageTk
 from mouse_pointer.generators.basic import create_cursor_image
 from mouse_pointer.core.cursor import save_cursor, save_multi_cursor
 
+from mouse_pointer.ui.tabs.editor_tab import build_editor_tab
+from mouse_pointer.ui.tabs.export_tab import build_export_tab
+from mouse_pointer.ui.tabs.fonts_tab import build_fonts_tab
 
 class CursorGeneratorGUI(tk.Tk):
     def __init__(self):
@@ -152,7 +155,7 @@ class CursorGeneratorGUI(tk.Tk):
         # ---- Tab 1: Cursor Editor ----
         editor_tab = ttk.Frame(self.notebook, padding=5)
         self.notebook.add(editor_tab, text="  Cursor Editor  ")
-        self._build_editor_tab(editor_tab)
+        build_editor_tab(self, editor_tab)
 
         # ---- Tab 2: Bases Gallery ----
         bases_tab = ttk.Frame(self.notebook, padding=5)
@@ -174,166 +177,18 @@ class CursorGeneratorGUI(tk.Tk):
             thumb_size=40,
         )
 
-        # ---- Tab 4: Export Set ----
+        # ---- Tab 4: Font List ----
+        fonts_tab = ttk.Frame(self.notebook, padding=5)
+        self.notebook.add(fonts_tab, text="  System Fonts  ")
+        build_fonts_tab(self, fonts_tab)
+
+        # ---- Tab 5: Export Set ----
         export_tab = ttk.Frame(self.notebook, padding=5)
         self.notebook.add(export_tab, text="  Export Set  ")
-        self._build_export_tab(export_tab)
+        build_export_tab(self, export_tab)
 
     # ------------------------------------------------------------------
-    #  Tab 1 – Cursor Editor
-    # ------------------------------------------------------------------
-    def _build_editor_tab(self, parent):
-        # --- Left Panel (Controls) ---
-        controls_frame = ttk.LabelFrame(parent, text="Settings", padding=15)
-        controls_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 10))
-
-        row = 0
-
-        # Shape
-        ttk.Label(controls_frame, text="Shape:").grid(row=row, column=0, sticky=tk.W, pady=5)
-        shape_combo = ttk.Combobox(controls_frame, textvariable=self.var_shape, state="readonly", values=["arrow", "triangle", "cross"])
-        shape_combo.grid(row=row, column=1, sticky=tk.EW, pady=5)
-        shape_combo.bind("<<ComboboxSelected>>", self.on_change)
-        row += 1
-
-        # Size
-        ttk.Label(controls_frame, text="Size (px):").grid(row=row, column=0, sticky=tk.W, pady=5)
-        size_combo = ttk.Combobox(controls_frame, textvariable=self.var_size, state="readonly", values=[32, 48, 64])
-        size_combo.grid(row=row, column=1, sticky=tk.EW, pady=5)
-        size_combo.bind("<<ComboboxSelected>>", self.on_change)
-        row += 1
-
-        # Color
-        ttk.Label(controls_frame, text="Fill Color:").grid(row=row, column=0, sticky=tk.W, pady=5)
-        color_btn = ttk.Button(controls_frame, text="Select Color", command=lambda: self.choose_color("fill"))
-        color_btn.grid(row=row, column=1, sticky=tk.EW, pady=5)
-        self.color_preview = tk.Label(controls_frame, bg=self.var_color.get(), width=3)
-        self.color_preview.grid(row=row, column=2, padx=5)
-        row += 1
-
-        # Border Color
-        ttk.Label(controls_frame, text="Border Color:").grid(row=row, column=0, sticky=tk.W, pady=5)
-        border_color_btn = ttk.Button(controls_frame, text="Select Color", command=lambda: self.choose_color("border"))
-        border_color_btn.grid(row=row, column=1, sticky=tk.EW, pady=5)
-        self.border_preview = tk.Label(controls_frame, bg=self.var_border_color.get(), width=3)
-        self.border_preview.grid(row=row, column=2, padx=5)
-        row += 1
-
-        # Border Thickness
-        ttk.Label(controls_frame, text="Border Thick:").grid(row=row, column=0, sticky=tk.W, pady=5)
-        thickness_spin = ttk.Spinbox(controls_frame, from_=0, to=5, textvariable=self.var_border_thickness, command=self.on_change)
-        thickness_spin.grid(row=row, column=1, sticky=tk.EW, pady=5)
-        thickness_spin.bind("<Return>", self.on_change)
-        thickness_spin.bind("<FocusOut>", self.on_change)
-        row += 1
-
-        # Top-Right Text
-        ttk.Label(controls_frame, text="TR Text:").grid(row=row, column=0, sticky=tk.W, pady=5)
-        tr_frame = ttk.Frame(controls_frame)
-        tr_frame.grid(row=row, column=1, sticky=tk.EW, pady=5)
-        tr_entry = ttk.Entry(tr_frame, textvariable=self.var_tr_text, width=4)
-        tr_entry.pack(side=tk.LEFT)
-        tr_entry.bind("<KeyRelease>", self.on_change)
-        ttk.Label(tr_frame, text=" Size:").pack(side=tk.LEFT, padx=(5, 2))
-        tr_spin = ttk.Spinbox(tr_frame, from_=8, to=32, textvariable=self.var_tr_size, width=3, command=self.on_change)
-        tr_spin.pack(side=tk.LEFT)
-        tr_spin.bind("<Return>", self.on_change)
-        tr_spin.bind("<FocusOut>", self.on_change)
-        row += 1
-
-        # Bottom-Right Text
-        ttk.Label(controls_frame, text="BR Text:").grid(row=row, column=0, sticky=tk.W, pady=5)
-        br_frame = ttk.Frame(controls_frame)
-        br_frame.grid(row=row, column=1, sticky=tk.EW, pady=5)
-        br_entry = ttk.Entry(br_frame, textvariable=self.var_br_text, width=4)
-        br_entry.pack(side=tk.LEFT)
-        br_entry.bind("<KeyRelease>", self.on_change)
-        ttk.Label(br_frame, text=" Size:").pack(side=tk.LEFT, padx=(5, 2))
-        br_spin = ttk.Spinbox(br_frame, from_=8, to=32, textvariable=self.var_br_size, width=3, command=self.on_change)
-        br_spin.pack(side=tk.LEFT)
-        br_spin.bind("<Return>", self.on_change)
-        br_spin.bind("<FocusOut>", self.on_change)
-        row += 1
-
-        # Caption Text
-        ttk.Label(controls_frame, text="Caption:").grid(row=row, column=0, sticky=tk.W, pady=5)
-        caption_frame = ttk.Frame(controls_frame)
-        caption_frame.grid(row=row, column=1, sticky=tk.EW, pady=5)
-        caption_entry = ttk.Entry(caption_frame, textvariable=self.var_caption_text, width=8)
-        caption_entry.pack(side=tk.LEFT)
-        caption_entry.bind("<KeyRelease>", self.on_change)
-        ttk.Label(caption_frame, text=" Size:").pack(side=tk.LEFT, padx=(5, 2))
-        caption_spin = ttk.Spinbox(caption_frame, from_=8, to=32, textvariable=self.var_caption_size, width=3, command=self.on_change)
-        caption_spin.pack(side=tk.LEFT)
-        caption_spin.bind("<Return>", self.on_change)
-        caption_spin.bind("<FocusOut>", self.on_change)
-        row += 1
-
-        ttk.Label(controls_frame, text=" Cap Color:").grid(row=row, column=0, sticky=tk.W, pady=5)
-        cap_color_btn = ttk.Button(controls_frame, text="Text Color", command=lambda: self.choose_color("caption_text"))
-        cap_color_btn.grid(row=row, column=1, sticky=tk.EW, pady=5)
-        self.cap_color_preview = tk.Label(controls_frame, bg=self.var_caption_color.get(), width=3)
-        self.cap_color_preview.grid(row=row, column=2, padx=5)
-        row += 1
-
-        ttk.Label(controls_frame, text=" Cap BG:").grid(row=row, column=0, sticky=tk.W, pady=5)
-        cap_bg_btn = ttk.Button(controls_frame, text="BG Color", command=lambda: self.choose_color("caption_bg"))
-        cap_bg_btn.grid(row=row, column=1, sticky=tk.EW, pady=5)
-        self.cap_bg_preview = tk.Label(controls_frame, bg=self.var_caption_bg_color.get(), width=3)
-        self.cap_bg_preview.grid(row=row, column=2, padx=5)
-        row += 1
-
-        # --- SVG Overlays ---
-        ttk.Separator(controls_frame, orient=tk.HORIZONTAL).grid(row=row, column=0, columnspan=3, sticky=tk.EW, pady=10)
-        row += 1
-
-        # Base Overlay
-        ttk.Label(controls_frame, text="SVG Base:").grid(row=row, column=0, sticky=tk.W, pady=5)
-        base_combo = ttk.Combobox(controls_frame, textvariable=self.var_base_name, state="readonly", values=self.base_choices)
-        base_combo.grid(row=row, column=1, sticky=tk.EW, pady=5)
-        base_combo.bind("<<ComboboxSelected>>", self.on_change)
-        row += 1
-
-        # Badge 1 (Bottom Right)
-        ttk.Label(controls_frame, text="Badge 1 (BR):").grid(row=row, column=0, sticky=tk.W, pady=5)
-        badge1_combo = ttk.Combobox(controls_frame, textvariable=self.var_badge1_name, state="readonly", values=self.badge_choices)
-        badge1_combo.grid(row=row, column=1, sticky=tk.EW, pady=5)
-        badge1_combo.bind("<<ComboboxSelected>>", self.on_change)
-        row += 1
-
-        # Badge 2 (Top Left)
-        ttk.Label(controls_frame, text="Badge 2 (TL):").grid(row=row, column=0, sticky=tk.W, pady=5)
-        badge2_combo = ttk.Combobox(controls_frame, textvariable=self.var_badge2_name, state="readonly", values=self.badge_choices)
-        badge2_combo.grid(row=row, column=1, sticky=tk.EW, pady=5)
-        badge2_combo.bind("<<ComboboxSelected>>", self.on_change)
-        row += 1
-
-        # Drop Shadow
-        ttk.Label(controls_frame, text="Effects:").grid(row=row, column=0, sticky=tk.W, pady=5)
-        shadow_chk = ttk.Checkbutton(controls_frame, text="Drop Shadow", variable=self.var_drop_shadow, command=self.on_change)
-        shadow_chk.grid(row=row, column=1, sticky=tk.W, pady=5)
-        row += 1
-
-        # --- Right Panel (Preview & Action) ---
-        right_frame = ttk.Frame(parent)
-        right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
-
-        # Preview Area
-        preview_group = ttk.LabelFrame(right_frame, text="Live Preview", padding=15)
-        preview_group.pack(fill=tk.BOTH, expand=True, pady=(0, 10))
-
-        self.preview_canvas = tk.Canvas(preview_group, width=150, height=150, bg="#dddddd", highlightthickness=1, highlightbackground="#999")
-        self.preview_canvas.pack(expand=True)
-
-        self.hotspot_label = ttk.Label(preview_group, text="Hotspot: (0, 0)")
-        self.hotspot_label.pack(pady=5)
-
-        # Generate Button
-        generate_btn = ttk.Button(right_frame, text="Generate .cur", command=self.generate_cur, style="Accent.TButton")
-        generate_btn.pack(fill=tk.X, pady=10, ipady=10)
-
-    # ------------------------------------------------------------------
-    #  Tab 2 / 3 – Gallery helpers
+    #  Gallery helpers
     # ------------------------------------------------------------------
 
     def _build_pictogram_list(self, parent, items: dict, click_callback, thumb_size: int = 48):
@@ -457,6 +312,9 @@ class CursorGeneratorGUI(tk.Tk):
         self.update_preview()
 
     def update_preview(self):
+        if not hasattr(self, 'preview_canvas') or not hasattr(self, 'hotspot_label'):
+            return
+            
         try:
             size = self.var_size.get()
             fill_rgba = self.hex_to_rgba(self.var_color.get())
@@ -675,95 +533,6 @@ class CursorGeneratorGUI(tk.Tk):
                 self.var_export_br.set(self.export_tree.item(sel[0], "values")[2])
 
         self.export_tree.bind("<<TreeviewSelect>>", _on_select)
-
-        # --- 出力ボタン ---
-        btn_frame = ttk.Frame(parent)
-        btn_frame.pack(fill=tk.X, pady=(8, 0))
-        ttk.Button(
-            btn_frame,
-            text="📁  フォルダを選択して 17 種類を一括出力",
-            command=self._export_cursor_set,
-        ).pack(side=tk.RIGHT)
-
-    def _export_cursor_set(self):
-        """Export Set タブの設定を元に 17 種類のカーソルファイルを一括生成する。"""
-        from tkinter import filedialog as fd
-        import traceback
-
-        out_dir = fd.askdirectory(title="出力フォルダを選択")
-        if not out_dir:
-            return
-
-        try:
-            fill_rgba   = self.hex_to_rgba(self.var_color.get())
-            border_rgba = self.hex_to_rgba(self.var_border_color.get())
-            cap_rgba    = self.hex_to_rgba(self.var_caption_color.get())
-            cap_bg_rgba = self.hex_to_rgba(self.var_caption_bg_color.get())
-            try:    tr_s = self.var_tr_size.get()
-            except tk.TclError: tr_s = 12
-            try:    cap_s = self.var_caption_size.get()
-            except tk.TclError: cap_s = 12
-            shape       = self.var_shape.get()
-            tr_text     = self.var_tr_text.get()
-            cap_text    = self.var_caption_text.get()
-            border_th   = self.var_border_thickness.get()
-            drop_shadow = self.var_drop_shadow.get()
-            base_name   = self.var_base_name.get()
-            badge1_name = self.var_badge1_name.get()
-            badge2_name = self.var_badge2_name.get()
-
-            sizes = [32, 48, 64]
-            errors = []
-
-            # Treeview から現在のロール設定を取得
-            rows = []
-            for iid in self.export_tree.get_children():
-                vals = self.export_tree.item(iid, "values")
-                rows.append({"name": vals[0], "filename": vals[1], "label_br": vals[2]})
-
-            for role in rows:
-                br_text = role["label_br"]
-                filename = role["filename"]
-                out_path = str(Path(out_dir) / filename)
-                try:
-                    multi_image_data = []
-                    for s in sizes:
-                        img, hotspot = create_cursor_image(
-                            size=s,
-                            color=fill_rgba,
-                            shape=shape,
-                            border_color=border_rgba,
-                            border_thickness=border_th,
-                            tr_text=tr_text,
-                            tr_text_size=tr_s,
-                            br_text=br_text,
-                            br_text_size=max(8, s // 4),
-                            caption_text=cap_text,
-                            caption_text_size=cap_s,
-                            caption_color=cap_rgba,
-                            caption_bg_color=cap_bg_rgba,
-                            drop_shadow=drop_shadow,
-                            base_name=base_name,
-                            badge1_name=badge1_name,
-                            badge2_name=badge2_name,
-                        )
-                        multi_image_data.append((img, hotspot))
-                    save_multi_cursor(multi_image_data, out_path)
-                except Exception as e:
-                    errors.append(f"{filename}: {e}")
-
-            if errors:
-                messagebox.showwarning(
-                    "一部エラー",
-                    f"{len(rows) - len(errors)} 個成功、{len(errors)} 個失敗:\n" + "\n".join(errors),
-                )
-            else:
-                messagebox.showinfo(
-                    "完了",
-                    f"17 種類のカーソルを以下に出力しました:\n{out_dir}",
-                )
-        except Exception as e:
-            messagebox.showerror("Error", f"一括出力に失敗しました:\n{traceback.format_exc()}")
 
 def run_gui():
     app = CursorGeneratorGUI()
