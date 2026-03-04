@@ -74,11 +74,9 @@ class PreviewPanel:
         vars_to_trace = [
             self.app.var_size, self.app.var_shape, self.app.var_color,
             self.app.var_border_color, self.app.var_border_thickness,
-            self.app.var_tr_text, self.app.var_tr_size,
-            self.app.var_mr_text, self.app.var_mr_size,
-            self.app.var_caption_text, self.app.var_caption_size,
-            self.app.var_caption_color, self.app.var_caption_bg_color,
-            self.app.var_caption_aa, self.app.var_caption_outline,
+            self.app.var_tr_text, self.app.var_tr_size, self.app.var_tr_color, self.app.var_tr_bg_color, self.app.var_tr_bg_alpha, self.app.var_tr_aa, self.app.var_tr_outline,
+            self.app.var_mr_text, self.app.var_mr_size, self.app.var_mr_color, self.app.var_mr_bg_color, self.app.var_mr_bg_alpha, self.app.var_mr_aa, self.app.var_mr_outline,
+            self.app.var_caption_text, self.app.var_caption_size, self.app.var_caption_color, self.app.var_caption_bg_color, self.app.var_caption_bg_alpha, self.app.var_caption_aa, self.app.var_caption_outline,
             self.app.var_drop_shadow, self.app.var_show_grid,
             self.app.var_base_name, self.app.var_badge1_name, self.app.var_badge2_name,
             self.app.var_svg_aa,
@@ -102,14 +100,23 @@ class PreviewPanel:
             try: cap_s = self.app.var_caption_size.get()
             except: cap_s = 12
 
+            def get_text_data(color_var, bg_var, alpha_var):
+                rgb = self.app.hex_to_rgba(color_var.get())[:3]
+                bg_rgb = self.app.hex_to_rgba(bg_var.get())[:3]
+                return (*rgb, 255), (*bg_rgb, alpha_var.get())
+
+            tr_c, tr_bg = get_text_data(self.app.var_tr_color, self.app.var_tr_bg_color, self.app.var_tr_bg_alpha)
+            mr_c, mr_bg = get_text_data(self.app.var_mr_color, self.app.var_mr_bg_color, self.app.var_mr_bg_alpha)
+            cap_c, cap_bg = get_text_data(self.app.var_caption_color, self.app.var_caption_bg_color, self.app.var_caption_bg_alpha)
+
             # Use create_cursor_image with all current app variables
             img, hotspot = create_cursor_image(
                 size=size_val, color=fill_rgba, shape=self.app.var_shape.get(),
                 border_color=border_rgba, border_thickness=self.app.var_border_thickness.get(),
-                tr_text=self.app.var_tr_text.get(), tr_text_size=tr_s,
-                mr_text=self.app.var_mr_text.get(), mr_text_size=mr_s,
+                tr_text=self.app.var_tr_text.get(), tr_text_size=tr_s, tr_color=tr_c, tr_bg_color=tr_bg, tr_aa=self.app.var_tr_aa.get(), tr_outline=self.app.var_tr_outline.get(),
+                mr_text=self.app.var_mr_text.get(), mr_text_size=mr_s, mr_color=mr_c, mr_bg_color=mr_bg, mr_aa=self.app.var_mr_aa.get(), mr_outline=self.app.var_mr_outline.get(),
                 caption_text=self.app.var_caption_text.get(), caption_text_size=cap_s,
-                caption_color=cap_rgba, caption_bg_color=cap_bg_rgba,
+                caption_color=cap_c, caption_bg_color=cap_bg,
                 caption_aa=self.app.var_caption_aa.get(), caption_outline=self.app.var_caption_outline.get(),
                 drop_shadow=self.app.var_drop_shadow.get(), base_name=self.app.var_base_name.get(),
                 badge1_name=self.app.var_badge1_name.get(), badge2_name=self.app.var_badge2_name.get(),
@@ -155,10 +162,10 @@ class PreviewPanel:
                     native_img, _ = create_cursor_image(
                         size=s, color=fill_rgba, shape=self.app.var_shape.get(),
                         border_color=border_rgba, border_thickness=self.app.var_border_thickness.get(),
-                        tr_text=self.app.var_tr_text.get(), tr_text_size=tr_s,
-                        mr_text=self.app.var_mr_text.get(), mr_text_size=mr_s,
+                        tr_text=self.app.var_tr_text.get(), tr_text_size=tr_s, tr_color=tr_c, tr_bg_color=tr_bg, tr_aa=self.app.var_tr_aa.get(), tr_outline=self.app.var_tr_outline.get(),
+                        mr_text=self.app.var_mr_text.get(), mr_text_size=mr_s, mr_color=mr_c, mr_bg_color=mr_bg, mr_aa=self.app.var_mr_aa.get(), mr_outline=self.app.var_mr_outline.get(),
                         caption_text=self.app.var_caption_text.get(), caption_text_size=cap_s,
-                        caption_color=cap_rgba, caption_bg_color=cap_bg_rgba,
+                        caption_color=cap_c, caption_bg_color=cap_bg,
                         caption_aa=self.app.var_caption_aa.get(), caption_outline=self.app.var_caption_outline.get(),
                         drop_shadow=self.app.var_drop_shadow.get(), base_name=self.app.var_base_name.get(),
                         badge1_name=self.app.var_badge1_name.get(), badge2_name=self.app.var_badge2_name.get(),

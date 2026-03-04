@@ -34,12 +34,25 @@ class CursorGeneratorGUI(tk.Tk):
         self.var_border_thickness = tk.IntVar(value=1)
         self.var_tr_text = tk.StringVar(value="")
         self.var_tr_size = tk.IntVar(value=12)
+        self.var_tr_color = tk.StringVar(value="#ffffff")
+        self.var_tr_bg_color = tk.StringVar(value="#000000")
+        self.var_tr_bg_alpha = tk.IntVar(value=255)
+        self.var_tr_aa = tk.BooleanVar(value=True)
+        self.var_tr_outline = tk.BooleanVar(value=True)
+
         self.var_mr_text = tk.StringVar(value="")
         self.var_mr_size = tk.IntVar(value=12)
+        self.var_mr_color = tk.StringVar(value="#ffffff")
+        self.var_mr_bg_color = tk.StringVar(value="#000000")
+        self.var_mr_bg_alpha = tk.IntVar(value=255)
+        self.var_mr_aa = tk.BooleanVar(value=True)
+        self.var_mr_outline = tk.BooleanVar(value=True)
+
         self.var_caption_text = tk.StringVar(value="")
         self.var_caption_size = tk.IntVar(value=12)
-        self.var_caption_color = tk.StringVar(value="#000000") # Default Black
-        self.var_caption_bg_color = tk.StringVar(value="#ffffff") # Default White
+        self.var_caption_color = tk.StringVar(value="#000000")
+        self.var_caption_bg_color = tk.StringVar(value="#ffffff")
+        self.var_caption_bg_alpha = tk.IntVar(value=255)
         self.var_caption_aa = tk.BooleanVar(value=True)
         self.var_caption_outline = tk.BooleanVar(value=False)
         self.var_show_grid = tk.BooleanVar(value=True)
@@ -77,12 +90,23 @@ class CursorGeneratorGUI(tk.Tk):
             "border_thickness": self.var_border_thickness.get(),
             "tr_text": self.var_tr_text.get(),
             "tr_size": self.var_tr_size.get(),
+            "tr_color": self.var_tr_color.get(),
+            "tr_bg_color": self.var_tr_bg_color.get(),
+            "tr_bg_alpha": self.var_tr_bg_alpha.get(),
+            "tr_aa": self.var_tr_aa.get(),
+            "tr_outline": self.var_tr_outline.get(),
             "mr_text": self.var_mr_text.get(),
             "mr_size": self.var_mr_size.get(),
+            "mr_color": self.var_mr_color.get(),
+            "mr_bg_color": self.var_mr_bg_color.get(),
+            "mr_bg_alpha": self.var_mr_bg_alpha.get(),
+            "mr_aa": self.var_mr_aa.get(),
+            "mr_outline": self.var_mr_outline.get(),
             "caption_text": self.var_caption_text.get(),
             "caption_size": self.var_caption_size.get(),
             "caption_color": self.var_caption_color.get(),
             "caption_bg_color": self.var_caption_bg_color.get(),
+            "caption_bg_alpha": self.var_caption_bg_alpha.get(),
             "caption_aa": self.var_caption_aa.get(),
             "caption_outline": self.var_caption_outline.get(),
             "show_grid": self.var_show_grid.get(),
@@ -128,12 +152,25 @@ class CursorGeneratorGUI(tk.Tk):
                 set_val(self.var_border_thickness, "border_thickness", int)
                 set_val(self.var_tr_text, "tr_text")
                 set_val(self.var_tr_size, "tr_size", int)
+                set_val(self.var_tr_color, "tr_color")
+                set_val(self.var_tr_bg_color, "tr_bg_color")
+                set_val(self.var_tr_bg_alpha, "tr_bg_alpha", int)
+                set_val(self.var_tr_aa, "tr_aa", bool)
+                set_val(self.var_tr_outline, "tr_outline", bool)
+
                 set_val(self.var_mr_text, "mr_text")
                 set_val(self.var_mr_size, "mr_size", int)
+                set_val(self.var_mr_color, "mr_color")
+                set_val(self.var_mr_bg_color, "mr_bg_color")
+                set_val(self.var_mr_bg_alpha, "mr_bg_alpha", int)
+                set_val(self.var_mr_aa, "mr_aa", bool)
+                set_val(self.var_mr_outline, "mr_outline", bool)
+
                 set_val(self.var_caption_text, "caption_text")
                 set_val(self.var_caption_size, "caption_size", int)
                 set_val(self.var_caption_color, "caption_color")
                 set_val(self.var_caption_bg_color, "caption_bg_color")
+                set_val(self.var_caption_bg_alpha, "caption_bg_alpha", int)
                 set_val(self.var_caption_aa, "caption_aa", bool)
                 set_val(self.var_caption_outline, "caption_outline", bool)
                 set_val(self.var_show_grid, "show_grid", bool)

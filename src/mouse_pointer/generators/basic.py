@@ -97,6 +97,14 @@ def create_cursor_image(
     caption_bg_color: Tuple[int, int, int, int] = (255, 255, 255, 255),
     caption_aa: bool = True,
     caption_outline: bool = False,
+    tr_color: Tuple[int, int, int, int] = (255, 255, 255, 255),
+    tr_bg_color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+    tr_aa: bool = True,
+    tr_outline: bool = True,
+    mr_color: Tuple[int, int, int, int] = (255, 255, 255, 255),
+    mr_bg_color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+    mr_aa: bool = True,
+    mr_outline: bool = True,
     drop_shadow: bool = False,
     base_name: str = "",
     badge1_name: str = "",
@@ -138,57 +146,67 @@ def create_cursor_image(
         
     draw = ImageDraw.Draw(img)
 
-    if caption_text:
-        caption_font = get_default_font(caption_text_size)
-        cx, cy = size // 2, size - 1
-        def _draw_caption_text(target_draw, pos_x, pos_y, text, font, fill, is_aa):
-            if is_aa: target_draw.text((pos_x, pos_y), text, font=font, fill=fill, anchor="mb")
+    def _render_text(draw_obj, text, font, pos, fill, bg, is_aa, is_outline, anchor):
+        if not text: return
+        
+        # Get bounds
+        try: left, top, right, bottom = draw_obj.textbbox(pos, text, font=font, anchor=anchor)
+        except AttributeError:
+            tw, th = draw_obj.textsize(text, font=font)
+            px, py = pos
+            if anchor == "mb": left, top, right, bottom = px - tw/2, py - th, px + tw/2, py
+            elif anchor == "rt": left, top, right, bottom = px - tw, py, px, py + th
+            elif anchor == "rm": left, top, right, bottom = px - tw, py - th/2, px, py + th/2
+            else: left, top, right, bottom = px, py, px + tw, py + th
+
+        # Draw background rectangle with alpha support
+        if bg and bg[3] > 0:
+            # We use a temp image to paste the rectangle with alpha correctly onto the RGBA img
+            rect_img = Image.new("RGBA", (int(right-left)+2, int(bottom-top)+2), bg)
+            img.paste(rect_img, (int(left)-1, int(top)-1), rect_img)
+
+        def _draw_core(target_draw, p_x, p_y, f_color):
+            if is_aa: target_draw.text((p_x, p_y), text, font=font, fill=f_color, anchor=anchor)
             else:
-                try: left, top, right, bottom = target_draw.textbbox((pos_x, pos_y), text, font=font, anchor="mb")
+                # Aliased rendering using a 1-bit mask
+                try: lb, tb, rb, bb = target_draw.textbbox((p_x, p_y), text, font=font, anchor=anchor)
                 except AttributeError:
                     tw, th = target_draw.textsize(text, font=font)
-                    left, top, right, bottom = pos_x - tw/2, pos_y - th, pos_x + tw/2, pos_y
-                w, h = int(right - left) + 4, int(bottom - top) + 4
+                    if anchor == "mb": lb, tb, rb, bb = p_x - tw/2, p_y - th, p_x + tw/2, p_y
+                    elif anchor == "rt": lb, tb, rb, bb = p_x - tw, p_y, p_x, p_y + th
+                    elif anchor == "rm": lb, tb, rb, bb = p_x - tw, p_y - th/2, p_x, p_y + th/2
+                    else: lb, tb, rb, bb = p_x, p_y, p_x + tw, p_y + th
+                
+                w, h = int(rb - lb) + 4, int(bb - tb) + 4
                 if w <= 0 or h <= 0: return
                 mask = Image.new("1", (w, h), 0)
-                ImageDraw.Draw(mask).text((2, 2), text, font=font, fill=1, anchor="lt")
-                color_img = Image.new("RGBA", (w, h), fill)
-                target_draw._image.paste(color_img, (int(left) - 2, int(top) - 2), mask)
+                # Draw text to mask at 2,2 offset
+                t_ix, t_iy = p_x - lb + 2, p_y - tb + 2
+                ImageDraw.Draw(mask).text((t_ix, t_iy), text, font=font, fill=1, anchor=anchor)
+                color_img = Image.new("RGBA", (w, h), f_color)
+                # Paste using the 1-bit mask onto the main image
+                img.paste(color_img, (int(lb) - 2, int(tb) - 2), mask)
 
-        if caption_outline:
-            offset = max(1, int(size * 0.03))
-            _draw_caption_text(draw, cx - offset, cy, caption_text, caption_font, caption_bg_color, caption_aa)
-            _draw_caption_text(draw, cx + offset, cy, caption_text, caption_font, caption_bg_color, caption_aa)
-            _draw_caption_text(draw, cx, cy - offset, caption_text, caption_font, caption_bg_color, caption_aa)
-            _draw_caption_text(draw, cx, min(cy + offset, size - 1), caption_text, caption_font, caption_bg_color, caption_aa)
-        else:
-            if len(caption_bg_color) == 4 and caption_bg_color[3] > 0:
-                try:
-                    left, top, right, bottom = draw.textbbox((cx, cy), caption_text, font=caption_font, anchor="mb")
-                    draw.rectangle([left - 1, top - 1, right + 1, min(bottom + 1, size - 2)], fill=caption_bg_color)
-                except AttributeError:
-                    tw, th = draw.textsize(caption_text, font=caption_font)
-                    draw.rectangle([cx - tw/2 - 1, cy - th - 1, cx + tw/2 + 1, cy - 1], fill=caption_bg_color)
-        _draw_caption_text(draw, cx, cy, caption_text, caption_font, caption_color, caption_aa)
+        if is_outline:
+            off = max(1, int(size * 0.03))
+            _draw_core(draw_obj, pos[0]-off, pos[1], bg)
+            _draw_core(draw_obj, pos[0]+off, pos[1], bg)
+            _draw_core(draw_obj, pos[0], pos[1]-off, bg)
+            _draw_core(draw_obj, pos[0], pos[1]+off, bg)
+            
+        _draw_core(draw_obj, pos[0], pos[1], fill)
+
+    if caption_text:
+        _render_text(draw, caption_text, get_default_font(caption_text_size), (size // 2, size - 1), caption_color, caption_bg_color, caption_aa, caption_outline, "mb")
 
     try: draw.polygon(points, fill=color, outline=border_color, width=border_thickness)
     except TypeError: draw.polygon(points, fill=color, outline=border_color)
-        
-    def draw_outlined_text(text, position, font, anchor="lt"):
-        if not text: return
-        brightness = sum(color[:3]) / 3
-        text_color = (0, 0, 0, 255) if brightness > 128 else (255, 255, 255, 255)
-        text_bg = (255, 255, 255, 255) if brightness > 128 else (0, 0, 0, 255)
-        offset = max(1, int(size * 0.03))
-        x, y = position
-        draw.text((x-offset, y), text, font=font, fill=text_bg, anchor=anchor)
-        draw.text((x+offset, y), text, font=font, fill=text_bg, anchor=anchor)
-        draw.text((x, y-offset), text, font=font, fill=text_bg, anchor=anchor)
-        draw.text((x, y+offset), text, font=font, fill=text_bg, anchor=anchor)
-        draw.text((x, y), text, font=font, fill=text_color, anchor=anchor)
 
-    if tr_text: draw_outlined_text(tr_text, (size - 2, 2), get_default_font(tr_text_size), anchor="rt")
-    if mr_text: draw_outlined_text(mr_text, (size - 2, size // 2), get_default_font(mr_text_size), anchor="rm")
+    if tr_text:
+        _render_text(draw, tr_text, get_default_font(tr_text_size), (size - 2, 2), tr_color, tr_bg_color, tr_aa, tr_outline, "rt")
+    
+    if mr_text:
+        _render_text(draw, mr_text, get_default_font(mr_text_size), (size - 2, size // 2), mr_color, mr_bg_color, mr_aa, mr_outline, "rm")
 
     if base_name or badge1_name or badge2_name:
         try:

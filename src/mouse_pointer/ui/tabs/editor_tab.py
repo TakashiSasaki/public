@@ -60,67 +60,55 @@ def build_editor_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
     app.var_border_color.trace_add("write", lambda *a: border_preview.config(bg=app.var_border_color.get()))
     row += 1
 
-    # TR Text
-    ttk.Separator(controls_frame, orient=tk.HORIZONTAL).grid(row=row, column=0, columnspan=3, sticky=tk.EW, pady=10)
-    row += 1
-    ttk.Label(controls_frame, text=" TR Text:").grid(row=row, column=0, sticky=tk.W, pady=5)
-    tr_entry = ttk.Entry(controls_frame, textvariable=app.var_tr_text, width=10)
-    tr_entry.grid(row=row, column=1, sticky=tk.EW, pady=5)
-    row += 1
+    # --- Text Settings Helper ---
+    def add_text_controls(parent, label_prefix, text_var, size_var, color_var, bg_var, alpha_var, aa_var, outline_var):
+        nonlocal row
+        ttk.Separator(parent, orient=tk.HORIZONTAL).grid(row=row, column=0, columnspan=3, sticky=tk.EW, pady=10)
+        row += 1
+        
+        ttk.Label(parent, text=f" {label_prefix} Text:").grid(row=row, column=0, sticky=tk.W, pady=2)
+        ttk.Entry(parent, textvariable=text_var, width=10).grid(row=row, column=1, sticky=tk.EW, pady=2)
+        row += 1
+        
+        ttk.Label(parent, text=f" {label_prefix} Size:").grid(row=row, column=0, sticky=tk.W, pady=2)
+        ttk.Spinbox(parent, from_=8, to=72, textvariable=size_var, width=5).grid(row=row, column=1, sticky=tk.EW, pady=2)
+        row += 1
+        
+        # Color & BG
+        color_frame = ttk.Frame(parent)
+        color_frame.grid(row=row, column=0, columnspan=3, sticky=tk.W, pady=2)
+        
+        def pick_c(var, lbl):
+            c = colorchooser.askcolor(initialcolor=var.get(), title=f"Select {lbl} Color")
+            if c[1]: var.set(c[1])
+            
+        btn_c = ttk.Button(color_frame, text="Clr", width=4, command=lambda: pick_c(color_var, f"{label_prefix} Text"))
+        btn_c.pack(side=tk.LEFT, padx=2)
+        pre_c = tk.Label(color_frame, bg=color_var.get(), width=2)
+        pre_c.pack(side=tk.LEFT, padx=2)
+        color_var.trace_add("write", lambda *a: pre_c.config(bg=color_var.get()))
+        
+        btn_bg = ttk.Button(color_frame, text="BG", width=4, command=lambda: pick_c(bg_var, f"{label_prefix} BG"))
+        btn_bg.pack(side=tk.LEFT, padx=2)
+        pre_bg = tk.Label(color_frame, bg=bg_var.get(), width=2)
+        pre_bg.pack(side=tk.LEFT, padx=2)
+        bg_var.trace_add("write", lambda *a: pre_bg.config(bg=bg_var.get()))
+        
+        ttk.Label(color_frame, text=" α:").pack(side=tk.LEFT, padx=(5, 0))
+        ttk.Spinbox(color_frame, from_=0, to=255, textvariable=alpha_var, width=4).pack(side=tk.LEFT, padx=2)
+        row += 1
+        
+        # Options
+        opt_frame = ttk.Frame(parent)
+        opt_frame.grid(row=row, column=0, columnspan=3, sticky=tk.W, pady=2)
+        ttk.Checkbutton(opt_frame, text="AA", variable=aa_var).pack(side=tk.LEFT, padx=2)
+        ttk.Checkbutton(opt_frame, text="Out", variable=outline_var).pack(side=tk.LEFT, padx=2)
+        row += 1
 
-    ttk.Label(controls_frame, text=" TR Size:").grid(row=row, column=0, sticky=tk.W, pady=5)
-    tr_spin = ttk.Spinbox(controls_frame, from_=8, to=72, textvariable=app.var_tr_size, width=5)
-    tr_spin.grid(row=row, column=1, sticky=tk.EW, pady=5)
-    row += 1
-
-    # MR Text
-    ttk.Separator(controls_frame, orient=tk.HORIZONTAL).grid(row=row, column=0, columnspan=3, sticky=tk.EW, pady=5)
-    row += 1
-    ttk.Label(controls_frame, text=" MR Text:").grid(row=row, column=0, sticky=tk.W, pady=5)
-    mr_entry = ttk.Entry(controls_frame, textvariable=app.var_mr_text, width=10)
-    mr_entry.grid(row=row, column=1, sticky=tk.EW, pady=5)
-    row += 1
-
-    ttk.Label(controls_frame, text=" MR Size:").grid(row=row, column=0, sticky=tk.W, pady=5)
-    mr_spin = ttk.Spinbox(controls_frame, from_=8, to=72, textvariable=app.var_mr_size, width=5)
-    mr_spin.grid(row=row, column=1, sticky=tk.EW, pady=5)
-    row += 1
-
-    # Caption Text
-    ttk.Separator(controls_frame, orient=tk.HORIZONTAL).grid(row=row, column=0, columnspan=3, sticky=tk.EW, pady=5)
-    row += 1
-    ttk.Label(controls_frame, text=" Caption:").grid(row=row, column=0, sticky=tk.W, pady=5)
-    caption_entry = ttk.Entry(controls_frame, textvariable=app.var_caption_text, width=10)
-    caption_entry.grid(row=row, column=1, sticky=tk.EW, pady=5)
-    row += 1
-
-    ttk.Label(controls_frame, text=" Cap Size:").grid(row=row, column=0, sticky=tk.W, pady=5)
-    caption_spin = ttk.Spinbox(controls_frame, from_=8, to=72, textvariable=app.var_caption_size, width=5)
-    caption_spin.grid(row=row, column=1, sticky=tk.EW, pady=5)
-    row += 1
-
-    ttk.Label(controls_frame, text=" Cap Color:").grid(row=row, column=0, sticky=tk.W, pady=5)
-    cap_color_btn = ttk.Button(controls_frame, text="Text Color", command=lambda: choose_color("caption_text"))
-    cap_color_btn.grid(row=row, column=1, sticky=tk.EW, pady=5)
-    cap_color_preview = tk.Label(controls_frame, bg=app.var_caption_color.get(), width=3)
-    cap_color_preview.grid(row=row, column=2, padx=5)
-    app.var_caption_color.trace_add("write", lambda *a: cap_color_preview.config(bg=app.var_caption_color.get()))
-    row += 1
-
-    ttk.Label(controls_frame, text=" Cap BG:").grid(row=row, column=0, sticky=tk.W, pady=5)
-    cap_bg_btn = ttk.Button(controls_frame, text="BG Color", command=lambda: choose_color("caption_bg"))
-    cap_bg_btn.grid(row=row, column=1, sticky=tk.EW, pady=5)
-    cap_bg_preview = tk.Label(controls_frame, bg=app.var_caption_bg_color.get(), width=3)
-    cap_bg_preview.grid(row=row, column=2, padx=5)
-    app.var_caption_bg_color.trace_add("write", lambda *a: cap_bg_preview.config(bg=app.var_caption_bg_color.get()))
-    row += 1
-
-    # Caption Render Options
-    cap_opt_frame = ttk.Frame(controls_frame)
-    cap_opt_frame.grid(row=row, column=1, columnspan=2, sticky=tk.W, pady=2)
-    ttk.Checkbutton(cap_opt_frame, text="Anti-alias", variable=app.var_caption_aa).pack(side=tk.LEFT, padx=(0, 5))
-    ttk.Checkbutton(cap_opt_frame, text="Outline", variable=app.var_caption_outline).pack(side=tk.LEFT)
-    row += 1
+    # Apply Text controls
+    add_text_controls(controls_frame, "TR", app.var_tr_text, app.var_tr_size, app.var_tr_color, app.var_tr_bg_color, app.var_tr_bg_alpha, app.var_tr_aa, app.var_tr_outline)
+    add_text_controls(controls_frame, "MR", app.var_mr_text, app.var_mr_size, app.var_mr_color, app.var_mr_bg_color, app.var_mr_bg_alpha, app.var_mr_aa, app.var_mr_outline)
+    add_text_controls(controls_frame, "Cap", app.var_caption_text, app.var_caption_size, app.var_caption_color, app.var_caption_bg_color, app.var_caption_bg_alpha, app.var_caption_aa, app.var_caption_outline)
 
     # Effects
     ttk.Separator(controls_frame, orient=tk.HORIZONTAL).grid(row=row, column=0, columnspan=3, sticky=tk.EW, pady=10)
@@ -147,7 +135,16 @@ def build_editor_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
         if file_path:
             try:
                 fill_rgba, border_rgba = app.hex_to_rgba(app.var_color.get()), app.hex_to_rgba(app.var_border_color.get())
-                cap_rgba, cap_bg_rgba = app.hex_to_rgba(app.var_caption_color.get()), app.hex_to_rgba(app.var_caption_bg_color.get())
+                
+                def get_text_data(color_var, bg_var, alpha_var):
+                    rgb = app.hex_to_rgba(color_var.get())[:3]
+                    bg_rgb = app.hex_to_rgba(bg_var.get())[:3]
+                    return (*rgb, 255), (*bg_rgb, alpha_var.get())
+
+                tr_c, tr_bg = get_text_data(app.var_tr_color, app.var_tr_bg_color, app.var_tr_bg_alpha)
+                mr_c, mr_bg = get_text_data(app.var_mr_color, app.var_mr_bg_color, app.var_mr_bg_alpha)
+                cap_c, cap_bg = get_text_data(app.var_caption_color, app.var_caption_bg_color, app.var_caption_bg_alpha)
+
                 try: tr_s = app.var_tr_size.get()
                 except: tr_s = 12
                 try: mr_s = app.var_mr_size.get()
@@ -159,8 +156,9 @@ def build_editor_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
                 for s in [32, 48, 64]:
                     img, hotspot = create_cursor_image(
                         size=s, color=fill_rgba, shape=app.var_shape.get(), border_color=border_rgba, border_thickness=app.var_border_thickness.get(),
-                        tr_text=app.var_tr_text.get(), tr_text_size=tr_s, mr_text=app.var_mr_text.get(), mr_text_size=mr_s,
-                        caption_text=app.var_caption_text.get(), caption_text_size=cap_s, caption_color=cap_rgba, caption_bg_color=cap_bg_rgba,
+                        tr_text=app.var_tr_text.get(), tr_text_size=tr_s, tr_color=tr_c, tr_bg_color=tr_bg, tr_aa=app.var_tr_aa.get(), tr_outline=app.var_tr_outline.get(),
+                        mr_text=app.var_mr_text.get(), mr_text_size=mr_s, mr_color=mr_c, mr_bg_color=mr_bg, mr_aa=app.var_mr_aa.get(), mr_outline=app.var_mr_outline.get(),
+                        caption_text=app.var_caption_text.get(), caption_text_size=cap_s, caption_color=cap_c, caption_bg_color=cap_bg,
                         caption_aa=app.var_caption_aa.get(), caption_outline=app.var_caption_outline.get(), drop_shadow=app.var_drop_shadow.get(),
                         base_name=app.var_base_name.get(), badge1_name=app.var_badge1_name.get(), badge2_name=app.var_badge2_name.get(),
                         svg_aa=app.var_svg_aa.get()
