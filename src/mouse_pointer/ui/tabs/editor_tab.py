@@ -148,7 +148,10 @@ def build_editor_tab(app, parent):
     canvas_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 5))
     
     app.preview_canvas = tk.Canvas(canvas_frame, width=256, height=256, bg="#f0f0f0", relief=tk.SUNKEN, borderwidth=1)
-    app.preview_canvas.pack(padx=10, pady=10, expand=True)
+    app.preview_canvas.pack(padx=10, pady=10, anchor=tk.CENTER)
+
+    app.hotspot_label = ttk.Label(canvas_frame, text="Hotspot: (0, 0)")
+    app.hotspot_label.pack(pady=(0, 10))
 
     # ピクトグラムビュアー（右側）枠
     picto_frame = ttk.LabelFrame(top_preview_container, text="Pictograms (Bases & Badges)")
