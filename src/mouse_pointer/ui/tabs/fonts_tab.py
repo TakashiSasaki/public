@@ -167,6 +167,7 @@ def build_fonts_tab(app, parent, tab_type="vector"):
             name_lower = f_path.name.lower()
             is_mono = False
             is_bitmap = False
+            is_supported = True
 
             # Bitmap heuristic 1: extension
             if name_lower.endswith(".fon") or name_lower.endswith(".fnt"):
@@ -193,15 +194,34 @@ def build_fonts_tab(app, parent, tab_type="vector"):
                 if name_lower.endswith(".fon"):
                     is_bitmap = True
                 pass
+
+            # Fast Support Check for Vector Fonts
+            # Symbol fonts or fonts missing standard Latin glyphs are filtered out.
+            if tab_type == "vector" and not is_bitmap:
+                try:
+                    f = ImageFont.truetype(str(f_path), 16)
+                    # Test drawing 'A' and 'B' on small masks. 
+                    # If they map to the same image (e.g. symbol-only or missing glyph), mark as unsupported.
+                    img_a = Image.new("L", (20, 20), 0)
+                    ImageDraw.Draw(img_a).text((0, 0), "A", font=f, fill=255)
+                    img_b = Image.new("L", (20, 20), 0)
+                    ImageDraw.Draw(img_b).text((0, 0), "B", font=f, fill=255)
+                    
+                    if img_a.tobytes() == img_b.tobytes():
+                        is_supported = False
+                except:
+                    is_supported = False
             
-            all_fonts_info.append((f_path.name, is_mono, is_bitmap))
+            all_fonts_info.append((f_path.name, is_mono, is_bitmap, is_supported))
 
     def refresh_listbox():
         font_listbox.delete(0, tk.END)
         only_mono = var_mono.get()
         only_bitmap = var_bitmap.get()
 
-        for name, is_m, is_b in all_fonts_info:
+        for name, is_m, is_b, is_s in all_fonts_info:
+            if tab_type == "vector" and not is_s:
+                continue
             if only_mono and not is_m:
                 continue
             if only_bitmap and not is_b:
@@ -326,26 +346,7 @@ def build_fonts_tab(app, parent, tab_type="vector"):
                 else:
                     raise e
 
-            # --- Duplicate-Glyph Detection (OEM/Symbol font check) ---
-            # If standard English letters all map to the exact same image, it's likely 
-            # an OEM charmap where Pillow can't find Unicode mappings.
-            try:
-                unique_images = set()
-                # Use native_size because getting masks at scaled up sizes isn't necessary
-                # We'll just draw to small crops to compare
-                for test_char in "ABab":
-                    test_img = Image.new("L", (30, 30), 0)
-                    test_draw = ImageDraw.Draw(test_img)
-                    test_draw.text((0, 0), test_char, font=font, fill=255)
-                    unique_images.add(test_img.tobytes())
-                
-                # If all 4 distinct letters look identical, it's a broken/unsupported charmap
-                if len(unique_images) <= 1:
-                    raise ValueError("This font appears to use an unsupported OEM character map or only contains symbol glyphs.")
-            except ValueError:
-                raise
-            except Exception:
-                pass # Ignore detection errors, just proceed
+
 
             # Create an image at the 'native' size of the font (or requested size if scalable)
             # We use a large enough margin.
