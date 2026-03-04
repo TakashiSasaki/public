@@ -47,6 +47,16 @@ uv run mouse-pointer generate --color red --size 48 --shape triangle --output my
 uv run generate-examples
 ```
 
+### 実行ファイル（.exe）の作成
+
+PythonがインストールされていないWidnows環境でも動作する、単一の実行ファイル（.exe）をビルドできます。
+
+```bash
+uv run build-exe
+```
+
+ビルドが完了すると、`dist/MousePointerGenerator.exe` が生成されます。このファイル単体で配布・実行が可能です。
+
 ## 開発
 
 - `src/mouse_pointer/gui.py`: GUIの実装

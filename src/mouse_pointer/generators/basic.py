@@ -3,6 +3,7 @@ import io
 import json
 import os
 from pathlib import Path
+from mouse_pointer.core.utils import get_assets_dir
 from typing import Tuple, Optional, Any, List, Dict
 from PIL import Image, ImageDraw, ImageFont
 
@@ -249,7 +250,7 @@ def create_cursor_image(
 
     if base_name or badge1_name or badge2_name:
         try:
-            assets_dir = Path(__file__).parent.parent.parent.parent / "pictogram" / "src" / "assets"
+            assets_dir = get_assets_dir()
             json_path = assets_dir / "pictograms.json"
             if json_path.exists():
                 with open(json_path, "r", encoding="utf-8") as f: pictograms = json.load(f)

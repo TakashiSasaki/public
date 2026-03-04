@@ -22,6 +22,7 @@
   - パッケージの追加や同期には `uv add`, `uv sync` を使用してください。
   - Pythonスクリプトの実行は、標準的なPythonインタープリタを介して行うために `uv run python <script>` または `uv run <command>` を使用してください。
   - サンプルファイルの生成には `uv run generate-examples` を使用してください (`src/mouse_pointer/examples.py` を呼び出します)。
+  - 配布用の単一実行ファイル (.exe) のビルドには `uv run build-exe` を使用してください (`src/mouse_pointer/builder.py` を呼び出します)。
 
 ## 3. バージョン管理とコミットのルール (Version Control & Commits)
 
@@ -58,8 +59,15 @@ AIエージェントとしてこのプロジェクトでコードの修正や機
     - `src/mouse_pointer/gui.py` (`render_svg_thumbnail`)
     - `src/mouse_pointer/generators/basic.py` (`render_svg_to_pil`)
 
-**注意点**:
+- **注意点**:
 - 新規に SVG レンダリング処理を追加・修正する場合は、必ずこの技法が適用されているか確認してください。単に `bg=None` や `bg=0x00000000` を指定するだけでは背景が透過されず、黒または白の矩形が残ってしまいます。
+
+## 6. アセットのパス解決 (Asset Path Resolution)
+
+単一実行ファイル (.exe) としてパッケージングした際にアセットファイルを正しく読み込むため、以下のルールを遵守してください。
+
+- **`get_assets_dir()` の使用**: `pictograms.json` やその他のリソースを読み込む際は、直接 `Path(__file__)` から辿らず、`src/mouse_pointer/core/utils.py` の `get_assets_dir()` を使用してください。
+- **PyInstaller 対応**: この関数は実行環境（凍結された exe か通常の Python か）を自動判定し、適切なパス（`_MEIPASS` またはリポジトリ内のパス）を返します。
 
 ## 6. フォント処理とフィルタリング (Font Processing & Filtering)
 

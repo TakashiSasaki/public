@@ -4,6 +4,7 @@ import socket
 import importlib.metadata
 import platformdirs
 from pathlib import Path
+from mouse_pointer.core.utils import get_assets_dir
 from typing import Optional, Dict, Any, List, Tuple, Union, Callable
 from tkinter import ttk
 
@@ -214,7 +215,7 @@ class CursorGeneratorGUI(tk.Tk):
         self.destroy()
 
     def load_pictograms(self):
-        assets_dir = Path(__file__).parent.parent.parent / "pictogram" / "src" / "assets"
+        assets_dir = get_assets_dir()
         json_path = assets_dir / "pictograms.json"
         if json_path.exists():
             try:

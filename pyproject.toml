@@ -1,6 +1,6 @@
 [project]
 name = "mouse-pointer"
-version = "0.3.0"
+version = "0.3.1"
 description = "Add your description here"
 readme = "README.md"
 authors = [
@@ -17,7 +17,13 @@ dependencies = [
 [project.scripts]
 mouse-pointer = "mouse_pointer.cli:main"
 generate-examples = "mouse_pointer.examples:main"
+build-exe = "mouse_pointer.builder:main"
 
 [build-system]
 requires = ["uv_build>=0.10.4,<0.11.0"]
 build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pyinstaller>=6.19.0",
+]
