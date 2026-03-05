@@ -29,6 +29,12 @@ This document outlines the technical decisions and architecture for the Git Rela
 - **Automated/AI Updates**: Implicit version bumps made by AI agents or automated scripts must *only* increment the **patch** level (e.g., `0.2.0` -> `0.2.1`).
 - **Human Updates**: Bumping the minor or major version numbers is strictly reserved for human developers to perform manually indicating significant feature additions or breaking changes.
 
+### 6. Package Layout
+- **uv Structure**: Designed as a standard Python package following `src/` layout.
+- **Package Name**: Main logic resides in `src/branch_detect`.
+- **Command Line**: Defined in `pyproject.toml` as `git-detect-related-branch` via the `[project.scripts]` table.
+
 ## Maintainer Notes
 - When adding new features, maintain compatibility with the built-in `tkinter` to avoid external dependencies.
 - Ensure any `subprocess` calls handle potential errors (e.g., directory not being a git repo) gracefully.
+- **Python Interpreter Details**: If a required Python interpreter appears to be missing, note that the environment might be managed by `uv`. Use `uv run` to correctly resolve the managed environment instead of invoking `python` directly.

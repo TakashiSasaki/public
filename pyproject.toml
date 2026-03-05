@@ -1,0 +1,16 @@
+[project]
+name = "git-detect-related-branch"
+version = "0.2.4"
+description = "Git Branch Detector GUI Tool"
+requires-python = ">=3.8"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/branch_detect"]
+
+[project.scripts]
+git-detect-related-branch = "branch_detect.detect_gui:main"

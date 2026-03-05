@@ -279,7 +279,7 @@ def ensure_single_instance():
         return False
     return True
 
-if __name__ == "__main__":
+def main():
     if not ensure_single_instance():
         root = tk.Tk()
         root.withdraw()
@@ -293,3 +293,6 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         root.destroy()
         sys.exit(0)
+
+if __name__ == "__main__":
+    main()
