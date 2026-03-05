@@ -6,7 +6,7 @@ import socket
 import sys
 import threading
 
-VERSION = "0.2.1"
+VERSION = "0.2.2"
 LOCK_PORT = 54321
 
 class BranchDetectorApp:
@@ -63,13 +63,17 @@ class BranchDetectorApp:
 
         def create_filter_group(parent, title, options):
             group = ttk.Frame(parent)
-            group.pack(side=tk.LEFT, padx=(0, 20))
-            ttk.Label(group, text=title, font=("Segoe UI", 9, "bold")).pack(anchor=tk.W)
+            group.pack(side=tk.TOP, fill=tk.X, pady=(2, 2))
+            
+            # Use a fixed width label for alignment
+            label = ttk.Label(group, text=f"{title}:", width=15, font=("Segoe UI", 9, "bold"))
+            label.pack(side=tk.LEFT, padx=(5, 10))
+            
             for opt in options:
                 var = tk.BooleanVar(value=True)
                 self.filter_vars[opt] = var
                 cb = ttk.Checkbutton(group, text=opt, variable=var, command=self.apply_filters)
-                cb.pack(anchor=tk.W)
+                cb.pack(side=tk.LEFT, padx=(0, 15))
 
         create_filter_group(filter_frame, "Type", ["Branch", "Reflog"])
         create_filter_group(filter_frame, "Shared History", ["Yes", "No"])
