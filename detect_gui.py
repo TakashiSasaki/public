@@ -6,7 +6,7 @@ import socket
 import sys
 import threading
 
-VERSION = "0.2.2"
+VERSION = "0.2.3"
 LOCK_PORT = 54321
 
 class BranchDetectorApp:
@@ -14,6 +14,14 @@ class BranchDetectorApp:
         self.root = root
         self.root.title(f"Git Related Branch Detector v{VERSION}")
         self.root.geometry("1000x600")
+
+        try:
+            icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "app_icon.png")
+            if os.path.exists(icon_path):
+                img = tk.PhotoImage(file=icon_path)
+                self.root.tk.call('wm', 'iconphoto', self.root._w, img)
+        except Exception:
+            pass
 
         # Paths
         self.cwd = os.getcwd()
@@ -61,9 +69,15 @@ class BranchDetectorApp:
         filter_frame = ttk.LabelFrame(main_frame, text="Filters", padding="5")
         filter_frame.pack(fill=tk.X, pady=(0, 10))
 
+        row1 = ttk.Frame(filter_frame)
+        row1.pack(side=tk.TOP, fill=tk.X, pady=(2, 2))
+        
+        row2 = ttk.Frame(filter_frame)
+        row2.pack(side=tk.TOP, fill=tk.X, pady=(2, 2))
+
         def create_filter_group(parent, title, options):
             group = ttk.Frame(parent)
-            group.pack(side=tk.TOP, fill=tk.X, pady=(2, 2))
+            group.pack(side=tk.LEFT, padx=(0, 20))
             
             # Use a fixed width label for alignment
             label = ttk.Label(group, text=f"{title}:", width=15, font=("Segoe UI", 9, "bold"))
@@ -75,13 +89,11 @@ class BranchDetectorApp:
                 cb = ttk.Checkbutton(group, text=opt, variable=var, command=self.apply_filters)
                 cb.pack(side=tk.LEFT, padx=(0, 15))
 
-        create_filter_group(filter_frame, "Type", ["Branch", "Reflog"])
-        create_filter_group(filter_frame, "Shared History", ["Yes", "No"])
-        create_filter_group(filter_frame, "Relationship", [
+        create_filter_group(row1, "Type", ["Branch", "Reflog"])
+        create_filter_group(row1, "Shared History", ["Yes", "No"])
+        create_filter_group(row2, "Relationship", [
             "Tip (Identical)", "Tip (Ahead)", "Ancestor", "Diverged", "Independent"
         ])
-        
-        ttk.Label(filter_frame, text="\n* 'Current' is always shown at the top.", font=("Segoe UI", 8, "italic")).pack(side=tk.BOTTOM, anchor=tk.E)
 
         # List Section (Treeview)
         tree_frame = ttk.Frame(main_frame)
@@ -273,4 +285,8 @@ if __name__ == "__main__":
 
     root = tk.Tk()
     app = BranchDetectorApp(root)
-    root.mainloop()
+    try:
+        root.mainloop()
+    except KeyboardInterrupt:
+        root.destroy()
+        sys.exit(0)
