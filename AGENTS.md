@@ -21,7 +21,7 @@ This document outlines the technical decisions and architecture for the Git Rela
 - **Hash-based Execution Cache**: Reflogs often produce hundreds of entries pointing to a limited set of unique commit hashes. To prevent `git merge-base` from hanging the GUI due to repeated sub-process calls, the relationship status is cached per commit hash.
 
 ### 4. Single Instance Enforcement
-- **TCP Socket Binding**: The application attempts to bind to localhost port `54321` on startup.
+- **TCP Socket Binding**: The application attempts to bind to localhost port `52941` on startup.
 - **Rationale**: This is a robust, cross-platform way to ensure only one instance is running without relying on file locks which might be left behind if the process crashes.
 
 ### 5. Versioning Policy

@@ -6,8 +6,8 @@ import socket
 import sys
 import threading
 
-VERSION = "0.2.3"
-LOCK_PORT = 54321
+VERSION = "0.2.4"
+LOCK_PORT = 52941
 
 class BranchDetectorApp:
     def __init__(self, root):
@@ -84,7 +84,10 @@ class BranchDetectorApp:
             label.pack(side=tk.LEFT, padx=(5, 10))
             
             for opt in options:
-                var = tk.BooleanVar(value=True)
+                is_on = True
+                if opt in ["Tip (Identical)", "Ancestor"]:
+                    is_on = False
+                var = tk.BooleanVar(value=is_on)
                 self.filter_vars[opt] = var
                 cb = ttk.Checkbutton(group, text=opt, variable=var, command=self.apply_filters)
                 cb.pack(side=tk.LEFT, padx=(0, 15))
