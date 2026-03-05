@@ -4,6 +4,7 @@ import subprocess
 import os
 import socket
 import sys
+import threading
 
 VERSION = "0.2.0"
 LOCK_PORT = 54321
@@ -19,7 +20,8 @@ class BranchDetectorApp:
         self.repo_root = self.get_git_root()
 
         self.setup_ui()
-        self.refresh_data()
+        # Start initial load asynchronously
+        self.root.after(100, self.start_refresh)
 
     def get_git_root(self):
         try:
@@ -49,7 +51,7 @@ class BranchDetectorApp:
         self.current_branch_label = ttk.Label(header_frame, text="Current Branch: Checking...", font=("Segoe UI", 10, "bold"))
         self.current_branch_label.pack(side=tk.LEFT)
 
-        self.refresh_btn = ttk.Button(header_frame, text="Refresh", command=self.refresh_data)
+        self.refresh_btn = ttk.Button(header_frame, text="Refresh", command=self.start_refresh)
         self.refresh_btn.pack(side=tk.RIGHT)
 
         # List Section (Treeview)
@@ -84,26 +86,47 @@ class BranchDetectorApp:
         self.tree.tag_configure('ancestor', foreground='#1565c0') # Blue-ish
         self.tree.tag_configure('independent', foreground='#9e9e9e') # Gray-ish
 
+    def _get_subprocess_kwargs(self):
+        kwargs = {"stderr": subprocess.STDOUT, "text": True}
+        if os.name == 'nt':
+            startupinfo = subprocess.STARTUPINFO()
+            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+            kwargs["startupinfo"] = startupinfo
+        return kwargs
+
     def git_cmd(self, args):
         try:
-            return subprocess.check_output(["git"] + args, stderr=subprocess.STDOUT, text=True).strip()
+            return subprocess.check_output(["git"] + args, **self._get_subprocess_kwargs()).strip()
         except subprocess.CalledProcessError:
             return None
 
-    def refresh_data(self):
-        # Clear tree
+    def git_call(self, args):
+        kwargs = {"stdout": subprocess.DEVNULL}
+        if os.name == 'nt':
+            startupinfo = subprocess.STARTUPINFO()
+            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+            kwargs["startupinfo"] = startupinfo
+        return subprocess.call(["git"] + args, **kwargs)
+
+    def start_refresh(self):
+        self.refresh_btn.config(state=tk.DISABLED)
+        self.current_branch_label.config(text="Current Branch: Analyzing...")
         for item in self.tree.get_children():
             self.tree.delete(item)
+            
+        threading.Thread(target=self.refresh_data_bg, daemon=True).start()
 
+    def refresh_data_bg(self):
+        results = []
+        
         current = self.git_cmd(["branch", "--show-current"])
+        current_display = ""
         if not current:
             current = self.git_cmd(["rev-parse", "--short", "HEAD"])
-            self.current_branch_label.config(text=f"Current: DETACHED ({current})")
+            current_display = f"Current: DETACHED ({current})"
         else:
-            self.current_branch_label.config(text=f"Current Branch: {current}")
+            current_display = f"Current Branch: {current}"
 
-        # Cache for hash evaluation to significantly speed up processing reflogs
-        # Since many reflogs point to the same commit hash
         eval_cache = {}
 
         def evaluate_hash(target_name, target_hash):
@@ -114,13 +137,12 @@ class BranchDetectorApp:
             relationship = "Independent"
             tags = ()
 
-            # Use the hash directly to prevent lookup issues with weird reflog names
             has_base = self.git_cmd(["merge-base", current, target_hash])
             if has_base:
                 shared = "Yes"
-                is_ancestor = subprocess.call(["git", "merge-base", "--is-ancestor", target_hash, current]) == 0
+                is_ancestor = self.git_call(["merge-base", "--is-ancestor", target_hash, current]) == 0
                 if is_ancestor:
-                    is_descendant = subprocess.call(["git", "merge-base", "--is-ancestor", current, target_hash]) == 0
+                    is_descendant = self.git_call(["merge-base", "--is-ancestor", current, target_hash]) == 0
                     if is_descendant:
                         relationship = "Tip (Identical)"
                         tags = ('tip',)
@@ -128,7 +150,7 @@ class BranchDetectorApp:
                         relationship = "Ancestor"
                         tags = ('ancestor',)
                 else:
-                    is_tip = subprocess.call(["git", "merge-base", "--is-ancestor", current, target_hash]) == 0
+                    is_tip = self.git_call(["merge-base", "--is-ancestor", current, target_hash]) == 0
                     if is_tip:
                         relationship = "Tip (Ahead)"
                         tags = ('tip',)
@@ -149,13 +171,12 @@ class BranchDetectorApp:
                 name, b_hash = line.split()
                 
                 if name == current:
-                    self.tree.insert("", tk.END, values=(name, "Branch", "Yes", "Current", b_hash), tags=('current',))
+                    results.append({"values": (name, "Branch", "Yes", "Current", b_hash), "tags": ('current',)})
                 else:
                     shared, relationship, tags = evaluate_hash(name, b_hash)
-                    self.tree.insert("", tk.END, values=(name, "Branch", shared, relationship, b_hash), tags=tags)
+                    results.append({"values": (name, "Branch", shared, relationship, b_hash), "tags": tags})
 
         # 2. Process Reflogs
-        # Log all reflogs globally. %H is hash, %gd is selector (e.g., HEAD@{0})
         reflogs_raw = self.git_cmd(["log", "-g", "--all", "--format=%H %gd"])
         if reflogs_raw:
             for line in reflogs_raw.split('\n'):
@@ -164,7 +185,16 @@ class BranchDetectorApp:
                 if len(parts) == 2:
                     r_hash, name = parts
                     shared, relationship, tags = evaluate_hash(name, r_hash)
-                    self.tree.insert("", tk.END, values=(name, "Reflog", shared, relationship, r_hash), tags=tags)
+                    results.append({"values": (name, "Reflog", shared, relationship, r_hash), "tags": tags})
+                    
+        # Update UI safely from main thread
+        self.root.after(0, self.update_ui_with_results, current_display, results)
+
+    def update_ui_with_results(self, current_display, results):
+        self.current_branch_label.config(text=current_display)
+        for res in results:
+            self.tree.insert("", tk.END, values=res["values"], tags=res["tags"])
+        self.refresh_btn.config(state=tk.NORMAL)
 
 
 def ensure_single_instance():
