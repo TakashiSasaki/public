@@ -1,0 +1,8 @@
+feat: restore lost agent skills and update documentation (manifest 0.1.20)
+
+- Recreated submodule_equivalence_analyzer skill
+- Recreated remaining_branches_submodule_adder skill (previously sync_submodules.ps1)
+- Updated AGENTS.md and README.md with new skill paths
+- Bumped manifest.webmanifest to 0.1.20
+- Updated mouse-pointer submodule to latest commit
+- Removed legacy script locations

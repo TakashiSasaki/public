@@ -25,9 +25,9 @@ if (-not (Test-Path -Path $TmpDir)) {
     }
 }
 
-Write-Output "Fetching latest changes from origin..."
+Write-Output "Fetching latest changes from public..."
 if (-not $DryRun) {
-    git fetch origin
+    git fetch public
 }
 
 # 1. Get the list of all remote branches
@@ -36,7 +36,7 @@ Write-Output "Retrieving remote branch list..."
 
 if (-not $DryRun) {
     # Extract just the branch names (e.g., refs/heads/branch_name -> branch_name)
-    git ls-remote --heads origin | ForEach-Object {
+    git ls-remote --heads public | ForEach-Object {
         if ($_ -match "refs/heads/(.*)") {
             $matches[1]
         }
@@ -91,10 +91,7 @@ foreach ($Branch in $RemoteBranches) {
     Write-Output "Adding missing branch '$Branch' as submodule..."
     
     if (-not $DryRun) {
-        # Assuming the remote URL is https://github.com/TakashiSasaki/public.git 
-        # based on previous commands in this repository. 
-        # However, a robust way is to get the origin URL.
-        $OriginUrl = (git remote get-url origin).Trim()
+        $OriginUrl = (git remote get-url public).Trim()
         
         # Add the submodule. The path will be the branch name.
         $Command = "git submodule add -b `"$Branch`" `"$OriginUrl`" `"$Branch`""
@@ -103,10 +100,12 @@ foreach ($Branch in $RemoteBranches) {
         if ($LASTEXITCODE -eq 0) {
             Write-Output "Successfully added '$Branch'"
             $AddedCount++
-        } else {
+        }
+        else {
             Write-Warning "Failed to add '$Branch'"
         }
-    } else {
+    }
+    else {
         Write-Output "[DryRun] Would add '$Branch' from remote origin."
         $AddedCount++
     }
@@ -114,9 +113,9 @@ foreach ($Branch in $RemoteBranches) {
 
 if ($AddedCount -eq 0) {
     Write-Output "All remote branches are already configured as submodules."
-} else {
+}
+else {
     Write-Output "Finished adding $AddedCount submodules."
 }
 
-# Cleanup is optional, but we leave the files in .tmp as requested for temporary tracking
 Write-Output "Sync process complete."

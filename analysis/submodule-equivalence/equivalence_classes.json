@@ -1,0 +1,53 @@
+{
+  "generated_at_utc": "2026-03-05T01:14:09.456078+00:00",
+  "repo_root": "C:\\Users\\takashi\\Documents\\GitHub\\public",
+  "submodule_count": 16,
+  "total_unique_commit_count": 496,
+  "shared_commit_count": 394,
+  "equivalence_class_count": 2,
+  "equivalence_classes": [
+    [
+      "9b7310d2-2d5c-4b70-8fd3-f286f3cfc61b",
+      "feat/mcp-filelist-server",
+      "git-hangup-investigation",
+      "git-lfs-lite",
+      "githooks",
+      "llama-cpp-tk",
+      "mcp",
+      "mdns-inspector",
+      "mouse-pointer",
+      "pictogram",
+      "remove-desktop-ini",
+      "shellex-rust",
+      "static-lunr",
+      "test/add-http-tests-and-fix-stdio",
+      "windows-moukaeritai-work"
+    ],
+    [
+      "hello"
+    ]
+  ],
+  "submodule_commit_counts": {
+    "9b7310d2-2d5c-4b70-8fd3-f286f3cfc61b": 394,
+    "feat/mcp-filelist-server": 84,
+    "git-hangup-investigation": 394,
+    "git-lfs-lite": 394,
+    "githooks": 394,
+    "hello": 102,
+    "llama-cpp-tk": 394,
+    "mcp": 394,
+    "mdns-inspector": 394,
+    "mouse-pointer": 394,
+    "pictogram": 394,
+    "remove-desktop-ini": 394,
+    "shellex-rust": 394,
+    "static-lunr": 394,
+    "test/add-http-tests-and-fix-stdio": 394,
+    "windows-moukaeritai-work": 394
+  },
+  "output_files": {
+    "all_pairs_tsv": "commit_to_submodule.tsv",
+    "shared_pairs_tsv": "shared_commit_to_submodule.tsv",
+    "summary_json": "equivalence_classes.json"
+  }
+}

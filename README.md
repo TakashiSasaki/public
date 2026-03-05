@@ -20,10 +20,10 @@ PowerShell またはターミナルを開き、リポジトリのルートディ
 
 ```powershell
 # 通常の同期実行（リモートの最新ブランチを取得し、不足しているサブモジュールを自動追加）
-.\sync_submodules.ps1
+.\.agent\skills\remaining_branches_submodule_adder\scripts\add_remaining_branches_as_submodules.ps1
 
 # ドライラン（実際には追加せず、どのブランチが追加されるかを確認する場合）
-.\sync_submodules.ps1 -DryRun
+.\.agent\skills\remaining_branches_submodule_adder\scripts\add_remaining_branches_as_submodules.ps1 -DryRun
 ```
 
 ### スクリプトの動作概要
