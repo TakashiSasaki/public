@@ -24,8 +24,10 @@ This document outlines the technical decisions and architecture for the Git Rela
 - **TCP Socket Binding**: The application attempts to bind to localhost port `54321` on startup.
 - **Rationale**: This is a robust, cross-platform way to ensure only one instance is running without relying on file locks which might be left behind if the process crashes.
 
-### 4. Versioning
-- **Semantic Versioning**: Starting from `0.1.0`. The version is defined within `detect_gui.py`.
+### 5. Versioning Policy
+- **Semantic Versioning**: The software uses semantic versioning.
+- **Automated/AI Updates**: Implicit version bumps made by AI agents or automated scripts must *only* increment the **patch** level (e.g., `0.2.0` -> `0.2.1`).
+- **Human Updates**: Bumping the minor or major version numbers is strictly reserved for human developers to perform manually indicating significant feature additions or breaking changes.
 
 ## Maintainer Notes
 - When adding new features, maintain compatibility with the built-in `tkinter` to avoid external dependencies.

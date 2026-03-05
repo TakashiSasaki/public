@@ -6,7 +6,7 @@ import socket
 import sys
 import threading
 
-VERSION = "0.2.0"
+VERSION = "0.2.1"
 LOCK_PORT = 54321
 
 class BranchDetectorApp:
@@ -18,6 +18,9 @@ class BranchDetectorApp:
         # Paths
         self.cwd = os.getcwd()
         self.repo_root = self.get_git_root()
+
+        self.all_data = []  # Store raw data for filtering
+        self.filter_vars = {} # Store Tkinter variables for filters
 
         self.setup_ui()
         # Start initial load asynchronously
@@ -53,6 +56,28 @@ class BranchDetectorApp:
 
         self.refresh_btn = ttk.Button(header_frame, text="Refresh", command=self.start_refresh)
         self.refresh_btn.pack(side=tk.RIGHT)
+
+        # Filters Section
+        filter_frame = ttk.LabelFrame(main_frame, text="Filters", padding="5")
+        filter_frame.pack(fill=tk.X, pady=(0, 10))
+
+        def create_filter_group(parent, title, options):
+            group = ttk.Frame(parent)
+            group.pack(side=tk.LEFT, padx=(0, 20))
+            ttk.Label(group, text=title, font=("Segoe UI", 9, "bold")).pack(anchor=tk.W)
+            for opt in options:
+                var = tk.BooleanVar(value=True)
+                self.filter_vars[opt] = var
+                cb = ttk.Checkbutton(group, text=opt, variable=var, command=self.apply_filters)
+                cb.pack(anchor=tk.W)
+
+        create_filter_group(filter_frame, "Type", ["Branch", "Reflog"])
+        create_filter_group(filter_frame, "Shared History", ["Yes", "No"])
+        create_filter_group(filter_frame, "Relationship", [
+            "Tip (Identical)", "Tip (Ahead)", "Ancestor", "Diverged", "Independent"
+        ])
+        
+        ttk.Label(filter_frame, text="\n* 'Current' is always shown at the top.", font=("Segoe UI", 8, "italic")).pack(side=tk.BOTTOM, anchor=tk.E)
 
         # List Section (Treeview)
         tree_frame = ttk.Frame(main_frame)
@@ -188,13 +213,42 @@ class BranchDetectorApp:
                     results.append({"values": (name, "Reflog", shared, relationship, r_hash), "tags": tags})
                     
         # Update UI safely from main thread
-        self.root.after(0, self.update_ui_with_results, current_display, results)
+        self.root.after(0, self.store_and_apply_data, current_display, results)
 
-    def update_ui_with_results(self, current_display, results):
+    def store_and_apply_data(self, current_display, results):
         self.current_branch_label.config(text=current_display)
-        for res in results:
-            self.tree.insert("", tk.END, values=res["values"], tags=res["tags"])
+        self.all_data = results
+        self.apply_filters()
         self.refresh_btn.config(state=tk.NORMAL)
+
+    def apply_filters(self):
+        # Clear tree
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+
+        # 1. Always insert Current first
+        for res in self.all_data:
+            _, _, _, relationship, _ = res["values"]
+            if relationship == "Current":
+                self.tree.insert("", tk.END, values=res["values"], tags=res["tags"])
+                break
+
+        # 2. Apply filters to the rest
+        for res in self.all_data:
+            _, v_type, v_shared, v_rel, _ = res["values"]
+            
+            if v_rel == "Current":
+                continue # Already handled
+
+            # Check logic: if any associated filter var exists and is False, skip
+            if v_type in self.filter_vars and not self.filter_vars[v_type].get():
+                continue
+            if v_shared in self.filter_vars and not self.filter_vars[v_shared].get():
+                continue
+            if v_rel in self.filter_vars and not self.filter_vars[v_rel].get():
+                continue
+
+            self.tree.insert("", tk.END, values=res["values"], tags=res["tags"])
 
 
 def ensure_single_instance():
