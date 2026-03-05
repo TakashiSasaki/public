@@ -13,10 +13,14 @@ This document outlines the technical decisions and architecture for the Git Rela
 - **Command Set**:
   - `git branch --show-current`: To identify the reference point.
   - `git for-each-ref`: To efficiently list all local and remote branches.
+  - `git log -g --all --format="%H %gd"`: To extract all reflog entries (added in v0.2.0). 
   - `git merge-base`: To determine the relationship (Ancestor, Tip, Independent).
   - `git rev-parse`: To get branch hashes and repository root path.
 
-### 3. Single Instance Enforcement
+### 3. Performance Optimization (Caching)
+- **Hash-based Execution Cache**: Reflogs often produce hundreds of entries pointing to a limited set of unique commit hashes. To prevent `git merge-base` from hanging the GUI due to repeated sub-process calls, the relationship status is cached per commit hash.
+
+### 4. Single Instance Enforcement
 - **TCP Socket Binding**: The application attempts to bind to localhost port `54321` on startup.
 - **Rationale**: This is a robust, cross-platform way to ensure only one instance is running without relying on file locks which might be left behind if the process crashes.
 

@@ -5,14 +5,14 @@ import os
 import socket
 import sys
 
-VERSION = "0.1.0"
+VERSION = "0.2.0"
 LOCK_PORT = 54321
 
 class BranchDetectorApp:
     def __init__(self, root):
         self.root = root
         self.root.title(f"Git Related Branch Detector v{VERSION}")
-        self.root.geometry("900x600")
+        self.root.geometry("1000x600")
 
         # Paths
         self.cwd = os.getcwd()
@@ -56,15 +56,17 @@ class BranchDetectorApp:
         tree_frame = ttk.Frame(main_frame)
         tree_frame.pack(fill=tk.BOTH, expand=True)
 
-        columns = ("name", "shared", "relationship", "hash")
+        columns = ("name", "type", "shared", "relationship", "hash")
         self.tree = ttk.Treeview(tree_frame, columns=columns, show='headings')
         
-        self.tree.heading("name", text="Branch Name")
+        self.tree.heading("name", text="Reference Name")
+        self.tree.heading("type", text="Type")
         self.tree.heading("shared", text="Shared History")
         self.tree.heading("relationship", text="Relationship")
         self.tree.heading("hash", text="Commit Hash")
 
-        self.tree.column("name", width=300)
+        self.tree.column("name", width=250)
+        self.tree.column("type", width=80, anchor=tk.CENTER)
         self.tree.column("shared", width=100, anchor=tk.CENTER)
         self.tree.column("relationship", width=120, anchor=tk.CENTER)
         self.tree.column("hash", width=350)
@@ -95,75 +97,87 @@ class BranchDetectorApp:
 
         current = self.git_cmd(["branch", "--show-current"])
         if not current:
-            # Might be detached HEAD
             current = self.git_cmd(["rev-parse", "--short", "HEAD"])
             self.current_branch_label.config(text=f"Current: DETACHED ({current})")
         else:
             self.current_branch_label.config(text=f"Current Branch: {current}")
 
-        # List all branches
-        branches_raw = self.git_cmd(["for-each-ref", "--format=%(refname:short) %(objectname)", "refs/heads", "refs/remotes"])
-        if not branches_raw:
-            return
+        # Cache for hash evaluation to significantly speed up processing reflogs
+        # Since many reflogs point to the same commit hash
+        eval_cache = {}
 
-        for line in branches_raw.split('\n'):
-            if not line: continue
-            name, b_hash = line.split()
+        def evaluate_hash(target_name, target_hash):
+            if target_hash in eval_cache:
+                return eval_cache[target_hash]
             
             shared = "No"
             relationship = "Independent"
             tags = ()
 
-            if name == current:
+            # Use the hash directly to prevent lookup issues with weird reflog names
+            has_base = self.git_cmd(["merge-base", current, target_hash])
+            if has_base:
                 shared = "Yes"
-                relationship = "Current"
-                tags = ('current',)
-            else:
-                # Check for shared history
-                has_base = self.git_cmd(["merge-base", current, name])
-                if has_base:
-                    shared = "Yes"
-                    # Determine Tip or Ancestor
-                    is_ancestor = subprocess.call(["git", "merge-base", "--is-ancestor", name, current]) == 0
-                    if is_ancestor:
-                        # name is in current's history
-                        # Double check if current is also ancestor of name (identical)
-                        is_descendant = subprocess.call(["git", "merge-base", "--is-ancestor", current, name]) == 0
-                        if is_descendant:
-                            relationship = "Tip (Identical)"
-                            tags = ('tip',)
-                        else:
-                            relationship = "Ancestor"
-                            tags = ('ancestor',)
+                is_ancestor = subprocess.call(["git", "merge-base", "--is-ancestor", target_hash, current]) == 0
+                if is_ancestor:
+                    is_descendant = subprocess.call(["git", "merge-base", "--is-ancestor", current, target_hash]) == 0
+                    if is_descendant:
+                        relationship = "Tip (Identical)"
+                        tags = ('tip',)
                     else:
-                        # name is not ancestor of current, but shared base exists
-                        # check if current is ancestor of name (then name is Tip)
-                        is_tip = subprocess.call(["git", "merge-base", "--is-ancestor", current, name]) == 0
-                        if is_tip:
-                            relationship = "Tip (Ahead)"
-                            tags = ('tip',)
-                        else:
-                            relationship = "Diverged"
+                        relationship = "Ancestor"
+                        tags = ('ancestor',)
                 else:
-                    tags = ('independent',)
+                    is_tip = subprocess.call(["git", "merge-base", "--is-ancestor", current, target_hash]) == 0
+                    if is_tip:
+                        relationship = "Tip (Ahead)"
+                        tags = ('tip',)
+                    else:
+                        relationship = "Diverged"
+            else:
+                tags = ('independent',)
+            
+            result = (shared, relationship, tags)
+            eval_cache[target_hash] = result
+            return result
 
-            self.tree.insert("", tk.END, values=(name, shared, relationship, b_hash), tags=tags)
+        # 1. Process Branches
+        branches_raw = self.git_cmd(["for-each-ref", "--format=%(refname:short) %(objectname)", "refs/heads", "refs/remotes"])
+        if branches_raw:
+            for line in branches_raw.split('\n'):
+                if not line: continue
+                name, b_hash = line.split()
+                
+                if name == current:
+                    self.tree.insert("", tk.END, values=(name, "Branch", "Yes", "Current", b_hash), tags=('current',))
+                else:
+                    shared, relationship, tags = evaluate_hash(name, b_hash)
+                    self.tree.insert("", tk.END, values=(name, "Branch", shared, relationship, b_hash), tags=tags)
+
+        # 2. Process Reflogs
+        # Log all reflogs globally. %H is hash, %gd is selector (e.g., HEAD@{0})
+        reflogs_raw = self.git_cmd(["log", "-g", "--all", "--format=%H %gd"])
+        if reflogs_raw:
+            for line in reflogs_raw.split('\n'):
+                if not line: continue
+                parts = line.split(maxsplit=1)
+                if len(parts) == 2:
+                    r_hash, name = parts
+                    shared, relationship, tags = evaluate_hash(name, r_hash)
+                    self.tree.insert("", tk.END, values=(name, "Reflog", shared, relationship, r_hash), tags=tags)
+
 
 def ensure_single_instance():
-    # Attempt to create a socket listener on a specific port
     try:
-        # Use a global variable to keep the socket alive
         global lock_socket
         lock_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         lock_socket.bind(('127.0.0.1', LOCK_PORT))
     except socket.error:
-        # Port already in use
         return False
     return True
 
 if __name__ == "__main__":
     if not ensure_single_instance():
-        # Using a hidden root for the error message
         root = tk.Tk()
         root.withdraw()
         messagebox.showerror("Instance Error", "Another instance of Git Related Branch Detector is already running.")
