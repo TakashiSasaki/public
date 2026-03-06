@@ -6,7 +6,7 @@ import socket
 import sys
 import threading
 
-VERSION = "0.2.12"
+VERSION = "0.2.13"
 LOCK_PORT = 52941
 
 class BranchDetectorApp:
@@ -60,9 +60,14 @@ class BranchDetectorApp:
         self.tab_remote = ttk.Frame(self.notebook)
         self.notebook.add(self.tab_remote, text="Remote Tracking")
 
+        # Tab 4: Remotes List
+        self.tab_remotes_list = ttk.Frame(self.notebook)
+        self.notebook.add(self.tab_remotes_list, text="Remotes List")
+
         self.setup_branches_tab()
         self.setup_status_tab()
         self.setup_remote_tab()
+        self.setup_remotes_list_tab()
 
     def setup_branches_tab(self):
         # Main container for branches tab
@@ -243,6 +248,34 @@ class BranchDetectorApp:
         self.remote_tree.tag_configure('behind', foreground='#e65100')
         self.remote_tree.tag_configure('remote_only', foreground='#9e9e9e')
 
+    def setup_remotes_list_tab(self):
+        remotes_frame = ttk.Frame(self.tab_remotes_list, padding="10")
+        remotes_frame.pack(fill=tk.BOTH, expand=True)
+
+        header = ttk.Frame(remotes_frame)
+        header.pack(fill=tk.X, pady=(0, 10))
+        ttk.Label(header, text="Registered Remote Repositories", font=("Segoe UI", 10, "bold")).pack(side=tk.LEFT)
+
+        tree_container = ttk.Frame(remotes_frame)
+        tree_container.pack(fill=tk.BOTH, expand=True)
+
+        columns = ("name", "url", "type")
+        self.remotes_list_tree = ttk.Treeview(tree_container, columns=columns, show='headings')
+        
+        self.remotes_list_tree.heading("name", text="Name")
+        self.remotes_list_tree.heading("url", text="URL")
+        self.remotes_list_tree.heading("type", text="Type")
+
+        self.remotes_list_tree.column("name", width=150)
+        self.remotes_list_tree.column("url", width=500)
+        self.remotes_list_tree.column("type", width=100, anchor=tk.CENTER)
+
+        scrollbar = ttk.Scrollbar(tree_container, orient=tk.VERTICAL, command=self.remotes_list_tree.yview)
+        self.remotes_list_tree.configure(yscroll=scrollbar.set)
+        
+        self.remotes_list_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
     def _get_subprocess_kwargs(self):
         kwargs = {"stderr": subprocess.STDOUT, "text": True, "encoding": "utf-8", "errors": "replace"}
         if os.name == 'nt':
@@ -290,6 +323,7 @@ class BranchDetectorApp:
         self.refresh_branches_tab()
         self.refresh_status_tab()
         self.refresh_remote_tab()
+        self.refresh_remotes_list_tab()
 
     def refresh_branches_tab(self):
         self.refresh_btn.config(state=tk.DISABLED)
@@ -485,6 +519,35 @@ class BranchDetectorApp:
     def _fetch_complete(self):
         self.fetch_btn.config(state=tk.NORMAL, text="Fetch All")
         self.start_refresh()
+
+    def refresh_remotes_list_tab(self):
+        for item in self.remotes_list_tree.get_children():
+            self.remotes_list_tree.delete(item)
+        threading.Thread(target=self._refresh_remotes_list_bg, daemon=True).start()
+
+    def _refresh_remotes_list_bg(self):
+        results = []
+        rm_raw = self.git_cmd(["remote", "-v"])
+        if rm_raw:
+            for line in rm_raw.split('\n'):
+                line = line.strip()
+                if not line: continue
+                # Example: github  git@github.com:TakashiSasaki/fido-uri.git (fetch)
+                parts = line.split()
+                if len(parts) >= 3:
+                    name = parts[0]
+                    url = parts[1]
+                    # remove parentheses around type
+                    rtype = parts[2].strip("()") if len(parts) > 2 else ""
+                    results.append((name, url, rtype))
+                elif len(parts) == 2: # Fallback if type is missing somehow
+                    results.append((parts[0], parts[1], ""))
+
+        self.root.after(0, self._update_remotes_list_ui, results)
+
+    def _update_remotes_list_ui(self, results):
+        for res in results:
+            self.remotes_list_tree.insert("", tk.END, values=res)
 
     def apply_filters(self):
         # Clear tree
