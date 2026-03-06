@@ -1,6 +1,6 @@
 [project]
 name = "git-detect-related-branch"
-version = "0.2.6"
+version = "0.2.7"
 description = "Git Branch Detector GUI Tool"
 requires-python = ">=3.8"
 dependencies = []

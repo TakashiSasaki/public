@@ -1,12 +1,12 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, filedialog
 import subprocess
 import os
 import socket
 import sys
 import threading
 
-VERSION = "0.2.6"
+VERSION = "0.2.7"
 LOCK_PORT = 52941
 
 class BranchDetectorApp:
@@ -68,8 +68,29 @@ class BranchDetectorApp:
         path_frame = ttk.LabelFrame(main_frame, text="System Information", padding="5")
         path_frame.pack(fill=tk.X, pady=(0, 10))
 
-        ttk.Label(path_frame, text=f"Working Dir: {self.cwd}").pack(anchor=tk.W)
-        ttk.Label(path_frame, text=f"Git Repo: {self.repo_root}").pack(anchor=tk.W)
+        # Working directory row
+        cwd_frame = ttk.Frame(path_frame)
+        cwd_frame.pack(fill=tk.X, pady=(2, 2))
+        ttk.Label(cwd_frame, text="Working Dir:").pack(side=tk.LEFT, padx=(0, 5))
+        
+        self.cwd_var = tk.StringVar(value=self.cwd)
+        self.cwd_entry = ttk.Entry(cwd_frame, textvariable=self.cwd_var, state='readonly')
+        self.cwd_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
+
+        btn_browse = ttk.Button(cwd_frame, text="Browse...", command=self.browse_dir)
+        btn_browse.pack(side=tk.LEFT, padx=(0, 5))
+
+        btn_parent = ttk.Button(cwd_frame, text="⬆ Parent Dir", command=self.go_parent_dir)
+        btn_parent.pack(side=tk.LEFT)
+
+        # Git Repo row
+        repo_frame = ttk.Frame(path_frame)
+        repo_frame.pack(fill=tk.X, pady=(2, 2))
+        ttk.Label(repo_frame, text="Git Repo:").pack(side=tk.LEFT, padx=(0, 5))
+        
+        self.repo_var = tk.StringVar(value=self.repo_root)
+        self.repo_label = ttk.Label(repo_frame, textvariable=self.repo_var, font=("Segoe UI", 9, "bold"))
+        self.repo_label.pack(side=tk.LEFT)
 
         # Header Section
         header_frame = ttk.Frame(main_frame)
@@ -197,6 +218,27 @@ class BranchDetectorApp:
             startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
             kwargs["startupinfo"] = startupinfo
         return subprocess.call(["git"] + args, **kwargs)
+
+    def browse_dir(self):
+        new_dir = filedialog.askdirectory(initialdir=self.cwd, title="Select Working Directory")
+        if new_dir:
+            self.change_dir(new_dir)
+
+    def go_parent_dir(self):
+        new_dir = os.path.dirname(self.cwd)
+        if new_dir and new_dir != self.cwd:
+            self.change_dir(new_dir)
+
+    def change_dir(self, new_dir):
+        try:
+            os.chdir(new_dir)
+            self.cwd = os.getcwd()
+            self.cwd_var.set(self.cwd)
+            self.repo_root = self.get_git_root()
+            self.repo_var.set(self.repo_root)
+            self.start_refresh()
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to change directory:\n{e}")
 
     def start_refresh(self):
         self.refresh_branches_tab()
