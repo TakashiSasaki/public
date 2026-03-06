@@ -6,7 +6,7 @@ import socket
 import sys
 import threading
 
-VERSION = "0.2.16"
+VERSION = "0.2.17"
 LOCK_PORT = 52941
 
 class BranchDetectorApp:
@@ -53,9 +53,11 @@ class BranchDetectorApp:
         cwd_frame.pack(fill=tk.X, pady=(2, 2))
         ttk.Label(cwd_frame, text="Working Dir:").pack(side=tk.LEFT, padx=(0, 5))
         
-        self.cwd_var = tk.StringVar(value=self.cwd)
-        self.cwd_entry = ttk.Entry(cwd_frame, textvariable=self.cwd_var, state='readonly')
-        self.cwd_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
+        # Use Text widget for rich text (highlighting)
+        self.cwd_text = tk.Text(cwd_frame, height=1, font=("Segoe UI", 9), padx=5, pady=2,
+                               bg=self.root.cget('bg'), relief=tk.FLAT, state=tk.DISABLED)
+        self.cwd_text.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
+        self.cwd_text.tag_configure("highlight", foreground="#1565c0", font=("Segoe UI", 9, "bold"))
 
         self.btn_browse = ttk.Button(cwd_frame, text="Browse...", command=self.browse_dir)
         self.btn_browse.pack(side=tk.LEFT, padx=(0, 5))
@@ -68,9 +70,10 @@ class BranchDetectorApp:
         repo_frame.pack(fill=tk.X, pady=(2, 2))
         ttk.Label(repo_frame, text="Git Repo:").pack(side=tk.LEFT, padx=(0, 5))
         
-        self.repo_var = tk.StringVar(value=self.repo_root)
-        self.repo_label = ttk.Label(repo_frame, textvariable=self.repo_var, font=("Segoe UI", 9, "bold"))
-        self.repo_label.pack(side=tk.LEFT)
+        self.repo_text = tk.Text(repo_frame, height=1, font=("Segoe UI", 9), padx=5, pady=2,
+                                bg=self.root.cget('bg'), relief=tk.FLAT, state=tk.DISABLED)
+        self.repo_text.pack(side=tk.LEFT, fill=tk.X, expand=True)
+        self.repo_text.tag_configure("highlight", foreground="#1565c0", font=("Segoe UI", 9, "bold"))
 
         # Main notebook
         self.notebook = ttk.Notebook(self.root)
@@ -361,14 +364,44 @@ class BranchDetectorApp:
         try:
             os.chdir(new_dir)
             self.cwd = os.getcwd()
-            self.cwd_var.set(self.cwd)
             self.repo_root = self.get_git_root()
-            self.repo_var.set(self.repo_root)
+            self.update_path_displays()
             self.start_refresh()
         except Exception as e:
             messagebox.showerror("Error", f"Failed to change directory:\n{e}")
 
+    def update_path_displays(self):
+        # Identify the project name from repo root
+        if self.repo_root and os.path.exists(self.repo_root) and self.repo_root != "Not a Git Repository":
+            proj_name = os.path.basename(self.repo_root)
+        else:
+            proj_name = None
+
+        self._render_path_with_highlight(self.cwd_text, self.cwd, proj_name)
+        self._render_path_with_highlight(self.repo_text, self.repo_root, proj_name)
+
+    def _render_path_with_highlight(self, text_widget, path_str, highlight_str):
+        text_widget.config(state=tk.NORMAL)
+        text_widget.delete(1.0, tk.END)
+        
+        if not path_str:
+            text_widget.config(state=tk.DISABLED)
+            return
+
+        text_widget.insert(tk.END, path_str)
+        
+        if highlight_str:
+            import re
+            # Find all occurrences of the project name
+            for m in re.finditer(re.escape(highlight_str), path_str):
+                start = f"1.{m.start()}"
+                end = f"1.{m.end()}"
+                text_widget.tag_add("highlight", start, end)
+        
+        text_widget.config(state=tk.DISABLED)
+
     def start_refresh(self):
+        self.update_path_displays()
         self.refresh_branches_tab()
         self.refresh_status_tab()
         self.refresh_remote_tab()
