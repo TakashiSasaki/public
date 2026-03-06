@@ -13,28 +13,36 @@ This document outlines the technical decisions and architecture for the Git Rela
 - **Command Set**:
   - `git branch --show-current`: To identify the reference point.
   - `git for-each-ref`: To efficiently list all local and remote branches.
-  - `git log -g --all --format="%H %gd"`: To extract all reflog entries (added in v0.2.0). 
-  - `git merge-base`: To determine the relationship (Ancestor, Tip, Independent).
+  - `git log -g --all --format="%H %gd"`: To extract all reflog entries.
+  - `git merge-base`: To determine relationship (Ancestor, Tip, Independent).
   - `git rev-parse`: To get branch hashes and repository root path.
+  - `git status`: To check for dirty worktree and display details (added in v0.2.5).
+  - `git branch -vv`: To parse tracking status (ahead/behind/gone) (added in v0.2.10).
+  - `git branch -r`: To list remote-only branches (added in v0.2.10).
+  - `git fetch --all`: To update remote tracking caches (added in v0.2.10).
+  - `git remote -v`: To list registered remotes (added in v0.2.13).
+  - `git remote rename`: To rename registered remotes (added in v0.2.15).
 
-### 3. Performance Optimization (Caching)
-- **Hash-based Execution Cache**: Reflogs often produce hundreds of entries pointing to a limited set of unique commit hashes. To prevent `git merge-base` from hanging the GUI due to repeated sub-process calls, the relationship status is cached per commit hash.
+### 3. Performance and Robustness
+- **Hash-based Execution Cache**: Relationship status is cached per commit hash to prevent UI hangs.
+- **Multibyte Character Support**: Subprocess calls explicitly use `encoding="utf-8"` with `errors="replace"`. This is critical for Windows environments where the system locale (e.g., CP932) may conflict with Git's UTF-8 output (fixed in v0.2.12).
 
-### 4. Single Instance Enforcement
-- **TCP Socket Binding**: The application attempts to bind to localhost port `52941` on startup.
-- **Rationale**: This is a robust, cross-platform way to ensure only one instance is running without relying on file locks which might be left behind if the process crashes.
+### 4. UI Architecture
+- **Tabbed Navigation**: Uses `ttk.Notebook` to separate Related Branches, Git Status, and Remote Tracking features.
+- **Global Information Area**: The "System Information" frame (CWD, Repo Root, and Navigation buttons) resides outside the notebook to remain persistently visible across all tabs (added in v0.2.14).
 
-### 5. Versioning Policy
-- **Semantic Versioning**: The software uses semantic versioning.
-- **Automated/AI Updates**: Implicit version bumps made by AI agents or automated scripts must *only* increment the **patch** level (e.g., `0.2.0` -> `0.2.1`).
-- **Human Updates**: Bumping the minor or major version numbers is strictly reserved for human developers to perform manually indicating significant feature additions or breaking changes.
+### 5. Single Instance Enforcement
+- **TCP Socket Binding**: The application binds to localhost port `52941`.
+- **Rationale**: Robust cross-platform way to ensure single instance without stale lock files.
 
-### 6. Package Layout
-- **uv Structure**: Designed as a standard Python package following `src/` layout.
-- **Package Name**: Main logic resides in `src/branch_detect`.
-- **Command Line**: Defined in `pyproject.toml` as `git-detect-related-branch` via the `[project.scripts]` table.
+### 6. Versioning Policy
+- **Semantic Versioning**: AI agents/automated scripts increment **patch** level (e.g., `0.2.0` -> `0.2.1`). Humans reserve minor/major bumps.
+
+### 7. Package Layout
+- **uv Structure**: Standard `src/` layout. Package logic in `src/branch_detect`.
 
 ## Maintainer Notes
-- When adding new features, maintain compatibility with the built-in `tkinter` to avoid external dependencies.
-- Ensure any `subprocess` calls handle potential errors (e.g., directory not being a git repo) gracefully.
-- **Python Interpreter Details**: If a required Python interpreter appears to be missing, note that the environment might be managed by `uv`. Use `uv run` to correctly resolve the managed environment instead of invoking `python` directly.
+- **Safety First**: Repository-modifying actions must be safe. For example, `git fetch` is used without `--prune` to prevent automatic cache deletion (v0.2.11).
+- **Built-in Only**: Maintain compatibility with built-in `tkinter` and `ttk` to avoid external dependencies.
+- **Subprocess Handling**: Ensure any `subprocess` calls handle errors gracefully and use the defined encoding standards.
+- **Environment**: If a required Python interpreter appears to be missing, use `uv run` to resolve the managed environment instead of invoking `python` directly.
