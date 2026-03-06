@@ -6,7 +6,7 @@ import socket
 import sys
 import threading
 
-VERSION = "0.2.11"
+VERSION = "0.2.12"
 LOCK_PORT = 52941
 
 class BranchDetectorApp:
@@ -244,7 +244,7 @@ class BranchDetectorApp:
         self.remote_tree.tag_configure('remote_only', foreground='#9e9e9e')
 
     def _get_subprocess_kwargs(self):
-        kwargs = {"stderr": subprocess.STDOUT, "text": True}
+        kwargs = {"stderr": subprocess.STDOUT, "text": True, "encoding": "utf-8", "errors": "replace"}
         if os.name == 'nt':
             startupinfo = subprocess.STARTUPINFO()
             startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
