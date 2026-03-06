@@ -6,7 +6,7 @@ import socket
 import sys
 import threading
 
-VERSION = "0.2.17"
+VERSION = "0.2.19"
 LOCK_PORT = 52941
 
 class BranchDetectorApp:
@@ -63,7 +63,10 @@ class BranchDetectorApp:
         self.btn_browse.pack(side=tk.LEFT, padx=(0, 5))
 
         self.btn_parent = ttk.Button(cwd_frame, text="⬆ Parent Dir", command=self.go_parent_dir)
-        self.btn_parent.pack(side=tk.LEFT)
+        self.btn_parent.pack(side=tk.LEFT, padx=(0, 5))
+
+        self.btn_terminal = ttk.Button(cwd_frame, text="💻 Terminal", command=self.open_terminal)
+        self.btn_terminal.pack(side=tk.LEFT)
 
         # Git Repo row
         repo_frame = ttk.Frame(path_frame)
@@ -257,25 +260,32 @@ class BranchDetectorApp:
         header.pack(fill=tk.X, pady=(0, 10))
         ttk.Label(header, text="Registered Remote Repositories", font=("Segoe UI", 10, "bold")).pack(side=tk.LEFT)
 
-        tree_container = ttk.Frame(remotes_frame)
-        tree_container.pack(fill=tk.BOTH, expand=True)
+        text_container = ttk.Frame(remotes_frame)
+        text_container.pack(fill=tk.BOTH, expand=True)
 
-        columns = ("name", "url", "type")
-        self.remotes_list_tree = ttk.Treeview(tree_container, columns=columns, show='headings')
+        # Use Text widget for rich text (highlighting) and manual table layout
+        # tabs=(width1, alignment1, width2, alignment2...)
+        self.remotes_list_text = tk.Text(text_container, font=("Segoe UI", 9), padx=5, pady=5,
+                                        tabs=(150, tk.LEFT, 700, tk.LEFT), cursor="arrow",
+                                        state=tk.DISABLED, undo=False)
         
-        self.remotes_list_tree.heading("name", text="Name")
-        self.remotes_list_tree.heading("url", text="URL")
-        self.remotes_list_tree.heading("type", text="Type")
+        # Tags for display and selection
+        self.remotes_list_text.tag_configure("header", font=("Segoe UI", 9, "bold"))
+        self.remotes_list_text.tag_configure("highlight", foreground="#1565c0", font=("Segoe UI", 9, "bold"))
+        self.remotes_list_text.tag_configure("selection", background="#0078d7", foreground="white")
 
-        self.remotes_list_tree.column("name", width=150)
-        self.remotes_list_tree.column("url", width=500)
-        self.remotes_list_tree.column("type", width=100, anchor=tk.CENTER)
-
-        scrollbar = ttk.Scrollbar(tree_container, orient=tk.VERTICAL, command=self.remotes_list_tree.yview)
-        self.remotes_list_tree.configure(yscroll=scrollbar.set)
+        scrollbar = ttk.Scrollbar(text_container, orient=tk.VERTICAL, command=self.remotes_list_text.yview)
+        self.remotes_list_text.configure(yscroll=scrollbar.set)
         
-        self.remotes_list_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.remotes_list_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # Selection tracking
+        self.selected_remote_index = None
+        self.remotes_data = [] # Stores list of (name, url, type)
+
+        # Bind selection
+        self.remotes_list_text.bind("<Button-1>", self._on_remote_list_click)
 
         # Rename controls at the bottom
         controls_frame = ttk.Frame(remotes_frame)
@@ -290,24 +300,32 @@ class BranchDetectorApp:
         self.rename_remote_btn = ttk.Button(controls_frame, text="Rename", command=self.rename_selected_remote)
         self.rename_remote_btn.pack(side=tk.LEFT)
         
-        # Bind selection to populate the entry
-        self.remotes_list_tree.bind('<<TreeviewSelect>>', self._on_remote_select)
+    def _on_remote_list_click(self, event):
+        # Determine which line was clicked
+        index = self.remotes_list_text.index(f"@{event.x},{event.y}")
+        line_num = int(index.split('.')[0])
+        
+        # Line 1 is header, data starts at line 2
+        data_index = line_num - 2
+        
+        if 0 <= data_index < len(self.remotes_data):
+            self.selected_remote_index = data_index
+            remote_info = self.remotes_data[data_index]
+            self.new_remote_name_var.set(remote_info[0])
+            self._update_remotes_selection_ui()
 
-    def _on_remote_select(self, event):
-        selection = self.remotes_list_tree.selection()
-        if selection:
-            item = self.remotes_list_tree.item(selection[0])
-            current_name = item['values'][0]
-            self.new_remote_name_var.set(current_name)
+    def _update_remotes_selection_ui(self):
+        self.remotes_list_text.tag_remove("selection", "1.0", tk.END)
+        if self.selected_remote_index is not None:
+            line_num = self.selected_remote_index + 2
+            self.remotes_list_text.tag_add("selection", f"{line_num}.0", f"{line_num}.end+1c")
 
     def rename_selected_remote(self):
-        selection = self.remotes_list_tree.selection()
-        if not selection:
+        if self.selected_remote_index is None:
             messagebox.showwarning("Warning", "Please select a remote from the list.")
             return
             
-        item = self.remotes_list_tree.item(selection[0])
-        old_name = item['values'][0]
+        old_name = self.remotes_data[self.selected_remote_index][0]
         new_name = self.new_remote_name_var.get().strip()
         
         if not new_name:
@@ -370,6 +388,24 @@ class BranchDetectorApp:
         except Exception as e:
             messagebox.showerror("Error", f"Failed to change directory:\n{e}")
 
+    def open_terminal(self):
+        try:
+            if os.name == 'nt':
+                # Try Windows Terminal first, then PowerShell
+                try:
+                    subprocess.Popen(["wt.exe", "-d", self.cwd])
+                except FileNotFoundError:
+                    subprocess.Popen(["powershell.exe"], cwd=self.cwd, creationflags=subprocess.CREATE_NEW_CONSOLE)
+            else:
+                # Basic support for other OS
+                import platform
+                if platform.system() == 'Darwin':
+                    subprocess.Popen(['open', '-a', 'Terminal', self.cwd])
+                else:
+                    subprocess.Popen(['x-terminal-emulator'], cwd=self.cwd)
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to open terminal:\n{e}")
+
     def update_path_displays(self):
         # Identify the project name from repo root
         if self.repo_root and os.path.exists(self.repo_root) and self.repo_root != "Not a Git Repository":
@@ -411,6 +447,7 @@ class BranchDetectorApp:
         self.refresh_btn.config(state=tk.DISABLED)
         self.btn_browse.config(state=tk.DISABLED)
         self.btn_parent.config(state=tk.DISABLED)
+        self.btn_terminal.config(state=tk.DISABLED)
         self.current_branch_label.config(text="Current Branch: Analyzing...", foreground="#e65100") # Deep Orange
         self.status_label.config(text="", foreground="black")
         for item in self.tree.get_children():
@@ -509,6 +546,7 @@ class BranchDetectorApp:
         self.refresh_btn.config(state=tk.NORMAL)
         self.btn_browse.config(state=tk.NORMAL)
         self.btn_parent.config(state=tk.NORMAL)
+        self.btn_terminal.config(state=tk.NORMAL)
 
     def refresh_status_tab(self):
         self.status_text.config(state=tk.NORMAL)
@@ -603,9 +641,50 @@ class BranchDetectorApp:
         self.start_refresh()
 
     def refresh_remotes_list_tab(self):
-        for item in self.remotes_list_tree.get_children():
-            self.remotes_list_tree.delete(item)
         threading.Thread(target=self._refresh_remotes_list_bg, daemon=True).start()
+
+    def _update_remotes_list_ui(self, results):
+        self.remotes_data = results
+        self.remotes_list_text.config(state=tk.NORMAL)
+        self.remotes_list_text.delete(1.0, tk.END)
+        
+        # Header
+        self.remotes_list_text.insert(tk.END, "Name\tURL\tType\n", "header")
+        
+        import re
+        for rname, rurl, rtype in results:
+            start_pos = self.remotes_list_text.index("insert")
+            
+            # Insert name
+            self.remotes_list_text.insert(tk.END, rname, "highlight")
+            self.remotes_list_text.insert(tk.END, "\t")
+            
+            # Insert URL with name highlighting
+            url_start = self.remotes_list_text.index("insert")
+            self.remotes_list_text.insert(tk.END, rurl)
+            
+            # Find all occurrences of name in the URL we just inserted
+            if rname:
+                for match in re.finditer(re.escape(rname), rurl):
+                    # match.start() is relative to url_start
+                    # Extract line/col from url_start
+                    line, col = map(int, url_start.split('.'))
+                    m_start = f"{line}.{col + match.start()}"
+                    m_end = f"{line}.{col + match.end()}"
+                    self.remotes_list_text.tag_add("highlight", m_start, m_end)
+
+            self.remotes_list_text.insert(tk.END, "\t")
+            self.remotes_list_text.insert(tk.END, f"{rtype}\n")
+
+        # Restore selection if possible
+        if self.selected_remote_index is not None:
+            if self.selected_remote_index >= len(results):
+                self.selected_remote_index = None
+                self.new_remote_name_var.set("")
+            else:
+                self._update_remotes_selection_ui()
+                
+        self.remotes_list_text.config(state=tk.DISABLED)
 
     def _refresh_remotes_list_bg(self):
         results = []
@@ -627,9 +706,6 @@ class BranchDetectorApp:
 
         self.root.after(0, self._update_remotes_list_ui, results)
 
-    def _update_remotes_list_ui(self, results):
-        for res in results:
-            self.remotes_list_tree.insert("", tk.END, values=res)
 
     def apply_filters(self):
         # Clear tree
