@@ -6,7 +6,7 @@ import socket
 import sys
 import threading
 
-VERSION = "0.2.13"
+VERSION = "0.2.14"
 LOCK_PORT = 52941
 
 class BranchDetectorApp:
@@ -44,9 +44,37 @@ class BranchDetectorApp:
             return "Not a Git Repository"
 
     def setup_ui(self):
+        # Global System Information Section
+        path_frame = ttk.LabelFrame(self.root, text="System Information", padding="5")
+        path_frame.pack(fill=tk.X, padx=10, pady=(10, 0))
+
+        # Working directory row
+        cwd_frame = ttk.Frame(path_frame)
+        cwd_frame.pack(fill=tk.X, pady=(2, 2))
+        ttk.Label(cwd_frame, text="Working Dir:").pack(side=tk.LEFT, padx=(0, 5))
+        
+        self.cwd_var = tk.StringVar(value=self.cwd)
+        self.cwd_entry = ttk.Entry(cwd_frame, textvariable=self.cwd_var, state='readonly')
+        self.cwd_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
+
+        self.btn_browse = ttk.Button(cwd_frame, text="Browse...", command=self.browse_dir)
+        self.btn_browse.pack(side=tk.LEFT, padx=(0, 5))
+
+        self.btn_parent = ttk.Button(cwd_frame, text="⬆ Parent Dir", command=self.go_parent_dir)
+        self.btn_parent.pack(side=tk.LEFT)
+
+        # Git Repo row
+        repo_frame = ttk.Frame(path_frame)
+        repo_frame.pack(fill=tk.X, pady=(2, 2))
+        ttk.Label(repo_frame, text="Git Repo:").pack(side=tk.LEFT, padx=(0, 5))
+        
+        self.repo_var = tk.StringVar(value=self.repo_root)
+        self.repo_label = ttk.Label(repo_frame, textvariable=self.repo_var, font=("Segoe UI", 9, "bold"))
+        self.repo_label.pack(side=tk.LEFT)
+
         # Main notebook
         self.notebook = ttk.Notebook(self.root)
-        self.notebook.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        self.notebook.pack(fill=tk.BOTH, expand=True, padx=10, pady=(10, 10))
 
         # Tab 1: Related Branches
         self.tab_branches = ttk.Frame(self.notebook)
@@ -73,34 +101,6 @@ class BranchDetectorApp:
         # Main container for branches tab
         main_frame = ttk.Frame(self.tab_branches, padding="10")
         main_frame.pack(fill=tk.BOTH, expand=True)
-
-        # Path Info Section
-        path_frame = ttk.LabelFrame(main_frame, text="System Information", padding="5")
-        path_frame.pack(fill=tk.X, pady=(0, 10))
-
-        # Working directory row
-        cwd_frame = ttk.Frame(path_frame)
-        cwd_frame.pack(fill=tk.X, pady=(2, 2))
-        ttk.Label(cwd_frame, text="Working Dir:").pack(side=tk.LEFT, padx=(0, 5))
-        
-        self.cwd_var = tk.StringVar(value=self.cwd)
-        self.cwd_entry = ttk.Entry(cwd_frame, textvariable=self.cwd_var, state='readonly')
-        self.cwd_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
-
-        self.btn_browse = ttk.Button(cwd_frame, text="Browse...", command=self.browse_dir)
-        self.btn_browse.pack(side=tk.LEFT, padx=(0, 5))
-
-        self.btn_parent = ttk.Button(cwd_frame, text="⬆ Parent Dir", command=self.go_parent_dir)
-        self.btn_parent.pack(side=tk.LEFT)
-
-        # Git Repo row
-        repo_frame = ttk.Frame(path_frame)
-        repo_frame.pack(fill=tk.X, pady=(2, 2))
-        ttk.Label(repo_frame, text="Git Repo:").pack(side=tk.LEFT, padx=(0, 5))
-        
-        self.repo_var = tk.StringVar(value=self.repo_root)
-        self.repo_label = ttk.Label(repo_frame, textvariable=self.repo_var, font=("Segoe UI", 9, "bold"))
-        self.repo_label.pack(side=tk.LEFT)
 
         # Header Section
         header_frame = ttk.Frame(main_frame)
