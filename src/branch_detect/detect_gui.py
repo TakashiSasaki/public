@@ -6,7 +6,7 @@ import socket
 import sys
 import threading
 
-VERSION = "0.2.9"
+VERSION = "0.2.10"
 LOCK_PORT = 52941
 
 class BranchDetectorApp:
@@ -56,8 +56,13 @@ class BranchDetectorApp:
         self.tab_status = ttk.Frame(self.notebook)
         self.notebook.add(self.tab_status, text="Git Status")
 
+        # Tab 3: Remote Tracking
+        self.tab_remote = ttk.Frame(self.notebook)
+        self.notebook.add(self.tab_remote, text="Remote Tracking")
+
         self.setup_branches_tab()
         self.setup_status_tab()
+        self.setup_remote_tab()
 
     def setup_branches_tab(self):
         # Main container for branches tab
@@ -197,6 +202,47 @@ class BranchDetectorApp:
         btn_refresh_status = ttk.Button(btn_frame, text="Refresh Status", command=self.refresh_status_tab)
         btn_refresh_status.pack(side=tk.RIGHT)
 
+    def setup_remote_tab(self):
+        remote_frame = ttk.Frame(self.tab_remote, padding="10")
+        remote_frame.pack(fill=tk.BOTH, expand=True)
+
+        # Header with Fetch button
+        header = ttk.Frame(remote_frame)
+        header.pack(fill=tk.X, pady=(0, 10))
+        
+        ttk.Label(header, text="Local & Remote Synchronization Status", font=("Segoe UI", 10, "bold")).pack(side=tk.LEFT)
+        self.fetch_btn = ttk.Button(header, text="Fetch All (--prune)", command=self.fetch_all_bg)
+        self.fetch_btn.pack(side=tk.RIGHT)
+
+        # Treeview for remote tracking
+        tree_container = ttk.Frame(remote_frame)
+        tree_container.pack(fill=tk.BOTH, expand=True)
+
+        columns = ("branch", "tracking", "status", "msg")
+        self.remote_tree = ttk.Treeview(tree_container, columns=columns, show='headings')
+        
+        self.remote_tree.heading("branch", text="Branch")
+        self.remote_tree.heading("tracking", text="Tracking Upstream")
+        self.remote_tree.heading("status", text="Sync Status")
+        self.remote_tree.heading("msg", text="Latest Commit Message")
+
+        self.remote_tree.column("branch", width=150)
+        self.remote_tree.column("tracking", width=200)
+        self.remote_tree.column("status", width=150)
+        self.remote_tree.column("msg", width=400)
+
+        scrollbar = ttk.Scrollbar(tree_container, orient=tk.VERTICAL, command=self.remote_tree.yview)
+        self.remote_tree.configure(yscroll=scrollbar.set)
+        
+        self.remote_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # Tags
+        self.remote_tree.tag_configure('gone', foreground='#c62828')
+        self.remote_tree.tag_configure('ahead', foreground='#2e7d32')
+        self.remote_tree.tag_configure('behind', foreground='#e65100')
+        self.remote_tree.tag_configure('remote_only', foreground='#9e9e9e')
+
     def _get_subprocess_kwargs(self):
         kwargs = {"stderr": subprocess.STDOUT, "text": True}
         if os.name == 'nt':
@@ -243,6 +289,7 @@ class BranchDetectorApp:
     def start_refresh(self):
         self.refresh_branches_tab()
         self.refresh_status_tab()
+        self.refresh_remote_tab()
 
     def refresh_branches_tab(self):
         self.refresh_btn.config(state=tk.DISABLED)
@@ -367,6 +414,77 @@ class BranchDetectorApp:
         else:
             self.status_text.insert(tk.END, "Failed to execute 'git status'.")
         self.status_text.config(state=tk.DISABLED)
+
+    def refresh_remote_tab(self):
+        for item in self.remote_tree.get_children():
+            self.remote_tree.delete(item)
+        threading.Thread(target=self._refresh_remote_bg, daemon=True).start()
+
+    def _refresh_remote_bg(self):
+        results = []
+        # 1. Get branch -vv for tracking info
+        # Output format: * branch_name hash [upstream: ahead X, behind Y] commit_msg
+        bv_raw = self.git_cmd(["branch", "-vv", "--color=never"])
+        tracked_remotes = set()
+        
+        if bv_raw:
+            import re
+            for line in bv_raw.split('\n'):
+                if not line.strip(): continue
+                # Match: (optional *) branch_name hash [tracking_info] commit_msg
+                # Tracking info pattern: [remote/branch: ahead X, behind Y]
+                match = re.match(r'[* ]\s+(\S+)\s+\w+\s+(?:\[([^\]]+)\]\s+)?(.*)', line)
+                if match:
+                    b_name, tracking_raw, msg = match.groups()
+                    status = "No Tracking"
+                    upstream = ""
+                    tags = ()
+                    
+                    if tracking_raw:
+                        # tracking_raw can be "origin/main" or "origin/main: ahead 1" or "origin/main: gone"
+                        if ':' in tracking_raw:
+                            upstream, status_part = tracking_raw.split(':', 1)
+                            status = status_part.strip()
+                        else:
+                            upstream = tracking_raw
+                            status = "Synced"
+                        
+                        tracked_remotes.add(upstream)
+                        if "gone" in status: tags = ('gone',)
+                        elif "ahead" in status: tags = ('ahead',)
+                        elif "behind" in status: tags = ('behind',)
+
+                    results.append({"values": (b_name, upstream, status, msg), "tags": tags})
+
+        # 2. Get remote branches (git branch -r) to find what's NOT tracked
+        br_raw = self.git_cmd(["branch", "-r", "--color=never"])
+        if br_raw:
+            for line in br_raw.split('\n'):
+                line = line.strip()
+                if not line or " -> " in line: continue # Skip HEAD pointers
+                r_name = line
+                if r_name not in tracked_remotes:
+                    # Get last commit message for this remote branch
+                    r_msg = self.git_cmd(["log", "-1", "--format=%s", r_name]) or ""
+                    results.append({"values": (f"({r_name})", r_name, "Remote Only", r_msg), "tags": ('remote_only',)})
+
+        self.root.after(0, self._update_remote_ui, results)
+
+    def _update_remote_ui(self, results):
+        for res in results:
+            self.remote_tree.insert("", tk.END, values=res["values"], tags=res["tags"])
+
+    def fetch_all_bg(self):
+        self.fetch_btn.config(state=tk.DISABLED, text="Fetching...")
+        threading.Thread(target=self._fetch_all_worker, daemon=True).start()
+
+    def _fetch_all_worker(self):
+        self.git_call(["fetch", "--all", "--prune"])
+        self.root.after(0, self._fetch_complete)
+
+    def _fetch_complete(self):
+        self.fetch_btn.config(state=tk.NORMAL, text="Fetch All (--prune)")
+        self.start_refresh()
 
     def apply_filters(self):
         # Clear tree
