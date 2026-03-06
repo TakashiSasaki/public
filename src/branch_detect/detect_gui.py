@@ -6,7 +6,7 @@ import socket
 import sys
 import threading
 
-VERSION = "0.2.15"
+VERSION = "0.2.16"
 LOCK_PORT = 52941
 
 class BranchDetectorApp:
@@ -135,8 +135,6 @@ class BranchDetectorApp:
             
             for opt in options:
                 is_on = True
-                if opt in ["Tip (Identical)", "Ancestor"]:
-                    is_on = False
                 var = tk.BooleanVar(value=is_on)
                 self.filter_vars[opt] = var
                 cb = ttk.Checkbutton(group, text=opt, variable=var, command=self.apply_filters)
