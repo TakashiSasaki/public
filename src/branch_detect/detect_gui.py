@@ -6,7 +6,7 @@ import socket
 import sys
 import threading
 
-VERSION = "0.2.8"
+VERSION = "0.2.9"
 LOCK_PORT = 52941
 
 class BranchDetectorApp:
@@ -248,7 +248,7 @@ class BranchDetectorApp:
         self.refresh_btn.config(state=tk.DISABLED)
         self.btn_browse.config(state=tk.DISABLED)
         self.btn_parent.config(state=tk.DISABLED)
-        self.current_branch_label.config(text="Current Branch: Analyzing...")
+        self.current_branch_label.config(text="Current Branch: Analyzing...", foreground="#e65100") # Deep Orange
         self.status_label.config(text="", foreground="black")
         for item in self.tree.get_children():
             self.tree.delete(item)
@@ -334,7 +334,7 @@ class BranchDetectorApp:
         self.root.after(0, self.store_and_apply_data, current_display, results, is_dirty)
 
     def store_and_apply_data(self, current_display, results, is_dirty):
-        self.current_branch_label.config(text=current_display)
+        self.current_branch_label.config(text=current_display, foreground="black")
         
         if is_dirty:
             self.status_label.config(text="⚠️ Worktree Dirty (Uncommitted Changes)", foreground="#c62828") # Red-ish
