@@ -6,7 +6,7 @@ import socket
 import sys
 import threading
 
-VERSION = "0.2.14"
+VERSION = "0.2.15"
 LOCK_PORT = 52941
 
 class BranchDetectorApp:
@@ -275,6 +275,57 @@ class BranchDetectorApp:
         
         self.remotes_list_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # Rename controls at the bottom
+        controls_frame = ttk.Frame(remotes_frame)
+        controls_frame.pack(fill=tk.X, pady=(10, 0))
+
+        ttk.Label(controls_frame, text="Rename Selected Remote to:").pack(side=tk.LEFT, padx=(0, 5))
+        
+        self.new_remote_name_var = tk.StringVar()
+        self.new_remote_name_entry = ttk.Entry(controls_frame, textvariable=self.new_remote_name_var, width=30)
+        self.new_remote_name_entry.pack(side=tk.LEFT, padx=(0, 10))
+        
+        self.rename_remote_btn = ttk.Button(controls_frame, text="Rename", command=self.rename_selected_remote)
+        self.rename_remote_btn.pack(side=tk.LEFT)
+        
+        # Bind selection to populate the entry
+        self.remotes_list_tree.bind('<<TreeviewSelect>>', self._on_remote_select)
+
+    def _on_remote_select(self, event):
+        selection = self.remotes_list_tree.selection()
+        if selection:
+            item = self.remotes_list_tree.item(selection[0])
+            current_name = item['values'][0]
+            self.new_remote_name_var.set(current_name)
+
+    def rename_selected_remote(self):
+        selection = self.remotes_list_tree.selection()
+        if not selection:
+            messagebox.showwarning("Warning", "Please select a remote from the list.")
+            return
+            
+        item = self.remotes_list_tree.item(selection[0])
+        old_name = item['values'][0]
+        new_name = self.new_remote_name_var.get().strip()
+        
+        if not new_name:
+            messagebox.showwarning("Warning", "New remote name cannot be empty.")
+            return
+        
+        if old_name == new_name:
+            return
+            
+        try:
+            kwargs = self._get_subprocess_kwargs()
+            kwargs['stdout'] = subprocess.PIPE
+            subprocess.run(["git", "remote", "rename", old_name, new_name], check=True, **kwargs)
+            self.new_remote_name_var.set("") # Clear entry on success
+            self.start_refresh()
+        except subprocess.CalledProcessError as e:
+            messagebox.showerror("Git Error", f"Failed to rename remote:\n{e.output}")
+        except Exception as e:
+            messagebox.showerror("Error", f"An unexpected error occurred:\n{e}")
 
     def _get_subprocess_kwargs(self):
         kwargs = {"stderr": subprocess.STDOUT, "text": True, "encoding": "utf-8", "errors": "replace"}
