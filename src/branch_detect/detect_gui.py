@@ -6,7 +6,7 @@ import socket
 import sys
 import threading
 
-VERSION = "0.2.10"
+VERSION = "0.2.11"
 LOCK_PORT = 52941
 
 class BranchDetectorApp:
@@ -211,7 +211,7 @@ class BranchDetectorApp:
         header.pack(fill=tk.X, pady=(0, 10))
         
         ttk.Label(header, text="Local & Remote Synchronization Status", font=("Segoe UI", 10, "bold")).pack(side=tk.LEFT)
-        self.fetch_btn = ttk.Button(header, text="Fetch All (--prune)", command=self.fetch_all_bg)
+        self.fetch_btn = ttk.Button(header, text="Fetch All", command=self.fetch_all_bg)
         self.fetch_btn.pack(side=tk.RIGHT)
 
         # Treeview for remote tracking
@@ -479,11 +479,11 @@ class BranchDetectorApp:
         threading.Thread(target=self._fetch_all_worker, daemon=True).start()
 
     def _fetch_all_worker(self):
-        self.git_call(["fetch", "--all", "--prune"])
+        self.git_call(["fetch", "--all"])
         self.root.after(0, self._fetch_complete)
 
     def _fetch_complete(self):
-        self.fetch_btn.config(state=tk.NORMAL, text="Fetch All (--prune)")
+        self.fetch_btn.config(state=tk.NORMAL, text="Fetch All")
         self.start_refresh()
 
     def apply_filters(self):
