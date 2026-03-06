@@ -6,7 +6,7 @@ import socket
 import sys
 import threading
 
-VERSION = "0.2.4"
+VERSION = "0.2.5"
 LOCK_PORT = 52941
 
 class BranchDetectorApp:
@@ -61,6 +61,9 @@ class BranchDetectorApp:
 
         self.current_branch_label = ttk.Label(header_frame, text="Current Branch: Checking...", font=("Segoe UI", 10, "bold"))
         self.current_branch_label.pack(side=tk.LEFT)
+
+        self.status_label = ttk.Label(header_frame, text="", font=("Segoe UI", 10, "bold"))
+        self.status_label.pack(side=tk.LEFT, padx=(20, 0))
 
         self.refresh_btn = ttk.Button(header_frame, text="Refresh", command=self.start_refresh)
         self.refresh_btn.pack(side=tk.RIGHT)
@@ -155,6 +158,7 @@ class BranchDetectorApp:
     def start_refresh(self):
         self.refresh_btn.config(state=tk.DISABLED)
         self.current_branch_label.config(text="Current Branch: Analyzing...")
+        self.status_label.config(text="", foreground="black")
         for item in self.tree.get_children():
             self.tree.delete(item)
             
@@ -170,6 +174,10 @@ class BranchDetectorApp:
             current_display = f"Current: DETACHED ({current})"
         else:
             current_display = f"Current Branch: {current}"
+
+        # Check for dirty worktree
+        status_raw = self.git_cmd(["status", "--porcelain"])
+        is_dirty = bool(status_raw and status_raw.strip())
 
         eval_cache = {}
 
@@ -232,10 +240,16 @@ class BranchDetectorApp:
                     results.append({"values": (name, "Reflog", shared, relationship, r_hash), "tags": tags})
                     
         # Update UI safely from main thread
-        self.root.after(0, self.store_and_apply_data, current_display, results)
+        self.root.after(0, self.store_and_apply_data, current_display, results, is_dirty)
 
-    def store_and_apply_data(self, current_display, results):
+    def store_and_apply_data(self, current_display, results, is_dirty):
         self.current_branch_label.config(text=current_display)
+        
+        if is_dirty:
+            self.status_label.config(text="⚠️ Worktree Dirty (Uncommitted Changes)", foreground="#c62828") # Red-ish
+        else:
+            self.status_label.config(text="✓ Worktree Clean", foreground="#2e7d32") # Green-ish
+            
         self.all_data = results
         self.apply_filters()
         self.refresh_btn.config(state=tk.NORMAL)
