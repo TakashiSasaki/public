@@ -6,7 +6,7 @@ import socket
 import sys
 import threading
 
-VERSION = "0.2.7"
+VERSION = "0.2.8"
 LOCK_PORT = 52941
 
 class BranchDetectorApp:
@@ -77,11 +77,11 @@ class BranchDetectorApp:
         self.cwd_entry = ttk.Entry(cwd_frame, textvariable=self.cwd_var, state='readonly')
         self.cwd_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
 
-        btn_browse = ttk.Button(cwd_frame, text="Browse...", command=self.browse_dir)
-        btn_browse.pack(side=tk.LEFT, padx=(0, 5))
+        self.btn_browse = ttk.Button(cwd_frame, text="Browse...", command=self.browse_dir)
+        self.btn_browse.pack(side=tk.LEFT, padx=(0, 5))
 
-        btn_parent = ttk.Button(cwd_frame, text="⬆ Parent Dir", command=self.go_parent_dir)
-        btn_parent.pack(side=tk.LEFT)
+        self.btn_parent = ttk.Button(cwd_frame, text="⬆ Parent Dir", command=self.go_parent_dir)
+        self.btn_parent.pack(side=tk.LEFT)
 
         # Git Repo row
         repo_frame = ttk.Frame(path_frame)
@@ -246,6 +246,8 @@ class BranchDetectorApp:
 
     def refresh_branches_tab(self):
         self.refresh_btn.config(state=tk.DISABLED)
+        self.btn_browse.config(state=tk.DISABLED)
+        self.btn_parent.config(state=tk.DISABLED)
         self.current_branch_label.config(text="Current Branch: Analyzing...")
         self.status_label.config(text="", foreground="black")
         for item in self.tree.get_children():
@@ -342,6 +344,8 @@ class BranchDetectorApp:
         self.all_data = results
         self.apply_filters()
         self.refresh_btn.config(state=tk.NORMAL)
+        self.btn_browse.config(state=tk.NORMAL)
+        self.btn_parent.config(state=tk.NORMAL)
 
     def refresh_status_tab(self):
         self.status_text.config(state=tk.NORMAL)
