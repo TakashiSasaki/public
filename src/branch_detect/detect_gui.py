@@ -6,7 +6,7 @@ import socket
 import sys
 import threading
 
-VERSION = "0.2.5"
+VERSION = "0.2.6"
 LOCK_PORT = 52941
 
 class BranchDetectorApp:
@@ -44,8 +44,24 @@ class BranchDetectorApp:
             return "Not a Git Repository"
 
     def setup_ui(self):
-        # Main container
-        main_frame = ttk.Frame(self.root, padding="10")
+        # Main notebook
+        self.notebook = ttk.Notebook(self.root)
+        self.notebook.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+        # Tab 1: Related Branches
+        self.tab_branches = ttk.Frame(self.notebook)
+        self.notebook.add(self.tab_branches, text="Related Branches")
+
+        # Tab 2: Git Status
+        self.tab_status = ttk.Frame(self.notebook)
+        self.notebook.add(self.tab_status, text="Git Status")
+
+        self.setup_branches_tab()
+        self.setup_status_tab()
+
+    def setup_branches_tab(self):
+        # Main container for branches tab
+        main_frame = ttk.Frame(self.tab_branches, padding="10")
         main_frame.pack(fill=tk.BOTH, expand=True)
 
         # Path Info Section
@@ -133,6 +149,33 @@ class BranchDetectorApp:
         self.tree.tag_configure('ancestor', foreground='#1565c0') # Blue-ish
         self.tree.tag_configure('independent', foreground='#9e9e9e') # Gray-ish
 
+    def setup_status_tab(self):
+        status_frame = ttk.Frame(self.tab_status, padding="10")
+        status_frame.pack(fill=tk.BOTH, expand=True)
+
+        # Text area for git status
+        self.status_text = tk.Text(status_frame, wrap=tk.NONE, font=("Consolas", 10))
+        status_scroll_y = ttk.Scrollbar(status_frame, orient=tk.VERTICAL, command=self.status_text.yview)
+        status_scroll_x = ttk.Scrollbar(status_frame, orient=tk.HORIZONTAL, command=self.status_text.xview)
+        
+        self.status_text.configure(yscrollcommand=status_scroll_y.set, xscrollcommand=status_scroll_x.set)
+        
+        self.status_text.grid(row=0, column=0, sticky="nsew")
+        status_scroll_y.grid(row=0, column=1, sticky="ns")
+        status_scroll_x.grid(row=1, column=0, sticky="ew")
+        
+        # Make the text area expand
+        status_frame.grid_rowconfigure(0, weight=1)
+        status_frame.grid_columnconfigure(0, weight=1)
+        self.status_text.config(state=tk.DISABLED)
+
+        # Refresh button for status tab
+        btn_frame = ttk.Frame(status_frame)
+        btn_frame.grid(row=2, column=0, columnspan=2, sticky=tk.E, pady=(10, 0))
+        
+        btn_refresh_status = ttk.Button(btn_frame, text="Refresh Status", command=self.refresh_status_tab)
+        btn_refresh_status.pack(side=tk.RIGHT)
+
     def _get_subprocess_kwargs(self):
         kwargs = {"stderr": subprocess.STDOUT, "text": True}
         if os.name == 'nt':
@@ -156,6 +199,10 @@ class BranchDetectorApp:
         return subprocess.call(["git"] + args, **kwargs)
 
     def start_refresh(self):
+        self.refresh_branches_tab()
+        self.refresh_status_tab()
+
+    def refresh_branches_tab(self):
         self.refresh_btn.config(state=tk.DISABLED)
         self.current_branch_label.config(text="Current Branch: Analyzing...")
         self.status_label.config(text="", foreground="black")
@@ -253,6 +300,27 @@ class BranchDetectorApp:
         self.all_data = results
         self.apply_filters()
         self.refresh_btn.config(state=tk.NORMAL)
+
+    def refresh_status_tab(self):
+        self.status_text.config(state=tk.NORMAL)
+        self.status_text.delete(1.0, tk.END)
+        self.status_text.insert(tk.END, "Loading git status...")
+        self.status_text.config(state=tk.DISABLED)
+        threading.Thread(target=self._refresh_status_bg, daemon=True).start()
+
+    def _refresh_status_bg(self):
+        # Use simple git status to get the verbose output and colors if we can? No, standard text output is fine.
+        status_out = self.git_cmd(["status"])
+        self.root.after(0, self._update_status_ui, status_out)
+
+    def _update_status_ui(self, status_out):
+        self.status_text.config(state=tk.NORMAL)
+        self.status_text.delete(1.0, tk.END)
+        if status_out is not None:
+            self.status_text.insert(tk.END, status_out)
+        else:
+            self.status_text.insert(tk.END, "Failed to execute 'git status'.")
+        self.status_text.config(state=tk.DISABLED)
 
     def apply_filters(self):
         # Clear tree
