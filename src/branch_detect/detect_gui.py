@@ -86,16 +86,19 @@ class BranchDetectorApp:
         self.tab_status = ttk.Frame(self.notebook)
         self.tab_remote = ttk.Frame(self.notebook)
         self.tab_remotes_list = ttk.Frame(self.notebook)
+        self.tab_submodules = ttk.Frame(self.notebook)
 
         self.notebook.add(self.tab_branches, text="Related Branches")
         self.notebook.add(self.tab_status, text="Git Status")
         self.notebook.add(self.tab_remote, text="Remote Tracking")
         self.notebook.add(self.tab_remotes_list, text="Remotes List")
+        self.notebook.add(self.tab_submodules, text="Submodules")
 
         self.setup_branches_tab()
         self.setup_status_tab()
         self.setup_remote_tab()
         self.setup_remotes_list_tab()
+        self.setup_submodules_tab()
 
     def setup_branches_tab(self):
         main_frame = ttk.Frame(self.tab_branches, padding="10")
@@ -265,6 +268,66 @@ class BranchDetectorApp:
         ttk.Entry(controls_frame, textvariable=self.new_remote_name_var, width=30).pack(side=tk.LEFT, padx=(0, 10))
         ttk.Button(controls_frame, text="Rename", command=self.rename_selected_remote).pack(side=tk.LEFT)
 
+    def setup_submodules_tab(self):
+        sm_frame = ttk.Frame(self.tab_submodules, padding="10")
+        sm_frame.pack(fill=tk.BOTH, expand=True)
+
+        header = ttk.Frame(sm_frame)
+        header.pack(fill=tk.X, pady=(0, 10))
+        ttk.Label(header, text="Git Submodule Overview", font=("Segoe UI", 10, "bold")).pack(side=tk.LEFT)
+        
+        btn_group = ttk.Frame(header)
+        btn_group.pack(side=tk.RIGHT)
+        
+        self.sm_update_btn = ttk.Button(btn_group, text="Update", command=lambda: self.submodule_action("update"))
+        self.sm_update_btn.pack(side=tk.LEFT, padx=2)
+        
+        self.sm_update_remote_btn = ttk.Button(btn_group, text="Update (Remote)", command=lambda: self.submodule_action("update_remote"))
+        self.sm_update_remote_btn.pack(side=tk.LEFT, padx=2)
+        
+        self.sm_sync_btn = ttk.Button(btn_group, text="Sync", command=lambda: self.submodule_action("sync"))
+        self.sm_sync_btn.pack(side=tk.LEFT, padx=2)
+        
+        self.sm_fetch_btn = ttk.Button(btn_group, text="Fetch", command=lambda: self.submodule_action("fetch"))
+        self.sm_fetch_btn.pack(side=tk.LEFT, padx=2)
+        
+        self.sm_open_btn = ttk.Button(btn_group, text="Open", command=self.submodule_open)
+        self.sm_open_btn.pack(side=tk.LEFT, padx=2)
+
+        tree_container = ttk.Frame(sm_frame)
+        tree_container.pack(fill=tk.BOTH, expand=True)
+
+        columns = ("path", "name", "branch", "status", "upstream", "recorded", "actual")
+        self.sm_tree = ttk.Treeview(tree_container, columns=columns, show='headings')
+        self.sm_tree.heading("path", text="Path")
+        self.sm_tree.heading("name", text="Name")
+        self.sm_tree.heading("branch", text="In-Submodule Branch")
+        self.sm_tree.heading("status", text="Sync Status")
+        self.sm_tree.heading("upstream", text="Upstream Status")
+        self.sm_tree.heading("recorded", text="Recorded Commit")
+        self.sm_tree.heading("actual", text="Actual Commit")
+
+        self.sm_tree.column("path", width=150)
+        self.sm_tree.column("name", width=100)
+        self.sm_tree.column("branch", width=150)
+        self.sm_tree.column("status", width=120)
+        self.sm_tree.column("upstream", width=150)
+        self.sm_tree.column("recorded", width=100)
+        self.sm_tree.column("actual", width=100)
+
+        v_scroll = ttk.Scrollbar(tree_container, orient=tk.VERTICAL, command=self.sm_tree.yview)
+        h_scroll = ttk.Scrollbar(sm_frame, orient=tk.HORIZONTAL, command=self.sm_tree.xview)
+        self.sm_tree.configure(yscrollcommand=v_scroll.set, xscrollcommand=h_scroll.set)
+        
+        self.sm_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        v_scroll.pack(side=tk.RIGHT, fill=tk.Y)
+        h_scroll.pack(fill=tk.X)
+
+        self.sm_tree.tag_configure('dirty', foreground='#c62828')
+        self.sm_tree.tag_configure('behind', foreground='#e65100')
+        self.sm_tree.tag_configure('clean', foreground='#2e7d32')
+        self.sm_tree.tag_configure('detached', foreground='#9e9e9e')
+
     def _on_remote_list_click(self, event):
         index = self.remotes_list_text.index(f"@{event.x},{event.y}")
         line_num = int(index.split('.')[0])
@@ -347,6 +410,127 @@ class BranchDetectorApp:
         self.refresh_status_tab()
         self.refresh_remote_tab()
         self.refresh_remotes_list_tab()
+        self.refresh_submodules_tab()
+
+    def refresh_submodules_tab(self):
+        for item in self.sm_tree.get_children(): self.sm_tree.delete(item)
+        threading.Thread(target=self._refresh_submodules_bg, daemon=True).start()
+
+    def _refresh_submodules_bg(self):
+        results = []
+        if self.repo_root == "Not a Git Repository":
+            return
+
+        # Get submodule status (path, hash, name)
+        status_raw = self.git_cmd(["submodule", "status", "--recursive"])
+        if not status_raw:
+            return
+
+        for line in status_raw.split('\n'):
+            line = line.strip()
+            if not line: continue
+            
+            # Example:  3f2a1c... libA (heads/main)
+            # or: +92a8bc... libB (92a8bc...)
+            match = re.match(r'([ +\-])([0-9a-f]+)\s+([^\s]+)(?:\s+\((.+)\))?', line)
+            if not match: continue
+            
+            prefix, actual_hash, path, ref_hint = match.groups()
+            name = path # Simplified name detection
+            
+            # Sync Status
+            status = "Clean"
+            tags = ('clean',)
+            if prefix == '+': 
+                status = "Modified"
+                tags = ('dirty',)
+            elif prefix == '-': 
+                status = "Not Init"
+                tags = ('detached',)
+
+            # Get recorded hash in parent index
+            recorded_hash = self.git_cmd(["ls-tree", "HEAD", path]).split()
+            recorded_hash = recorded_hash[2] if len(recorded_hash) > 2 else "Unknown"
+
+            # Branch and Upstream status (inside submodule)
+            sm_abs_path = os.path.join(self.repo_root, path)
+            sm_branch = "Unknown"
+            upstream_status = "Unknown"
+            upstream_tags = ()
+            
+            if os.path.isdir(sm_abs_path):
+                # We need to run git commands inside the submodule
+                def sm_git(args):
+                    kwargs = self._get_subprocess_kwargs()
+                    try:
+                        return subprocess.run(["git"] + args, capture_output=True, check=True, cwd=sm_abs_path, **kwargs).stdout.strip()
+                    except Exception: return ""
+
+                sm_branch = sm_git(["branch", "--show-current"]) or "Detached HEAD"
+                if sm_branch == "Detached HEAD":
+                    sm_branch = f"({sm_git(['rev-parse', '--short', 'HEAD'])})"
+                    upstream_tags = ('detached',)
+
+                # Upstream Status
+                # Check if it has a tracking branch
+                tracking = sm_git(["rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"])
+                if tracking:
+                    behind_commits = sm_git(["log", "HEAD..@{u}", "--oneline"])
+                    if behind_commits:
+                        count = len(behind_commits.split('\n'))
+                        upstream_status = f"Behind by {count}"
+                        upstream_tags += ('behind',)
+                    else:
+                        upstream_status = "Up-to-date"
+                        upstream_tags += ('clean',)
+                else:
+                    upstream_status = "No Tracking"
+
+            results.append({
+                "values": (path, name, sm_branch, status, upstream_status, recorded_hash[:8], actual_hash[:8]),
+                "tags": tags + upstream_tags
+            })
+
+        self.root.after(0, self._update_submodules_ui, results)
+
+    def _update_submodules_ui(self, results):
+        for res in results:
+            self.sm_tree.insert("", tk.END, values=res["values"], tags=res["tags"])
+
+    def submodule_action(self, action_type):
+        selection = self.sm_tree.selection()
+        if not selection and action_type != "fetch": # Fetch might apply to all? Let's say it applies to selected or all
+            # If nothing selected and it's update/sync, warn. If it's fetch, we can do for-each.
+            pass
+
+        paths = [self.sm_tree.item(item)['values'][0] for item in selection]
+        
+        def worker():
+            if action_type == "update":
+                self.git_call(["submodule", "update", "--init", "--recursive"] + paths)
+            elif action_type == "update_remote":
+                self.git_call(["submodule", "update", "--remote", "--recursive"] + paths)
+            elif action_type == "sync":
+                self.git_call(["submodule", "sync", "--recursive"] + paths)
+            elif action_type == "fetch":
+                if paths:
+                    for p in paths:
+                        sm_path = os.path.join(self.repo_root, p)
+                        subprocess.run(["git", "fetch"], cwd=sm_path, **self._get_subprocess_kwargs())
+                else:
+                    self.git_call(["submodule", "foreach", "--recursive", "git fetch"])
+            
+            self.root.after(0, self.start_refresh)
+
+        threading.Thread(target=worker, daemon=True).start()
+
+    def submodule_open(self):
+        selection = self.sm_tree.selection()
+        if not selection: return
+        path = self.sm_tree.item(selection[0])['values'][0]
+        sm_abs_path = os.path.join(self.repo_root, path)
+        if os.path.isdir(sm_abs_path):
+            self.change_dir(sm_abs_path)
 
     def refresh_branches_tab(self):
         self.refresh_btn.config(state=tk.DISABLED)
