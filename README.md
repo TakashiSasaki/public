@@ -1,5 +1,7 @@
 # Git Related Branch Detector
 
+**Author:** Takashi Sasaki ([@TakashiSasaki](https://x.com/TakashiSasaki))
+
 This tool helps visualize the relationship between the current branch and other branches, including remote tracking branches and reflog entries.
 
 ## Quick Run
