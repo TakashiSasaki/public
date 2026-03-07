@@ -15,6 +15,7 @@ This document outlines the technical decisions and architecture for the Git Rela
   - `git for-each-ref`: To efficiently list all local and remote branches.
   - `git log -g --all --format="%H %gd"`: To extract all reflog entries.
   - `git merge-base`: To determine relationship (Ancestor, Tip, Independent).
+  - `git merge-base --is-ancestor`: For refined relationship detection (added in v0.2.19).
   - `git rev-parse`: To get branch hashes and repository root path.
   - `git status`: To check for dirty worktree and display details (added in v0.2.5).
   - `git branch -vv`: To parse tracking status (ahead/behind/gone) (added in v0.2.10).
@@ -22,27 +23,36 @@ This document outlines the technical decisions and architecture for the Git Rela
   - `git fetch --all`: To update remote tracking caches (added in v0.2.10).
   - `git remote -v`: To list registered remotes (added in v0.2.13).
   - `git remote rename`: To rename registered remotes (added in v0.2.15).
+  - `git submodule status --recursive`: For submodule overview (added in v0.2.19).
+  - `git ls-tree HEAD <path>`: To get recorded submodule hashes (added in v0.2.19).
 
 ### 3. Performance and Robustness
 - **Hash-based Execution Cache**: Relationship status is cached per commit hash to prevent UI hangs.
+- **Asynchronous Startup**: The application loads data 100ms after UI rendering (`root.after`) to ensure the window appears instantly without freezing (added in v0.2.19).
 - **Multibyte Character Support**: Subprocess calls explicitly use `encoding="utf-8"` with `errors="replace"`. This is critical for Windows environments where the system locale (e.g., CP932) may conflict with Git's UTF-8 output (fixed in v0.2.12).
 
 ### 4. UI Architecture
-- **Tabbed Navigation**: Uses `ttk.Notebook` to separate Related Branches, Git Status, and Remote Tracking features.
+- **Tabbed Navigation**: Uses `ttk.Notebook` to separate Related Branches, Git Status, Remote Tracking, Remotes List, and **Submodules**.
 - **Global Information Area**: The "System Information" frame (CWD, Repo Root, and Navigation buttons) resides outside the notebook to remain persistently visible across all tabs (added in v0.2.14).
+- **Consolidated Filter UI**: Filters use a multi-row layout with fixed-width labels for a structured, professional look (added in v0.2.19).
 
-### 5. Single Instance Enforcement
+### 5. Advanced Submodule Tracking
+- **Recorded vs. Actual**: Compares the hash in the parent's index with the actual checked-out HEAD.
+- **Upstream Check**: Runs git commands within submodule directories to check if they are behind their tracking branches (added in v0.2.19).
+
+### 6. Single Instance Enforcement
 - **TCP Socket Binding**: The application binds to localhost port `52941`.
 - **Rationale**: Robust cross-platform way to ensure single instance without stale lock files.
 
-### 6. Versioning Policy
+### 7. Versioning Policy
 - **Semantic Versioning**: AI agents/automated scripts increment **patch** level (e.g., `0.2.0` -> `0.2.1`). Humans reserve minor/major bumps.
 
-### 7. Package Layout
+### 8. Package Layout
 - **uv Structure**: Standard `src/` layout. Package logic in `src/branch_detect`.
 
 ## Maintainer Notes
 - **Safety First**: Repository-modifying actions must be safe. For example, `git fetch` is used without `--prune` to prevent automatic cache deletion (v0.2.11).
+- **App Icon**: Support for `app_icon.png` in the source directory for branded window decoration (added in v0.2.19).
 - **Built-in Only**: Maintain compatibility with built-in `tkinter` and `ttk` to avoid external dependencies.
 - **Subprocess Handling**: Ensure any `subprocess` calls handle errors gracefully and use the defined encoding standards.
 - **Environment**: If a required Python interpreter appears to be missing, use `uv run` to resolve the managed environment instead of invoking `python` directly.
