@@ -100,7 +100,7 @@ class BranchDetectorApp:
         filter_frame.pack(side=tk.LEFT, fill=tk.X, expand=True)
 
         filter_groups = {
-            "Type": ["Local", "Remote"],
+            "Type": ["Local", "Remote", "Reflog"],
             "Shared Node": ["Shared", "Unique"],
             "Relationship": ["Current", "Tip (Identical)", "Ancestor", "Independent"]
         }
@@ -156,6 +156,7 @@ class BranchDetectorApp:
         self.tree.tag_configure('tip', foreground='#2e7d32')
         self.tree.tag_configure('ancestor', foreground='#1565c0')
         self.tree.tag_configure('independent', foreground='#c62828')
+        self.tree.tag_configure('reflog', foreground='#9e9e9e')
 
     def setup_status_tab(self):
         status_frame = ttk.Frame(self.tab_status, padding="10")
@@ -348,21 +349,26 @@ class BranchDetectorApp:
         is_dirty = bool(self.git_cmd(["status", "--porcelain"]))
         current = self.git_cmd(["branch", "--show-current"])
         if not current:
-            self.root.after(0, self._update_branches_ui, [], "Detached HEAD / Not found", is_dirty)
-            return
+            # Maybe it's a detached HEAD, try to get a hash or short name
+            current = self.git_cmd(["rev-parse", "--short", "HEAD"]) or "Unknown"
 
         raw_refs = self.git_cmd(["for-each-ref", "--format=%(refname:short)|%(objectname)"])
-        reflog_raw = self.git_cmd(["log", "-g", "--all", "--format=%H %gd"])
+        reflog_raw = self.git_cmd(["log", "-g", "--all", "--format=%H %gd %s"])
         
-        shared_commits = set()
-        if reflog_raw:
-            for line in reflog_raw.split('\n'):
-                if line.strip(): shared_commits.add(line.split()[0])
+        # Track which hashes we've already matched to a named branch
+        named_hashes = {} # hash -> list of names
+        if raw_refs:
+            for line in raw_refs.split('\n'):
+                if not line.strip(): continue
+                b_name, b_hash = line.split('|')
+                if b_hash not in named_hashes: named_hashes[b_hash] = []
+                named_hashes[b_hash].append(b_name)
 
-        current_hash = self.git_cmd(["rev-parse", current])
+        current_hash = self.git_cmd(["rev-parse", "HEAD"])
         
         rel_cache = {}
         def get_relationship(c1, c2):
+            if not c1 or not c2: return "Independent"
             if c1 == c2: return "Tip (Identical)"
             if (c1, c2) in rel_cache: return rel_cache[(c1, c2)]
             base = self.git_cmd(["merge-base", c1, c2])
@@ -372,13 +378,16 @@ class BranchDetectorApp:
             return res
 
         results = []
+        seen_hashes = set()
+
+        # 1. Process named references (Branches/Remotes)
         if raw_refs:
             for line in raw_refs.split('\n'):
                 if not line.strip(): continue
                 b_name, b_hash = line.split('|')
                 
-                b_type = "Remote" if "/" in b_name else "Local"
-                shared = "Shared" if b_hash in shared_commits else "Unique"
+                b_type = "Remote" if b_name.startswith("origin/") or "/" in b_name else "Local"
+                shared = "Shared" # Named branches are usually considered shared/tracked
                 
                 if b_name == current:
                     rel = "Current"
@@ -391,6 +400,28 @@ class BranchDetectorApp:
                     
                 msg = self.git_cmd(["log", "-1", "--format=%s", b_name])
                 results.append({"values": (b_name, b_type, shared, rel, msg), "tags": tags})
+                seen_hashes.add(b_hash)
+
+        # 2. Process reflog entries (only those not already seen as branches, or all?)
+        # Let's include unique hashes from reflog as "Reflog" type.
+        if reflog_raw:
+            for line in reflog_raw.split('\n'):
+                if not line.strip(): continue
+                parts = line.split(' ', 2)
+                if len(parts) < 2: continue
+                r_hash, r_selector = parts[0], parts[1]
+                r_msg = parts[2] if len(parts) > 2 else ""
+
+                if r_hash in seen_hashes: continue # Avoid noise if it's already a branch head
+
+                rel = get_relationship(current_hash, r_hash)
+                tags = ('reflog',)
+                if rel == "Tip (Identical)": tags += ('tip',)
+                elif rel == "Ancestor": tags += ('ancestor',)
+                else: tags += ('independent',)
+
+                results.append({"values": (r_selector, "Reflog", "Shared", rel, r_msg), "tags": tags})
+                seen_hashes.add(r_hash)
 
         self.root.after(0, self._update_branches_ui, results, current, is_dirty)
 
