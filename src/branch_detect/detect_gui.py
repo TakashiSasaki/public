@@ -20,11 +20,19 @@ class BranchDetectorApp:
         self.cwd = os.getcwd()
         self.repo_root = self.get_git_root()
 
+        try:
+            icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "app_icon.png")
+            if os.path.exists(icon_path):
+                img = tk.PhotoImage(file=icon_path)
+                self.root.tk.call('wm', 'iconphoto', self.root._w, img)
+        except Exception:
+            pass
+
         self.filter_vars = {}
         self.all_data = []
 
         self.setup_ui()
-        self.start_refresh()
+        self.root.after(100, self.start_refresh)
 
     def get_git_root(self):
         try:
@@ -102,19 +110,28 @@ class BranchDetectorApp:
         filter_groups = {
             "Type": ["Local", "Remote", "Reflog"],
             "Shared Node": ["Shared", "Unique"],
-            "Relationship": ["Current", "Tip (Identical)", "Ancestor", "Independent"]
+            "Relationship": ["Current", "Tip (Identical)", "Tip (Ahead)", "Ancestor", "Diverged", "Independent"]
         }
 
-        for group_name, options in filter_groups.items():
-            group = ttk.Frame(filter_frame)
+        row1 = ttk.Frame(filter_frame)
+        row1.pack(side=tk.TOP, fill=tk.X, pady=(2, 2))
+        row2 = ttk.Frame(filter_frame)
+        row2.pack(side=tk.TOP, fill=tk.X, pady=(2, 2))
+
+        def create_filter_group(parent, group_name, options):
+            group = ttk.Frame(parent)
             group.pack(side=tk.LEFT, padx=(0, 15))
-            ttk.Label(group, text=group_name + ":", font=("Segoe UI", 9, "bold")).pack(side=tk.LEFT, padx=(0, 5))
+            ttk.Label(group, text=group_name + ":", font=("Segoe UI", 9, "bold"), width=12).pack(side=tk.LEFT, padx=(5, 5))
             
             for opt in options:
                 var = tk.BooleanVar(value=True)
                 self.filter_vars[opt] = var
                 cb = ttk.Checkbutton(group, text=opt, variable=var, command=self.apply_filters)
                 cb.pack(side=tk.LEFT)
+
+        create_filter_group(row1, "Type", ["Local", "Remote", "Reflog"])
+        create_filter_group(row1, "Shared Node", ["Shared", "Unique"])
+        create_filter_group(row2, "Relationship", ["Current", "Tip (Identical)", "Tip (Ahead)", "Ancestor", "Diverged", "Independent"])
 
         btn_frame = ttk.Frame(header_frame)
         btn_frame.pack(side=tk.RIGHT, fill=tk.Y)
@@ -371,9 +388,21 @@ class BranchDetectorApp:
             if not c1 or not c2: return "Independent"
             if c1 == c2: return "Tip (Identical)"
             if (c1, c2) in rel_cache: return rel_cache[(c1, c2)]
-            base = self.git_cmd(["merge-base", c1, c2])
-            if base == c2: res = "Ancestor"
-            else: res = "Independent"
+            
+            # Check for ancestor/descendant/diverged
+            is_ancestor = self.git_call(["merge-base", "--is-ancestor", c2, c1])
+            if is_ancestor:
+                res = "Ancestor"
+            else:
+                is_tip_ahead = self.git_call(["merge-base", "--is-ancestor", c1, c2])
+                if is_tip_ahead:
+                    res = "Tip (Ahead)"
+                else:
+                    # If they share a base but neither is an ancestor, they've diverged
+                    base = self.git_cmd(["merge-base", c1, c2])
+                    if base: res = "Diverged"
+                    else: res = "Independent"
+            
             rel_cache[(c1, c2)] = res
             return res
 
