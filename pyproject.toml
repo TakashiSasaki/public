@@ -1,6 +1,6 @@
 [project]
 name = "gag-repo-viewer"
-version = "0.2.23"
+version = "0.2.24"
 description = "Git Branch Detector GUI Tool"
 readme = "README.md"
 requires-python = ">=3.8"
