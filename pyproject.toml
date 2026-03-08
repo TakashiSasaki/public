@@ -1,5 +1,5 @@
 [project]
-name = "git-detect-related-branch"
+name = "gag-repo-viewer"
 version = "0.2.19"
 description = "Git Branch Detector GUI Tool"
 requires-python = ">=3.8"

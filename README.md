@@ -1,8 +1,8 @@
-# Git Related Branch Detector
+# gag-repo-viewer (Git Related Branch Detector)
 
 **Author:** Takashi Sasaki ([@TakashiSasaki](https://x.com/TakashiSasaki))
 
-This tool helps visualize the relationship between the current branch and other branches, including remote tracking branches and reflog entries.
+This tool helps visualize the relationship between the current branch and other branches, including remote tracking branches and reflog entries. It is part of the [gag](https://pypi.org/project/gag/) tool suite.
 
 ## Project Philosophy: The Viewer's Promise
 This application is designed as a **read-only viewer**. Its core mission is to provide clarity and insight into Git repositories without ever altering them. 
@@ -17,6 +17,12 @@ You can run this application directly from GitHub using `uvx`:
 
 ```bash
 uvx --refresh --from git+https://github.com/TakashiSasaki/public.git@git-local-repo-viewer gui
+```
+
+Or install it from PyPI (once published):
+
+```bash
+pip install gag-repo-viewer
 ```
 
 ## Features
