@@ -2,6 +2,11 @@
 
 This document outlines the technical decisions and architecture for the Git Related Branch Detector tool.
 
+## Guiding Principles: The "Constitution"
+1. **Strictly Read-Only**: This application must remain a passive viewer. Do not implement any GUI features that perform repository-modifying operations (e.g., `git commit`, `git merge`, `git checkout` to a new branch). 
+2. **Safe Fetching & Syncing**: Operations like `git fetch` or `git submodule update` are permitted only because they synchronize local caches with remotes, but they must not automatically merge or overwrite uncommitted local work.
+3. **User Trust**: The primary value proposition is that a user can open any repository and know, with 100% certainty, that the tool will not change their data.
+
 ## Technical Decisions
 
 ### 1. Language and Framework
