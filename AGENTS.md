@@ -53,7 +53,7 @@ This document outlines the technical decisions and architecture for the Git Rela
 - **Semantic Versioning**: AI agents/automated scripts increment **patch** level (e.g., `0.2.0` -> `0.2.1`). Humans reserve minor/major bumps.
 
 ### 8. Package Layout
-- **uv Structure**: Standard `src/` layout. Package logic in `src/branch_detect`.
+- **uv Structure**: Standard `src/` layout. Package logic in `src/gag/repo_viewer`.
 
 ## Maintainer Notes
 - **Safety First**: Repository-modifying actions must be safe. For example, `git fetch` is used without `--prune` to prevent automatic cache deletion (v0.2.11).
