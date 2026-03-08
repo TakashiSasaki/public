@@ -554,11 +554,37 @@ class BranchDetectorApp:
         menu = tk.Menu(self.root, tearoff=0)
         
         if menu_type == "branch":
-            menu.add_command(label=f"Copy Branch Name: {values[0]}", command=lambda: self.copy_to_clip(values[0]))
+            full_name = str(values[0])
+            menu.add_command(label=f"Copy Branch Name: {full_name}", command=lambda: self.copy_to_clip(full_name))
+            
+            # Handle remote branches (usually "remotes/remote_name/branch_name")
+            if full_name.startswith("remotes/"):
+                parts = full_name.split('/')
+                if len(parts) >= 3:
+                    remote_name = parts[1]
+                    inner_branch = "/".join(parts[2:])
+                    menu.add_separator()
+                    menu.add_command(label=f"Copy Remote: {remote_name}", command=lambda: self.copy_to_clip(remote_name))
+                    menu.add_command(label=f"Copy Branch: {inner_branch}", command=lambda: self.copy_to_clip(inner_branch))
+
         elif menu_type == "remote":
-            menu.add_command(label=f"Copy Local Name: {values[0]}", command=lambda: self.copy_to_clip(values[0]))
-            if values[1]:
-                menu.add_command(label=f"Copy Upstream: {values[1]}", command=lambda: self.copy_to_clip(values[1]))
+            local_name = str(values[0])
+            upstream = str(values[1]) if values[1] else ""
+            
+            menu.add_command(label=f"Copy Local Name: {local_name}", command=lambda: self.copy_to_clip(local_name))
+            
+            if upstream:
+                menu.add_separator()
+                menu.add_command(label=f"Copy Upstream (Full): {upstream}", command=lambda: self.copy_to_clip(upstream))
+                
+                # Split "remote/branch"
+                if '/' in upstream:
+                    parts = upstream.split('/', 1)
+                    remote = parts[0]
+                    branch = parts[1]
+                    menu.add_command(label=f"Copy Remote: {remote}", command=lambda: self.copy_to_clip(remote))
+                    menu.add_command(label=f"Copy Branch: {branch}", command=lambda: self.copy_to_clip(branch))
+
         elif menu_type == "submodule":
             menu.add_command(label=f"Copy Path: {values[0]}", command=lambda: self.copy_to_clip(values[0]))
             menu.add_command(label=f"Copy Name: {values[1]}", command=lambda: self.copy_to_clip(values[1]))
