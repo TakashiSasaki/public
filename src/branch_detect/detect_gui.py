@@ -77,6 +77,18 @@ class BranchDetectorApp:
         self.repo_text.pack(side=tk.LEFT, fill=tk.X, expand=True)
         self.repo_text.tag_configure("highlight", foreground="#1565c0", font=("Segoe UI", 9, "bold"))
 
+        # Current Branch & Status row
+        branch_info_frame = ttk.Frame(path_frame)
+        branch_info_frame.pack(fill=tk.X, pady=(2, 2))
+        
+        ttk.Label(branch_info_frame, text="Current Branch:").pack(side=tk.LEFT, padx=(0, 5))
+        self.current_branch_label = ttk.Label(branch_info_frame, text="Analyzing...", font=("Segoe UI", 9, "bold"))
+        self.current_branch_label.pack(side=tk.LEFT, padx=(0, 15))
+        
+        ttk.Label(branch_info_frame, text="Worktree:").pack(side=tk.LEFT, padx=(0, 5))
+        self.status_label = ttk.Label(branch_info_frame, text="", font=("Segoe UI", 9))
+        self.status_label.pack(side=tk.LEFT)
+
         # Main notebook
         self.notebook = ttk.Notebook(self.root)
         self.notebook.pack(fill=tk.BOTH, expand=True, padx=10, pady=(10, 10))
@@ -141,13 +153,6 @@ class BranchDetectorApp:
 
         self.refresh_btn = ttk.Button(btn_frame, text="Refresh", command=self.start_refresh)
         self.refresh_btn.pack(side=tk.TOP, pady=2)
-
-        info_frame = ttk.Frame(main_frame)
-        info_frame.pack(fill=tk.X, pady=(0, 5))
-        self.current_branch_label = ttk.Label(info_frame, text="Current Branch: Unknown", font=("Segoe UI", 10, "bold"))
-        self.current_branch_label.pack(side=tk.LEFT)
-        self.status_label = ttk.Label(info_frame, text="", font=("Segoe UI", 9))
-        self.status_label.pack(side=tk.RIGHT)
 
         tree_frame = ttk.Frame(main_frame)
         tree_frame.pack(fill=tk.BOTH, expand=True)
@@ -639,9 +644,9 @@ class BranchDetectorApp:
         self.root.after(0, self._update_branches_ui, results, current, is_dirty)
 
     def _update_branches_ui(self, results, current_name, is_dirty):
-        self.current_branch_label.config(text=f"Current Branch: {current_name}", foreground="black")
-        if is_dirty: self.status_label.config(text="⚠️ Worktree Dirty", foreground="#c62828")
-        else: self.status_label.config(text="✓ Worktree Clean", foreground="#2e7d32")
+        self.current_branch_label.config(text=f"{current_name}", foreground="black")
+        if is_dirty: self.status_label.config(text="⚠️ Dirty", foreground="#c62828")
+        else: self.status_label.config(text="✓ Clean", foreground="#2e7d32")
             
         self.all_data = results
         self.apply_filters()
@@ -759,12 +764,8 @@ class BranchDetectorApp:
     def apply_filters(self):
         for item in self.tree.get_children(): self.tree.delete(item)
         for res in self.all_data:
-            if res["values"][3] == "Current":
-                self.tree.insert("", tk.END, values=res["values"], tags=res["tags"])
-                break
-        for res in self.all_data:
             _, v_type, v_shared, v_rel, _ = res["values"]
-            if v_rel == "Current": continue
+            if v_rel == "Current": continue # Exclude current branch from table
             if v_type in self.filter_vars and not self.filter_vars[v_type].get(): continue
             if v_shared in self.filter_vars and not self.filter_vars[v_shared].get(): continue
             if v_rel in self.filter_vars and not self.filter_vars[v_rel].get(): continue
