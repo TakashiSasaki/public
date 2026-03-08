@@ -8,7 +8,7 @@ import threading
 import platform
 import re
 
-VERSION = "0.2.19"
+VERSION = "0.2.20"
 LOCK_PORT = 52941
 
 class BranchDetectorApp:
