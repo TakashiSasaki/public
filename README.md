@@ -13,13 +13,23 @@ This application is designed as a **read-only viewer**. Its core mission is to p
 
 ## Quick Run
 
-You can run this application directly from GitHub using `uvx`:
+The easiest way to run the latest version is via **uvx** or **pipx** (no installation required):
+
+### 1. Using uvx (Fastest)
 
 ```bash
-uvx --refresh --from git+https://github.com/TakashiSasaki/public.git@git-local-repo-viewer gui
+uvx gag-repo-viewer
 ```
 
-Or install it from PyPI (once published):
+### 2. Using pipx
+
+```bash
+pipx run gag-repo-viewer
+```
+
+### 3. Installation
+
+Or install it permanently to your environment:
 
 ```bash
 pip install gag-repo-viewer
