@@ -3,3 +3,4 @@ __pycache__
 commit_message.txt
 uv.lock
 .env
+dist/
