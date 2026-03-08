@@ -183,6 +183,8 @@ class BranchDetectorApp:
         self.tree.tag_configure('independent', foreground='#c62828')
         self.tree.tag_configure('reflog', foreground='#9e9e9e')
 
+        self.tree.bind("<Button-3>", lambda e: self._show_tree_context_menu(e, self.tree, "branch"))
+
     def setup_status_tab(self):
         status_frame = ttk.Frame(self.tab_status, padding="10")
         status_frame.pack(fill=tk.BOTH, expand=True)
@@ -238,6 +240,8 @@ class BranchDetectorApp:
         self.remote_tree.tag_configure('ahead', foreground='#2e7d32')
         self.remote_tree.tag_configure('behind', foreground='#e65100')
         self.remote_tree.tag_configure('remote_only', foreground='#9e9e9e')
+
+        self.remote_tree.bind("<Button-3>", lambda e: self._show_tree_context_menu(e, self.remote_tree, "remote"))
 
     def setup_remotes_list_tab(self):
         remotes_frame = ttk.Frame(self.tab_remotes_list, padding="10")
@@ -332,6 +336,8 @@ class BranchDetectorApp:
         self.sm_tree.tag_configure('behind', foreground='#e65100')
         self.sm_tree.tag_configure('clean', foreground='#2e7d32')
         self.sm_tree.tag_configure('detached', foreground='#9e9e9e')
+
+        self.sm_tree.bind("<Button-3>", lambda e: self._show_tree_context_menu(e, self.sm_tree, "submodule"))
 
     def _on_remote_list_click(self, event):
         index = self.remotes_list_text.index(f"@{event.x},{event.y}")
@@ -536,6 +542,34 @@ class BranchDetectorApp:
         sm_abs_path = os.path.join(self.repo_root, path)
         if os.path.isdir(sm_abs_path):
             self.change_dir(sm_abs_path)
+
+    def _show_tree_context_menu(self, event, tree, menu_type):
+        item = tree.identify_row(event.y)
+        if not item: return
+        
+        # Select item under cursor
+        tree.selection_set(item)
+        values = tree.item(item)['values']
+        
+        menu = tk.Menu(self.root, tearoff=0)
+        
+        if menu_type == "branch":
+            menu.add_command(label=f"Copy Branch Name: {values[0]}", command=lambda: self.copy_to_clip(values[0]))
+        elif menu_type == "remote":
+            menu.add_command(label=f"Copy Local Name: {values[0]}", command=lambda: self.copy_to_clip(values[0]))
+            if values[1]:
+                menu.add_command(label=f"Copy Upstream: {values[1]}", command=lambda: self.copy_to_clip(values[1]))
+        elif menu_type == "submodule":
+            menu.add_command(label=f"Copy Path: {values[0]}", command=lambda: self.copy_to_clip(values[0]))
+            menu.add_command(label=f"Copy Name: {values[1]}", command=lambda: self.copy_to_clip(values[1]))
+            menu.add_command(label=f"Copy Actual Hash: {values[6]}", command=lambda: self.copy_to_clip(values[6]))
+            
+        menu.post(event.x_root, event.y_root)
+
+    def copy_to_clip(self, text):
+        self.root.clipboard_clear()
+        self.root.clipboard_append(text)
+        self.root.update()
 
     def refresh_branches_tab(self):
         self.refresh_btn.config(state=tk.DISABLED)
