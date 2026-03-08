@@ -8,7 +8,12 @@ import threading
 import platform
 import re
 
-VERSION = "0.2.21"
+import importlib.metadata
+
+try:
+    VERSION = importlib.metadata.version("gag-repo-viewer")
+except importlib.metadata.PackageNotFoundError:
+    VERSION = "dev"
 LOCK_PORT = 52941
 
 class BranchDetectorApp:
