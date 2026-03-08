@@ -5,6 +5,8 @@ import socket
 import sys
 import threading
 import re
+import platform
+from . import app_config
 
 import importlib.metadata
 
@@ -26,6 +28,7 @@ class BranchDetectorApp:
 
         self.cwd = os.getcwd()
         self.repo = GitRepository(self.cwd)
+        self.initial_filters = app_config.load_filters()
 
         try:
             icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "app_icon.png")
@@ -63,7 +66,10 @@ class BranchDetectorApp:
         self.btn_parent.pack(side=tk.LEFT, padx=(0, 5))
 
         self.btn_terminal = ttk.Button(cwd_frame, text="💻 Terminal", command=self.open_terminal)
-        self.btn_terminal.pack(side=tk.LEFT)
+        self.btn_terminal.pack(side=tk.LEFT, padx=(0, 5))
+
+        self.btn_appdata = ttk.Button(cwd_frame, text="📂 App Data", command=self._open_app_data_dir)
+        self.btn_appdata.pack(side=tk.LEFT)
 
         # Git Repo row
         repo_frame = ttk.Frame(path_frame)
@@ -130,7 +136,9 @@ class BranchDetectorApp:
             group.pack(side=tk.LEFT, padx=(0, 15))
             ttk.Label(group, text=group_name + ":", font=("Segoe UI", 9, "bold"), width=12).pack(side=tk.LEFT, padx=(5, 5))
             for opt in options:
-                var = tk.BooleanVar(value=True)
+                # Load persisted state or default to True
+                val = self.initial_filters.get(opt, True)
+                var = tk.BooleanVar(value=val)
                 self.filter_vars[opt] = var
                 cb = ttk.Checkbutton(group, text=opt, variable=var, command=self.apply_filters)
                 cb.pack(side=tk.LEFT)
@@ -416,6 +424,11 @@ class BranchDetectorApp:
     def apply_filters(self):
         for item in self.tree.get_children():
             self.tree.delete(item)
+        
+        # Save filter state to config
+        current_state = {k: v.get() for k, v in self.filter_vars.items()}
+        app_config.save_filters(current_state)
+
         for res in self.all_data:
             _, v_type, v_shared, v_rel, _ = res["values"]
             if v_rel == "Current":
@@ -637,6 +650,19 @@ class BranchDetectorApp:
         self.root.clipboard_clear()
         self.root.clipboard_append(text)
         self.root.update()
+
+    def _open_app_data_dir(self):
+        import subprocess, os
+        path = str(app_config.get_config_dir())
+        try:
+            if os.name == "nt":
+                subprocess.Popen(["explorer", path])
+            elif platform.system() == "Darwin":
+                subprocess.Popen(["open", path])
+            else:
+                subprocess.Popen(["xdg-open", path])
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to open app data dir: {e}")
 
 
 def ensure_single_instance():

@@ -1,6 +1,6 @@
 [project]
 name = "gag-repo-viewer"
-version = "0.2.24"
+version = "0.2.25"
 description = "Git Branch Detector GUI Tool"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -8,6 +8,7 @@ authors = [
     { name = "Takashi Sasaki" }
 ]
 dependencies = [
+    "platformdirs>=4.0",
     "pipx>=1.7.1",
 ]
 
