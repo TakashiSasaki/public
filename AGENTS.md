@@ -61,6 +61,7 @@ This document outlines the technical decisions and architecture for the Git Rela
 ## Lessons Learned (Packaging & PyPI)
 - **`dist/` Cleanup**: `uv publish` uploads everything in the `dist/` directory. Always clear `dist/` before building a new version to avoid 400 errors due to file name reuse.
 - **Entry Point Naming**: Using a script name that matches the package name (e.g., `gag-repo-viewer = "..."`) is highly recommended for tools like `uvx` and `pipx` to resolve commands correctly on all platforms.
+- **Single Source of Truth (Version)**: Documentation and UI version strings must be derived from a single source (`pyproject.toml`). In the code, use `importlib.metadata.version("gag-repo-viewer")` instead of hardcoding a `VERSION` constant.
 - **Credential Storage**: Use `uv auth login [SERVICE]` to store tokens securely in the OS keyring. While tokens can be in `.env`, the keyring is the most secure and frictionless method for local development.
 - **Namespace Packages**: Native namespace packages (no `__init__.py` in the top level `src/gag`) allow multiple independent repositories to contribute to the same `gag.*` namespace.
 - **App Icon**: Support for `app_icon.png` in the source directory for branded window decoration (added in v0.2.19).
