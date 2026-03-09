@@ -7,7 +7,7 @@ import importlib.util
 def get_python_env_info() -> dict:
     """
     Retrieves information about the current Python execution environment.
-    Based on docs/python-env-info.md
+    Based on dev-docs/python-env-info.md
     """
     
     # Check for customization hooks

@@ -86,7 +86,7 @@ Follow the standard Python src-layout:
   - Contains sample input files (e.g., `.efu`) and expected output files (e.g., `.jsonld`).
   - Organized by tool or use case (structure to be refined).
   - **Purpose**: Learning, testing, and quick-start references for users and developers.
-- `docs/`: **Documentation**. Additional documentation files for developers.
+- `dev-docs/`: **Documentation**. Additional documentation files for developers.
   - `SYMLINKS.md`: Guide for working with symbolic links on Windows.
   - `WINDOWS_PYTHON_ENV.md`: Python environment setup on Windows.
   - `json-schema-jsonld-guide.md`: Guide for JSON Schema and JSON-LD usage.

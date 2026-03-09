@@ -107,7 +107,7 @@ schema/         JSON Schema and JSON-LD context definitions
 tests/          pytest test suite
 scripts/        Dev utilities (version bump, PURL check, schema validation)
 reports/        Auto-generated test and coverage reports (git-ignored)
-docs/           Additional documentation
+dev-docs/       Additional documentation
 ```
 
 ---
