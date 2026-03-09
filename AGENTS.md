@@ -98,6 +98,7 @@ Follow the standard Python src-layout:
   - `Everything64.dll`: Required for IPC-based file scanning (`filelist_ipc.py`).
 - `work/`: **Local Work Directory**. Use this for all temporary files, test outputs, and diagnostic results. Contents are ignored by Git.
 - `schema/`: Single source of truth for semantic and structural specifications.
+- `docs/`: **Website/Landing Page**. Source for GitHub Pages (gag.moukaeritai.work).
 - `pyproject.toml`: Project configuration and dependencies.
 
 ## Schema Management

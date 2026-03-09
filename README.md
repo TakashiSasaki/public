@@ -108,6 +108,7 @@ tests/          pytest test suite
 scripts/        Dev utilities (version bump, PURL check, schema validation)
 reports/        Auto-generated test and coverage reports (git-ignored)
 dev-docs/       Additional documentation
+docs/           Website/Landing Page (GitHub Pages)
 ```
 
 ---
