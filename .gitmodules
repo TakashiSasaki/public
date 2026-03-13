@@ -18,10 +18,6 @@
 	path = shellex-rust
 	url = https://github.com/TakashiSasaki/public.git
 	branch = shellex-rust
-[submodule "githooks"]
-	path = githooks
-	url = https://github.com/TakashiSasaki/public.git
-	branch = githooks
 [submodule "feat/mcp-filelist-server"]
 	path = feat/mcp-filelist-server
 	url = https://github.com/TakashiSasaki/windows-moukaeritai-work.git

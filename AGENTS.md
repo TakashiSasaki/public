@@ -3,16 +3,21 @@
 ## リポジトリ概要
 - このリポジトリは、GitHub Pages で `public.moukaeritai.work` を公開するためのものです。
 - GitHub リポジトリ URL は `https://github.com/TakashiSasaki/public` です。
+- このブランチは典型的なモノレポではありません。独立した履歴を持つブランチやリポジトリ群を、公開用ブランチ `public.moukaeritai.work` でサブモジュールとして束ねる「公開ハブ」として運用します。
 
 ## 公開ブランチ
 - 公開対象は、ドメイン名と同じブランチ `public.moukaeritai.work` です。
+- ルート直下の `index.html` `manifest.webmanifest` `service-worker.js` などは、この公開ブランチ自身が配信する GitHub Pages 用のファイルです。
 
 ## サブモジュール構成
 - `public.moukaeritai.work` ブランチには、このブランチ以外の各ブランチ（`master` 等の一部例外を除く）をサブモジュールとして配置します。
 - サブモジュールの配置先は、対象ブランチ名と同名のディレクトリ（リポジトリのルート直下）です。
 - 例: `pictogram` ブランチは `./pictogram` サブモジュールとして配置します。
-- サブモジュール URL は同一リポジトリ `git@github.com:TakashiSasaki/public` を使用し、`.gitmodules` の `branch` に対象ブランチ名を設定します。
+- サブモジュールの多くは同一リポジトリ `TakashiSasaki/public` の別ブランチを参照しますが、必要に応じて別リポジトリを参照しても構いません。実際の参照先は常に `.gitmodules` を正とします。
+- 同一リポジトリ内の別ブランチをサブモジュール化する場合は、`.gitmodules` の `branch` に対象ブランチ名を設定します。
 - 新しく追加されたリモートブランチを自動でサブモジュールとして取り込むため、`.agent/skills/remaining_branches_submodule_adder/scripts/add_remaining_branches_as_submodules.ps1` スクリプトを用意しています。必要に応じてこのスクリプトを実行し、サブモジュール構成を同期してください。
+- サブモジュールを追加・更新した後は、`.gitmodules` と親リポジトリ側の gitlink が変更されるため、両方が意図どおり差分に含まれていることを確認してください。
+- 各サブモジュールの実体の履歴は親リポジトリとは別管理です。親リポジトリ側では「どのコミットを指しているか」を固定して管理します。
 
 ## 別リモートブランチの取り込み手順
 - `windows-moukaeritai-work` リモートの全ブランチを、このリポジトリのローカルブランチとして履歴ごと取り込む場合は追跡ブランチを作成します。
@@ -37,23 +42,21 @@
 ## バージョン運用（Manifest）
 - `manifest.webmanifest` の `version` はセマンティックバージョン（`major.minor.patch`）を使用します。
 - コミット時は少なくともパッチ番号を `+1` します。
-- pre-commit フック（`githooks/pre-commit`）は `githooks/pre-commit-manifest-version.ps1` を呼び出し、`manifest.webmanifest` の `version` を自動バンプして同ファイルを自動 `git add` します。
-- フックは `git config core.hooksPath githooks` で有効化します。
-- 別のチェックアウト先でも同じ挙動にするため、チェックアウト後に `githooks/setup-hooks.ps1` または `githooks/setup-hooks.sh` を実行してください。
-- `githooks` には Python プロジェクト再利用用のテンプレート（`githooks/pre-commit-pyproject.sh`, `githooks/bump-pyproject-version.py`）と JavaScript/TypeScript プロジェクト再利用用のテンプレート（`githooks/pre-commit-packagejson.sh`, `githooks/bump-packagejson-version.py`）も保管します。
-- このブランチでは `pyproject.toml` を対象とするテンプレートは実行しません。
-- このブランチでは `package.json` を対象とするテンプレートも実行しません。
+- バージョン更新の判断と実施は、Git フックではなく、開発者またはコーディングエージェントのスキル・ルールに基づいて行います。
+- エージェントがコミットを作成する場合は、必要に応じて `manifest.webmanifest` の `version` を更新し、その変更を明示的にコミットへ含めてください。
+- 旧来の Git フック前提の運用は廃止しました。今後はフックの有無に依存しない形で、作業手順またはエージェントの指示として明示的に実施してください。
 - プロジェクトごとにバージョンを管理するファイルは1つだけにし、同一コミットで複数ファイルを同時バンプしません。複数バージョン管理が必要な場合は別プロジェクトとして扱います。
 
 ## 新規クローン時の必須手順
-- このブランチを新しくクローンまたはチェックアウトした直後は、必ずフック設定を行ってください。
-- Windows (PowerShell): `./.agent/skills/remaining_branches_submodule_adder/scripts/add_remaining_branches_as_submodules.ps1`
-- sh 環境: (必要に応じて sh 用スクリプトを作成してください)
-- この設定をしないと、コミット時の `manifest.webmanifest` バージョン自動バンプが動作しません。
+- このブランチを新しくクローンまたはチェックアウトした直後は、必要に応じて `./.agent/skills/remaining_branches_submodule_adder/scripts/add_remaining_branches_as_submodules.ps1` を実行し、不足しているサブモジュール構成を取り込みます。
+- Git フックの初期設定は必須ではありません。バージョン更新や運用チェックは、今後はエージェントの指示・スキル・作業手順で補います。
 
 ## 運用ルール
 - 今後もプロジェクト運用に有効な知見は、継続的に `AGENTS.md` へ反映してください。
 - コミットメッセージは常に詳細な内容（変更目的・主な変更点が分かる内容）を優先してください。
+- サブモジュール内で作業した変更は、そのサブモジュール側でコミット・プッシュしてから、親リポジトリ側でサブモジュール参照先の更新をコミットしてください。
+- 親リポジトリ側だけをコミットしても、サブモジュール内部の未プッシュ変更は公開状態に反映されません。
+- エージェントが変更を行う場合は、Git フックの存在を前提にせず、必要なバージョン更新・関連ファイル更新・`git add` を明示的に実施してください。
 
 ## 知見: ローカル作業とプッシュの管理
 - **事例 (2026-03-05)**: 以前作成したエージェント用スキル（Submodule Adder 等）が、新しくクローンした環境で消失していることが判明。
