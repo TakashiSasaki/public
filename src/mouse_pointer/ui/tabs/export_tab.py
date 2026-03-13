@@ -42,13 +42,14 @@ def build_export_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
     dir_frame.pack(fill=tk.X)
     ttk.Label(dir_frame, text="Output Directory:").pack(side=tk.LEFT, padx=(0, 5))
 
-    out_dir_var = tk.StringVar(value=os.path.join(os.getcwd(), "cursor_set"))
-    ttk.Entry(dir_frame, textvariable=out_dir_var, width=60).pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
+    if not app.var_export_out_dir.get():
+        app.var_export_out_dir.set(os.path.join(os.getcwd(), "cursor_set"))
+    ttk.Entry(dir_frame, textvariable=app.var_export_out_dir, width=60).pack(side=tk.LEFT, fill=tk.X, expand=True, padx=5)
 
     def browse_dir() -> None:
-        selected = filedialog.askdirectory(initialdir=out_dir_var.get() or os.getcwd(), title="Select output folder")
+        selected = filedialog.askdirectory(initialdir=app.var_export_out_dir.get() or os.getcwd(), title="Select output folder")
         if selected:
-            out_dir_var.set(selected)
+            app.var_export_out_dir.set(selected)
 
     ttk.Button(dir_frame, text="Browse...", command=browse_dir).pack(side=tk.LEFT, padx=(5, 0))
 
@@ -148,7 +149,7 @@ def build_export_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
         }
 
     def _run_export() -> None:
-        out_dir = out_dir_var.get().strip()
+        out_dir = app.var_export_out_dir.get().strip()
         if not out_dir:
             messagebox.showerror("Export Error", "Output directory is required.")
             return

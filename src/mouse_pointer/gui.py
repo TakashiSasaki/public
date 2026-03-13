@@ -75,6 +75,7 @@ class CursorGeneratorGUI(tk.Tk):
         self.var_anim_scroll = tk.BooleanVar(value=True)
         self.var_anim_frames = tk.IntVar(value=15)
         self.var_anim_speed = tk.IntVar(value=10) # 1/60s jiffies
+        self.var_export_out_dir = tk.StringVar(value="")
 
         # Pictograms data
         self.pictograms_data = {}
@@ -150,6 +151,7 @@ class CursorGeneratorGUI(tk.Tk):
             "anim_scroll": self.var_anim_scroll.get(),
             "anim_frames": self.var_anim_frames.get(),
             "anim_speed": self.var_anim_speed.get(),
+            "export_out_dir": self.var_export_out_dir.get(),
             "window_width": self.winfo_width(),
             "window_height": self.winfo_height(),
         }
@@ -225,6 +227,7 @@ class CursorGeneratorGUI(tk.Tk):
                 set_val(self.var_anim_scroll, "anim_scroll", bool)
                 set_val(self.var_anim_frames, "anim_frames", int)
                 set_val(self.var_anim_speed, "anim_speed", int)
+                set_val(self.var_export_out_dir, "export_out_dir")
 
                 if "window_width" in settings and "window_height" in settings:
                     w, h = settings["window_width"], settings["window_height"]
