@@ -10,7 +10,7 @@ Windows用のマウスポインタ（.cur / .aniファイル）をカスタマ�
   - 塗りつぶしの色と枠線の色
   - 枠線の太さ
   - 内部への1文字描画やSVGバッジの合成
-  - アニメーション効果（グラデーションウェーブ、キャプションのスクロール等）
+  - アニメーション効果（強度調整可能なグラデーションウェーブ、キャプションのスクロール等）
   - ホットスポットの自動計算と手動保存
 - **CLIモード**: コマンドラインから素早くカーソルを自動生成できます。
 
@@ -37,6 +37,10 @@ uv run mouse-pointer
 
 ```bash
 uv run mouse-pointer generate --color red --size 48 --shape triangle --output my_cursor.cur
+```
+
+```bash
+uv run mouse-pointer generate --color "#800080" --shape arrow --anim-gradient --anim-gradient-intensity 128 --output demo.ani
 ```
 
 ### サンプルファイルの生成

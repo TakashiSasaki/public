@@ -42,6 +42,7 @@ def main() -> None:
     
     # Animations
     gen_parser.add_argument("--anim-gradient", action="store_true", help="Enable gradient waving animation")
+    gen_parser.add_argument("--anim-gradient-intensity", type=int, default=96, help="Gradient wave intensity; higher values make the wave more visible")
     gen_parser.add_argument("--anim-scroll", action="store_true", help="Enable caption scroll animation")
     gen_parser.add_argument("--anim-frames", type=int, default=15, help="Total frames for animation")
     gen_parser.add_argument("--anim-speed", type=int, default=10, help="Frame delay in jiffies (1/60s)")
@@ -121,6 +122,7 @@ def main() -> None:
                 size=args.size,
                 total_frames=args.anim_frames,
                 anim_gradient=args.anim_gradient,
+                gradient_intensity=max(0, args.anim_gradient_intensity),
                 anim_scroll=args.anim_scroll,
                 **render_kwargs
             )

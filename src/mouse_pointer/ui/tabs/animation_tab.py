@@ -31,6 +31,7 @@ def get_render_kwargs(app: "CursorGeneratorGUI") -> dict:
         "shape": app.var_shape.get(),
         "border_color": app.hex_to_rgba(app.var_border_color.get()),
         "border_thickness": app.var_border_thickness.get(),
+        "gradient_intensity": max(0, safe_int(app.var_anim_gradient_intensity, 96)),
         "tr_text": app.var_tr_text.get(),
         "tr_text_size": safe_int(app.var_tr_size, 12),
         "tr_color": tr_c, "tr_bg_color": tr_bg,
@@ -149,6 +150,9 @@ def build_animation_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Fra
     controls_frame.pack(side=tk.LEFT, fill=tk.Y, padx=(0, 10))
 
     ttk.Checkbutton(controls_frame, text="Enable Gradient Wave (Base)", variable=app.var_anim_gradient).pack(anchor=tk.W, pady=5)
+    ttk.Label(controls_frame, text="Gradient Intensity:").pack(anchor=tk.W, pady=(10, 0))
+    ttk.Spinbox(controls_frame, from_=0, to=192, textvariable=app.var_anim_gradient_intensity, width=10).pack(anchor=tk.W, pady=5)
+    ttk.Label(controls_frame, text="0 = no visible gradient change, larger values = stronger contrast", wraplength=220, justify=tk.LEFT, font=("Segoe UI", 8)).pack(anchor=tk.W)
     ttk.Checkbutton(controls_frame, text="Enable Caption Scrolling", variable=app.var_anim_scroll).pack(anchor=tk.W, pady=5)
 
     ttk.Label(controls_frame, text="Total Frames:").pack(anchor=tk.W, pady=(10, 0))

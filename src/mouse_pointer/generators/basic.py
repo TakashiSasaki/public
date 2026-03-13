@@ -112,6 +112,7 @@ def create_cursor_image(
     badge2_name: str = "",
     svg_aa: bool = True,
     gradient_shift: float = 0.0, # 0.0 to 1.0 for waving effect
+    gradient_intensity: int = 96,
     caption_x_offset: int = 0,
     caption_wrap_width: int = 0, # If > 0, text wraps/loops
 ) -> Tuple[Image.Image, Tuple[int, int]]:
@@ -157,8 +158,9 @@ def create_cursor_image(
         g_draw = ImageDraw.Draw(grad)
         
         r, g, b, a = color
+        intensity = max(0, min(int(gradient_intensity), 255))
         # Secondary color for gradient (e.g. 50% lighter)
-        c2 = (min(r+60, 255), min(g+60, 255), min(b+60, 255), a)
+        c2 = (min(r + intensity, 255), min(g + intensity, 255), min(b + intensity, 255), a)
         
         for x in range(size):
             # Oscillate the gradient stop over time (0 to 1)
@@ -289,6 +291,7 @@ def create_animated_cursor_frames(
     size: int = 32,
     total_frames: int = 15,
     anim_gradient: bool = True,
+    gradient_intensity: int = 96,
     anim_scroll: bool = True,
     **kwargs
 ) -> List[Tuple[Image.Image, Tuple[int, int]]]:
@@ -325,6 +328,7 @@ def create_animated_cursor_frames(
         frame_img, hotspot = create_cursor_image(
             size=size,
             gradient_shift=g_shift,
+            gradient_intensity=gradient_intensity,
             caption_x_offset=c_off,
             caption_wrap_width=wrap_w,
             **kwargs

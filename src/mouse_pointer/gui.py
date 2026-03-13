@@ -69,6 +69,7 @@ class CursorGeneratorGUI(tk.Tk):
 
         # Animation Settings
         self.var_anim_gradient = tk.BooleanVar(value=True)
+        self.var_anim_gradient_intensity = tk.IntVar(value=96)
         self.var_anim_scroll = tk.BooleanVar(value=True)
         self.var_anim_frames = tk.IntVar(value=15)
         self.var_anim_speed = tk.IntVar(value=10) # 1/60s jiffies
@@ -125,6 +126,7 @@ class CursorGeneratorGUI(tk.Tk):
             "badge2_name": self.var_badge2_name.get(),
             "svg_aa": self.var_svg_aa.get(),
             "anim_gradient": self.var_anim_gradient.get(),
+            "anim_gradient_intensity": self.var_anim_gradient_intensity.get(),
             "anim_scroll": self.var_anim_scroll.get(),
             "anim_frames": self.var_anim_frames.get(),
             "anim_speed": self.var_anim_speed.get(),
@@ -199,6 +201,7 @@ class CursorGeneratorGUI(tk.Tk):
                 set_val(self.var_badge2_name, "badge2_name")
                 set_val(self.var_svg_aa, "svg_aa", bool)
                 set_val(self.var_anim_gradient, "anim_gradient", bool)
+                set_val(self.var_anim_gradient_intensity, "anim_gradient_intensity", int)
                 set_val(self.var_anim_scroll, "anim_scroll", bool)
                 set_val(self.var_anim_frames, "anim_frames", int)
                 set_val(self.var_anim_speed, "anim_speed", int)
