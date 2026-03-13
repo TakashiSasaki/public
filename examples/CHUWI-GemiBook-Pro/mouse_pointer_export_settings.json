@@ -1,7 +1,7 @@
 {
     "shape": "arrow",
     "size": 32,
-    "color": "#800080",
+    "color": "#00ff00",
     "border_color": "#000000",
     "border_thickness": 1,
     "tr_text": "",
@@ -20,7 +20,7 @@
     "mr_outline": false,
     "caption_text": "CHUWI GemiBook",
     "caption_size": "14",
-    "caption_color": "#800080",
+    "caption_color": "#008000",
     "caption_bg_color": "#ffffff",
     "caption_bg_alpha": 0,
     "caption_aa": true,
