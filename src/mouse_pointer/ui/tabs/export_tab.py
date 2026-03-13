@@ -28,7 +28,7 @@ def build_export_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
             "Generate a Windows cursor set into one folder. "
             "Filename values are the conventional Windows cursor filenames used by the standard scheme "
             "(for example arrow.cur, help.cur, wait.cur, hand.cur). "
-            "Text style follows your current editor and text settings, and role-specific text content is fixed per cursor role. "
+            "TR, MR, and Caption follow your current text settings uniformly across all exported roles. "
             "Each export writes both .cur and .ani files using the current Animation tab settings."
         ),
         wraplength=760,
@@ -152,16 +152,19 @@ def build_export_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
             "border_color": app.hex_to_rgba(app.var_border_color.get()),
             "border_thickness": app.var_border_thickness.get(),
             "gradient_intensity": max(0, safe_int(app.var_anim_gradient_intensity, 96)),
+            "tr_text": app.var_tr_text.get(),
             "tr_text_size": safe_int(app.var_tr_size, 12),
             "tr_color": tr_color,
             "tr_bg_color": tr_bg,
             "tr_aa": app.var_tr_aa.get(),
             "tr_outline": app.var_tr_outline.get(),
+            "mr_text": app.var_mr_text.get(),
             "mr_text_size": safe_int(app.var_mr_size, 12),
             "mr_color": mr_color,
             "mr_bg_color": mr_bg,
             "mr_aa": app.var_mr_aa.get(),
             "mr_outline": app.var_mr_outline.get(),
+            "caption_text": app.var_caption_text.get(),
             "caption_text_size": safe_int(app.var_caption_size, 12),
             "caption_color": caption_color,
             "caption_bg_color": caption_bg,
@@ -207,9 +210,6 @@ def build_export_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
                 render_kwargs.update(
                     {
                         "shape": role["shape"],
-                        "tr_text": role["tr_text"],
-                        "mr_text": role["mr_text"],
-                        "caption_text": role["caption_text"],
                     }
                 )
                 if not role.get("use_overlays", True):

@@ -126,6 +126,8 @@ def create_cursor_image(
     ox, oy = pad, pad
     hotspot = (ox, oy)
     custom_mask: Optional[Image.Image] = None
+    custom_cutout_mask: Optional[Image.Image] = None
+    custom_detail_masks: List[Image.Image] = []
 
     def sx(value: float) -> int:
         return int(round(ox + value * s))
@@ -133,44 +135,127 @@ def create_cursor_image(
     def sy(value: float) -> int:
         return int(round(oy + value * s))
 
-    def _draw_custom_shape_mask() -> Optional[Image.Image]:
-        if shape not in {"hand", "ibeam", "hourglass"}:
-            return None
+    def _draw_hand_mask() -> Image.Image:
+        mask = Image.new("L", (size, size), 0)
+        mask_draw = ImageDraw.Draw(mask)
+        finger_radius = max(1, int(round(1.2 * s)))
+        palm_radius = max(1, int(round(2.2 * s)))
+        wrist_radius = max(1, int(round(1.0 * s)))
 
+        # Pointing hand silhouette: long index finger, stepped fingers, palm, thumb, wrist.
+        mask_draw.rounded_rectangle((sx(10.0), sy(1.8), sx(14.2), sy(20.8)), radius=finger_radius, fill=255)
+        mask_draw.rounded_rectangle((sx(14.0), sy(7.8), sx(17.4), sy(19.6)), radius=finger_radius, fill=255)
+        mask_draw.rounded_rectangle((sx(17.0), sy(10.0), sx(20.3), sy(20.4)), radius=finger_radius, fill=255)
+        mask_draw.rounded_rectangle((sx(19.8), sy(12.0), sx(22.8), sy(20.6)), radius=finger_radius, fill=255)
+        mask_draw.rounded_rectangle((sx(8.8), sy(14.0), sx(21.0), sy(25.2)), radius=palm_radius, fill=255)
+        mask_draw.rounded_rectangle((sx(11.2), sy(24.2), sx(19.2), sy(31.0)), radius=wrist_radius, fill=255)
+        mask_draw.polygon(
+            [
+                (sx(9.8), sy(15.0)),
+                (sx(5.2), sy(12.6)),
+                (sx(3.6), sy(14.3)),
+                (sx(4.4), sy(17.6)),
+                (sx(7.8), sy(22.0)),
+                (sx(10.4), sy(22.2)),
+                (sx(11.7), sy(19.4)),
+                (sx(11.4), sy(16.8)),
+            ],
+            fill=255,
+        )
+        # Fill the crotch between the index finger and palm to avoid a forked silhouette.
+        mask_draw.polygon(
+            [
+                (sx(12.0), sy(15.2)),
+                (sx(16.0), sy(13.8)),
+                (sx(17.4), sy(16.6)),
+                (sx(15.0), sy(19.6)),
+                (sx(11.8), sy(18.6)),
+            ],
+            fill=255,
+        )
+        return mask
+
+    def _draw_ibeam_mask() -> Image.Image:
         mask = Image.new("L", (size, size), 0)
         mask_draw = ImageDraw.Draw(mask)
         radius = max(1, int(round(1.6 * s)))
-
-        if shape == "hand":
-            mask_draw.rounded_rectangle((sx(11), sy(2), sx(15), sy(18)), radius=radius, fill=255)
-            mask_draw.rounded_rectangle((sx(9), sy(13), sx(19), sy(24)), radius=radius, fill=255)
-            mask_draw.rounded_rectangle((sx(10), sy(23), sx(18), sy(31)), radius=radius, fill=255)
-            mask_draw.rounded_rectangle((sx(15), sy(8), sx(18), sy(18)), radius=radius, fill=255)
-            mask_draw.rounded_rectangle((sx(17), sy(10), sx(20), sy(19)), radius=radius, fill=255)
-            mask_draw.rounded_rectangle((sx(19), sy(12), sx(22), sy(20)), radius=radius, fill=255)
-            mask_draw.polygon(
-                [
-                    (sx(10), sy(16)),
-                    (sx(5), sy(12)),
-                    (sx(4), sy(15)),
-                    (sx(7), sy(19)),
-                    (sx(10), sy(20)),
-                ],
-                fill=255,
-            )
-        elif shape == "ibeam":
-            mask_draw.rounded_rectangle((sx(14), sy(4), sx(18), sy(28)), radius=radius, fill=255)
-            mask_draw.rounded_rectangle((sx(9), sy(3), sx(23), sy(7)), radius=radius, fill=255)
-            mask_draw.rounded_rectangle((sx(9), sy(25), sx(23), sy(29)), radius=radius, fill=255)
-        elif shape == "hourglass":
-            mask_draw.rounded_rectangle((sx(8), sy(3), sx(24), sy(6)), radius=radius, fill=255)
-            mask_draw.rounded_rectangle((sx(8), sy(26), sx(24), sy(29)), radius=radius, fill=255)
-            mask_draw.polygon([(sx(9), sy(6)), (sx(23), sy(6)), (sx(16), sy(15))], fill=255)
-            mask_draw.polygon([(sx(16), sy(17)), (sx(9), sy(26)), (sx(23), sy(26))], fill=255)
-
+        mask_draw.rounded_rectangle((sx(14), sy(4), sx(18), sy(28)), radius=radius, fill=255)
+        mask_draw.rounded_rectangle((sx(9), sy(3), sx(23), sy(7)), radius=radius, fill=255)
+        mask_draw.rounded_rectangle((sx(9), sy(25), sx(23), sy(29)), radius=radius, fill=255)
         return mask
 
-    def _paint_custom_shape(mask: Image.Image) -> None:
+    def _draw_hourglass_masks() -> Tuple[Image.Image, Image.Image, List[Image.Image]]:
+        outer = Image.new("L", (size, size), 0)
+        cutout = Image.new("L", (size, size), 0)
+        upper_sand = Image.new("L", (size, size), 0)
+        lower_sand = Image.new("L", (size, size), 0)
+        od = ImageDraw.Draw(outer)
+        cd = ImageDraw.Draw(cutout)
+        usd = ImageDraw.Draw(upper_sand)
+        lsd = ImageDraw.Draw(lower_sand)
+        bar_radius = max(1, int(round(1.2 * s)))
+
+        od.rounded_rectangle((sx(8.8), sy(2.8), sx(23.2), sy(5.2)), radius=bar_radius, fill=255)
+        od.rounded_rectangle((sx(8.8), sy(26.8), sx(23.2), sy(29.2)), radius=bar_radius, fill=255)
+        od.polygon(
+            [
+                (sx(10.3), sy(5.0)),
+                (sx(21.7), sy(5.0)),
+                (sx(18.3), sy(11.7)),
+                (sx(17.0), sy(14.8)),
+                (sx(18.0), sy(18.1)),
+                (sx(21.8), sy(27.0)),
+                (sx(10.2), sy(27.0)),
+                (sx(14.0), sy(18.1)),
+                (sx(15.0), sy(14.8)),
+                (sx(13.7), sy(11.7)),
+            ],
+            fill=255,
+        )
+
+        cd.polygon(
+            [
+                (sx(12.2), sy(6.8)),
+                (sx(19.8), sy(6.8)),
+                (sx(17.5), sy(11.4)),
+                (sx(16.0), sy(13.8)),
+                (sx(14.5), sy(11.4)),
+            ],
+            fill=255,
+        )
+        cd.polygon(
+            [
+                (sx(16.0), sy(15.9)),
+                (sx(17.6), sy(18.7)),
+                (sx(19.6), sy(24.9)),
+                (sx(12.4), sy(24.9)),
+                (sx(14.4), sy(18.7)),
+            ],
+            fill=255,
+        )
+
+        usd.polygon(
+            [
+                (sx(12.9), sy(8.4)),
+                (sx(19.1), sy(8.4)),
+                (sx(17.4), sy(11.0)),
+                (sx(14.6), sy(11.0)),
+            ],
+            fill=255,
+        )
+        usd.rectangle((sx(15.5), sy(11.0), sx(16.5), sy(13.4)), fill=255)
+        lsd.polygon(
+            [
+                (sx(12.8), sy(23.8)),
+                (sx(19.2), sy(23.8)),
+                (sx(17.5), sy(19.4)),
+                (sx(14.5), sy(19.4)),
+            ],
+            fill=255,
+        )
+        return outer, cutout, [upper_sand, lower_sand]
+
+    def _paint_custom_shape(mask: Image.Image, cutout_mask: Optional[Image.Image] = None, detail_masks: Optional[List[Image.Image]] = None) -> None:
         if border_thickness > 0:
             filter_size = max(3, (border_thickness * 2) + 1)
             if filter_size % 2 == 0:
@@ -182,6 +267,12 @@ def create_cursor_image(
 
         fill_layer = Image.new("RGBA", (size, size), color)
         img.paste(fill_layer, (0, 0), mask)
+        if cutout_mask is not None:
+            clear_layer = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+            img.paste(clear_layer, (0, 0), cutout_mask)
+        if detail_masks:
+            for detail_mask in detail_masks:
+                img.paste(fill_layer, (0, 0), detail_mask)
     
     if shape == "arrow":
         points = [(ox+0*s, oy+0*s), (ox+0*s, oy+22*s), (ox+6*s, oy+16*s), (ox+10*s, oy+25*s), (ox+14*s, oy+23*s), (ox+10*s, oy+14*s), (ox+16*s, oy+14*s)]
@@ -195,15 +286,15 @@ def create_cursor_image(
         hotspot = (int(ox+16*s), int(oy+16*s))
     elif shape == "hand":
         points = []
-        custom_mask = _draw_custom_shape_mask()
-        hotspot = (sx(13), sy(3))
+        custom_mask = _draw_hand_mask()
+        hotspot = (sx(11.5), sy(2.5))
     elif shape == "ibeam":
         points = []
-        custom_mask = _draw_custom_shape_mask()
+        custom_mask = _draw_ibeam_mask()
         hotspot = (sx(16), sy(16))
     elif shape == "hourglass":
         points = []
-        custom_mask = _draw_custom_shape_mask()
+        custom_mask, custom_cutout_mask, custom_detail_masks = _draw_hourglass_masks()
         hotspot = (sx(16), sy(16))
     else:
         points = [(ox+0, oy+0), (ox+0, oy+22*s), (ox+6*s, oy+16*s), (ox+16*s, oy+14*s)]
@@ -245,7 +336,7 @@ def create_cursor_image(
 
     # Draw the main cursor body
     if custom_mask is not None:
-        _paint_custom_shape(custom_mask)
+        _paint_custom_shape(custom_mask, custom_cutout_mask, custom_detail_masks)
     elif gradient_shift is not None:
         grad_img, poly_mask = _create_gradient_mask(size, points, gradient_shift)
         img.paste(grad_img, (0, 0), poly_mask)
