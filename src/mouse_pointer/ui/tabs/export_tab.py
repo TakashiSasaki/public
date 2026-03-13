@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 
 
 EXPORT_SIZES = [32, 48, 64, 96, 128]
+EXPORT_SETTINGS_FILENAME = "mouse_pointer_export_settings.json"
 
 
 def build_export_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
@@ -53,6 +54,34 @@ def build_export_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
 
     ttk.Button(dir_frame, text="Browse...", command=browse_dir).pack(side=tk.LEFT, padx=(5, 0))
 
+    def open_output_directory() -> None:
+        out_dir = app.var_export_out_dir.get().strip()
+        if not out_dir:
+            messagebox.showerror("Open Folder", "Output directory is required.")
+            return
+
+        output_path = Path(out_dir)
+        output_path.mkdir(parents=True, exist_ok=True)
+        try:
+            os.startfile(str(output_path))
+        except Exception as e:
+            messagebox.showerror("Open Folder", f"Failed to open output directory:\n{e}")
+
+    def load_export_settings() -> None:
+        filename = filedialog.askopenfilename(
+            title="Load Export Settings",
+            initialdir=app.var_export_out_dir.get() or os.getcwd(),
+            filetypes=[("JSON files", "*.json"), ("All files", "*.*")],
+        )
+        if not filename:
+            return
+
+        try:
+            app.load_settings_from_path(Path(filename))
+            messagebox.showinfo("Settings Loaded", f"Loaded settings from:\n{filename}")
+        except Exception as e:
+            messagebox.showerror("Settings Load Error", f"Failed to load settings:\n{e}")
+
     ttk.Label(
         settings_frame,
         text=f"Generated sizes: {', '.join(f'{size}px' for size in EXPORT_SIZES)}",
@@ -65,6 +94,11 @@ def build_export_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
         wraplength=760,
         justify=tk.LEFT,
     ).pack(anchor=tk.W, pady=(4, 0))
+
+    controls_row = ttk.Frame(settings_frame)
+    controls_row.pack(fill=tk.X, pady=(8, 0))
+    ttk.Button(controls_row, text="Load Settings File", command=load_export_settings).pack(side=tk.LEFT)
+    ttk.Button(controls_row, text="Open Output Directory", command=open_output_directory).pack(side=tk.LEFT, padx=(8, 0))
 
     table_frame = ttk.LabelFrame(export_frame, text="Cursor Roles", padding=10)
     table_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
@@ -164,6 +198,9 @@ def build_export_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
             exported_ani = 0
             errors = []
 
+            settings_output_path = output_path / EXPORT_SETTINGS_FILENAME
+            app.save_settings_to_path(settings_output_path)
+
             for item_id in tree.get_children():
                 role = roles_by_filename[item_id]
                 render_kwargs = dict(common_kwargs)
@@ -217,7 +254,7 @@ def build_export_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
             else:
                 messagebox.showinfo(
                     "Export Complete",
-                    f"Generated {exported_cur} .cur files and {exported_ani} .ani files in:\n{output_path}",
+                    f"Generated {exported_cur} .cur files, {exported_ani} .ani files, and:\n{settings_output_path}",
                 )
         except Exception as export_error:
             messagebox.showerror("Export Error", f"Failed to export cursor set:\n{export_error}")

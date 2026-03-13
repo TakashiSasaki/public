@@ -111,9 +111,9 @@ class CursorGeneratorGUI(tk.Tk):
         config_dir.mkdir(parents=True, exist_ok=True)
         return config_dir / "editor_settings.json"
 
-    def save_settings(self):
-        """現在のエディタ設定をJSONファイルに保存する"""
-        settings = {
+    def collect_settings(self, include_window_geometry: bool = True) -> Dict[str, Any]:
+        """現在のエディタ設定を dict として収集する"""
+        settings: Dict[str, Any] = {
             "shape": self.var_shape.get(),
             "size": self.var_size.get(),
             "color": self.var_color.get(),
@@ -152,14 +152,92 @@ class CursorGeneratorGUI(tk.Tk):
             "anim_frames": self.var_anim_frames.get(),
             "anim_speed": self.var_anim_speed.get(),
             "export_out_dir": self.var_export_out_dir.get(),
-            "window_width": self.winfo_width(),
-            "window_height": self.winfo_height(),
         }
+        if include_window_geometry:
+            settings["window_width"] = self.winfo_width()
+            settings["window_height"] = self.winfo_height()
+        return settings
+
+    def apply_settings(self, settings: Dict[str, Any]) -> None:
+        """dict から設定を読み込んで反映する"""
+        def set_val(var: Union[tk.StringVar, tk.IntVar, tk.BooleanVar], key: str, type_cast: Optional[Callable[[Any], Any]] = None) -> None:
+            if key in settings:
+                val = settings[key]
+                if type_cast:
+                    try:
+                        if type_cast is bool and isinstance(val, str):
+                            val = val.lower() == "true"
+                        elif type_cast is int and isinstance(val, str):
+                            try:
+                                val = int(val)
+                            except ValueError:
+                                val = 0
+                        else:
+                            val = type_cast(val)
+                    except Exception:
+                        return
+                var.set(val)
+
+        set_val(self.var_shape, "shape")
+        set_val(self.var_size, "size", int)
+        set_val(self.var_color, "color")
+        set_val(self.var_border_color, "border_color")
+        set_val(self.var_border_thickness, "border_thickness", int)
+        set_val(self.var_tr_text, "tr_text")
+        set_val(self.var_tr_size, "tr_size")
+        set_val(self.var_tr_color, "tr_color")
+        set_val(self.var_tr_bg_color, "tr_bg_color")
+        set_val(self.var_tr_bg_alpha, "tr_bg_alpha", int)
+        set_val(self.var_tr_aa, "tr_aa", bool)
+        set_val(self.var_tr_outline, "tr_outline", bool)
+        set_val(self.var_mr_text, "mr_text")
+        set_val(self.var_mr_size, "mr_size")
+        set_val(self.var_mr_color, "mr_color")
+        set_val(self.var_mr_bg_color, "mr_bg_color")
+        set_val(self.var_mr_bg_alpha, "mr_bg_alpha", int)
+        set_val(self.var_mr_aa, "mr_aa", bool)
+        set_val(self.var_mr_outline, "mr_outline", bool)
+        set_val(self.var_caption_text, "caption_text")
+        set_val(self.var_caption_size, "caption_size")
+        set_val(self.var_caption_color, "caption_color")
+        set_val(self.var_caption_bg_color, "caption_bg_color")
+        set_val(self.var_caption_bg_alpha, "caption_bg_alpha", int)
+        set_val(self.var_caption_aa, "caption_aa", bool)
+        set_val(self.var_caption_outline, "caption_outline", bool)
+        set_val(self.var_show_grid, "show_grid", bool)
+        set_val(self.var_drop_shadow, "drop_shadow", bool)
+        set_val(self.var_base_name, "base_name")
+        set_val(self.var_badge1_name, "badge1_name")
+        set_val(self.var_badge2_name, "badge2_name")
+        set_val(self.var_svg_aa, "svg_aa", bool)
+        set_val(self.var_anim_gradient, "anim_gradient", bool)
+        set_val(self.var_anim_gradient_intensity, "anim_gradient_intensity", int)
+        set_val(self.var_anim_scroll, "anim_scroll", bool)
+        set_val(self.var_anim_frames, "anim_frames", int)
+        set_val(self.var_anim_speed, "anim_speed", int)
+        set_val(self.var_export_out_dir, "export_out_dir")
+
+        if "window_width" in settings and "window_height" in settings:
+            self.geometry(f"{settings['window_width']}x{settings['window_height']}")
+
+    def save_settings_to_path(self, path: Path, include_window_geometry: bool = True) -> None:
+        """指定されたパスへ設定を保存する"""
+        settings = self.collect_settings(include_window_geometry=include_window_geometry)
         try:
-            with open(self.get_settings_path(), "w", encoding="utf-8") as f:
+            with open(path, "w", encoding="utf-8") as f:
                 json.dump(settings, f, indent=4, ensure_ascii=False)
         except Exception as e:
             print(f"Failed to save settings: {e}")
+
+    def load_settings_from_path(self, path: Path) -> None:
+        """指定された JSON ファイルから設定を読み込む"""
+        with open(path, "r", encoding="utf-8") as f:
+            settings: Dict[str, Any] = json.load(f)
+        self.apply_settings(settings)
+
+    def save_settings(self):
+        """現在のエディタ設定をJSONファイルに保存する"""
+        self.save_settings_to_path(self.get_settings_path())
 
     def load_settings(self) -> None:
         """保存されているエディタ設定を読み込んで反映する"""
@@ -167,71 +245,7 @@ class CursorGeneratorGUI(tk.Tk):
         if not path.exists():
             return
         try:
-            with open(path, "r", encoding="utf-8") as f:
-                settings: Dict[str, Any] = json.load(f)
-                
-                def set_val(var: Union[tk.StringVar, tk.IntVar, tk.BooleanVar], key: str, type_cast: Optional[Callable[[Any], Any]] = None) -> None:
-                    if key in settings:
-                        val = settings[key]
-                        if type_cast:
-                            try:
-                                if type_cast is bool and isinstance(val, str):
-                                    val = val.lower() == "true"
-                                elif type_cast is int and isinstance(val, str):
-                                    # Safely convert string to int, default to 0 if invalid
-                                    try:
-                                        val = int(val)
-                                    except ValueError:
-                                        val = 0
-                                else:
-                                    val = type_cast(val)
-                            except: return
-                        var.set(val)
-
-                set_val(self.var_shape, "shape")
-                set_val(self.var_size, "size", int)
-                set_val(self.var_color, "color")
-                set_val(self.var_border_color, "border_color")
-                set_val(self.var_border_thickness, "border_thickness", int)
-                set_val(self.var_tr_text, "tr_text")
-                set_val(self.var_tr_size, "tr_size") # Load as string
-                set_val(self.var_tr_color, "tr_color")
-                set_val(self.var_tr_bg_color, "tr_bg_color")
-                set_val(self.var_tr_bg_alpha, "tr_bg_alpha", int)
-                set_val(self.var_tr_aa, "tr_aa", bool)
-                set_val(self.var_tr_outline, "tr_outline", bool)
-
-                set_val(self.var_mr_text, "mr_text")
-                set_val(self.var_mr_size, "mr_size") # Load as string
-                set_val(self.var_mr_color, "mr_color")
-                set_val(self.var_mr_bg_color, "mr_bg_color")
-                set_val(self.var_mr_bg_alpha, "mr_bg_alpha", int)
-                set_val(self.var_mr_aa, "mr_aa", bool)
-                set_val(self.var_mr_outline, "mr_outline", bool)
-
-                set_val(self.var_caption_text, "caption_text")
-                set_val(self.var_caption_size, "caption_size") # Load as string
-                set_val(self.var_caption_color, "caption_color")
-                set_val(self.var_caption_bg_color, "caption_bg_color")
-                set_val(self.var_caption_bg_alpha, "caption_bg_alpha", int)
-                set_val(self.var_caption_aa, "caption_aa", bool)
-                set_val(self.var_caption_outline, "caption_outline", bool)
-                set_val(self.var_show_grid, "show_grid", bool)
-                set_val(self.var_drop_shadow, "drop_shadow", bool)
-                set_val(self.var_base_name, "base_name")
-                set_val(self.var_badge1_name, "badge1_name")
-                set_val(self.var_badge2_name, "badge2_name")
-                set_val(self.var_svg_aa, "svg_aa", bool)
-                set_val(self.var_anim_gradient, "anim_gradient", bool)
-                set_val(self.var_anim_gradient_intensity, "anim_gradient_intensity", int)
-                set_val(self.var_anim_scroll, "anim_scroll", bool)
-                set_val(self.var_anim_frames, "anim_frames", int)
-                set_val(self.var_anim_speed, "anim_speed", int)
-                set_val(self.var_export_out_dir, "export_out_dir")
-
-                if "window_width" in settings and "window_height" in settings:
-                    w, h = settings["window_width"], settings["window_height"]
-                    self.geometry(f"{w}x{h}")
+            self.load_settings_from_path(path)
         except Exception as e:
             print(f"Failed to load settings: {e}")
 
