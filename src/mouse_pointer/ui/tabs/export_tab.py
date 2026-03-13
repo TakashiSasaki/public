@@ -4,8 +4,8 @@ from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 from typing import TYPE_CHECKING, Any, Dict
 
-from mouse_pointer.core.cursor import save_multi_cursor
-from mouse_pointer.generators.basic import create_cursor_image
+from mouse_pointer.core.cursor import save_animated_cursor, save_multi_cursor
+from mouse_pointer.generators.basic import create_animated_cursor_frames, create_cursor_image
 from mouse_pointer.generators.cursor_roles import CURSOR_ROLES
 
 if TYPE_CHECKING:
@@ -25,8 +25,10 @@ def build_export_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
         export_frame,
         text=(
             "Generate a Windows cursor set into one folder. "
-            "Color, border, shadow, and text styling follow your current editor settings, "
-            "while each role uses its own recognisable cursor shape."
+            "Filename values are the conventional Windows cursor filenames used by the standard scheme "
+            "(for example arrow.cur, help.cur, wait.cur, hand.cur). "
+            "Text style follows your current editor and text settings, and role-specific text content is fixed per cursor role. "
+            "Each export writes both .cur and .ani files using the current Animation tab settings."
         ),
         wraplength=760,
         justify=tk.LEFT,
@@ -55,25 +57,26 @@ def build_export_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
         text=f"Generated sizes: {', '.join(f'{size}px' for size in EXPORT_SIZES)}",
         font=("Segoe UI", 8),
     ).pack(anchor=tk.W, pady=(8, 0))
+    ttk.Label(
+        settings_frame,
+        text="ANI export uses the current Gradient / Scroll / Frames / Speed settings from the Animation tab.",
+        font=("Segoe UI", 8),
+        wraplength=760,
+        justify=tk.LEFT,
+    ).pack(anchor=tk.W, pady=(4, 0))
 
     table_frame = ttk.LabelFrame(export_frame, text="Cursor Roles", padding=10)
     table_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
 
-    columns = ("name", "filename", "shape", "tr_text", "mr_text", "caption_text")
+    columns = ("name", "filename", "shape")
     tree = ttk.Treeview(table_frame, columns=columns, show="headings", height=10)
     tree.heading("name", text="Role")
     tree.heading("filename", text="Filename")
     tree.heading("shape", text="Shape")
-    tree.heading("tr_text", text="TR")
-    tree.heading("mr_text", text="MR")
-    tree.heading("caption_text", text="Caption")
 
-    tree.column("name", width=170, anchor=tk.W)
-    tree.column("filename", width=110, anchor=tk.W)
-    tree.column("shape", width=90, anchor=tk.CENTER)
-    tree.column("tr_text", width=80, anchor=tk.CENTER)
-    tree.column("mr_text", width=100, anchor=tk.CENTER)
-    tree.column("caption_text", width=160, anchor=tk.W)
+    tree.column("name", width=220, anchor=tk.W)
+    tree.column("filename", width=150, anchor=tk.W)
+    tree.column("shape", width=110, anchor=tk.CENTER)
 
     for role in CURSOR_ROLES:
         tree.insert(
@@ -84,9 +87,6 @@ def build_export_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
                 role["name"],
                 role["filename"],
                 role["shape"],
-                role["tr_text"],
-                role["mr_text"],
-                role["caption_text"],
             ),
         )
 
@@ -94,76 +94,6 @@ def build_export_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
     scrollbar = ttk.Scrollbar(table_frame, orient=tk.VERTICAL, command=tree.yview)
     tree.configure(yscrollcommand=scrollbar.set)
     scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-
-    edit_frame = ttk.LabelFrame(export_frame, text="Selected Role Override", padding=10)
-    edit_frame.pack(fill=tk.X, padx=10, pady=(0, 10))
-
-    selected_role_var = tk.StringVar(value="Select a row to edit text overrides.")
-    ttk.Label(edit_frame, textvariable=selected_role_var).grid(row=0, column=0, columnspan=6, sticky=tk.W, pady=(0, 8))
-
-    edit_tr_var = tk.StringVar()
-    edit_mr_var = tk.StringVar()
-    edit_caption_var = tk.StringVar()
-
-    ttk.Label(edit_frame, text="TR Text:").grid(row=1, column=0, sticky=tk.W, padx=(0, 5))
-    ttk.Entry(edit_frame, textvariable=edit_tr_var, width=10).grid(row=1, column=1, sticky=tk.W, padx=(0, 12))
-    ttk.Label(edit_frame, text="MR Text:").grid(row=1, column=2, sticky=tk.W, padx=(0, 5))
-    ttk.Entry(edit_frame, textvariable=edit_mr_var, width=12).grid(row=1, column=3, sticky=tk.W, padx=(0, 12))
-    ttk.Label(edit_frame, text="Caption:").grid(row=1, column=4, sticky=tk.W, padx=(0, 5))
-    ttk.Entry(edit_frame, textvariable=edit_caption_var, width=24).grid(row=1, column=5, sticky=tk.EW)
-    edit_frame.columnconfigure(5, weight=1)
-
-    def sync_editor_from_selection(*_args: Any) -> None:
-        selected = tree.selection()
-        if not selected:
-            return
-
-        item_id = selected[0]
-        role = roles_by_filename[item_id]
-        values = tree.item(item_id, "values")
-        selected_role_var.set(f"{role['name']} ({role['shape']})")
-        edit_tr_var.set(values[3])
-        edit_mr_var.set(values[4])
-        edit_caption_var.set(values[5])
-
-    def apply_selected_override() -> None:
-        selected = tree.selection()
-        if not selected:
-            return
-
-        item_id = selected[0]
-        values = list(tree.item(item_id, "values"))
-        values[3] = edit_tr_var.get()
-        values[4] = edit_mr_var.get()
-        values[5] = edit_caption_var.get()
-        tree.item(item_id, values=values)
-
-    def reset_selected_override() -> None:
-        selected = tree.selection()
-        if not selected:
-            return
-
-        item_id = selected[0]
-        role = roles_by_filename[item_id]
-        tree.item(
-            item_id,
-            values=(
-                role["name"],
-                role["filename"],
-                role["shape"],
-                role["tr_text"],
-                role["mr_text"],
-                role["caption_text"],
-            ),
-        )
-        sync_editor_from_selection()
-
-    tree.bind("<<TreeviewSelect>>", sync_editor_from_selection)
-
-    button_row = ttk.Frame(edit_frame)
-    button_row.grid(row=2, column=0, columnspan=6, sticky=tk.W, pady=(8, 0))
-    ttk.Button(button_row, text="Apply to Selected", command=apply_selected_override).pack(side=tk.LEFT)
-    ttk.Button(button_row, text="Reset Selected", command=reset_selected_override).pack(side=tk.LEFT, padx=(8, 0))
 
     def safe_int(var: tk.Variable, default: int) -> int:
         try:
@@ -186,6 +116,7 @@ def build_export_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
             "color": app.hex_to_rgba(app.var_color.get()),
             "border_color": app.hex_to_rgba(app.var_border_color.get()),
             "border_thickness": app.var_border_thickness.get(),
+            "gradient_intensity": max(0, safe_int(app.var_anim_gradient_intensity, 96)),
             "tr_text_size": safe_int(app.var_tr_size, 12),
             "tr_color": tr_color,
             "tr_bg_color": tr_bg,
@@ -208,6 +139,14 @@ def build_export_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
             "svg_aa": app.var_svg_aa.get(),
         }
 
+    def collect_animation_kwargs() -> Dict[str, Any]:
+        return {
+            "anim_gradient": app.var_anim_gradient.get(),
+            "anim_scroll": app.var_anim_scroll.get(),
+            "total_frames": max(2, safe_int(app.var_anim_frames, 15)),
+            "jif_rate": max(1, safe_int(app.var_anim_speed, 10)),
+        }
+
     def _run_export() -> None:
         out_dir = out_dir_var.get().strip()
         if not out_dir:
@@ -219,19 +158,20 @@ def build_export_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
 
         try:
             common_kwargs = collect_common_render_kwargs()
-            exported = 0
+            animation_kwargs = collect_animation_kwargs()
+            exported_cur = 0
+            exported_ani = 0
             errors = []
 
             for item_id in tree.get_children():
                 role = roles_by_filename[item_id]
-                values = tree.item(item_id, "values")
                 render_kwargs = dict(common_kwargs)
                 render_kwargs.update(
                     {
                         "shape": role["shape"],
-                        "tr_text": values[3],
-                        "mr_text": values[4],
-                        "caption_text": values[5],
+                        "tr_text": role["tr_text"],
+                        "mr_text": role["mr_text"],
+                        "caption_text": role["caption_text"],
                     }
                 )
                 if not role.get("use_overlays", True):
@@ -245,19 +185,38 @@ def build_export_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
                         image, hotspot = create_cursor_image(size=export_size, **render_kwargs)
                         multi_image_data.append((image, hotspot))
                     save_multi_cursor(multi_image_data, output_path / role["filename"])
-                    exported += 1
+                    exported_cur += 1
+
+                    ani_frames = []
+                    for export_size in EXPORT_SIZES:
+                        frames = create_animated_cursor_frames(
+                            size=export_size,
+                            total_frames=animation_kwargs["total_frames"],
+                            anim_gradient=animation_kwargs["anim_gradient"],
+                            anim_scroll=animation_kwargs["anim_scroll"],
+                            **render_kwargs,
+                        )
+                        if not ani_frames:
+                            ani_frames = [[frame] for frame in frames]
+                        else:
+                            for frame_index, frame in enumerate(frames):
+                                ani_frames[frame_index].append(frame)
+
+                    ani_filename = Path(role["filename"]).with_suffix(".ani")
+                    save_animated_cursor(ani_frames, output_path / ani_filename, jif_rate=animation_kwargs["jif_rate"])
+                    exported_ani += 1
                 except Exception as role_error:
                     errors.append(f"{role['filename']}: {role_error}")
 
             if errors:
                 messagebox.showwarning(
                     "Export Finished with Errors",
-                    f"{exported} of {len(CURSOR_ROLES)} cursors were generated.\n\n" + "\n".join(errors),
+                    f"{exported_cur} .cur files and {exported_ani} .ani files were generated out of {len(CURSOR_ROLES)} roles.\n\n" + "\n".join(errors),
                 )
             else:
                 messagebox.showinfo(
                     "Export Complete",
-                    f"Generated {exported} cursors in:\n{output_path}",
+                    f"Generated {exported_cur} .cur files and {exported_ani} .ani files in:\n{output_path}",
                 )
         except Exception as export_error:
             messagebox.showerror("Export Error", f"Failed to export cursor set:\n{export_error}")

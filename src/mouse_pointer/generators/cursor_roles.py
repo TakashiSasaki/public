@@ -9,8 +9,8 @@ Windows の標準カーソルロール定義。
     filename     : 出力する .cur ファイル名
     registry_key : レジストリキー名（参考情報）
     shape        : ベースのカーソル形状
-    tr_text      : 右上テキストの既定値
-    mr_text      : 右中央テキストの既定値
+    tr_text      : 右上 (Top Right) に描画する既定テキスト
+    mr_text      : 右中央 (Middle Right) に描画する既定テキスト
     caption_text : キャプションの既定値
     use_overlays : 現在の SVG ベース/バッジ設定を適用するか
 """
