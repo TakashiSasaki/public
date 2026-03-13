@@ -4,7 +4,7 @@ import socket
 import importlib.metadata
 import platformdirs
 from pathlib import Path
-from mouse_pointer.core.utils import get_assets_dir
+from mouse_pointer.core.utils import get_app_asset_path, get_assets_dir
 from typing import Optional, Dict, Any, List, Tuple, Union, Callable
 from tkinter import ttk
 
@@ -28,6 +28,8 @@ class CursorGeneratorGUI(tk.Tk):
         self.title(f"Mouse Cursor Generator v{version}")
         self.geometry("800x640")
         self.configure(padx=10, pady=10)
+        self._app_icon_image: Optional[tk.PhotoImage] = None
+        self._set_app_icon()
 
         # Variables
         self.var_shape = tk.StringVar(value="arrow")
@@ -83,6 +85,24 @@ class CursorGeneratorGUI(tk.Tk):
         self.create_widgets()
         
         self.protocol("WM_DELETE_WINDOW", self.on_close)
+
+    def _set_app_icon(self) -> None:
+        """Sets the window and taskbar icon when the asset files are available."""
+        png_path = get_app_asset_path("app_icon.png")
+        ico_path = get_app_asset_path("app_icon.ico")
+
+        try:
+            if png_path.exists():
+                self._app_icon_image = tk.PhotoImage(file=str(png_path))
+                self.iconphoto(True, self._app_icon_image)
+        except Exception as e:
+            print(f"Failed to set app icon photo: {e}")
+
+        try:
+            if ico_path.exists():
+                self.iconbitmap(default=str(ico_path))
+        except Exception as e:
+            print(f"Failed to set app icon bitmap: {e}")
 
     def get_settings_path(self) -> Path:
         """プラットフォーム固有の設定ファイルパスを返す"""

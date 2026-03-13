@@ -23,8 +23,16 @@ def main():
 
     # Path to assets
     assets_json = Path("pictogram/src/assets/pictograms.json")
+    app_icon_png = Path("assets/app_icon.png")
+    app_icon_ico = Path("assets/app_icon.ico")
     if not assets_json.exists():
         print(f"Error: {assets_json} not found. Make sure the pictogram submodule is initialized.")
+        sys.exit(1)
+    if not app_icon_png.exists():
+        print(f"Error: {app_icon_png} not found.")
+        sys.exit(1)
+    if not app_icon_ico.exists():
+        print(f"Error: {app_icon_ico} not found.")
         sys.exit(1)
 
     # Build command arguments
@@ -35,7 +43,10 @@ def main():
         '--windowed',
         '--noconfirm',
         '--clean',
+        '--icon', str(app_icon_ico),
         '--add-data', f"{assets_json};assets",
+        '--add-data', f"{app_icon_png};app_assets",
+        '--add-data', f"{app_icon_ico};app_assets",
     ]
 
     print(f"Building executable: {exe_name}.exe")

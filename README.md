@@ -14,6 +14,7 @@ Windows用のマウスポインタ（.cur / .aniファイル）をカスタマ�
   - ホットスポットの自動計算と手動保存
   - Export Set タブからの標準カーソルセット一括生成
 - **CLIモード**: コマンドラインから素早くカーソルを自動生成できます。
+- **アプリケーションアイコン**: Tk 実行時のウィンドウ/タスクバーと、PyInstaller でビルドした `.exe` に専用アイコンを適用します。
 
 ## セットアップ
 
@@ -65,6 +66,8 @@ uv run build-exe
 ```
 
 ビルドが完了すると、`dist/MousePointerGenerator_vX.Y.Z.exe` （例: `MousePointerGenerator_v0.3.1.exe`）が生成されます。このファイル単体で配布・実行が可能です。
+
+アプリケーションアイコン素材は `assets/app_icon.png` と `assets/app_icon.ico` に配置しています。アイコンを差し替える場合は、この 2 ファイルを揃えて更新してください。
 
 ## 開発
 
