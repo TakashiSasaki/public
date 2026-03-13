@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import ttk, colorchooser, filedialog, messagebox
 from typing import TYPE_CHECKING, Any, Optional, Dict, List, Tuple
 from PIL import Image, ImageTk
-from mouse_pointer.generators.basic import create_cursor_image, render_svg_to_pil
+from mouse_pointer.generators.basic import SUPPORTED_SHAPES, create_cursor_image, render_svg_to_pil
 from mouse_pointer.core.cursor import save_multi_cursor
 from mouse_pointer.ui.components.preview_panel import PreviewPanel
 
@@ -31,7 +31,7 @@ def build_editor_tab(app: "CursorGeneratorGUI", parent: tk.Widget) -> ttk.Frame:
 
     # Shape
     ttk.Label(controls_frame, text=" Shape:").grid(row=row, column=0, sticky=tk.W, pady=5)
-    shape_cb = ttk.Combobox(controls_frame, textvariable=app.var_shape, values=["arrow", "triangle", "cross"], state="readonly", width=10)
+    shape_cb = ttk.Combobox(controls_frame, textvariable=app.var_shape, values=list(SUPPORTED_SHAPES), state="readonly", width=10)
     shape_cb.grid(row=row, column=1, sticky=tk.EW, pady=5)
     row += 1
 

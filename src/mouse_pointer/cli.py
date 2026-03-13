@@ -2,7 +2,7 @@ import argparse
 import sys
 from typing import Tuple, Any, Dict
 from mouse_pointer.core.cursor import save_cursor
-from mouse_pointer.generators.basic import create_cursor_image
+from mouse_pointer.generators.basic import SUPPORTED_SHAPES, create_cursor_image
 from mouse_pointer.gui import run_gui
 
 def main() -> None:
@@ -17,7 +17,7 @@ def main() -> None:
     gen_parser.add_argument("--color", type=str, default="purple", help="Color of the cursor (name or hex)")
     gen_parser.add_argument("--output", type=str, default="output.cur", help="Output filename")
     gen_parser.add_argument("--size", type=int, default=32, help="Cursor size (px)")
-    gen_parser.add_argument("--shape", type=str, default="arrow", choices=["arrow", "triangle", "cross"], help="Shape of the cursor")
+    gen_parser.add_argument("--shape", type=str, default="arrow", choices=list(SUPPORTED_SHAPES), help="Shape of the cursor")
     gen_parser.add_argument("--tr-text", type=str, default="", help="Text to display in the top-right corner")
     gen_parser.add_argument("--tr-size", type=int, default=12, help="Font size for top-right text")
     gen_parser.add_argument("--mr-text", type=str, default="", help="Text to display in the middle-right area")

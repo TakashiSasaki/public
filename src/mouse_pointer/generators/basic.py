@@ -5,7 +5,9 @@ import os
 from pathlib import Path
 from mouse_pointer.core.utils import get_assets_dir
 from typing import Tuple, Optional, Any, List, Dict
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageFont
+
+SUPPORTED_SHAPES = ("arrow", "triangle", "cross", "hand", "ibeam", "hourglass")
 
 def get_default_font(size: int) -> ImageFont.ImageFont:
     """シンプルなフォントを取得する（フォントがない場合のフォールバック用）"""
@@ -111,7 +113,7 @@ def create_cursor_image(
     badge1_name: str = "",
     badge2_name: str = "",
     svg_aa: bool = True,
-    gradient_shift: float = 0.0, # 0.0 to 1.0 for waving effect
+    gradient_shift: Optional[float] = None, # 0.0 to 1.0 for waving effect; None disables gradient fill
     gradient_intensity: int = 96,
     caption_x_offset: int = 0,
     caption_wrap_width: int = 0, # If > 0, text wraps/loops
@@ -123,6 +125,63 @@ def create_cursor_image(
     s = s_factor
     ox, oy = pad, pad
     hotspot = (ox, oy)
+    custom_mask: Optional[Image.Image] = None
+
+    def sx(value: float) -> int:
+        return int(round(ox + value * s))
+
+    def sy(value: float) -> int:
+        return int(round(oy + value * s))
+
+    def _draw_custom_shape_mask() -> Optional[Image.Image]:
+        if shape not in {"hand", "ibeam", "hourglass"}:
+            return None
+
+        mask = Image.new("L", (size, size), 0)
+        mask_draw = ImageDraw.Draw(mask)
+        radius = max(1, int(round(1.6 * s)))
+
+        if shape == "hand":
+            mask_draw.rounded_rectangle((sx(11), sy(2), sx(15), sy(18)), radius=radius, fill=255)
+            mask_draw.rounded_rectangle((sx(9), sy(13), sx(19), sy(24)), radius=radius, fill=255)
+            mask_draw.rounded_rectangle((sx(10), sy(23), sx(18), sy(31)), radius=radius, fill=255)
+            mask_draw.rounded_rectangle((sx(15), sy(8), sx(18), sy(18)), radius=radius, fill=255)
+            mask_draw.rounded_rectangle((sx(17), sy(10), sx(20), sy(19)), radius=radius, fill=255)
+            mask_draw.rounded_rectangle((sx(19), sy(12), sx(22), sy(20)), radius=radius, fill=255)
+            mask_draw.polygon(
+                [
+                    (sx(10), sy(16)),
+                    (sx(5), sy(12)),
+                    (sx(4), sy(15)),
+                    (sx(7), sy(19)),
+                    (sx(10), sy(20)),
+                ],
+                fill=255,
+            )
+        elif shape == "ibeam":
+            mask_draw.rounded_rectangle((sx(14), sy(4), sx(18), sy(28)), radius=radius, fill=255)
+            mask_draw.rounded_rectangle((sx(9), sy(3), sx(23), sy(7)), radius=radius, fill=255)
+            mask_draw.rounded_rectangle((sx(9), sy(25), sx(23), sy(29)), radius=radius, fill=255)
+        elif shape == "hourglass":
+            mask_draw.rounded_rectangle((sx(8), sy(3), sx(24), sy(6)), radius=radius, fill=255)
+            mask_draw.rounded_rectangle((sx(8), sy(26), sx(24), sy(29)), radius=radius, fill=255)
+            mask_draw.polygon([(sx(9), sy(6)), (sx(23), sy(6)), (sx(16), sy(15))], fill=255)
+            mask_draw.polygon([(sx(16), sy(17)), (sx(9), sy(26)), (sx(23), sy(26))], fill=255)
+
+        return mask
+
+    def _paint_custom_shape(mask: Image.Image) -> None:
+        if border_thickness > 0:
+            filter_size = max(3, (border_thickness * 2) + 1)
+            if filter_size % 2 == 0:
+                filter_size += 1
+            expanded = mask.filter(ImageFilter.MaxFilter(filter_size))
+            border_mask = ImageChops.subtract(expanded, mask)
+            border_layer = Image.new("RGBA", (size, size), border_color)
+            img.paste(border_layer, (0, 0), border_mask)
+
+        fill_layer = Image.new("RGBA", (size, size), color)
+        img.paste(fill_layer, (0, 0), mask)
     
     if shape == "arrow":
         points = [(ox+0*s, oy+0*s), (ox+0*s, oy+22*s), (ox+6*s, oy+16*s), (ox+10*s, oy+25*s), (ox+14*s, oy+23*s), (ox+10*s, oy+14*s), (ox+16*s, oy+14*s)]
@@ -134,11 +193,21 @@ def create_cursor_image(
         thick = 6 * s
         points = [(ox + 16*s - thick/2, oy + 0*s), (ox + 16*s + thick/2, oy + 0*s), (ox + 16*s + thick/2, oy + 16*s - thick/2), (ox + 32*s, oy + 16*s - thick/2), (ox + 32*s, oy + 16*s + thick/2), (ox + 16*s + thick/2, oy + 16*s + thick/2), (ox + 16*s + thick/2, oy + 32*s), (ox + 16*s - thick/2, oy + 32*s), (ox + 16*s - thick/2, oy + 16*s + thick/2), (ox + 0*s, oy + 16*s + thick/2), (ox + 0*s, oy + 16*s - thick/2), (ox + 16*s - thick/2, oy + 16*s - thick/2)]
         hotspot = (int(ox+16*s), int(oy+16*s))
+    elif shape == "hand":
+        points = []
+        custom_mask = _draw_custom_shape_mask()
+        hotspot = (sx(13), sy(3))
+    elif shape == "ibeam":
+        points = []
+        custom_mask = _draw_custom_shape_mask()
+        hotspot = (sx(16), sy(16))
+    elif shape == "hourglass":
+        points = []
+        custom_mask = _draw_custom_shape_mask()
+        hotspot = (sx(16), sy(16))
     else:
         points = [(ox+0, oy+0), (ox+0, oy+22*s), (ox+6*s, oy+16*s), (ox+16*s, oy+14*s)]
         hotspot = (int(ox+0), int(oy+0))
-        
-        img.paste(shadow_img, (0, 0), shadow_img)
         
     # Preparation for drawing the body (Fill)
     draw = ImageDraw.Draw(img)
@@ -175,7 +244,9 @@ def create_cursor_image(
         return grad, mask
 
     # Draw the main cursor body
-    if gradient_shift != 0:
+    if custom_mask is not None:
+        _paint_custom_shape(custom_mask)
+    elif gradient_shift is not None:
         grad_img, poly_mask = _create_gradient_mask(size, points, gradient_shift)
         img.paste(grad_img, (0, 0), poly_mask)
         # Still need the border
@@ -312,7 +383,7 @@ def create_animated_cursor_frames(
             text_width, _ = ImageDraw.Draw(Image.new("L", (1, 1))).textsize(caption_text, font=font)
     
     for i in range(total_frames):
-        g_shift = (i / total_frames) if anim_gradient else 0.0
+        g_shift = (i / total_frames) if anim_gradient else None
         
         # Calculate scroll offset for wrapping loop
         c_off = 0

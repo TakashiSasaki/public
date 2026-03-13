@@ -6,12 +6,13 @@ Windows用のマウスポインタ（.cur / .aniファイル）をカスタマ�
 
 - **GUIモード**: Tkinterを使用した視覚的なインターフェースで、形状、色、枠線、文字などをリアルタイムに調整できます。
 - **カスタマイズ要素**:
-  - 形状（矢印、三角形、十字）
+  - 形状（矢印、三角形、十字、リンク選択用の手、テキスト選択用のIビーム、砂時計）
   - 塗りつぶしの色と枠線の色
   - 枠線の太さ
   - 内部への1文字描画やSVGバッジの合成
   - アニメーション効果（強度調整可能なグラデーションウェーブ、キャプションのスクロール等）
   - ホットスポットの自動計算と手動保存
+  - Export Set タブからの標準カーソルセット一括生成
 - **CLIモード**: コマンドラインから素早くカーソルを自動生成できます。
 
 ## セットアップ
@@ -41,6 +42,10 @@ uv run mouse-pointer generate --color red --size 48 --shape triangle --output my
 
 ```bash
 uv run mouse-pointer generate --color "#800080" --shape arrow --anim-gradient --anim-gradient-intensity 128 --output demo.ani
+```
+
+```bash
+uv run mouse-pointer generate --color "#cc00ff" --shape hand --output link_select.cur
 ```
 
 ### サンプルファイルの生成
