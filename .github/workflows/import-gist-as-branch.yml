@@ -1,0 +1,64 @@
+name: Import Gist as Unrelated Branch
+
+on:
+  workflow_dispatch:
+    inputs:
+      gist_url:
+        description: 'GistのURL (例: https://gist.github.com/bcdcafa0d6d97a3f956cabd30cb6e2e7.git)'
+        required: true
+        type: string
+      branch_name:
+        description: '作成する新しいブランチ名'
+        required: true
+        type: string
+
+jobs:
+  import-gist:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # ブランチの作成・プッシュに必要
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # すべてのブランチ情報を取得して重複チェックを確実にする
+
+      - name: Check if branch already exists
+        run: |
+          TARGET_BRANCH="${{ inputs.branch_name }}"
+          
+          # ローカルまたはリモートに同名ブランチが存在するか確認
+          if git show-ref --verify --quiet "refs/heads/$TARGET_BRANCH" || \
+             git show-ref --verify --quiet "refs/remotes/origin/$TARGET_BRANCH"; then
+            echo "Error: Branch '$TARGET_BRANCH' already exists. Aborting to prevent pollution." >&2
+            exit 1
+          fi
+
+      - name: Clone Gist and Push to New Branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          GIST_URL="${{ inputs.gist_url }}"
+          TARGET_BRANCH="${{ inputs.branch_name }}"
+          
+          # GitHub Actionsの認証情報をGitに設定
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
+          # 1. 一時ディレクトリにGistをクローン
+          mkdir gist-repo
+          cd gist-repo
+          git clone "$GIST_URL" .
+          
+          # 2. クローンしたGistのデフォルトブランチ名（main または master）を自動取得
+          GIST_DEFAULT_BRANCH=$(git branch --show-current)
+          echo "Detected Gist branch: $GIST_DEFAULT_BRANCH"
+          
+          # 3. 現在のリポジトリをリモートとして追加（GITHUB_TOKENを埋め込んで認証を通す）
+          PUSH_URL="https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
+          git remote add target-repo "$PUSH_URL"
+          
+          # 4. Gistの履歴を維持したまま、指定されたブランチ名でリモートに直接プッシュ
+          # これにより、既存の履歴とは交わらない完全に独立した（unrelated）ブランチが作成されます
+          git push target-repo "${GIST_DEFAULT_BRANCH}:${TARGET_BRANCH}"
