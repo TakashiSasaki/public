@@ -66,5 +66,6 @@ Reviewers preparing a release candidate should point to:
 - [release/release-candidate-notes.md](../release/release-candidate-notes.md)
 - [release/publication-readiness-summary.md](../release/publication-readiness-summary.md)
 - [release/post-publication-work.md](../release/post-publication-work.md)
+- [release/pre-publication-sweep.md](../release/pre-publication-sweep.md)
 - [tools/README.md](../tools/README.md)
 - [tools/check_consistency.py](../tools/check_consistency.py)
