@@ -4,7 +4,14 @@
 
 This document explains how different readers should navigate the document set.
 
-## 1. For specification readers
+## 1. For public readers
+
+Start here:
+
+- [../README.md](../README.md)
+- [../00-index.md](../00-index.md)
+
+## 2. For specification readers
 
 We recommend reading the canonical section files in numeric order:
 

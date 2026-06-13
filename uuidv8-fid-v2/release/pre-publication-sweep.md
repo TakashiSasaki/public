@@ -16,6 +16,8 @@ Warnings, if any, must be reviewed.
 
 ## 2. Required manual review
 
+- [ ] Confirm `uuidv8-fid-v2/README.md` remains non-normative.
+- [ ] Confirm public entry-point stubs point to the public landing page and canonical specification.
 - [ ] Confirm no new Format ID was assigned.
 - [ ] Confirm `0x10` remains the only assigned concrete Format ID.
 - [ ] Confirm `0x11..0xef` remains unassigned.
