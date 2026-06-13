@@ -11,7 +11,11 @@ This directory does not itself assign any Format ID.
 
 ## Current Assignments
 
-No concrete UUIDv8-FID-v2 payload formats are assigned in this version.
+The following concrete UUIDv8-FID-v2 payload formats are assigned:
+
+| Format ID | Name | Specification |
+|---:|---|---|
+| `0x10` | `time48-rand` | `10-time48-rand.md` |
 
 ## Reserved and Unassigned Space
 
