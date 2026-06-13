@@ -46,3 +46,9 @@ Derived non-normative implementation guidance, pseudocode, and checklists for UU
 Derived non-normative audit and release-readiness material is placed under:
 
 - `audit/`
+
+## Publication and Reader Guidance
+
+Derived non-normative publication and reader guidance is placed under:
+
+- `publication/`
