@@ -41,6 +41,8 @@ The first assigned UUIDv8-FID-v2 payload format is `format_id = 0x10`, defined i
 
 Deterministic construction and parsing test vectors for the first assigned format are provided in `formats/10-time48-rand.md`.
 
+Structural conformance test vectors covering validation edge cases and unassigned ranges are provided in `conformance/structural-test-vectors.md`.
+
 # 19. Summary
 
 UUIDv8-FID-v2 is a UUID version 8 profile that introduces an 8-bit logical Format ID.

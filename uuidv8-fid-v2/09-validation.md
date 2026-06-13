@@ -58,3 +58,7 @@ part4_reserved_octet == 0x00
 ```
 
 This level determines whether the UUID conforms exactly to this version of UUIDv8-FID-v2, relies only on assigned or explicitly accepted formats, uses no reserved values, and ensures all reserved octets are zero.
+
+## 14.5 Conformance Test Vectors
+
+Derived conformance test vectors illustrating these validation levels are provided in `conformance/structural-test-vectors.md`.
