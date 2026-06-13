@@ -36,9 +36,10 @@ This registry defines:
 * assigned `format_type` values;
 * assigned `format_subtype` values within each `format_type`;
 * combined `format_id` values;
+* reserved `format_id` ranges;
 * names for assigned formats;
 * references to profile-specific payload-layout specifications;
-* assignment status for each value.
+* assignment status for each value or range.
 
 This registry does not redefine:
 
@@ -70,7 +71,7 @@ The key words `MUST`, `MUST NOT`, `SHOULD`, `SHOULD NOT`, and `MAY` are to be in
 : A registry entry whose semantics and payload layout are defined by a referenced specification.
 
 `reserved`
-: A registry entry that MUST NOT be generated unless a future specification changes its status.
+: A registry entry or range that MUST NOT be generated unless a future specification changes its status.
 
 `unassigned`
 : A registry entry that has not yet been assigned.
@@ -138,7 +139,7 @@ This initial version does not assign concrete payload families. Values are inten
 
 | format_type | Name | Status | Reference | Notes |
 |---:|---|---|---|---|
-| `0x0` | Reserved | reserved | This document | Reserved for control, null, or future registry use. Generators MUST NOT use this value unless a future specification assigns a subtype. |
+| `0x0` | Reserved | reserved | This document | Reserved for control, null, registry-internal, meta-format, or future registry use. All Format ID values `0x00..0x0f` are reserved unless a future specification explicitly assigns one or more values in this range. |
 | `0x1` | Unassigned | unassigned |  | Available for future assignment. |
 | `0x2` | Unassigned | unassigned |  | Available for future assignment. |
 | `0x3` | Unassigned | unassigned |  | Available for future assignment. |
@@ -153,22 +154,42 @@ This initial version does not assign concrete payload families. Values are inten
 | `0xc` | Unassigned | unassigned |  | Available for future assignment. |
 | `0xd` | Unassigned | unassigned |  | Available for future assignment. |
 | `0xe` | Unassigned | unassigned |  | Available for future assignment. |
-| `0xf` | Reserved | reserved | This document | Reserved for escape, diagnostics, or future extension. Generators MUST NOT use this value unless a future specification assigns a subtype. |
+| `0xf` | Reserved | reserved | This document | Reserved for escape, diagnostics, extended-format signaling, or future extension mechanisms. All Format ID values `0xf0..0xff` are reserved unless a future specification explicitly assigns one or more values in this range. |
 
 ## 20.7 Format ID Registry
 
-This section assigns concrete `format_id` values.
+This section assigns concrete `format_id` values and reserved `format_id` ranges.
 
-A `format_id` value is concrete only when both its `format_type` and `format_subtype` are assigned by this registry or by a referenced profile-specific document.
+A `format_id` value is concrete only when its payload layout and normative interpretation are assigned by this registry or by a referenced profile-specific document.
 
 This initial registry defines no concrete assigned payload formats.
 
-| format_type | format_subtype | format_id | Name | Status | Reference | Notes |
-|---:|---:|---:|---|---|---|---|
-| `0x0` | `0x0` | `0x00` | Reserved | reserved | This document | MUST NOT be generated. Useful as a null, default, or uninitialized detector. |
-| `0xf` | `0xf` | `0xff` | Reserved | reserved | This document | MUST NOT be generated. Reserved for future extension or diagnostics. |
+### 20.7.1 Reserved Format ID Ranges
 
-All other `format_id` values are unassigned unless listed in a future version of this registry or in a referenced profile-specific document.
+The following Format ID ranges are reserved:
+
+| Format ID range | Status | Reference | Notes |
+|---:|---|---|---|
+| `0x00..0x0f` | reserved | This document | Reserved for null, control, registry-internal, meta-format, or future registry use. Generators MUST NOT generate values in this range unless a future specification assigns one or more values in this range. |
+| `0xf0..0xff` | reserved | This document | Reserved for escape, diagnostics, extended-format signaling, or future extension mechanisms. Generators MUST NOT generate values in this range unless a future specification assigns one or more values in this range. |
+
+The reserved ranges above intentionally correspond to `format_id_hi4 = 0x0` and `format_id_hi4 = 0xf`. This preserves extension space if a future specification assigns additional structure or hierarchical interpretation to the high-order and low-order nibbles of the Format ID.
+
+### 20.7.2 Assignable Format ID Range
+
+The following Format ID range is available for future assignment:
+
+| Format ID range | Status | Reference | Notes |
+|---:|---|---|---|
+| `0x10..0xef` | unassigned | — | Available for future assignment by this registry or by referenced profile-specific documents. |
+
+A new `format_id` SHOULD be assigned only when the binary payload layout or normative interpretation changes. A new Format ID SHOULD NOT be assigned merely to name an application domain, object class, database table, dataset, or deployment-specific category.
+
+### 20.7.3 Individual Format ID Assignments
+
+Individual assigned, deprecated, or specially reserved Format ID values MAY be listed in this section in future versions of this registry.
+
+All Format ID values in `0x10..0xef` are unassigned unless listed in a future version of this registry or in a referenced profile-specific document.
 
 ## 20.8 Unknown Values
 
@@ -180,11 +201,11 @@ Implementations MAY expose the extracted `format_type`, `format_subtype`, and `f
 
 ## 20.9 Reserved Values
 
-Reserved values MUST NOT be generated.
+Reserved values and reserved ranges MUST NOT be generated.
 
-Parsers MAY recognize reserved values and report them distinctly from unassigned values.
+Parsers MAY recognize reserved values and reserved ranges and report them distinctly from unassigned values.
 
-A future version of this registry MAY change a reserved value to assigned status if doing so is explicitly documented.
+A future version of this registry MAY change a reserved value or reserved range to assigned status if doing so is explicitly documented.
 
 ## 20.10 Deprecation
 
@@ -224,4 +245,4 @@ Generated UUIDv8-FID-v2 values have the following center form:
 xxxxxxxx-xxxx-8T00-8S00-xxxxxxxxxxxx
 ```
 
-This initial registry reserves `format_id = 0x00` and `format_id = 0xff` and leaves concrete payload-format assignments to future registry updates or profile-specific documents.
+This initial registry reserves the Format ID ranges `0x00..0x0f` and `0xf0..0xff`, and leaves concrete payload-format assignments in `0x10..0xef` to future registry updates or profile-specific documents.

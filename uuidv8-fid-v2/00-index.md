@@ -15,8 +15,8 @@ Read the files in numeric order.
 7. `07-parsing-generation.md`
 8. `08-extraction-construction.md`
 9. `09-validation.md`
-10. `20-registry.md`
-11. `11-compatibility-security.md`
-12. `12-examples-summary.md`
+10. `11-compatibility-security.md`
+11. `12-examples-summary.md`
+12. `20-registry.md`
 
 The top-level files `../uuidv8-fid-v2.md` and `../uuidv8-fid-v2-registry.md` are non-normative entry-point stubs only.
