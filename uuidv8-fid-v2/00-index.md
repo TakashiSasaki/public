@@ -52,3 +52,9 @@ Derived non-normative audit and release-readiness material is placed under:
 Derived non-normative publication and reader guidance is placed under:
 
 - `publication/`
+
+## Local Consistency Tooling
+
+Derived local consistency tooling is placed under:
+
+- `tools/`
