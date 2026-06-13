@@ -8,6 +8,6 @@ The canonical UUIDv8-FID-v2 specification has been split into section files unde
 
 The UUIDv8-FID-v2 registry is part of the canonical specification as:
 
-- `uuidv8-fid-v2/10-registry.md`
+- `uuidv8-fid-v2/20-registry.md`
 
 Do not add normative requirements to this file.

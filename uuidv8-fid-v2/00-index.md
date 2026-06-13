@@ -15,7 +15,7 @@ Read the files in numeric order.
 7. `07-parsing-generation.md`
 8. `08-extraction-construction.md`
 9. `09-validation.md`
-10. `10-registry.md`
+10. `20-registry.md`
 11. `11-compatibility-security.md`
 12. `12-examples-summary.md`
 
