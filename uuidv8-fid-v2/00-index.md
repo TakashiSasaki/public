@@ -40,3 +40,9 @@ Derived conformance material for implementers to verify parsing, extraction, and
 Derived non-normative implementation guidance, pseudocode, and checklists for UUIDv8-FID-v2 are placed under:
 
 - `implementation/`
+
+## Audit and Release Readiness
+
+Derived non-normative audit and release-readiness material is placed under:
+
+- `audit/`
