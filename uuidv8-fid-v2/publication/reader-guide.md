@@ -58,3 +58,13 @@ Maintainers managing the document set should point to:
 - [publication/source-map.md](source-map.md)
 - [publication/single-file-assembly-plan.md](single-file-assembly-plan.md)
 - [publication/release-candidate-checklist.md](release-candidate-checklist.md)
+
+## 6. For release reviewers
+
+Reviewers preparing a release candidate should point to:
+
+- [release/release-candidate-notes.md](../release/release-candidate-notes.md)
+- [release/publication-readiness-summary.md](../release/publication-readiness-summary.md)
+- [release/post-publication-work.md](../release/post-publication-work.md)
+- [tools/README.md](../tools/README.md)
+- [tools/check_consistency.py](../tools/check_consistency.py)

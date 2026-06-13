@@ -8,6 +8,8 @@ This document provides a checklist for preparing a release candidate without dec
 
 - [ ] Run the audit consistency checklist.
 - [ ] Run `python uuidv8-fid-v2/tools/check_consistency.py`.
+- [ ] Confirm the checker exits with status code 0.
+- [ ] Review any checker warnings.
 - [ ] Verify `00-index.md` links to all major directories.
 - [ ] Verify the source map is up to date.
 - [ ] Verify top-level stubs remain non-normative.
@@ -31,7 +33,10 @@ This document provides a checklist for preparing a release candidate without dec
 - [ ] Verify the reader guide is current.
 - [ ] Verify the single-file assembly plan is current.
 - [ ] Verify no generated single-file artifact was manually edited as source of truth.
-- [ ] Verify any release notes avoid declaring a formal release unless explicitly intended.
+- [ ] Verify release-candidate notes are current.
+- [ ] Verify publication-readiness summary is current.
+- [ ] Verify post-publication work does not assign new Format IDs.
+- [ ] Verify no final release is declared unless explicitly intended.
 
 ## 5. Scope control
 

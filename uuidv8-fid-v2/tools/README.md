@@ -4,6 +4,12 @@ This directory contains local, manually runnable consistency checks for UUIDv8-F
 
 These tools do not define the specification and do not introduce new normative requirements.
 
+## Release-candidate use
+
+Run this checker before treating the document set as a release candidate.
+
+Warnings should be reviewed. Warnings do not cause a nonzero exit code unless a hard check fails.
+
 ## Usage
 
 ```text
