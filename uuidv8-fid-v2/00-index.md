@@ -58,3 +58,9 @@ Derived non-normative publication and reader guidance is placed under:
 Derived local consistency tooling is placed under:
 
 - `tools/`
+
+## Release Readiness Notes
+
+Derived non-normative release-candidate readiness notes are placed under:
+
+- `release/`

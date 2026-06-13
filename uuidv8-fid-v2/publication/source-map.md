@@ -36,5 +36,11 @@ This document records the role of each source file without duplicating normative
 | [uuidv8-fid-v2/publication/source-map.md](source-map.md) | Source map | `derived publication guidance` | The document you are reading. |
 | [uuidv8-fid-v2/publication/single-file-assembly-plan.md](single-file-assembly-plan.md) | Single-file assembly plan | `derived publication guidance` | Plan for assembling a single-file publication. |
 | [uuidv8-fid-v2/publication/release-candidate-checklist.md](release-candidate-checklist.md) | Release candidate checklist | `derived publication guidance` | Checklist for release candidates. |
+| [uuidv8-fid-v2/release/00-index.md](../release/00-index.md) | Release index | `derived release-readiness material` | Index of release readiness material. |
+| [uuidv8-fid-v2/release/release-candidate-notes.md](../release/release-candidate-notes.md) | Release candidate notes | `derived release-readiness material` | Release candidate readiness notes. |
+| [uuidv8-fid-v2/release/publication-readiness-summary.md](../release/publication-readiness-summary.md) | Publication readiness summary | `derived release-readiness material` | Summary table of release readiness. |
+| [uuidv8-fid-v2/release/post-publication-work.md](../release/post-publication-work.md) | Post-publication work | `derived release-readiness material` | Potential future tasks post-publication. |
+| [uuidv8-fid-v2/tools/README.md](../tools/README.md) | Tooling README | `derived local tooling` | Instructions for local tools. |
+| [uuidv8-fid-v2/tools/check_consistency.py](../tools/check_consistency.py) | Consistency checker | `derived local tooling` | Python script for checking local consistency. |
 | [uuidv8-fid-v2.md](../../uuidv8-fid-v2.md) | Top-level specification stub | `non-normative entry-point stub` | Entry-point stub for the specification. |
 | [uuidv8-fid-v2-registry.md](../../uuidv8-fid-v2-registry.md) | Top-level registry stub | `non-normative entry-point stub` | Entry-point stub for the registry. |

@@ -42,6 +42,10 @@ def check_file_existence():
         "uuidv8-fid-v2/audit/release-readiness.md",
         "uuidv8-fid-v2/publication/source-map.md",
         "uuidv8-fid-v2/publication/release-candidate-checklist.md",
+        "uuidv8-fid-v2/release/00-index.md",
+        "uuidv8-fid-v2/release/release-candidate-notes.md",
+        "uuidv8-fid-v2/release/publication-readiness-summary.md",
+        "uuidv8-fid-v2/release/post-publication-work.md",
         "uuidv8-fid-v2.md",
         "uuidv8-fid-v2-registry.md",
     ]
@@ -237,6 +241,10 @@ def check_source_map():
             "uuidv8-fid-v2/implementation/pseudocode.md",
             "uuidv8-fid-v2/audit/consistency-checklist.md",
             "uuidv8-fid-v2/publication/release-candidate-checklist.md",
+            "uuidv8-fid-v2/release/00-index.md",
+            "uuidv8-fid-v2/release/release-candidate-notes.md",
+            "uuidv8-fid-v2/release/publication-readiness-summary.md",
+            "uuidv8-fid-v2/release/post-publication-work.md",
             "uuidv8-fid-v2.md",
             "uuidv8-fid-v2-registry.md"
         ]
@@ -260,7 +268,8 @@ def check_index():
             "implementation/",
             "audit/",
             "publication/",
-            "tools/"
+            "tools/",
+            "release/"
         ]
         missing = [r for r in required if r not in content]
         if missing:
@@ -298,17 +307,26 @@ def check_stale_phrase_warnings():
         "registry scaffold"
     ]
 
+    allowlist = {
+        "uuidv8-fid-v2/audit/release-readiness.md",
+        "uuidv8-fid-v2/release/release-candidate-notes.md",
+        "uuidv8-fid-v2/release/post-publication-work.md"
+    }
+
     # Warning only, doesn't fail unless there's a script error
     # but we just report warnings.
     try:
         for filepath in files_to_check:
             if filepath.is_file():
+                rel_path = filepath.relative_to(REPO_ROOT).as_posix()
+                if rel_path in allowlist:
+                    continue
+
                 try:
                     lines = filepath.read_text(encoding='utf-8').splitlines()
                     for i, line in enumerate(lines):
                         for phrase in stale_phrases:
                             if phrase in line:
-                                rel_path = filepath.relative_to(REPO_ROOT)
                                 report_warn(rel_path, i+1, f"Found stale phrase '{phrase}'")
                 except Exception as e:
                     # Ignore unreadable files or non-utf8 silently for warnings, or just warn

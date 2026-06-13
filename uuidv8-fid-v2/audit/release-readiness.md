@@ -32,11 +32,12 @@ Reviewers should perform the following checks before a final release:
 
 ## 3. Future work candidates
 
-The following items are listed as non-commitments for possible future exploration:
+The following items remain possible future work and are not required for the current release-candidate state:
 
-- additional concrete formats only when a distinct binary payload layout or normative interpretation is needed.
-- possible machine-check scripts for conformance vectors.
-- possible implementation examples in a programming language.
-- possible publication packaging or generated single-file spec.
+- CI integration for the local consistency checker.
+- expanded machine-check coverage for links and Markdown/JSON alignment.
+- language-specific implementation examples.
+- generated single-file publication artifact.
+- rendered publication packaging.
 
 Publication-preparation notes are provided under `publication/`.
