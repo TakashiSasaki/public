@@ -31,6 +31,9 @@ This document provides a checklist for preparing a release candidate without dec
 
 ## 4. Publication preparation
 
+- [ ] Verify `uuidv8-fid-v2/README.md` is current.
+- [ ] Verify top-level entry-point stubs point to the public landing page and canonical specification.
+- [ ] Verify public-facing entry points remain non-normative.
 - [ ] Verify the reader guide is current.
 - [ ] Verify the single-file assembly plan is current.
 - [ ] Verify no generated single-file artifact was manually edited as source of truth.

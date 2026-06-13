@@ -32,6 +32,7 @@ def report_warn(file_path, line_no, message):
 def check_file_existence():
     group = "1. File existence checks"
     required_files = [
+        "uuidv8-fid-v2/README.md",
         "uuidv8-fid-v2/00-index.md",
         "uuidv8-fid-v2/20-registry.md",
         "uuidv8-fid-v2/formats/10-time48-rand.md",
@@ -236,6 +237,7 @@ def check_source_map():
     try:
         content = map_path.read_text(encoding='utf-8')
         required = [
+            "uuidv8-fid-v2/README.md",
             "uuidv8-fid-v2/20-registry.md",
             "uuidv8-fid-v2/formats/10-time48-rand.md",
             "uuidv8-fid-v2/conformance/structural-test-vectors.json",
@@ -321,6 +323,118 @@ def check_release_non_final_guard():
                 if forb in content:
                     errors.append(f"{f} contains forbidden phrase: '{forb}'")
 
+        except Exception as e:
+            errors.append(f"Error reading {f}: {e}")
+
+    if errors:
+        report_fail(group, "; ".join(errors))
+    else:
+        report_pass(group)
+
+def check_public_entry_points():
+    group = "Public entry-point checks"
+    errors = []
+
+    # Check README.md
+    try:
+        readme_path = BASE_DIR / "README.md"
+        content = readme_path.read_text(encoding='utf-8')
+        content_lower = content.lower()
+
+        required_paths_readme = [
+            "00-index.md",
+            "20-registry.md",
+            "formats/10-time48-rand.md",
+            "conformance/structural-test-vectors.md",
+            "conformance/structural-test-vectors.json",
+            "implementation/pseudocode.md",
+            "publication/reader-guide.md",
+            "release/pre-publication-sweep.md",
+            "tools/README.md"
+        ]
+
+        for path in required_paths_readme:
+            if path not in content:
+                errors.append(f"uuidv8-fid-v2/README.md missing path: {path}")
+
+        if "non-normative" not in content_lower:
+            errors.append("uuidv8-fid-v2/README.md missing 'non-normative'")
+
+    except Exception as e:
+        errors.append(f"Error reading uuidv8-fid-v2/README.md: {e}")
+
+    # Check uuidv8-fid-v2.md
+    try:
+        stub1_path = REPO_ROOT / "uuidv8-fid-v2.md"
+        content = stub1_path.read_text(encoding='utf-8')
+        content_lower = content.lower()
+
+        required_paths_stub1 = [
+            "uuidv8-fid-v2/README.md",
+            "uuidv8-fid-v2/00-index.md"
+        ]
+
+        for path in required_paths_stub1:
+            if path not in content:
+                errors.append(f"uuidv8-fid-v2.md missing path: {path}")
+
+        if "non-normative" not in content_lower:
+            errors.append("uuidv8-fid-v2.md missing 'non-normative'")
+        if "do not add normative requirements" not in content_lower:
+            errors.append("uuidv8-fid-v2.md missing 'do not add normative requirements'")
+
+    except Exception as e:
+        errors.append(f"Error reading uuidv8-fid-v2.md: {e}")
+
+    # Check uuidv8-fid-v2-registry.md
+    try:
+        stub2_path = REPO_ROOT / "uuidv8-fid-v2-registry.md"
+        content = stub2_path.read_text(encoding='utf-8')
+        content_lower = content.lower()
+
+        required_paths_stub2 = [
+            "uuidv8-fid-v2/README.md",
+            "uuidv8-fid-v2/20-registry.md",
+            "uuidv8-fid-v2/formats/10-time48-rand.md"
+        ]
+
+        for path in required_paths_stub2:
+            if path not in content:
+                errors.append(f"uuidv8-fid-v2-registry.md missing path: {path}")
+
+        if "non-normative" not in content_lower:
+            errors.append("uuidv8-fid-v2-registry.md missing 'non-normative'")
+        if "do not add normative requirements" not in content_lower:
+            errors.append("uuidv8-fid-v2-registry.md missing 'do not add normative requirements'")
+
+    except Exception as e:
+        errors.append(f"Error reading uuidv8-fid-v2-registry.md: {e}")
+
+    if errors:
+        report_fail(group, "; ".join(errors))
+    else:
+        report_pass(group)
+
+def check_public_entry_point_non_final_guard():
+    group = "Public entry-point non-final guard"
+    files_to_check = [
+        "uuidv8-fid-v2/README.md",
+        "uuidv8-fid-v2.md",
+        "uuidv8-fid-v2-registry.md"
+    ]
+
+    forbidden_phrases = [
+        "this is the final release",
+        "final release is declared"
+    ]
+
+    errors = []
+    for f in files_to_check:
+        try:
+            content = (REPO_ROOT / f).read_text(encoding='utf-8').lower()
+            for forb in forbidden_phrases:
+                if forb in content:
+                    errors.append(f"{f} contains forbidden phrase: '{forb}'")
         except Exception as e:
             errors.append(f"Error reading {f}: {e}")
 
@@ -420,6 +534,8 @@ def main():
     check_source_map()
     check_reader_guide()
     check_release_non_final_guard()
+    check_public_entry_points()
+    check_public_entry_point_non_final_guard()
     check_index()
     check_generated_single_file_guard()
     check_stale_phrase_warnings()

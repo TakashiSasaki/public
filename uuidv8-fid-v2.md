@@ -10,4 +10,10 @@ The UUIDv8-FID-v2 registry is part of the canonical specification as:
 
 - `uuidv8-fid-v2/20-registry.md`
 
+## Public entry points
+
+- [uuidv8-fid-v2/README.md](uuidv8-fid-v2/README.md)
+- [uuidv8-fid-v2/00-index.md](uuidv8-fid-v2/00-index.md)
+- [uuidv8-fid-v2/release/pre-publication-sweep.md](uuidv8-fid-v2/release/pre-publication-sweep.md)
+
 Do not add normative requirements to this file.
