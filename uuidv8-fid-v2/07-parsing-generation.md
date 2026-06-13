@@ -23,14 +23,15 @@ A parser SHOULD reject UUIDs whose `part4_reserved_bits` are nonzero when valida
 
 # 11. Generation Algorithm
 
-A generator for UUIDv8-FID-v2 SHOULD perform the following steps.
+A generator for a concrete UUIDv8-FID-v2 payload format SHOULD perform the following steps.
 
-1. Select a `format_type` in the range `0x0..0xf`.
-2. Select a `format_subtype` in the range `0x0..0xf`.
-3. Compute:
+1. Select a `format_id` that is assigned by the UUIDv8-FID-v2 registry or by a referenced profile-specific specification.
+2. Verify that the selected `format_id` is not reserved, unassigned, or deprecated unless the generator explicitly implements the referenced specification that permits such generation.
+3. Derive:
 
 ```text
-format_id = (format_type << 4) | format_subtype
+format_type    = (format_id >> 4) & 0x0f
+format_subtype =  format_id       & 0x0f
 ```
 
 4. Set the UUID version field to `1000`.
@@ -40,6 +41,12 @@ format_id = (format_type << 4) | format_subtype
 8. Store `format_subtype` in bits 68 through 71.
 9. Set `part3_reserved_octet` to `0x00`.
 10. Set `part4_reserved_octet` to `0x00`.
-11. Populate Part 1, Part 2, and Part 5 according to the registry or profile-specific definition associated with the selected Format ID.
+11. Populate Part 1, Part 2, and Part 5 according to the registry entry or profile-specific definition associated with the selected Format ID.
+
+A generator MUST NOT generate a UUIDv8-FID-v2 value using a reserved Format ID value or reserved Format ID range unless a future specification explicitly changes its status.
+
+A generator SHOULD NOT generate an unassigned Format ID as an interoperable UUIDv8-FID-v2 payload format.
+
+A generator SHOULD NOT generate deprecated formats unless required for compatibility with an existing system and explicitly documented by the referenced specification.
 
 A generator MUST NOT use `part4_reserved_bits`, `part3_reserved_octet`, or `part4_reserved_octet` for application data in this version of the specification.
