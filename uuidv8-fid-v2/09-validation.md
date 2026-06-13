@@ -61,4 +61,4 @@ This level determines whether the UUID conforms exactly to this version of UUIDv
 
 ## 14.5 Conformance Test Vectors
 
-Derived conformance test vectors illustrating these validation levels are provided in `conformance/structural-test-vectors.md`.
+Derived conformance test vectors illustrating these validation levels are provided in `conformance/structural-test-vectors.md` and its machine-readable companion `conformance/structural-test-vectors.json`.

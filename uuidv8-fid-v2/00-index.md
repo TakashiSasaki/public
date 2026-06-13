@@ -34,3 +34,9 @@ The directory currently includes the specification sections. The first assigned 
 Derived conformance material for implementers to verify parsing, extraction, and validation behavior is placed under:
 
 - `conformance/`
+
+## Implementation Guidance
+
+Derived non-normative implementation guidance, pseudocode, and checklists for UUIDv8-FID-v2 are placed under:
+
+- `implementation/`
