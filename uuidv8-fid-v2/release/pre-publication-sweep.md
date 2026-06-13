@@ -18,6 +18,8 @@ Warnings, if any, must be reviewed.
 
 - [ ] Confirm `uuidv8-fid-v2/README.md` remains non-normative.
 - [ ] Confirm public entry-point stubs point to the public landing page and canonical specification.
+- [ ] Confirm the navigation smoke test is current.
+- [ ] Confirm publication-facing relative links resolve locally.
 - [ ] Confirm no new Format ID was assigned.
 - [ ] Confirm `0x10` remains the only assigned concrete Format ID.
 - [ ] Confirm `0x11..0xef` remains unassigned.

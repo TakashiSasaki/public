@@ -28,7 +28,7 @@ We recommend reading the canonical section files in numeric order:
 - [12-examples-summary.md](../12-examples-summary.md)
 - [20-registry.md](../20-registry.md)
 
-## 2. For registry readers
+## 3. For registry readers
 
 To understand the registry state and defined formats, point to:
 
@@ -37,7 +37,7 @@ To understand the registry state and defined formats, point to:
 
 The current registry assigns only `0x10 time48-rand`, leaves `0x11..0xef` unassigned, and reserves `0x00..0x0f` and `0xf0..0xff`.
 
-## 3. For implementers
+## 4. For implementers
 
 For implementing the specification, point to:
 
@@ -50,7 +50,7 @@ For implementing the specification, point to:
 - [implementation/pseudocode.md](../implementation/pseudocode.md)
 - [implementation/implementation-checklist.md](../implementation/implementation-checklist.md)
 
-## 4. For reviewers
+## 5. For reviewers
 
 Reviewers checking consistency and readiness should point to:
 
@@ -58,15 +58,16 @@ Reviewers checking consistency and readiness should point to:
 - [audit/release-readiness.md](../audit/release-readiness.md)
 - [audit/known-non-goals.md](../audit/known-non-goals.md)
 
-## 5. For publication/package maintainers
+## 6. For publication/package maintainers
 
 Maintainers managing the document set should point to:
 
 - [publication/source-map.md](source-map.md)
+- [publication/navigation-smoke-test.md](navigation-smoke-test.md)
 - [publication/single-file-assembly-plan.md](single-file-assembly-plan.md)
 - [publication/release-candidate-checklist.md](release-candidate-checklist.md)
 
-## 6. For release reviewers
+## 7. For release reviewers
 
 Reviewers preparing a release candidate should point to:
 

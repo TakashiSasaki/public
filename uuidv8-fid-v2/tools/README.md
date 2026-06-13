@@ -12,7 +12,7 @@ Warnings should be reviewed. Warnings do not cause a nonzero exit code unless a 
 
 ## Coverage
 
-The checker validates selected file existence, registry invariants, conformance-vector structure, source-map entries, release-candidate references, public entry-point references, and generated-single-file guards.
+The checker validates selected file existence, registry invariants, conformance-vector structure, source-map entries, release-candidate references, public entry-point references, local relative Markdown links, and generated-single-file guards.
 
 ## Usage
 
