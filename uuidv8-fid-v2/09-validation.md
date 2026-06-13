@@ -33,10 +33,14 @@ Profile validation checks:
 variant == 0b10
 version == 0x8
 part4_reserved_bits == 0b00
-format_type and format_subtype are known to the implementation
+format_id is known to the implementation
+format_id is assigned, or deprecated and explicitly accepted for compatibility
+format_id is not reserved
 ```
 
-This level determines whether the implementation knows how to interpret the UUID payload.
+This level determines whether the implementation knows how to interpret the UUID payload according to a registry entry or profile-specific specification.
+
+Unknown, unassigned, and reserved Format ID values MAY still be extracted and reported, but they do not pass profile validation.
 
 ## 14.4 Strict Validation
 
@@ -46,9 +50,11 @@ Strict validation checks:
 variant == 0b10
 version == 0x8
 part4_reserved_bits == 0b00
-format_type and format_subtype are known to the implementation
+format_id is known to the implementation
+format_id is assigned, or deprecated and explicitly accepted for compatibility
+format_id is not reserved
 part3_reserved_octet == 0x00
 part4_reserved_octet == 0x00
 ```
 
-This level determines whether the UUID conforms exactly to this version of UUIDv8-FID-v2 and to a known assigned profile.
+This level determines whether the UUID conforms exactly to this version of UUIDv8-FID-v2, relies only on assigned or explicitly accepted formats, uses no reserved values, and ensures all reserved octets are zero.

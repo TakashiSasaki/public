@@ -183,6 +183,8 @@ The following Format ID range is available for future assignment:
 |---:|---|---|---|
 | `0x10..0xef` | unassigned | — | Available for future assignment by this registry or by referenced profile-specific documents. |
 
+Unassigned Format ID values are available for future assignment, but they are not concrete payload formats until assigned by this registry or by a referenced profile-specific specification.
+
 A new `format_id` SHOULD be assigned only when the binary payload layout or normative interpretation changes. A new Format ID SHOULD NOT be assigned merely to name an application domain, object class, database table, dataset, or deployment-specific category.
 
 ### 20.7.3 Individual Format ID Assignments

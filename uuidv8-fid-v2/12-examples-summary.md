@@ -29,11 +29,13 @@ format_id = (0x7 << 4) | 0x0a
 
 The UUID is structurally a UUIDv8-FID-v2 value with `format_type = 0x7`, `format_subtype = 0x0a`, and `format_id = 0x7a`, assuming the complete UUID is otherwise syntactically valid.
 
-A generated UUIDv8-FID-v2 value with this Format ID has the following center form:
+A structurally valid UUIDv8-FID-v2 value carrying this unassigned Format ID would have the following center form:
 
 ```text
 xxxxxxxx-xxxx-8700-8a00-xxxxxxxxxxxx
 ```
+
+This example demonstrates extraction and structural layout only; it does not assign `format_id = 0x7a`.
 
 # 19. Summary
 
