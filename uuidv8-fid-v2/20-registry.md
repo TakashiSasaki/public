@@ -191,6 +191,8 @@ A new `format_id` SHOULD be assigned only when the binary payload layout or norm
 
 Individual assigned, deprecated, or specially reserved Format ID values MAY be listed in this section in future versions of this registry.
 
+Format-specific payload layout specifications SHOULD be placed under `formats/` and referenced from this registry.
+
 All Format ID values in `0x10..0xef` are unassigned unless listed in a future version of this registry or in a referenced profile-specific document.
 
 ## 20.8 Unknown Values
