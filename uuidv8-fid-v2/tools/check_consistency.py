@@ -46,6 +46,7 @@ def check_file_existence():
         "uuidv8-fid-v2/release/release-candidate-notes.md",
         "uuidv8-fid-v2/release/publication-readiness-summary.md",
         "uuidv8-fid-v2/release/post-publication-work.md",
+        "uuidv8-fid-v2/release/pre-publication-sweep.md",
         "uuidv8-fid-v2.md",
         "uuidv8-fid-v2-registry.md",
     ]
@@ -245,6 +246,9 @@ def check_source_map():
             "uuidv8-fid-v2/release/release-candidate-notes.md",
             "uuidv8-fid-v2/release/publication-readiness-summary.md",
             "uuidv8-fid-v2/release/post-publication-work.md",
+            "uuidv8-fid-v2/release/pre-publication-sweep.md",
+            "uuidv8-fid-v2/tools/README.md",
+            "uuidv8-fid-v2/tools/check_consistency.py",
             "uuidv8-fid-v2.md",
             "uuidv8-fid-v2-registry.md"
         ]
@@ -257,8 +261,76 @@ def check_source_map():
     except Exception as e:
         report_fail(group, f"Error reading source-map: {e}")
 
+def check_reader_guide():
+    group = "9. Reader-guide checks"
+    guide_path = BASE_DIR / "publication" / "reader-guide.md"
+    try:
+        content = guide_path.read_text(encoding='utf-8')
+        required = [
+            "release/release-candidate-notes.md",
+            "release/publication-readiness-summary.md",
+            "release/post-publication-work.md",
+            "release/pre-publication-sweep.md",
+            "tools/README.md",
+            "tools/check_consistency.py"
+        ]
+        missing = [r for r in required if r not in content]
+        if missing:
+            report_fail(group, f"Missing reader-guide references: {', '.join(missing)}")
+        else:
+            report_pass(group)
+    except Exception as e:
+        report_fail(group, f"Error reading reader-guide: {e}")
+
+def check_release_non_final_guard():
+    group = "10. Release non-final guard"
+    release_files = [
+        "uuidv8-fid-v2/release/00-index.md",
+        "uuidv8-fid-v2/release/release-candidate-notes.md",
+        "uuidv8-fid-v2/release/publication-readiness-summary.md",
+        "uuidv8-fid-v2/release/pre-publication-sweep.md"
+    ]
+
+    required_phrases = [
+        "non-normative",
+        "does not declare a final release",
+        "release-candidate"
+    ]
+    forbidden_phrases = [
+        "this is the final release",
+        "final release is declared"
+    ]
+
+    errors = []
+    for f in release_files:
+        try:
+            content = (REPO_ROOT / f).read_text(encoding='utf-8').lower()
+
+            # Check required phrase
+            found_req = False
+            for req in required_phrases:
+                if req in content:
+                    found_req = True
+                    break
+
+            if not found_req:
+                errors.append(f"{f} missing non-final required phrasing")
+
+            # Check forbidden phrase
+            for forb in forbidden_phrases:
+                if forb in content:
+                    errors.append(f"{f} contains forbidden phrase: '{forb}'")
+
+        except Exception as e:
+            errors.append(f"Error reading {f}: {e}")
+
+    if errors:
+        report_fail(group, "; ".join(errors))
+    else:
+        report_pass(group)
+
 def check_index():
-    group = "9. Index checks"
+    group = "11. Index checks"
     idx_path = BASE_DIR / "00-index.md"
     try:
         content = idx_path.read_text(encoding='utf-8')
@@ -280,7 +352,7 @@ def check_index():
         report_fail(group, f"Error reading index: {e}")
 
 def check_generated_single_file_guard():
-    group = "10. Generated single-file guard"
+    group = "12. Generated single-file guard"
     forbidden = [
         "uuidv8-fid-v2/generated-single-file.md",
         "uuidv8-fid-v2/single-file.md",
@@ -294,7 +366,7 @@ def check_generated_single_file_guard():
         report_pass(group)
 
 def check_stale_phrase_warnings():
-    group = "11. Stale phrase warning checks"
+    group = "13. Stale phrase warning checks"
 
     # We check all .md files under uuidv8-fid-v2 and the two top-level ones
     files_to_check = list(BASE_DIR.rglob("*.md"))
@@ -346,6 +418,8 @@ def main():
     check_registry_text()
     check_top_level_stubs()
     check_source_map()
+    check_reader_guide()
+    check_release_non_final_guard()
     check_index()
     check_generated_single_file_guard()
     check_stale_phrase_warnings()

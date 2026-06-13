@@ -10,6 +10,10 @@ Run this checker before treating the document set as a release candidate.
 
 Warnings should be reviewed. Warnings do not cause a nonzero exit code unless a hard check fails.
 
+## Coverage
+
+The checker validates selected file existence, registry invariants, conformance-vector structure, source-map entries, release-candidate references, and generated-single-file guards.
+
 ## Usage
 
 ```text
