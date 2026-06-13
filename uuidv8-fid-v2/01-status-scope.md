@@ -6,7 +6,7 @@ UUIDv8-FID-v2 is an application-defined UUID version 8 profile. It preserves the
 
 UUIDv8-FID-v2 is intended for developers implementing UUID generation, parsing, validation, serialization, deserialization, indexing, and library-level interoperability.
 
-This document defines the field format, bit-level structure, and initial Format ID registry for UUIDv8-FID-v2. It does not assign any concrete payload format.
+This document defines the field format, bit-level structure, initial Format ID registry, and initial assigned payload format for UUIDv8-FID-v2.
 
 # 2. Scope
 
@@ -37,6 +37,6 @@ This specification does not define:
 
 The field-format sections define the bit-level structure, extraction, construction, and validation rules for UUIDv8-FID-v2 values.
 
-The registry chapter defines assignment status and assignment policy for Format ID values. This initial version does not assign any concrete payload format.
+The registry chapter defines assignment status and assignment policy for Format ID values. This initial version assigns `format_id = 0x10` as the first concrete UUIDv8-FID-v2 payload format.
 
 Concrete payload layouts and format-specific semantics are still defined by profile-specific documents.

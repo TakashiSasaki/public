@@ -135,7 +135,7 @@ The registry table uses the following columns.
 
 This section assigns or reserves `format_type` values.
 
-This initial version does not assign concrete payload families. Values are intentionally left unassigned until separate profile-specific decisions are made.
+This initial version assigns `format_type = 0x1` as the initial time-carrying payload family. Values `0x2..0xe` remain unassigned until separate profile-specific decisions are made.
 
 | format_type | Name | Status | Reference | Notes |
 |---:|---|---|---|---|
@@ -162,7 +162,7 @@ This section assigns concrete `format_id` values and reserved `format_id` ranges
 
 A `format_id` value is concrete only when its payload layout and normative interpretation are assigned by this registry or by a referenced profile-specific document.
 
-This initial registry defines no concrete assigned payload formats.
+This initial registry assigns `format_id = 0x10` as the first concrete UUIDv8-FID-v2 payload format.
 
 ### 20.7.1 Reserved Format ID Ranges
 
@@ -181,7 +181,7 @@ The following Format ID range is available for future assignment:
 
 | Format ID range | Status | Reference | Notes |
 |---:|---|---|---|
-| `0x10..0xef` | unassigned | — | Available for future assignment by this registry or by referenced profile-specific documents. |
+| `0x11..0xef` | unassigned | — | Available for future assignment by this registry or by referenced profile-specific documents. |
 
 Unassigned Format ID values are available for future assignment, but they are not concrete payload formats until assigned by this registry or by a referenced profile-specific specification.
 
@@ -199,7 +199,7 @@ The following individual Format ID values are assigned:
 |---:|---:|---:|---|---|---|---|
 | `0x1` | `0x0` | `0x10` | `time48-rand` | assigned | `formats/10-time48-rand.md` | Part 5 contains a 48-bit Unix epoch millisecond timestamp; Part 1 and Part 2 contain 48 bits of random or profile-defined payload. |
 
-All Format ID values in `0x10..0xef` are unassigned unless listed in a future version of this registry or in a referenced profile-specific document.
+All Format ID values in `0x11..0xef` are unassigned unless listed in a future version of this registry or in a referenced profile-specific document.
 
 ## 20.8 Unknown Values
 
@@ -255,4 +255,4 @@ Generated UUIDv8-FID-v2 values have the following center form:
 xxxxxxxx-xxxx-8T00-8S00-xxxxxxxxxxxx
 ```
 
-This initial registry reserves the Format ID ranges `0x00..0x0f` and `0xf0..0xff`, and leaves concrete payload-format assignments in `0x10..0xef` to future registry updates or profile-specific documents.
+This initial registry reserves the Format ID ranges `0x00..0x0f` and `0xf0..0xff`, and leaves concrete payload-format assignments in `0x11..0xef` to future registry updates or profile-specific documents.

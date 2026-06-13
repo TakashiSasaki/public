@@ -23,12 +23,13 @@ The UUIDv8-FID-v2 registry currently defines:
 
 ```text
 0x00..0x0f  reserved
-0x10..0xef  unassigned / available for future assignment
+0x10        assigned: time48-rand
+0x11..0xef  unassigned / available for future assignment
 0xf0..0xff  reserved
 ```
 
 Future format-specific documents SHOULD be named by Format ID and short symbolic name, for example:
 
-`10-example-name.md`
+`11-example-name.md`
 
-The example above is illustrative only and does not assign "format_id = 0x10".
+The example above is illustrative only and does not assign `format_id = 0x11`.

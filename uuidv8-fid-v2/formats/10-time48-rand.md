@@ -46,7 +46,9 @@ bits    field
 
 The canonical center form of generated values for this format is:
 
-`xxxxxxxx-xxxx-8100-8000-xxxxxxxxxxxx`
+```text
+xxxxxxxx-xxxx-8100-8000-xxxxxxxxxxxx
+```
 
 ## 5. Byte Order and Integer Interpretation
 
@@ -58,7 +60,9 @@ The canonical center form of generated values for this format is:
 
 `unix_ts_ms` is the number of milliseconds elapsed since the Unix epoch:
 
-`1970-01-01T00:00:00Z`
+```text
+1970-01-01T00:00:00Z
+```
 
 The timestamp unit is milliseconds.
 
@@ -136,7 +140,86 @@ If `rand_a` or `rand_b` contains node identifiers, dataset identifiers, counters
 
 ## 13. Test Vectors
 
-TBD.
+The following test vectors are deterministic examples for construction and parsing.
+
+These vectors are not recommendations for random-number generation. In particular, all-zero or all-one random fields are included only as boundary examples.
+
+### 13.1 Unix Epoch Boundary
+
+Input fields:
+
+```text
+rand_a      = 0x00000000
+rand_b      = 0x0000
+unix_ts_ms  = 0x000000000000
+```
+
+Expected UUID:
+
+```text
+00000000-0000-8100-8000-000000000000
+```
+
+Extracted fields:
+
+```text
+format_type    = 0x1
+format_subtype = 0x0
+format_id      = 0x10
+unix_ts_ms     = 0x000000000000
+```
+
+### 13.2 Fixed Timestamp and Random Payload
+
+Input fields:
+
+```text
+rand_a      = 0x12345678
+rand_b      = 0x9abc
+unix_ts_ms  = 0x01856aa0c800
+```
+
+The timestamp value `0x01856aa0c800` is decimal `1672531200000`, corresponding to `2023-01-01T00:00:00Z`.
+
+Expected UUID:
+
+```text
+12345678-9abc-8100-8000-01856aa0c800
+```
+
+Extracted fields:
+
+```text
+format_type    = 0x1
+format_subtype = 0x0
+format_id      = 0x10
+unix_ts_ms     = 0x01856aa0c800
+```
+
+### 13.3 Maximum Field Boundary
+
+Input fields:
+
+```text
+rand_a      = 0xffffffff
+rand_b      = 0xffff
+unix_ts_ms  = 0xffffffffffff
+```
+
+Expected UUID:
+
+```text
+ffffffff-ffff-8100-8000-ffffffffffff
+```
+
+Extracted fields:
+
+```text
+format_type    = 0x1
+format_subtype = 0x0
+format_id      = 0x10
+unix_ts_ms     = 0xffffffffffff
+```
 
 ## 14. Registry Entry
 
