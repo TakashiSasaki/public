@@ -122,6 +122,6 @@ part4_reserved_octet = 0x01
 
 * **Structural validation vs. profile validation**: Structural validation is not the same as profile validation. A UUID may be structurally sound according to UUIDv8-FID-v2 rules but fail to align with known formats in a specific profile.
 * **Unknown/unassigned Format IDs**: Unknown and unassigned Format IDs can be extracted but do not pass profile validation.
-* **Reserved Format IDs**: Reserved Format IDs are structurally extractable but must not be generated.
+* **Reserved Format IDs**: Reserved Format IDs are structurally extractable but generation is prohibited by the current registry.
 * **Nonzero reserved octets**: Nonzero reserved octets are allowed to be parsed in forward-compatible mode but fail strict validation.
 * **`part4_reserved_bits` vs. reserved octets**: `part4_reserved_bits` differs from the reserved octets. Nonzero `part4_reserved_bits` fails UUIDv8-FID-v2 structural validation.
