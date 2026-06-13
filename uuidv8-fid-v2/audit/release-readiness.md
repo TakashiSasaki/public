@@ -17,6 +17,7 @@ The current specification establishes a stable foundation:
 
 Reviewers should perform the following checks before a final release:
 
+- run `python uuidv8-fid-v2/tools/check_consistency.py`.
 - run a cross-file grep for stale phrases such as:
   - `No concrete payload format is assigned`
   - `does not assign concrete values`

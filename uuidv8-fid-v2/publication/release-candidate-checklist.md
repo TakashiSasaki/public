@@ -7,6 +7,7 @@ This document provides a checklist for preparing a release candidate without dec
 ## 1. Source consistency
 
 - [ ] Run the audit consistency checklist.
+- [ ] Run `python uuidv8-fid-v2/tools/check_consistency.py`.
 - [ ] Verify `00-index.md` links to all major directories.
 - [ ] Verify the source map is up to date.
 - [ ] Verify top-level stubs remain non-normative.
