@@ -37,3 +37,5 @@ The following items are listed as non-commitments for possible future exploratio
 - possible machine-check scripts for conformance vectors.
 - possible implementation examples in a programming language.
 - possible publication packaging or generated single-file spec.
+
+Publication-preparation notes are provided under `publication/`.
