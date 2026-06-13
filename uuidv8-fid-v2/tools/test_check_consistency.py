@@ -55,10 +55,9 @@ def main():
     else:
         all_passed = report_fail("baseline real repository passes", "rc=0 and PASS in stdout", result.returncode, result.stdout, result.stderr)
 
+    # Scenario B: missing public README fails
     with tempfile.TemporaryDirectory() as td:
         temp_dir = Path(td)
-
-        # Scenario B: missing public README fails
         setup_temp_repo(temp_dir)
         (temp_dir / "uuidv8-fid-v2" / "README.md").unlink()
         result = run_checker(temp_dir)
@@ -67,10 +66,9 @@ def main():
         else:
             all_passed = report_fail("missing public README fails", "rc!=0, FAIL in stdout, mentions README.md", result.returncode, result.stdout, result.stderr)
 
-        # Scenario C: registry assignment mutation fails
-        # Clean up and reset for next scenario
-        shutil.rmtree(temp_dir)
-        temp_dir.mkdir()
+    # Scenario C: registry assignment mutation fails
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
         setup_temp_repo(temp_dir)
         json_path = temp_dir / "uuidv8-fid-v2" / "conformance" / "structural-test-vectors.json"
         with open(json_path, 'r', encoding='utf-8') as f:
@@ -85,9 +83,9 @@ def main():
         else:
             all_passed = report_fail("registry assignment mutation fails", "rc!=0, FAIL in stdout, mentions registry/assigned", result.returncode, result.stdout, result.stderr)
 
-        # Scenario D: reader-guide heading numbering mutation fails
-        shutil.rmtree(temp_dir)
-        temp_dir.mkdir()
+    # Scenario D: reader-guide heading numbering mutation fails
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
         setup_temp_repo(temp_dir)
         guide_path = temp_dir / "uuidv8-fid-v2" / "publication" / "reader-guide.md"
         content = guide_path.read_text(encoding='utf-8')
@@ -99,9 +97,9 @@ def main():
         else:
             all_passed = report_fail("reader-guide heading mutation fails", "rc!=0, FAIL in stdout, mentions heading/numbering", result.returncode, result.stdout, result.stderr)
 
-        # Scenario E: broken relative Markdown link fails
-        shutil.rmtree(temp_dir)
-        temp_dir.mkdir()
+    # Scenario E: broken relative Markdown link fails
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
         setup_temp_repo(temp_dir)
         readme_path = temp_dir / "uuidv8-fid-v2" / "README.md"
         with open(readme_path, 'a', encoding='utf-8') as f:
@@ -112,9 +110,9 @@ def main():
         else:
             all_passed = report_fail("broken relative Markdown link fails", "rc!=0, FAIL in stdout, mentions does-not-exist.md", result.returncode, result.stdout, result.stderr)
 
-        # Scenario F: generated single-file artifact fails
-        shutil.rmtree(temp_dir)
-        temp_dir.mkdir()
+    # Scenario F: generated single-file artifact fails
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
         setup_temp_repo(temp_dir)
         (temp_dir / "uuidv8-fid-v2" / "generated-single-file.md").touch()
         result = run_checker(temp_dir)
@@ -123,9 +121,9 @@ def main():
         else:
             all_passed = report_fail("generated single-file artifact fails", "rc!=0, FAIL in stdout, mentions generated-single-file.md", result.returncode, result.stdout, result.stderr)
 
-        # Scenario G: final release phrase fails
-        shutil.rmtree(temp_dir)
-        temp_dir.mkdir()
+    # Scenario G: final release phrase fails
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
         setup_temp_repo(temp_dir)
         readme_path = temp_dir / "uuidv8-fid-v2" / "README.md"
         with open(readme_path, 'a', encoding='utf-8') as f:
@@ -136,9 +134,9 @@ def main():
         else:
             all_passed = report_fail("final release phrase fails", "rc!=0, FAIL in stdout, mentions forbidden phrase/final release", result.returncode, result.stdout, result.stderr)
 
-        # Scenario H: fenced code block broken link is ignored
-        shutil.rmtree(temp_dir)
-        temp_dir.mkdir()
+    # Scenario H: fenced code block broken link is ignored
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
         setup_temp_repo(temp_dir)
         readme_path = temp_dir / "uuidv8-fid-v2" / "README.md"
         with open(readme_path, 'a', encoding='utf-8') as f:

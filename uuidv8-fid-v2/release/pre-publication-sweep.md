@@ -12,7 +12,7 @@ python uuidv8-fid-v2/tools/check_consistency.py
 python uuidv8-fid-v2/tools/test_check_consistency.py
 ```
 
-The command must exit with status code 0 before publication.
+Both commands must exit with status code 0 before publication.
 Warnings, if any, must be reviewed.
 
 ## 2. Required manual review
