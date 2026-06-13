@@ -118,6 +118,12 @@ function construct_uuidv8_fid_v2(format_id, part1, part2, part5):
         // Explicitly reject unassigned Format IDs unless constructing non-interoperable test fixtures.
         fail("Unassigned Format IDs cannot be constructed for interoperable use.")
 
+    if status == "unknown":
+        fail("Unknown Format IDs cannot be constructed.")
+
+    if status == "deprecated":
+        fail("Deprecated Format IDs cannot be constructed unless explicitly accepted for compatibility.")
+
     format_type    = (format_id >> 4) & 0x0f
     format_subtype =  format_id       & 0x0f
 
@@ -175,6 +181,9 @@ function construct_time48_rand(rand_a, rand_b, unix_ts_ms):
 ```text
 function parse_time48_rand(uuid_bytes):
     fields = extract_uuidv8_fid_v2_fields(uuid_bytes)
+
+    if validate_uuidv8_fid_v2_structural(fields) != "pass":
+        fail("UUID is not structurally compatible with UUIDv8-FID-v2.")
 
     if fields.format_id != 0x10:
         fail("Invalid format_id for time48-rand.")
