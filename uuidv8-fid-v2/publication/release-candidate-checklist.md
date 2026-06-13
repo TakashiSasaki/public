@@ -35,6 +35,8 @@ This document provides a checklist for preparing a release candidate without dec
 - [ ] Verify top-level entry-point stubs point to the public landing page and canonical specification.
 - [ ] Verify public-facing entry points remain non-normative.
 - [ ] Verify the reader guide is current.
+- [ ] Verify `uuidv8-fid-v2/publication/navigation-smoke-test.md` is current.
+- [ ] Verify all relative Markdown links used by publication-facing documents resolve locally.
 - [ ] Verify the single-file assembly plan is current.
 - [ ] Verify no generated single-file artifact was manually edited as source of truth.
 - [ ] Verify release-candidate notes are current.

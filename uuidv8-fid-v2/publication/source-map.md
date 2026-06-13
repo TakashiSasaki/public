@@ -33,6 +33,7 @@ This document records the role of each source file without duplicating normative
 | [uuidv8-fid-v2/audit/known-non-goals.md](../audit/known-non-goals.md) | Known non-goals | `derived audit material` | Outlines topics out of scope. |
 | [uuidv8-fid-v2/publication/00-index.md](00-index.md) | Publication index | `derived publication guidance` | Index of publication and reader guidance. |
 | [uuidv8-fid-v2/publication/reader-guide.md](reader-guide.md) | Reader guide | `derived publication guidance` | Guide on how to navigate the documents. |
+| [uuidv8-fid-v2/publication/navigation-smoke-test.md](navigation-smoke-test.md) | Navigation smoke test | `derived publication guidance` | Manual navigation checks for publication readiness. |
 | [uuidv8-fid-v2/publication/source-map.md](source-map.md) | Source map | `derived publication guidance` | The document you are reading. |
 | [uuidv8-fid-v2/publication/single-file-assembly-plan.md](single-file-assembly-plan.md) | Single-file assembly plan | `derived publication guidance` | Plan for assembling a single-file publication. |
 | [uuidv8-fid-v2/publication/release-candidate-checklist.md](release-candidate-checklist.md) | Release candidate checklist | `derived publication guidance` | Checklist for release candidates. |

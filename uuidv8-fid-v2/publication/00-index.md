@@ -6,5 +6,6 @@ These documents do not introduce new normative requirements and do not replace t
 
 1. [reader-guide.md](reader-guide.md)
 2. [source-map.md](source-map.md)
-3. [single-file-assembly-plan.md](single-file-assembly-plan.md)
-4. [release-candidate-checklist.md](release-candidate-checklist.md)
+3. [navigation-smoke-test.md](navigation-smoke-test.md)
+4. [single-file-assembly-plan.md](single-file-assembly-plan.md)
+5. [release-candidate-checklist.md](release-candidate-checklist.md)

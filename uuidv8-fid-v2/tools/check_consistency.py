@@ -43,6 +43,7 @@ def check_file_existence():
         "uuidv8-fid-v2/audit/release-readiness.md",
         "uuidv8-fid-v2/publication/source-map.md",
         "uuidv8-fid-v2/publication/release-candidate-checklist.md",
+        "uuidv8-fid-v2/publication/navigation-smoke-test.md",
         "uuidv8-fid-v2/release/00-index.md",
         "uuidv8-fid-v2/release/release-candidate-notes.md",
         "uuidv8-fid-v2/release/publication-readiness-summary.md",
@@ -244,6 +245,7 @@ def check_source_map():
             "uuidv8-fid-v2/implementation/pseudocode.md",
             "uuidv8-fid-v2/audit/consistency-checklist.md",
             "uuidv8-fid-v2/publication/release-candidate-checklist.md",
+            "uuidv8-fid-v2/publication/navigation-smoke-test.md",
             "uuidv8-fid-v2/release/00-index.md",
             "uuidv8-fid-v2/release/release-candidate-notes.md",
             "uuidv8-fid-v2/release/publication-readiness-summary.md",
@@ -276,13 +278,47 @@ def check_reader_guide():
             "tools/README.md",
             "tools/check_consistency.py"
         ]
-        missing = [r for r in required if r not in content]
+
+        # Check either 'publication/navigation-smoke-test.md' or 'navigation-smoke-test.md'
+        if "publication/navigation-smoke-test.md" not in content and "navigation-smoke-test.md" not in content:
+            missing = ["navigation-smoke-test.md"]
+        else:
+            missing = []
+
+        missing.extend([r for r in required if r not in content])
         if missing:
             report_fail(group, f"Missing reader-guide references: {', '.join(missing)}")
         else:
             report_pass(group)
     except Exception as e:
         report_fail(group, f"Error reading reader-guide: {e}")
+
+def check_reader_guide_heading_numbering():
+    group = "Reader-guide heading numbering check"
+    guide_path = BASE_DIR / "publication" / "reader-guide.md"
+    expected = [
+        "## 1. For public readers",
+        "## 2. For specification readers",
+        "## 3. For registry readers",
+        "## 4. For implementers",
+        "## 5. For reviewers",
+        "## 6. For publication/package maintainers",
+        "## 7. For release reviewers"
+    ]
+    try:
+        content = guide_path.read_text(encoding='utf-8')
+        headings = [line.strip() for line in content.splitlines() if line.strip().startswith("## ")]
+
+        # Only take the expected ones from start to make sure order and contents match
+        # Actually the spec has a ## Purpose before the numbered ones. Let's find numbered ones.
+        numbered_headings = [h for h in headings if "## " in h and any(char.isdigit() for char in h)]
+
+        if numbered_headings != expected:
+            report_fail(group, f"Reader-guide numbered headings do not match expected sequential order. Found: {numbered_headings}")
+        else:
+            report_pass(group)
+    except Exception as e:
+        report_fail(group, f"Error reading reader-guide for heading check: {e}")
 
 def check_release_non_final_guard():
     group = "10. Release non-final guard"
@@ -479,6 +515,89 @@ def check_generated_single_file_guard():
     else:
         report_pass(group)
 
+import urllib.parse
+
+def check_relative_markdown_links():
+    group = "Relative Markdown link check"
+
+    files_to_check = list(BASE_DIR.rglob("*.md"))
+    files_to_check.append(REPO_ROOT / "uuidv8-fid-v2.md")
+    files_to_check.append(REPO_ROOT / "uuidv8-fid-v2-registry.md")
+
+    link_pattern = re.compile(r'\[([^\]]+)\]\(([^\)]+)\)')
+
+    errors = []
+
+    for filepath in files_to_check:
+        if not filepath.is_file():
+            continue
+
+        try:
+            content = filepath.read_text(encoding='utf-8')
+            lines = content.splitlines()
+
+            in_fenced_block = False
+            for i, line in enumerate(lines):
+                if line.strip().startswith('```'):
+                    in_fenced_block = not in_fenced_block
+                    continue
+
+                if in_fenced_block:
+                    continue
+
+                # We want to ignore image links ![]().
+                # The regex matches the [label](target). So if line contains ![label](target), we should ignore.
+                # Actually let's just finditer and look at the character before the match.
+                for match in link_pattern.finditer(line):
+                    start_idx = match.start()
+                    if start_idx > 0 and line[start_idx - 1] == '!':
+                        continue # Image link
+
+                    label = match.group(1)
+                    target = match.group(2)
+
+                    target = target.strip()
+
+                    if not target:
+                        continue
+
+                    if target.startswith('#'):
+                        continue
+
+                    if target.startswith(('http://', 'https://')):
+                        continue
+
+                    if target.startswith('mailto:'):
+                        continue
+
+                    # Strip fragment
+                    if '#' in target:
+                        target = target.split('#')[0]
+
+                    if not target:
+                        continue
+
+                    # Strip query string
+                    if '?' in target:
+                        target = target.split('?')[0]
+
+                    if not target:
+                        continue
+
+                    target_path = urllib.parse.unquote(target)
+                    resolved_path = (filepath.parent / target_path).resolve()
+
+                    if not resolved_path.exists():
+                        errors.append(f"{filepath.relative_to(REPO_ROOT)}:{i+1}: Link target missing: {target}")
+
+        except Exception as e:
+            errors.append(f"Error processing {filepath.relative_to(REPO_ROOT)}: {e}")
+
+    if errors:
+        report_fail(group, "\n" + "\n".join(errors))
+    else:
+        report_pass(group)
+
 def check_stale_phrase_warnings():
     group = "13. Stale phrase warning checks"
 
@@ -533,11 +652,13 @@ def main():
     check_top_level_stubs()
     check_source_map()
     check_reader_guide()
+    check_reader_guide_heading_numbering()
     check_release_non_final_guard()
     check_public_entry_points()
     check_public_entry_point_non_final_guard()
     check_index()
     check_generated_single_file_guard()
+    check_relative_markdown_links()
     check_stale_phrase_warnings()
 
     print()
