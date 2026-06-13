@@ -11,10 +11,10 @@ The following terms are used in this document.
 : An 8-bit logical identifier composed of `format_type` and `format_subtype`.
 
 `format_type`
-: The upper 4 bits of `format_id`. This field identifies a broad payload family. This document defines the field and its location but does not assign concrete values.
+: The upper 4 bits of `format_id`. This field identifies a broad payload family. This terminology section defines the field and its location. Concrete assignments are defined by the registry chapter and referenced format-specific documents.
 
 `format_subtype`
-: The lower 4 bits of `format_id`. This field identifies a concrete payload layout within a `format_type` family. This document defines the field and its location but does not assign concrete values.
+: The lower 4 bits of `format_id`. This field identifies a concrete payload layout within a `format_type` family. This terminology section defines the field and its location. Concrete assignments are defined by the registry chapter and referenced format-specific documents.
 
 `format_id_hi4`
 : The physical 4-bit field fragment occupying bits 52 through 55. Semantically, this field is `format_type`.

@@ -27,4 +27,4 @@ Concrete UUIDv8-FID-v2 Format ID specifications are placed under:
 
 - `formats/`
 
-The directory currently contains only an index and a template. No concrete payload format is assigned in this version.
+The directory currently includes the specification sections. The first assigned format is `formats/10-time48-rand.md` for `format_id = 0x10`.
