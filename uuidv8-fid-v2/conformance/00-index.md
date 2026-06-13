@@ -7,3 +7,4 @@ These documents do not introduce new normative requirements. The expected outcom
 ## Documents
 
 1. `structural-test-vectors.md`: Structural and validation test vectors for UUIDv8-FID-v2.
+2. `structural-test-vectors.json`: Machine-readable companion to `structural-test-vectors.md`.

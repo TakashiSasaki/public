@@ -43,6 +43,8 @@ Deterministic construction and parsing test vectors for the first assigned forma
 
 Structural conformance test vectors covering validation edge cases and unassigned ranges are provided in `conformance/structural-test-vectors.md`.
 
+Derived implementation guidance and pseudocode are provided in `implementation/pseudocode.md` and `implementation/implementation-checklist.md`.
+
 # 19. Summary
 
 UUIDv8-FID-v2 is a UUID version 8 profile that introduces an 8-bit logical Format ID.

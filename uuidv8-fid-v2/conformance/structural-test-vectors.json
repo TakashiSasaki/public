@@ -1,0 +1,234 @@
+{
+  "profile": "UUIDv8-FID-v2",
+  "kind": "structural-conformance-test-vectors",
+  "normative": false,
+  "derived_from": [
+    "uuidv8-fid-v2/07-parsing-generation.md",
+    "uuidv8-fid-v2/08-extraction-construction.md",
+    "uuidv8-fid-v2/09-validation.md",
+    "uuidv8-fid-v2/20-registry.md"
+  ],
+  "registry_state": {
+    "assigned": {
+      "0x10": "time48-rand"
+    },
+    "unassigned_ranges": [
+      "0x11..0xef"
+    ],
+    "reserved_ranges": [
+      "0x00..0x0f",
+      "0xf0..0xff"
+    ]
+  },
+  "vectors": [
+    {
+      "case": "A",
+      "description": "Assigned time48-rand",
+      "uuid": "00000000-0000-8100-8000-000000000000",
+      "format_id_status": "assigned",
+      "extracted": {
+        "version": "0x8",
+        "variant": "0b10",
+        "part4_reserved_bits": "0b00",
+        "format_type": "0x1",
+        "format_subtype": "0x0",
+        "format_id": "0x10",
+        "part3_reserved_octet": "0x00",
+        "part4_reserved_octet": "0x00"
+      },
+      "validation": {
+        "basic_uuidv8": "pass",
+        "uuidv8_fid_v2_structural": "pass",
+        "profile": "pass if time48-rand is supported",
+        "strict": "pass"
+      },
+      "generation_allowed_by_this_version": true,
+      "notes": []
+    },
+    {
+      "case": "B",
+      "description": "Unassigned but structurally valid",
+      "uuid": "00000000-0000-8700-8a00-000000000000",
+      "format_id_status": "unassigned",
+      "extracted": {
+        "version": "0x8",
+        "variant": "0b10",
+        "part4_reserved_bits": "0b00",
+        "format_type": "0x7",
+        "format_subtype": "0x0a",
+        "format_id": "0x7a",
+        "part3_reserved_octet": "0x00",
+        "part4_reserved_octet": "0x00"
+      },
+      "validation": {
+        "basic_uuidv8": "pass",
+        "uuidv8_fid_v2_structural": "pass",
+        "profile": "fail unless a future specification assigns and the implementation supports 0x7a",
+        "strict": "fail in the current registry"
+      },
+      "generation_allowed_by_this_version": false,
+      "notes": [
+        "This is an extraction example only. It does not assign format_id = 0x7a."
+      ]
+    },
+    {
+      "case": "C",
+      "description": "Reserved low range",
+      "uuid": "00000000-0000-8000-8000-000000000000",
+      "format_id_status": "reserved",
+      "extracted": {
+        "version": "0x8",
+        "variant": "0b10",
+        "part4_reserved_bits": "0b00",
+        "format_type": "0x0",
+        "format_subtype": "0x0",
+        "format_id": "0x00",
+        "part3_reserved_octet": "0x00",
+        "part4_reserved_octet": "0x00"
+      },
+      "validation": {
+        "basic_uuidv8": "pass",
+        "uuidv8_fid_v2_structural": "pass",
+        "profile": "fail because 0x00 is reserved",
+        "strict": "fail because 0x00 is reserved"
+      },
+      "generation_allowed_by_this_version": false,
+      "notes": [
+        "Reserved Format IDs are structurally extractable, but generation is prohibited by the current registry."
+      ]
+    },
+    {
+      "case": "D",
+      "description": "Reserved high range",
+      "uuid": "00000000-0000-8f00-8000-000000000000",
+      "format_id_status": "reserved",
+      "extracted": {
+        "version": "0x8",
+        "variant": "0b10",
+        "part4_reserved_bits": "0b00",
+        "format_type": "0xf",
+        "format_subtype": "0x0",
+        "format_id": "0xf0",
+        "part3_reserved_octet": "0x00",
+        "part4_reserved_octet": "0x00"
+      },
+      "validation": {
+        "basic_uuidv8": "pass",
+        "uuidv8_fid_v2_structural": "pass",
+        "profile": "fail because 0xf0 is reserved",
+        "strict": "fail because 0xf0 is reserved"
+      },
+      "generation_allowed_by_this_version": false,
+      "notes": [
+        "Reserved Format IDs are structurally extractable, but generation is prohibited by the current registry."
+      ]
+    },
+    {
+      "case": "E",
+      "description": "Invalid UUID version",
+      "uuid": "00000000-0000-7100-8000-000000000000",
+      "format_id_status": "not_applicable",
+      "extracted": {
+        "version": "0x7"
+      },
+      "validation": {
+        "basic_uuidv8": "fail",
+        "uuidv8_fid_v2_structural": "fail",
+        "profile": "fail",
+        "strict": "fail"
+      },
+      "generation_allowed_by_this_version": false,
+      "notes": []
+    },
+    {
+      "case": "F",
+      "description": "Invalid UUID variant",
+      "uuid": "00000000-0000-8100-c000-000000000000",
+      "format_id_status": "not_applicable",
+      "extracted": {
+        "variant": "0b11"
+      },
+      "validation": {
+        "basic_uuidv8": "fail",
+        "uuidv8_fid_v2_structural": "fail",
+        "profile": "fail",
+        "strict": "fail"
+      },
+      "generation_allowed_by_this_version": false,
+      "notes": []
+    },
+    {
+      "case": "G",
+      "description": "Invalid reserved bits in Part 4",
+      "uuid": "00000000-0000-8100-b000-000000000000",
+      "format_id_status": "not_applicable",
+      "extracted": {
+        "version": "0x8",
+        "variant": "0b10",
+        "part4_reserved_bits": "0b11"
+      },
+      "validation": {
+        "basic_uuidv8": "pass",
+        "uuidv8_fid_v2_structural": "fail",
+        "profile": "fail",
+        "strict": "fail"
+      },
+      "generation_allowed_by_this_version": false,
+      "notes": []
+    },
+    {
+      "case": "H",
+      "description": "Nonzero part3_reserved_octet",
+      "uuid": "00000000-0000-8101-8000-000000000000",
+      "format_id_status": "assigned",
+      "extracted": {
+        "version": "0x8",
+        "variant": "0b10",
+        "part4_reserved_bits": "0b00",
+        "format_type": "0x1",
+        "format_subtype": "0x0",
+        "format_id": "0x10",
+        "part3_reserved_octet": "0x01",
+        "part4_reserved_octet": "0x00"
+      },
+      "validation": {
+        "basic_uuidv8": "pass",
+        "uuidv8_fid_v2_structural": "pass",
+        "profile": "pass if the implementation supports format_id = 0x10 and does not apply strict reserved-octet policy at the profile-validation level",
+        "strict": "fail"
+      },
+      "generation_allowed_by_this_version": false,
+      "notes": [
+        "Profile validation may pass only if the implementation supports format_id = 0x10 and does not apply strict reserved-octet policy at the profile-validation level.",
+        "Strict validation fails because a reserved octet is nonzero."
+      ]
+    },
+    {
+      "case": "I",
+      "description": "Nonzero part4_reserved_octet",
+      "uuid": "00000000-0000-8100-8001-000000000000",
+      "format_id_status": "assigned",
+      "extracted": {
+        "version": "0x8",
+        "variant": "0b10",
+        "part4_reserved_bits": "0b00",
+        "format_type": "0x1",
+        "format_subtype": "0x0",
+        "format_id": "0x10",
+        "part3_reserved_octet": "0x00",
+        "part4_reserved_octet": "0x01"
+      },
+      "validation": {
+        "basic_uuidv8": "pass",
+        "uuidv8_fid_v2_structural": "pass",
+        "profile": "pass if the implementation supports format_id = 0x10 and does not apply strict reserved-octet policy at the profile-validation level",
+        "strict": "fail"
+      },
+      "generation_allowed_by_this_version": false,
+      "notes": [
+        "Profile validation may pass only if the implementation supports format_id = 0x10 and does not apply strict reserved-octet policy at the profile-validation level.",
+        "Strict validation fails because a reserved octet is nonzero."
+      ]
+    }
+  ]
+}
