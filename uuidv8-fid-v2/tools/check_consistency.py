@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import re
+import urllib.parse
 from pathlib import Path
 
 # Determine repo root relative to the script location
@@ -49,6 +50,7 @@ def check_file_existence():
         "uuidv8-fid-v2/release/publication-readiness-summary.md",
         "uuidv8-fid-v2/release/post-publication-work.md",
         "uuidv8-fid-v2/release/pre-publication-sweep.md",
+        "uuidv8-fid-v2/tools/test_check_consistency.py",
         "uuidv8-fid-v2.md",
         "uuidv8-fid-v2-registry.md",
     ]
@@ -253,6 +255,7 @@ def check_source_map():
             "uuidv8-fid-v2/release/pre-publication-sweep.md",
             "uuidv8-fid-v2/tools/README.md",
             "uuidv8-fid-v2/tools/check_consistency.py",
+            "uuidv8-fid-v2/tools/test_check_consistency.py",
             "uuidv8-fid-v2.md",
             "uuidv8-fid-v2-registry.md"
         ]
@@ -276,7 +279,8 @@ def check_reader_guide():
             "release/post-publication-work.md",
             "release/pre-publication-sweep.md",
             "tools/README.md",
-            "tools/check_consistency.py"
+            "tools/check_consistency.py",
+            "tools/test_check_consistency.py"
         ]
 
         # Check either 'publication/navigation-smoke-test.md' or 'navigation-smoke-test.md'
@@ -514,8 +518,6 @@ def check_generated_single_file_guard():
         report_fail(group, f"Found generated single-file artifacts: {', '.join(found)}")
     else:
         report_pass(group)
-
-import urllib.parse
 
 def check_relative_markdown_links():
     group = "Relative Markdown link check"

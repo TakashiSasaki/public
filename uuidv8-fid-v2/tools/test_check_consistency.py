@@ -1,0 +1,163 @@
+import os
+import sys
+import shutil
+import tempfile
+import subprocess
+from pathlib import Path
+
+# Determine repo root relative to this script location
+SCRIPT_DIR = Path(__file__).resolve().parent
+REPO_ROOT = SCRIPT_DIR.parent.parent
+
+def setup_temp_repo(temp_dir: Path):
+    """Copies the required files to the temp directory to mimic the repo structure."""
+    shutil.copy2(REPO_ROOT / "uuidv8-fid-v2.md", temp_dir / "uuidv8-fid-v2.md")
+    shutil.copy2(REPO_ROOT / "uuidv8-fid-v2-registry.md", temp_dir / "uuidv8-fid-v2-registry.md")
+    shutil.copytree(REPO_ROOT / "uuidv8-fid-v2", temp_dir / "uuidv8-fid-v2", dirs_exist_ok=True)
+
+def run_checker(temp_dir: Path):
+    """Runs the checker inside the temporary directory."""
+    checker_path = temp_dir / "uuidv8-fid-v2" / "tools" / "check_consistency.py"
+    result = subprocess.run(
+        [sys.executable, str(checker_path)],
+        cwd=temp_dir,
+        capture_output=True,
+        text=True
+    )
+    return result
+
+def report_pass(scenario_name):
+    print(f"PASS: {scenario_name}")
+
+def report_fail(scenario_name, expected, actual_rc, stdout, stderr):
+    print(f"FAIL: {scenario_name}")
+    print(f"  Expected: {expected}")
+    print(f"  Actual Return Code: {actual_rc}")
+    print("  --- STDOUT ---")
+    print("\n".join(f"  {line}" for line in stdout.splitlines()[-10:]))  # Last 10 lines
+    print("  --- STDERR ---")
+    print("\n".join(f"  {line}" for line in stderr.splitlines()[-10:]))  # Last 10 lines
+    return False
+
+def main():
+    print("Running UUIDv8-FID-v2 checker harness...\n")
+    all_passed = True
+
+    # Scenario A: baseline real repository passes
+    result = subprocess.run(
+        [sys.executable, str(REPO_ROOT / "uuidv8-fid-v2" / "tools" / "check_consistency.py")],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True
+    )
+    if result.returncode == 0 and ("UUIDv8-FID-v2 consistency checks: PASS" in result.stdout or "UUIDv8-FID-v2 consistency checks: PASS with warnings" in result.stdout):
+        report_pass("baseline real repository passes")
+    else:
+        all_passed = report_fail("baseline real repository passes", "rc=0 and PASS in stdout", result.returncode, result.stdout, result.stderr)
+
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+
+        # Scenario B: missing public README fails
+        setup_temp_repo(temp_dir)
+        (temp_dir / "uuidv8-fid-v2" / "README.md").unlink()
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "uuidv8-fid-v2/README.md" in result.stdout:
+            report_pass("missing public README fails")
+        else:
+            all_passed = report_fail("missing public README fails", "rc!=0, FAIL in stdout, mentions README.md", result.returncode, result.stdout, result.stderr)
+
+        # Scenario C: registry assignment mutation fails
+        # Clean up and reset for next scenario
+        shutil.rmtree(temp_dir)
+        temp_dir.mkdir()
+        setup_temp_repo(temp_dir)
+        json_path = temp_dir / "uuidv8-fid-v2" / "conformance" / "structural-test-vectors.json"
+        with open(json_path, 'r', encoding='utf-8') as f:
+            import json
+            data = json.load(f)
+        data["registry_state"]["assigned"]["0x11"] = "invalid-test-assignment"
+        with open(json_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f)
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and ("0x11" in result.stdout or "assigned" in result.stdout):
+            report_pass("registry assignment mutation fails")
+        else:
+            all_passed = report_fail("registry assignment mutation fails", "rc!=0, FAIL in stdout, mentions registry/assigned", result.returncode, result.stdout, result.stderr)
+
+        # Scenario D: reader-guide heading numbering mutation fails
+        shutil.rmtree(temp_dir)
+        temp_dir.mkdir()
+        setup_temp_repo(temp_dir)
+        guide_path = temp_dir / "uuidv8-fid-v2" / "publication" / "reader-guide.md"
+        content = guide_path.read_text(encoding='utf-8')
+        content = content.replace("## 3. For registry readers", "## 2. For registry readers")
+        guide_path.write_text(content, encoding='utf-8')
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and ("heading" in result.stdout.lower() or "numbering" in result.stdout.lower() or "sequential order" in result.stdout.lower()):
+            report_pass("reader-guide heading mutation fails")
+        else:
+            all_passed = report_fail("reader-guide heading mutation fails", "rc!=0, FAIL in stdout, mentions heading/numbering", result.returncode, result.stdout, result.stderr)
+
+        # Scenario E: broken relative Markdown link fails
+        shutil.rmtree(temp_dir)
+        temp_dir.mkdir()
+        setup_temp_repo(temp_dir)
+        readme_path = temp_dir / "uuidv8-fid-v2" / "README.md"
+        with open(readme_path, 'a', encoding='utf-8') as f:
+            f.write("\n\n[broken local link](does-not-exist.md)\n")
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "does-not-exist.md" in result.stdout:
+            report_pass("broken relative Markdown link fails")
+        else:
+            all_passed = report_fail("broken relative Markdown link fails", "rc!=0, FAIL in stdout, mentions does-not-exist.md", result.returncode, result.stdout, result.stderr)
+
+        # Scenario F: generated single-file artifact fails
+        shutil.rmtree(temp_dir)
+        temp_dir.mkdir()
+        setup_temp_repo(temp_dir)
+        (temp_dir / "uuidv8-fid-v2" / "generated-single-file.md").touch()
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "generated-single-file.md" in result.stdout:
+            report_pass("generated single-file artifact fails")
+        else:
+            all_passed = report_fail("generated single-file artifact fails", "rc!=0, FAIL in stdout, mentions generated-single-file.md", result.returncode, result.stdout, result.stderr)
+
+        # Scenario G: final release phrase fails
+        shutil.rmtree(temp_dir)
+        temp_dir.mkdir()
+        setup_temp_repo(temp_dir)
+        readme_path = temp_dir / "uuidv8-fid-v2" / "README.md"
+        with open(readme_path, 'a', encoding='utf-8') as f:
+            f.write("\n\nThis is the final release.\n")
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and ("forbidden phrase" in result.stdout.lower() or "final release" in result.stdout.lower()):
+            report_pass("final release phrase fails")
+        else:
+            all_passed = report_fail("final release phrase fails", "rc!=0, FAIL in stdout, mentions forbidden phrase/final release", result.returncode, result.stdout, result.stderr)
+
+        # Scenario H: fenced code block broken link is ignored
+        shutil.rmtree(temp_dir)
+        temp_dir.mkdir()
+        setup_temp_repo(temp_dir)
+        readme_path = temp_dir / "uuidv8-fid-v2" / "README.md"
+        with open(readme_path, 'a', encoding='utf-8') as f:
+            f.write("\n\n```text\n[broken local link inside code](does-not-exist-inside-code.md)\n```\n")
+        result = run_checker(temp_dir)
+        # Note: the checker can pass with warnings, so rc can be 0.
+        # But we need to ensure "does-not-exist-inside-code.md" is not reported.
+        if result.returncode == 0 and "does-not-exist-inside-code.md" not in result.stdout:
+            report_pass("fenced code block broken link is ignored")
+        else:
+            all_passed = report_fail("fenced code block broken link is ignored", "rc=0, 'does-not-exist-inside-code.md' not in stdout", result.returncode, result.stdout, result.stderr)
+
+    print()
+    if all_passed:
+        print("UUIDv8-FID-v2 checker harness: PASS")
+        sys.exit(0)
+    else:
+        print("UUIDv8-FID-v2 checker harness: FAIL")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()

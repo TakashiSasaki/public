@@ -9,6 +9,8 @@ This document provides a checklist for preparing a release candidate without dec
 - [ ] Run the audit consistency checklist.
 - [ ] Run `python uuidv8-fid-v2/tools/check_consistency.py`.
 - [ ] Confirm the checker exits with status code 0.
+- [ ] Run `python uuidv8-fid-v2/tools/test_check_consistency.py`.
+- [ ] Confirm the checker harness exits with status code 0.
 - [ ] Review any checker warnings.
 - [ ] Review `uuidv8-fid-v2/release/pre-publication-sweep.md`.
 - [ ] Verify `00-index.md` links to all major directories.

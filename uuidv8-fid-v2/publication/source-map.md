@@ -44,6 +44,7 @@ This document records the role of each source file without duplicating normative
 | [uuidv8-fid-v2/release/pre-publication-sweep.md](../release/pre-publication-sweep.md) | Pre-publication sweep | `derived release-readiness material` | Final pre-publication check list and sweep notes. |
 | [uuidv8-fid-v2/tools/README.md](../tools/README.md) | Tooling README | `derived local tooling` | Instructions for local tools. |
 | [uuidv8-fid-v2/tools/check_consistency.py](../tools/check_consistency.py) | Consistency checker | `derived local tooling` | Python script for checking local consistency. |
+| [uuidv8-fid-v2/tools/test_check_consistency.py](../tools/test_check_consistency.py) | Checker harness | `derived local tooling` | Local self-test harness for the consistency checker. |
 | [uuidv8-fid-v2/README.md](../README.md) | Public landing page | `non-normative public landing page` | Public entry point for readers. |
 | [uuidv8-fid-v2.md](../../uuidv8-fid-v2.md) | Top-level specification stub | `non-normative entry-point stub` | Entry-point stub for the specification. |
 | [uuidv8-fid-v2-registry.md](../../uuidv8-fid-v2-registry.md) | Top-level registry stub | `non-normative entry-point stub` | Entry-point stub for the registry. |
