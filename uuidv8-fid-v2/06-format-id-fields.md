@@ -33,4 +33,4 @@ An implementation MAY inspect `format_type` alone for coarse dispatch, classific
 
 An implementation MUST NOT fully parse or generate a UUIDv8-FID-v2 payload based only on `format_type` unless the corresponding `format_type` specification explicitly defines a single layout for all of its subtypes.
 
-This document does not assign meanings to any `format_type`, `format_subtype`, or `format_id` value.
+This field-format section does not itself assign meanings to `format_type`, `format_subtype`, or `format_id` values. Concrete assignments are defined by the registry chapter and referenced format-specific documents.
