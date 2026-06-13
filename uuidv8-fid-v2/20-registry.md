@@ -140,7 +140,7 @@ This initial version does not assign concrete payload families. Values are inten
 | format_type | Name | Status | Reference | Notes |
 |---:|---|---|---|---|
 | `0x0` | Reserved | reserved | This document | Reserved for control, null, registry-internal, meta-format, or future registry use. All Format ID values `0x00..0x0f` are reserved unless a future specification explicitly assigns one or more values in this range. |
-| `0x1` | Unassigned | unassigned |  | Available for future assignment. |
+| `0x1` | time48 | assigned | `formats/10-time48-rand.md` | Time-carrying payload family. Initial subtype `0x0` is assigned as `time48-rand`. |
 | `0x2` | Unassigned | unassigned |  | Available for future assignment. |
 | `0x3` | Unassigned | unassigned |  | Available for future assignment. |
 | `0x4` | Unassigned | unassigned |  | Available for future assignment. |
@@ -190,6 +190,14 @@ A new `format_id` SHOULD be assigned only when the binary payload layout or norm
 ### 20.7.3 Individual Format ID Assignments
 
 Individual assigned, deprecated, or specially reserved Format ID values MAY be listed in this section in future versions of this registry.
+
+Format-specific payload layout specifications SHOULD be placed under `formats/` and referenced from this registry.
+
+The following individual Format ID values are assigned:
+
+| format_type | format_subtype | format_id | Name | Status | Reference | Notes |
+|---:|---:|---:|---|---|---|---|
+| `0x1` | `0x0` | `0x10` | `time48-rand` | assigned | `formats/10-time48-rand.md` | Part 5 contains a 48-bit Unix epoch millisecond timestamp; Part 1 and Part 2 contain 48 bits of random or profile-defined payload. |
 
 All Format ID values in `0x10..0xef` are unassigned unless listed in a future version of this registry or in a referenced profile-specific document.
 

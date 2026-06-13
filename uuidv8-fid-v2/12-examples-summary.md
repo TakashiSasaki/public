@@ -37,6 +37,8 @@ xxxxxxxx-xxxx-8700-8a00-xxxxxxxxxxxx
 
 This example demonstrates extraction and structural layout only; it does not assign `format_id = 0x7a`.
 
+The first assigned UUIDv8-FID-v2 payload format is `format_id = 0x10`, defined in `formats/10-time48-rand.md`.
+
 # 19. Summary
 
 UUIDv8-FID-v2 is a UUID version 8 profile that introduces an 8-bit logical Format ID.

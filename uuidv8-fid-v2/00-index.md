@@ -20,3 +20,11 @@ Read the files in numeric order.
 12. `20-registry.md`
 
 The top-level files `../uuidv8-fid-v2.md` and `../uuidv8-fid-v2-registry.md` are non-normative entry-point stubs only.
+
+## Format-Specific Documents
+
+Concrete UUIDv8-FID-v2 Format ID specifications are placed under:
+
+- `formats/`
+
+The directory currently contains only an index and a template. No concrete payload format is assigned in this version.
