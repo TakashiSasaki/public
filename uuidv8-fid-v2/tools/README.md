@@ -12,7 +12,18 @@ Warnings should be reviewed. Warnings do not cause a nonzero exit code unless a 
 
 ## Coverage
 
-The checker validates selected file existence, registry invariants, conformance-vector structure, source-map entries, release-candidate references, public entry-point references, local relative Markdown links, and generated-single-file guards.
+The checker validates selected file existence, registry invariants, conformance-vector structure, source-map entries, release-candidate references, public entry-point references, local relative Markdown links, and generated-single-file guards. The checker harness tests this functionality.
+
+## Harness
+
+```text
+python uuidv8-fid-v2/tools/test_check_consistency.py
+```
+
+* the harness tests the consistency checker against baseline and temporary mutated copies;
+* it writes only to temporary directories;
+* it uses only Python standard library;
+* it is local tooling and not CI.
 
 ## Usage
 

@@ -9,13 +9,15 @@ The canonical specification remains the split files under `uuidv8-fid-v2/`.
 
 ```text
 python uuidv8-fid-v2/tools/check_consistency.py
+python uuidv8-fid-v2/tools/test_check_consistency.py
 ```
 
-The command must exit with status code 0 before publication.
+Both commands must exit with status code 0 before publication.
 Warnings, if any, must be reviewed.
 
 ## 2. Required manual review
 
+- [ ] Confirm the checker harness exits with status code 0.
 - [ ] Confirm `uuidv8-fid-v2/README.md` remains non-normative.
 - [ ] Confirm public entry-point stubs point to the public landing page and canonical specification.
 - [ ] Confirm the navigation smoke test is current.

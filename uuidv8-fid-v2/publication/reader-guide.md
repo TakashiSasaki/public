@@ -77,3 +77,4 @@ Reviewers preparing a release candidate should point to:
 - [release/pre-publication-sweep.md](../release/pre-publication-sweep.md)
 - [tools/README.md](../tools/README.md)
 - [tools/check_consistency.py](../tools/check_consistency.py)
+- [tools/test_check_consistency.py](../tools/test_check_consistency.py)
