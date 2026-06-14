@@ -850,8 +850,13 @@ def check_generated_single_file_guard():
     else:
         report_pass("No unauthorized generated markdown artifacts found")
 
-    # 2. Check for rendered HTML or explicit forbidden build artifacts
+    # 2. Check for legacy paths and rendered HTML or build artifacts
     forbidden = [
+        "uuidv8-fid-v2/generated-single-file.md",
+        "uuidv8-fid-v2/single-file.md",
+        "uuidv8-fid-v2/uuidv8-fid-v2-single-file.md",
+        "uuidv8-fid-v2/publication/generated-single-file.md",
+        "uuidv8-fid-v2/publication/single-file.md",
         "uuidv8-fid-v2.html",
         "uuidv8-fid-v2/uuidv8-fid-v2.html",
         "uuidv8-fid-v2/publication/uuidv8-fid-v2.html",

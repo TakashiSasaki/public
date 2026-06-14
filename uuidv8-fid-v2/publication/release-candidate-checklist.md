@@ -54,7 +54,7 @@ This document provides a checklist for preparing a release candidate without dec
 - [ ] Verify `single-file-assembly-dry-run-record.md` is current.
 - [ ] Verify `dual-form-publication-verification-record.md` is current.
 - [ ] Verify the single-file artifact exactly matches regenerated output.
-- [ ] Verify no generated single-file artifact was manually edited as source of truth.
+- [ ] Verify exactly one generated single-file artifact is allowed, at `uuidv8-fid-v2/publication/uuidv8-fid-v2-single-file.md`, and it was not manually edited as source of truth.
 - [ ] Verify release-candidate notes are current.
 - [ ] Verify publication-readiness summary is current.
 - [ ] Verify pre-publication sweep notes are current.

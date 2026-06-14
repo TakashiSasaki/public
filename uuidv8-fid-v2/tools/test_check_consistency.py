@@ -112,11 +112,11 @@ def main():
         else:
             all_passed = report_fail("broken relative Markdown link fails", "rc!=0, FAIL in stdout, mentions does-not-exist.md", result.returncode, result.stdout, result.stderr)
 
-    # Scenario F: generated single-file artifact fails
+    # Scenario F: generated single-file artifact fails (even without the generated string, legacy path is blocked)
     with tempfile.TemporaryDirectory() as td:
         temp_dir = Path(td)
         setup_temp_repo(temp_dir)
-        (temp_dir / "uuidv8-fid-v2" / "generated-single-file.md").write_text("This is generated dry-run output assembled from the split UUIDv8-FID-v2 source files")
+        (temp_dir / "uuidv8-fid-v2" / "generated-single-file.md").touch()
         result = run_checker(temp_dir)
         if result.returncode != 0 and "FAIL" in result.stdout and "generated-single-file.md" in result.stdout:
             report_pass("generated single-file artifact fails")
@@ -620,7 +620,7 @@ def main():
         temp_dir = Path(td)
         setup_temp_repo(temp_dir)
         target = temp_dir / "uuidv8-fid-v2" / "generated-single-file.md"
-        target.write_text("This is generated dry-run output assembled from the split UUIDv8-FID-v2 source files", encoding="utf-8")
+        target.write_text("This is a generated single-file artifact\n# UUIDv8-FID-v2\n", encoding="utf-8")
         result = run_checker(temp_dir)
         if result.returncode != 0:
             report_pass("committing an obvious generated single-file artifact still fails")

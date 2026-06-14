@@ -9,7 +9,7 @@ The document set is considered close to public-ready when the following are true
 * local consistency tooling passes;
 * reader guide and source map are present;
 * top-level entry points remain non-normative;
-* no generated single-file spec is treated as source of truth.
+* exactly one generated single-file publication artifact is allowed, and it is not treated as source of truth.
 
 Area | Status | Notes
 --- | --- | ---
