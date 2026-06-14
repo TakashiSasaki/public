@@ -960,6 +960,80 @@ def check_stale_phrase_warnings():
     except Exception as e:
         report_fail(group, f"Error processing warnings: {e}")
 
+def check_single_file_assembly_dry_run():
+    required_files = [
+        "tools/assemble_single_file.py",
+        "tools/test_assemble_single_file.py",
+        "publication/single-file-assembly-dry-run.md",
+        "release/single-file-assembly-dry-run-record.md"
+    ]
+    for rel in required_files:
+        if not os.path.isfile(os.path.join(REPO_ROOT, "uuidv8-fid-v2", rel)):
+            report_fail(f"Single-file assembly dry-run file missing: {rel}")
+        else:
+            report_pass(f"Single-file assembly dry-run file present: {rel}")
+
+    def require_phrases(rel_path, phrases):
+        path = os.path.join(REPO_ROOT, "uuidv8-fid-v2", rel_path)
+        if not os.path.isfile(path):
+            return
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                content = f.read().lower()
+            for phrase in phrases:
+                if phrase.lower() not in content:
+                    report_fail(f"{rel_path} missing required phrase: {phrase}")
+                else:
+                    report_pass(f"{rel_path} contains required phrase: {phrase}")
+        except Exception as e:
+            report_fail(f"Could not read {rel_path}: {e}")
+
+    phrases = [
+        "non-normative",
+        "does not declare a final release",
+        "python uuidv8-fid-v2/tools/assemble_single_file.py --check",
+        "python uuidv8-fid-v2/tools/assemble_single_file.py --stdout",
+        "python uuidv8-fid-v2/tools/test_assemble_single_file.py"
+    ]
+
+    require_phrases("publication/single-file-assembly-dry-run.md", phrases)
+    require_phrases("release/single-file-assembly-dry-run-record.md", phrases)
+
+    def check_ref(filepath, ref):
+        path = os.path.join(REPO_ROOT, "uuidv8-fid-v2", filepath)
+        if not os.path.isfile(path):
+            return
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                content = f.read()
+            if ref not in content:
+                report_fail(f"{filepath} missing reference to {ref}")
+            else:
+                report_pass(f"{filepath} references {ref}")
+        except Exception as e:
+            report_fail(f"Could not read {filepath}: {e}")
+
+    check_ref("tools/README.md", "assemble_single_file.py")
+    check_ref("tools/README.md", "test_assemble_single_file.py")
+
+    check_ref("publication/source-map.md", "single-file-assembly-dry-run.md")
+    check_ref("publication/source-map.md", "single-file-assembly-dry-run-record.md")
+    check_ref("publication/source-map.md", "assemble_single_file.py")
+    check_ref("publication/source-map.md", "test_assemble_single_file.py")
+
+    check_ref("publication/reader-guide.md", "single-file-assembly-dry-run.md")
+    check_ref("publication/single-file-assembly-plan.md", "single-file-assembly-dry-run.md")
+    check_ref("publication/publication-candidate-manifest.md", "single-file-assembly-dry-run.md")
+    check_ref("publication/publication-candidate-manifest.md", "single-file-assembly-dry-run-record.md")
+    check_ref("publication/publication-candidate-manifest.md", "assemble_single_file.py")
+    check_ref("publication/publication-candidate-manifest.md", "test_assemble_single_file.py")
+
+    check_ref("publication/publication-package-verification.md", "single-file-assembly-dry-run-record.md")
+
+    # either record or check is acceptable in the decision gate but let's just check for tool check
+    check_ref("release/release-decision-gate.md", "python uuidv8-fid-v2/tools/assemble_single_file.py --check")
+
+
 def main():
     parser = argparse.ArgumentParser(description="UUIDv8-FID-v2 local consistency checker.", allow_abbrev=False)
     parser.add_argument("--fail-on-warnings", action="store_true", help="Fail if any warnings are present.")
@@ -993,6 +1067,7 @@ def main():
     check_generated_single_file_guard()
     check_relative_markdown_links()
     check_stale_phrase_warnings()
+    check_single_file_assembly_dry_run()
 
     print()
     if has_failures:

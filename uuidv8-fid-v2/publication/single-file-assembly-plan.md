@@ -10,6 +10,7 @@ This document describes how a future generated single-file publication could be 
 * This document is an assembly plan only.
 * The canonical source remains the split files under `uuidv8-fid-v2/`.
 * A generated single-file artifact, if produced in the future, should be treated as generated output unless explicitly designated otherwise.
+* See [single-file-assembly-dry-run.md](single-file-assembly-dry-run.md) for how this plan is executed as a dry run.
 
 ## Proposed assembly order
 

@@ -4,13 +4,15 @@ This document is strictly non-normative and does not declare a final release. Th
 
 ## Command Execution Results
 
-Execution context: local working tree on branch `feature/rc-freeze-gate` after the release-candidate freeze / human-review gate changes.
+Execution context: local working tree on branch `feature/uuidv8-fid-v2-single-file-assembly-dry-run` after the single-file assembly dry-run changes.
 
 | Command | Status | Exit code | Summary | Notes |
 |---------|--------|-----------|---------|-------|
 | `python uuidv8-fid-v2/tools/check_consistency.py` | PASS | 0 | PASS | no warnings |
 | `python uuidv8-fid-v2/tools/check_consistency.py --fail-on-warnings` | PASS | 0 | PASS | no warnings |
 | `python uuidv8-fid-v2/tools/test_check_consistency.py` | PASS | 0 | PASS | All mutations passed |
+| `python uuidv8-fid-v2/tools/assemble_single_file.py --check` | PASS | 0 | PASS | verified canonical invariants |
+| `python uuidv8-fid-v2/tools/test_assemble_single_file.py` | PASS | 0 | PASS | All tests passed |
 
 ## Manual Invariant Review
 
