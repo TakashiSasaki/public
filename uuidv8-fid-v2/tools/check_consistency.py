@@ -3,6 +3,7 @@ import sys
 import json
 import re
 import urllib.parse
+import argparse
 from pathlib import Path
 
 # Determine repo root relative to the script location
@@ -708,7 +709,15 @@ def check_stale_phrase_warnings():
         report_fail(group, f"Error processing warnings: {e}")
 
 def main():
-    fail_on_warnings = "--fail-on-warnings" in sys.argv
+    parser = argparse.ArgumentParser(description="UUIDv8-FID-v2 local consistency checker.", allow_abbrev=False)
+    parser.add_argument("--fail-on-warnings", action="store_true", help="Fail if any warnings are present.")
+
+    try:
+        args = parser.parse_args()
+    except SystemExit as e:
+        sys.exit(1)
+
+    fail_on_warnings = args.fail_on_warnings
 
     print("Running UUIDv8-FID-v2 local consistency checks...\n")
 
