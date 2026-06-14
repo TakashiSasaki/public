@@ -20,6 +20,7 @@ All local consistency checks and test harnesses must execute successfully with n
 * `python uuidv8-fid-v2/tools/check_consistency.py --fail-on-warnings`
 * `python uuidv8-fid-v2/tools/test_check_consistency.py`
 * `python uuidv8-fid-v2/tools/assemble_single_file.py --check`
+* `python uuidv8-fid-v2/tools/test_assemble_single_file.py`
 
 ## Required human review
 

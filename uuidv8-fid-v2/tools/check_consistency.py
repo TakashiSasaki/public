@@ -646,8 +646,10 @@ def check_release_non_final_guard():
         "uuidv8-fid-v2/release/release-candidate-freeze.md",
         "uuidv8-fid-v2/release/human-review-record.md",
         "uuidv8-fid-v2/release/release-decision-gate.md",
+        "uuidv8-fid-v2/release/single-file-assembly-dry-run-record.md",
         "uuidv8-fid-v2/publication/publication-candidate-manifest.md",
-        "uuidv8-fid-v2/publication/publication-package-verification.md"
+        "uuidv8-fid-v2/publication/publication-package-verification.md",
+        "uuidv8-fid-v2/publication/single-file-assembly-dry-run.md"
     ]
 
     required_phrases = [
@@ -1033,6 +1035,7 @@ def check_single_file_assembly_dry_run():
 
     # either record or check is acceptable in the decision gate but let's just check for tool check
     check_ref("release/release-decision-gate.md", "python uuidv8-fid-v2/tools/assemble_single_file.py --check")
+    check_ref("release/release-decision-gate.md", "python uuidv8-fid-v2/tools/test_assemble_single_file.py")
 
 
 def main():
