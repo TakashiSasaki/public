@@ -46,6 +46,8 @@ def check_file_existence():
         "uuidv8-fid-v2/publication/source-map.md",
         "uuidv8-fid-v2/publication/release-candidate-checklist.md",
         "uuidv8-fid-v2/publication/navigation-smoke-test.md",
+        "uuidv8-fid-v2/publication/publication-candidate-manifest.md",
+        "uuidv8-fid-v2/publication/publication-package-verification.md",
         "uuidv8-fid-v2/release/00-index.md",
         "uuidv8-fid-v2/release/release-candidate-notes.md",
         "uuidv8-fid-v2/release/publication-readiness-summary.md",
@@ -249,6 +251,8 @@ def check_source_map():
             "uuidv8-fid-v2/audit/consistency-checklist.md",
             "uuidv8-fid-v2/publication/release-candidate-checklist.md",
             "uuidv8-fid-v2/publication/navigation-smoke-test.md",
+            "uuidv8-fid-v2/publication/publication-candidate-manifest.md",
+            "uuidv8-fid-v2/publication/publication-package-verification.md",
             "uuidv8-fid-v2/release/00-index.md",
             "uuidv8-fid-v2/release/release-candidate-notes.md",
             "uuidv8-fid-v2/release/publication-readiness-summary.md",
@@ -297,6 +301,150 @@ def check_reader_guide():
             report_pass(group)
     except Exception as e:
         report_fail(group, f"Error reading reader-guide: {e}")
+
+def check_publication_candidate_package():
+    group = "Publication candidate package checks"
+    manifest_file = "uuidv8-fid-v2/publication/publication-candidate-manifest.md"
+    verification_file = "uuidv8-fid-v2/publication/publication-package-verification.md"
+
+    errors = []
+
+    # 1. Check existences
+    manifest_path = REPO_ROOT / manifest_file
+    verification_path = REPO_ROOT / verification_file
+
+    if not manifest_path.exists():
+        errors.append(f"Missing {manifest_file}")
+    if not verification_path.exists():
+        errors.append(f"Missing {verification_file}")
+
+    if not errors:
+        try:
+            man_content = manifest_path.read_text(encoding='utf-8')
+            ver_content = verification_path.read_text(encoding='utf-8')
+            man_lower = man_content.lower()
+            ver_lower = ver_content.lower()
+
+            # 2. Both must contain 'non-normative'
+            if "non-normative" not in man_lower:
+                errors.append(f"{manifest_file} missing 'non-normative'")
+            if "non-normative" not in ver_lower:
+                errors.append(f"{verification_file} missing 'non-normative'")
+
+            # 3. Both must state they do not declare a final release
+            phrase = "does not declare a final release"
+            if phrase not in man_lower:
+                errors.append(f"{manifest_file} missing '{phrase}'")
+            if phrase not in ver_lower:
+                errors.append(f"{verification_file} missing '{phrase}'")
+
+            # 4. Manifest must contain the three required checker commands
+            cmd1 = "python uuidv8-fid-v2/tools/check_consistency.py"
+            cmd_strict = "python uuidv8-fid-v2/tools/check_consistency.py --fail-on-warnings"
+            cmd2 = "python uuidv8-fid-v2/tools/test_check_consistency.py"
+
+            if cmd_strict not in man_content:
+                errors.append(f"{manifest_file} missing command: {cmd_strict}")
+
+            # Check cmd1
+            man_without_strict = man_content.replace(cmd_strict, "")
+            if cmd1 not in man_without_strict:
+                errors.append(f"{manifest_file} missing command: {cmd1}")
+
+            if cmd2 not in man_content:
+                errors.append(f"{manifest_file} missing command: {cmd2}")
+
+            # 5. Manifest or verification document must contain the three required checker commands
+            combined_content = man_content + ver_content
+            if cmd_strict not in combined_content:
+                errors.append(f"Neither document contains command: {cmd_strict}")
+
+            combined_without_strict = combined_content.replace(cmd_strict, "")
+            if cmd1 not in combined_without_strict:
+                errors.append(f"Neither document contains command: {cmd1}")
+
+            if cmd2 not in combined_content:
+                errors.append(f"Neither document contains command: {cmd2}")
+
+            # 6. Manifest references
+            if "uuidv8-fid-v2.md" not in man_content:
+                errors.append(f"{manifest_file} missing reference to uuidv8-fid-v2.md")
+            if "uuidv8-fid-v2-registry.md" not in man_content:
+                errors.append(f"{manifest_file} missing reference to uuidv8-fid-v2-registry.md")
+            if "release-candidate-execution-record.md" not in man_content:
+                errors.append(f"{manifest_file} missing reference to release-candidate-execution-record.md")
+            if "check_consistency.py" not in man_content:
+                errors.append(f"{manifest_file} missing reference to check_consistency.py")
+            if "test_check_consistency.py" not in man_content:
+                errors.append(f"{manifest_file} missing reference to test_check_consistency.py")
+
+        except Exception as e:
+            errors.append(f"Error reading package documents: {e}")
+
+        # 7. Check references from other documents
+        def check_ref(filepath, ref):
+            try:
+                c = (REPO_ROOT / filepath).read_text(encoding='utf-8')
+                if ref not in c:
+                    errors.append(f"{filepath} missing reference to {ref}")
+            except Exception as e:
+                errors.append(f"Error reading {filepath} for ref: {e}")
+
+        check_ref("uuidv8-fid-v2/publication/00-index.md", "publication-candidate-manifest.md")
+        check_ref("uuidv8-fid-v2/publication/00-index.md", "publication-package-verification.md")
+
+        check_ref("uuidv8-fid-v2/publication/source-map.md", "publication-candidate-manifest.md")
+        check_ref("uuidv8-fid-v2/publication/source-map.md", "publication-package-verification.md")
+
+        check_ref("uuidv8-fid-v2/publication/reader-guide.md", "publication-candidate-manifest.md")
+        check_ref("uuidv8-fid-v2/publication/reader-guide.md", "publication-package-verification.md")
+
+        check_ref("uuidv8-fid-v2/publication/release-candidate-checklist.md", "publication-candidate-manifest.md")
+        check_ref("uuidv8-fid-v2/publication/release-candidate-checklist.md", "publication-package-verification.md")
+
+        check_ref("uuidv8-fid-v2/release/pre-publication-sweep.md", "publication-candidate-manifest.md")
+        check_ref("uuidv8-fid-v2/release/pre-publication-sweep.md", "publication-package-verification.md")
+
+        try:
+            prs_content = (REPO_ROOT / "uuidv8-fid-v2/release/publication-readiness-summary.md").read_text(encoding='utf-8')
+            if "manifest" not in prs_content.lower() and "verification" not in prs_content.lower() and "publication-candidate-manifest.md" not in prs_content and "publication-package-verification.md" not in prs_content:
+                errors.append(f"publication-readiness-summary.md missing reference to manifest or verification document")
+        except Exception as e:
+            errors.append(f"Error reading publication-readiness-summary.md: {e}")
+
+        # 8. Negative artifact checks
+        # Only flag CI workflows that relate to uuidv8-fid-v2.
+        ci_path = REPO_ROOT / ".github/workflows"
+        if ci_path.exists() and ci_path.is_dir():
+            for workflow_file in ci_path.glob("*.yml"):
+                try:
+                    wf_content = workflow_file.read_text(encoding='utf-8').lower()
+                    if "uuidv8-fid" in wf_content or "uuidv8" in wf_content:
+                        errors.append(f"UUIDv8-FID-v2 CI workflow exists: {workflow_file.name}")
+                except Exception:
+                    pass
+
+        invalid_dirs = [
+            "uuidv8-fid-v2/publication/html",
+            "uuidv8-fid-v2/publication/rendered",
+            "uuidv8-fid-v2/publication/dist",
+            "uuidv8-fid-v2/dist",
+            "uuidv8-fid-v2/build"
+        ]
+        for d in invalid_dirs:
+            if (REPO_ROOT / d).exists():
+                errors.append(f"Forbidden directory exists: {d}")
+
+        # Check for committed HTML files under uuidv8-fid-v2
+        html_files = list(BASE_DIR.rglob("*.html"))
+        if html_files:
+            for h in html_files:
+                errors.append(f"Forbidden HTML artifact exists: {h.relative_to(REPO_ROOT)}")
+
+    if errors:
+        report_fail(group, "; ".join(errors))
+    else:
+        report_pass(group)
 
 def check_reader_guide_heading_numbering():
     group = "Reader-guide heading numbering check"
@@ -395,7 +543,9 @@ def check_release_non_final_guard():
         "uuidv8-fid-v2/release/release-candidate-notes.md",
         "uuidv8-fid-v2/release/publication-readiness-summary.md",
         "uuidv8-fid-v2/release/pre-publication-sweep.md",
-        "uuidv8-fid-v2/release/release-candidate-execution-record.md"
+        "uuidv8-fid-v2/release/release-candidate-execution-record.md",
+        "uuidv8-fid-v2/publication/publication-candidate-manifest.md",
+        "uuidv8-fid-v2/publication/publication-package-verification.md"
     ]
 
     required_phrases = [
@@ -731,6 +881,7 @@ def main():
     check_source_map()
     check_reader_guide()
     check_reader_guide_heading_numbering()
+    check_publication_candidate_package()
     check_release_candidate_execution_record()
     check_release_non_final_guard()
     check_public_entry_points()
