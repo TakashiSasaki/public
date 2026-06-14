@@ -961,6 +961,7 @@ def check_stale_phrase_warnings():
         report_fail(group, f"Error processing warnings: {e}")
 
 def check_single_file_assembly_dry_run():
+    group = "Single-file assembly dry run checks"
     required_files = [
         "tools/assemble_single_file.py",
         "tools/test_assemble_single_file.py",
@@ -969,7 +970,7 @@ def check_single_file_assembly_dry_run():
     ]
     for rel in required_files:
         if not os.path.isfile(os.path.join(REPO_ROOT, "uuidv8-fid-v2", rel)):
-            report_fail(f"Single-file assembly dry-run file missing: {rel}")
+            report_fail(group, f"Single-file assembly dry-run file missing: {rel}")
         else:
             report_pass(f"Single-file assembly dry-run file present: {rel}")
 
@@ -982,11 +983,11 @@ def check_single_file_assembly_dry_run():
                 content = f.read().lower()
             for phrase in phrases:
                 if phrase.lower() not in content:
-                    report_fail(f"{rel_path} missing required phrase: {phrase}")
+                    report_fail(group, f"{rel_path} missing required phrase: {phrase}")
                 else:
                     report_pass(f"{rel_path} contains required phrase: {phrase}")
         except Exception as e:
-            report_fail(f"Could not read {rel_path}: {e}")
+            report_fail(group, f"Could not read {rel_path}: {e}")
 
     phrases = [
         "non-normative",
@@ -1007,11 +1008,11 @@ def check_single_file_assembly_dry_run():
             with open(path, "r", encoding="utf-8") as f:
                 content = f.read()
             if ref not in content:
-                report_fail(f"{filepath} missing reference to {ref}")
+                report_fail(group, f"{filepath} missing reference to {ref}")
             else:
                 report_pass(f"{filepath} references {ref}")
         except Exception as e:
-            report_fail(f"Could not read {filepath}: {e}")
+            report_fail(group, f"Could not read {filepath}: {e}")
 
     check_ref("tools/README.md", "assemble_single_file.py")
     check_ref("tools/README.md", "test_assemble_single_file.py")
