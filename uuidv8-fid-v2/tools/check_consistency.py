@@ -53,6 +53,9 @@ def check_file_existence():
         "uuidv8-fid-v2/release/publication-readiness-summary.md",
         "uuidv8-fid-v2/release/post-publication-work.md",
         "uuidv8-fid-v2/release/pre-publication-sweep.md",
+        "uuidv8-fid-v2/release/release-candidate-freeze.md",
+        "uuidv8-fid-v2/release/human-review-record.md",
+        "uuidv8-fid-v2/release/release-decision-gate.md",
         "uuidv8-fid-v2/tools/test_check_consistency.py",
         "uuidv8-fid-v2.md",
         "uuidv8-fid-v2-registry.md",
@@ -536,6 +539,102 @@ def check_release_candidate_execution_record():
     else:
         report_pass(group)
 
+def check_release_candidate_freeze_gate():
+    group = "Release candidate freeze gate checks"
+    errors = []
+
+    files = {
+        "freeze": "uuidv8-fid-v2/release/release-candidate-freeze.md",
+        "review": "uuidv8-fid-v2/release/human-review-record.md",
+        "gate": "uuidv8-fid-v2/release/release-decision-gate.md"
+    }
+
+    # Existence and wording checks
+    for name, filepath in files.items():
+        p = REPO_ROOT / filepath
+        if not p.exists():
+            errors.append(f"Missing {filepath}")
+        else:
+            try:
+                content = p.read_text(encoding='utf-8')
+                content_lower = content.lower()
+                if "non-normative" not in content_lower:
+                    errors.append(f"{filepath} missing 'non-normative'")
+                if "does not declare a final release" not in content_lower:
+                    errors.append(f"{filepath} missing 'does not declare a final release'")
+            except Exception as e:
+                errors.append(f"Error reading {filepath}: {e}")
+
+    # Specific human-review-record checks
+    p_review = REPO_ROOT / files["review"]
+    if p_review.exists():
+        try:
+            rev_content = p_review.read_text(encoding='utf-8')
+            required_hex = ["0x10", "0x11..0xef", "0x00..0x0f", "0xf0..0xff", "0x7a"]
+            for h in required_hex:
+                if h not in rev_content:
+                    errors.append(f"human-review-record.md missing invariant string: {h}")
+        except Exception as e:
+            pass
+
+    # Specific release-decision-gate checks
+    p_gate = REPO_ROOT / files["gate"]
+    if p_gate.exists():
+        try:
+            gate_content = p_gate.read_text(encoding='utf-8')
+            cmd1 = "python uuidv8-fid-v2/tools/check_consistency.py"
+            cmd_strict = "python uuidv8-fid-v2/tools/check_consistency.py --fail-on-warnings"
+            cmd2 = "python uuidv8-fid-v2/tools/test_check_consistency.py"
+
+            if cmd_strict not in gate_content:
+                errors.append("release-decision-gate.md missing strict command")
+            gate_without_strict = gate_content.replace(cmd_strict, "")
+            if cmd1 not in gate_without_strict:
+                errors.append("release-decision-gate.md missing default command")
+            if cmd2 not in gate_content:
+                errors.append("release-decision-gate.md missing test command")
+            if "does not declare a final release" not in gate_content.lower():
+                errors.append("release-decision-gate.md declaring a final release (missing non-declaration)")
+        except Exception as e:
+            pass
+
+    # Check cross-references
+    def check_ref(filepath, refs, req_all=True):
+        p = REPO_ROOT / filepath
+        if not p.exists():
+            return
+        try:
+            c = p.read_text(encoding='utf-8')
+            found = 0
+            for r in refs:
+                if r in c:
+                    found += 1
+                elif req_all:
+                    errors.append(f"{filepath} missing reference to {r}")
+            if not req_all and found == 0:
+                errors.append(f"{filepath} missing at least one reference from {refs}")
+        except Exception as e:
+            errors.append(f"Error reading {filepath}: {e}")
+
+    refs_all_three = ["release-candidate-freeze.md", "human-review-record.md", "release-decision-gate.md"]
+    check_ref("uuidv8-fid-v2/release/00-index.md", refs_all_three)
+    check_ref("uuidv8-fid-v2/publication/source-map.md", refs_all_three)
+    check_ref("uuidv8-fid-v2/publication/reader-guide.md", refs_all_three)
+    check_ref("uuidv8-fid-v2/publication/release-candidate-checklist.md", refs_all_three)
+    check_ref("uuidv8-fid-v2/release/pre-publication-sweep.md", refs_all_three)
+    check_ref("uuidv8-fid-v2/publication/publication-candidate-manifest.md", refs_all_three)
+
+    # publication-readiness-summary.md checks for freeze/gate/review wording
+    check_ref("uuidv8-fid-v2/release/publication-readiness-summary.md", ["freeze", "gate", "review"], req_all=False)
+
+    # publication-package-verification.md checks for both human review record and release decision gate
+    check_ref("uuidv8-fid-v2/publication/publication-package-verification.md", ["human-review-record.md", "release-decision-gate.md"], req_all=True)
+
+    if errors:
+        report_fail(group, "; ".join(errors))
+    else:
+        report_pass(group)
+
 def check_release_non_final_guard():
     group = "10. Release non-final guard"
     release_files = [
@@ -544,6 +643,9 @@ def check_release_non_final_guard():
         "uuidv8-fid-v2/release/publication-readiness-summary.md",
         "uuidv8-fid-v2/release/pre-publication-sweep.md",
         "uuidv8-fid-v2/release/release-candidate-execution-record.md",
+        "uuidv8-fid-v2/release/release-candidate-freeze.md",
+        "uuidv8-fid-v2/release/human-review-record.md",
+        "uuidv8-fid-v2/release/release-decision-gate.md",
         "uuidv8-fid-v2/publication/publication-candidate-manifest.md",
         "uuidv8-fid-v2/publication/publication-package-verification.md"
     ]
@@ -883,6 +985,7 @@ def main():
     check_reader_guide_heading_numbering()
     check_publication_candidate_package()
     check_release_candidate_execution_record()
+    check_release_candidate_freeze_gate()
     check_release_non_final_guard()
     check_public_entry_points()
     check_public_entry_point_non_final_guard()

@@ -9,3 +9,6 @@ These documents do not declare a final release and do not introduce new normativ
 3. post-publication-work.md
 4. pre-publication-sweep.md
 5. release-candidate-execution-record.md
+6. release-candidate-freeze.md
+7. human-review-record.md
+8. release-decision-gate.md

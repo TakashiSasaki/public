@@ -19,4 +19,6 @@ This document provides a concise verification checklist for a reviewer preparing
 - [ ] Run `python uuidv8-fid-v2/tools/check_consistency.py --fail-on-warnings`.
 - [ ] Run `python uuidv8-fid-v2/tools/test_check_consistency.py`.
 - [ ] Confirm release-candidate-execution-record.md is current.
+- [ ] Confirm human-review-record.md invariants are successfully verified.
+- [ ] Confirm release-decision-gate.md checks and review requirements are met.
 - [ ] Confirm final release is not declared.

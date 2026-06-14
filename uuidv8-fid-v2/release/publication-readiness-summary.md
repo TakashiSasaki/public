@@ -24,3 +24,4 @@ Local tooling | ready with checks | Local consistency tooling exists and should 
 Release notes | non-normative support | Release-candidate notes describe readiness only and do not declare a final release.
 Execution record | non-normative support | Release-candidate execution results are tracked in `release-candidate-execution-record.md`.
 Pre-publication sweep | ready with checks | Final local and manual checks are recorded in `pre-publication-sweep.md`.
+Release freeze gate | non-normative support | The freeze, gate, and review boundary documents define strict manual review conditions before any final-release decision.
