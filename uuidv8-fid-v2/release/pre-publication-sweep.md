@@ -15,6 +15,8 @@ python uuidv8-fid-v2/tools/test_check_consistency.py
 Both commands must exit with status code 0 before publication.
 Warnings, if any, must be reviewed.
 
+Command execution results may be recorded in `release-candidate-execution-record.md`.
+
 ## 2. Required manual review
 
 - [ ] Confirm the checker harness exits with status code 0.

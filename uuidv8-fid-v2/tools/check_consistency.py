@@ -324,13 +324,69 @@ def check_reader_guide_heading_numbering():
     except Exception as e:
         report_fail(group, f"Error reading reader-guide for heading check: {e}")
 
+def check_release_candidate_execution_record():
+    group = "Release candidate execution record checks"
+    record_file = "uuidv8-fid-v2/release/release-candidate-execution-record.md"
+
+    errors = []
+
+    # file exists
+    record_path = REPO_ROOT / record_file
+    if not record_path.exists():
+        errors.append(f"Execution record missing: {record_file}")
+    else:
+        try:
+            content = record_path.read_text(encoding='utf-8')
+            content_lower = content.lower()
+
+            # contains non-normative
+            if "non-normative" not in content_lower:
+                errors.append(f"{record_file} missing 'non-normative'")
+
+            # contains does not declare a final release
+            if "does not declare a final release" not in content_lower:
+                errors.append(f"{record_file} missing 'does not declare a final release'")
+
+            # contains both command names
+            cmd1 = "python uuidv8-fid-v2/tools/check_consistency.py"
+            cmd2 = "python uuidv8-fid-v2/tools/test_check_consistency.py"
+
+            if cmd1 not in content:
+                errors.append(f"{record_file} missing command: {cmd1}")
+            if cmd2 not in content:
+                errors.append(f"{record_file} missing command: {cmd2}")
+
+        except Exception as e:
+            errors.append(f"Error reading {record_file}: {e}")
+
+    # check references
+    def check_ref(filepath, ref):
+        try:
+            c = (REPO_ROOT / filepath).read_text(encoding='utf-8')
+            if ref not in c:
+                errors.append(f"{filepath} missing reference to {ref}")
+        except Exception as e:
+            errors.append(f"Error reading {filepath} for ref: {e}")
+
+    check_ref("uuidv8-fid-v2/release/00-index.md", "release-candidate-execution-record.md")
+    check_ref("uuidv8-fid-v2/publication/source-map.md", "release-candidate-execution-record.md")
+    check_ref("uuidv8-fid-v2/publication/reader-guide.md", "release-candidate-execution-record.md")
+    check_ref("uuidv8-fid-v2/publication/release-candidate-checklist.md", "release-candidate-execution-record.md")
+    check_ref("uuidv8-fid-v2/release/pre-publication-sweep.md", "release-candidate-execution-record.md")
+
+    if errors:
+        report_fail(group, "; ".join(errors))
+    else:
+        report_pass(group)
+
 def check_release_non_final_guard():
     group = "10. Release non-final guard"
     release_files = [
         "uuidv8-fid-v2/release/00-index.md",
         "uuidv8-fid-v2/release/release-candidate-notes.md",
         "uuidv8-fid-v2/release/publication-readiness-summary.md",
-        "uuidv8-fid-v2/release/pre-publication-sweep.md"
+        "uuidv8-fid-v2/release/pre-publication-sweep.md",
+        "uuidv8-fid-v2/release/release-candidate-execution-record.md"
     ]
 
     required_phrases = [
@@ -617,7 +673,8 @@ def check_stale_phrase_warnings():
     allowlist = {
         "uuidv8-fid-v2/audit/release-readiness.md",
         "uuidv8-fid-v2/release/release-candidate-notes.md",
-        "uuidv8-fid-v2/release/post-publication-work.md"
+        "uuidv8-fid-v2/release/post-publication-work.md",
+        "uuidv8-fid-v2/release/release-candidate-execution-record.md"
     }
 
     # Warning only, doesn't fail unless there's a script error
@@ -655,6 +712,7 @@ def main():
     check_source_map()
     check_reader_guide()
     check_reader_guide_heading_numbering()
+    check_release_candidate_execution_record()
     check_release_non_final_guard()
     check_public_entry_points()
     check_public_entry_point_non_final_guard()
