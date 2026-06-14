@@ -294,6 +294,39 @@ def main():
         else:
             all_passed = report_fail("manifest references a non-existent local file and relative Markdown link check fails", "rc!=0, FAIL in stdout, mentions bad link", result.returncode, result.stdout, result.stderr)
 
+    # Scenario P8: specific HTML file in package fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        html_path = temp_dir / "uuidv8-fid-v2" / "publication" / "index.html"
+        html_path.write_text("<html></html>", encoding='utf-8')
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "Forbidden HTML artifact exists" in result.stdout:
+            report_pass("specific HTML file in package fails")
+        else:
+            all_passed = report_fail("specific HTML file in package fails", "rc!=0, FAIL in stdout, mentions Forbidden HTML artifact", result.returncode, result.stdout, result.stderr)
+
+    # Scenario P9: UUIDv8-FID-v2 CI workflow fails while unrelated workflows pass.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        workflows_dir = temp_dir / ".github" / "workflows"
+        workflows_dir.mkdir(parents=True, exist_ok=True)
+        # Unrelated workflow
+        (workflows_dir / "unrelated.yml").write_text("name: Unrelated Build\n", encoding='utf-8')
+        # We first check that unrelated workflows don't fail the check
+        result_unrelated = run_checker(temp_dir)
+
+        # UUIDv8 workflow
+        (workflows_dir / "uuidv8.yml").write_text("name: UUIDv8-FID-v2 Checks\n", encoding='utf-8')
+        result_uuidv8 = run_checker(temp_dir)
+
+        if result_unrelated.returncode == 0 and result_uuidv8.returncode != 0 and "FAIL" in result_uuidv8.stdout and "UUIDv8-FID-v2 CI workflow exists" in result_uuidv8.stdout:
+            report_pass("UUIDv8-FID-v2 CI workflow fails while unrelated workflows pass")
+        else:
+            all_passed = report_fail("UUIDv8-FID-v2 CI workflow fails while unrelated workflows pass", "rc=0 for unrelated, rc!=0 and FAIL in stdout for uuidv8", result_uuidv8.returncode, result_uuidv8.stdout, result_uuidv8.stderr)
+
+
     # Scenario W1: baseline real repository passes in default mode
     result = subprocess.run(
         [sys.executable, str(REPO_ROOT / "uuidv8-fid-v2" / "tools" / "check_consistency.py")],

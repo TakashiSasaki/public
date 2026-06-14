@@ -413,9 +413,16 @@ def check_publication_candidate_package():
             errors.append(f"Error reading publication-readiness-summary.md: {e}")
 
         # 8. Negative artifact checks
+        # Only flag CI workflows that relate to uuidv8-fid-v2.
         ci_path = REPO_ROOT / ".github/workflows"
-        if ci_path.exists() and any(ci_path.iterdir()):
-            errors.append("CI workflow exists in .github/workflows")
+        if ci_path.exists() and ci_path.is_dir():
+            for workflow_file in ci_path.glob("*.yml"):
+                try:
+                    wf_content = workflow_file.read_text(encoding='utf-8').lower()
+                    if "uuidv8-fid" in wf_content or "uuidv8" in wf_content:
+                        errors.append(f"UUIDv8-FID-v2 CI workflow exists: {workflow_file.name}")
+                except Exception:
+                    pass
 
         invalid_dirs = [
             "uuidv8-fid-v2/publication/html",
@@ -427,6 +434,12 @@ def check_publication_candidate_package():
         for d in invalid_dirs:
             if (REPO_ROOT / d).exists():
                 errors.append(f"Forbidden directory exists: {d}")
+
+        # Check for committed HTML files under uuidv8-fid-v2
+        html_files = list(BASE_DIR.rglob("*.html"))
+        if html_files:
+            for h in html_files:
+                errors.append(f"Forbidden HTML artifact exists: {h.relative_to(REPO_ROOT)}")
 
     if errors:
         report_fail(group, "; ".join(errors))
