@@ -31,12 +31,11 @@ The canonical specification remains under `uuidv8-fid-v2/`.
 * review any warnings;
 * verify top-level stubs remain non-normative;
 * verify no new Format ID was introduced accidentally;
-* verify no generated single-file specification was introduced.
+* verify no generated single-file artifact is allowed except the committed generated derivative publication form at `uuidv8-fid-v2/publication/uuidv8-fid-v2-single-file.md`.
 
 ## 4. Not included in this release candidate
 
 * no additional concrete Format IDs;
 * no CI workflow;
-* no generated single-file artifact;
 * no formal external registry process;
 * no language-specific reference implementation.

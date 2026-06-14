@@ -10,6 +10,7 @@ These documents do not declare a final release and do not introduce new normativ
 4. pre-publication-sweep.md
 5. release-candidate-execution-record.md
 6. single-file-assembly-dry-run-record.md
-7. release-candidate-freeze.md
-8. human-review-record.md
-9. release-decision-gate.md
+7. dual-form-publication-verification-record.md
+8. release-candidate-freeze.md
+9. human-review-record.md
+10. release-decision-gate.md

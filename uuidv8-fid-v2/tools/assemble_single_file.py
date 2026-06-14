@@ -75,17 +75,24 @@ def main():
     parser.add_argument("--stdout", action="store_true", help="Print the assembled content to stdout.")
     parser.add_argument("--output", type=str, help="Write the assembled content to the specified path.")
     parser.add_argument("--force", action="store_true", help="Allow writing output inside the repository.")
+    parser.add_argument("--verify-output", type=str, metavar="<path>", help="Verify the specified committed artifact matches regenerated output exactly.")
+    parser.add_argument("--repo-root", type=str, metavar="<path>", help="Explicitly specify the repository root. Defaults to inferring from __file__.")
 
     args = parser.parse_args()
 
-    if not args.check and not args.stdout and not args.output:
-        print("Error: Must specify one of --check, --stdout, or --output.", file=sys.stderr)
+    if not args.check and not args.stdout and not args.output and not args.verify_output:
+        print("Error: Must specify one of --check, --stdout, --output, or --verify-output.", file=sys.stderr)
         sys.exit(1)
 
-    repo_root = get_repo_root()
+    if args.repo_root:
+        repo_root = os.path.abspath(args.repo_root)
+    else:
+        repo_root = get_repo_root()
 
     if args.output:
-        if is_inside_repo(args.output, repo_root) and not args.force:
+        # Keep user-facing behavior of writing to output path based on cwd
+        out_path = os.path.abspath(args.output)
+        if is_inside_repo(out_path, repo_root) and not args.force:
             print("Error: Refusing to write output inside the repository without --force.", file=sys.stderr)
             sys.exit(1)
 
@@ -103,6 +110,29 @@ def main():
                 print(f"Error: Invariant string missing from the assembled document: {inv}", file=sys.stderr)
                 sys.exit(1)
         print("Check passed successfully.")
+
+    if args.verify_output:
+        verify_path = args.verify_output
+        if not os.path.isabs(verify_path):
+            verify_path = os.path.join(repo_root, verify_path)
+        try:
+            with open(verify_path, "r", encoding="utf-8") as f:
+                committed_content = f.read()
+        except FileNotFoundError:
+            print(f"Error: artifact file is missing: {verify_path}", file=sys.stderr)
+            sys.exit(1)
+        except Exception as e:
+            print(f"Error: could not read artifact file {verify_path}: {e}", file=sys.stderr)
+            sys.exit(1)
+
+        def normalize_newlines(s):
+            return s.replace("\r\n", "\n").replace("\r", "\n")
+
+        if normalize_newlines(committed_content) != normalize_newlines(content):
+            print(f"Error: regenerated output does not match the committed artifact: {args.verify_output}", file=sys.stderr)
+            sys.exit(1)
+
+        print("Verified: committed single-file artifact matches regenerated output.")
 
     if args.stdout:
         print(content)

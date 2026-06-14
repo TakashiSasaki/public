@@ -37,7 +37,6 @@ The following items remain possible future work and are not required for the cur
 - CI integration for the local consistency checker.
 - expanded machine-check coverage for links and Markdown/JSON alignment.
 - language-specific implementation examples.
-- generated single-file publication artifact.
 - rendered publication packaging.
 
 Publication-preparation notes are provided under `publication/`.

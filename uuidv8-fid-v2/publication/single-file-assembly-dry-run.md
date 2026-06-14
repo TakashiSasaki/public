@@ -8,7 +8,7 @@ This document is derived publication guidance and is strictly non-normative. It 
 
 This document explains the single-file assembly dry-run process. A tool has been implemented to perform a trial run of assembling the UUIDv8-FID-v2 specification into a single file, following the plan outlined in `single-file-assembly-plan.md`.
 
-In this stride, the generated single-file artifact is not committed. Any future committed generated single-file artifact requires an explicit separate decision.
+In this stride, the generated single-file artifact is not committed. Any future committed generated single-file artifact requires an explicit separate decision. (Note: A separate dual-form publication stride has since allowed exactly one committed generated derivative artifact.)
 
 ## Tooling
 
