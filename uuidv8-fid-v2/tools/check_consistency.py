@@ -627,8 +627,8 @@ def check_release_candidate_freeze_gate():
     # publication-readiness-summary.md checks for freeze/gate/review wording
     check_ref("uuidv8-fid-v2/release/publication-readiness-summary.md", ["freeze", "gate", "review"], req_all=False)
 
-    # publication-package-verification.md checks for at least human review record or release decision gate
-    check_ref("uuidv8-fid-v2/publication/publication-package-verification.md", ["human-review-record.md", "release-decision-gate.md"], req_all=False)
+    # publication-package-verification.md checks for both human review record and release decision gate
+    check_ref("uuidv8-fid-v2/publication/publication-package-verification.md", ["human-review-record.md", "release-decision-gate.md"], req_all=True)
 
     if errors:
         report_fail(group, "; ".join(errors))

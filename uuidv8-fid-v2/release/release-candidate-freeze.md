@@ -23,7 +23,7 @@ This document defines what the "release-candidate freeze" means for UUIDv8-FID-v
 | Area | Included? | Role | Review expectation |
 |---|---|---|---|
 | Canonical split specification | Yes | Core normative text | Full review of invariants and semantics |
-| Registry and format-specific files | Yes | Non-normative tracking | Verification of specific assignments |
+| Registry and format-specific files | Yes | Normative specification | Full review of registry semantics and format constraints |
 | Conformance material | Yes | Structural validation cases | Ensuring exact expected vectors |
 | Implementation support material | Yes | Language-neutral pseudocode | Verification of correct algorithmic logic |
 | Publication candidate package documents | Yes | Package bounds | Ensuring exact file inclusion |
