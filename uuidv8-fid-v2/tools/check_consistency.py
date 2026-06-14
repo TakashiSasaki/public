@@ -649,7 +649,9 @@ def check_release_non_final_guard():
         "uuidv8-fid-v2/release/single-file-assembly-dry-run-record.md",
         "uuidv8-fid-v2/publication/publication-candidate-manifest.md",
         "uuidv8-fid-v2/publication/publication-package-verification.md",
-        "uuidv8-fid-v2/publication/single-file-assembly-dry-run.md"
+        "uuidv8-fid-v2/publication/single-file-assembly-dry-run.md",
+        "uuidv8-fid-v2/publication/dual-form-publication-package.md",
+        "uuidv8-fid-v2/release/dual-form-publication-verification-record.md"
     ]
 
     required_phrases = [

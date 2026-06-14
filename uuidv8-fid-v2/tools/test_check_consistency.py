@@ -687,7 +687,7 @@ def main():
         else:
             all_passed = report_fail("dual-form doc missing 'non-normative' fails", "rc!=0", result.returncode, result.stdout, result.stderr)
 
-    # Scenario DF5: dual-form doc missing forbidden final-release phrase fails.
+    # Scenario DF5: dual-form doc missing required non-final phrase fails.
     with tempfile.TemporaryDirectory() as td:
         temp_dir = Path(td)
         setup_temp_repo(temp_dir)
@@ -695,9 +695,35 @@ def main():
         df_path.write_text(df_path.read_text().replace("does not declare a final release", "some-other-phrase"))
         result = run_checker(temp_dir)
         if result.returncode != 0 and "missing required phrase: does not declare a final release" in result.stdout:
-            report_pass("dual-form doc missing final-release phrase fails")
+            report_pass("dual-form doc missing required non-final phrase fails")
         else:
-            all_passed = report_fail("dual-form doc missing final-release phrase fails", "rc!=0", result.returncode, result.stdout, result.stderr)
+            all_passed = report_fail("dual-form doc missing required non-final phrase fails", "rc!=0", result.returncode, result.stdout, result.stderr)
+
+    # Scenario DF5a: dual-form doc containing forbidden final-release phrase fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        df_path = temp_dir / "uuidv8-fid-v2" / "publication" / "dual-form-publication-package.md"
+        with open(df_path, 'a', encoding='utf-8') as f:
+            f.write("\nThis is the final release.\n")
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "forbidden phrase" in result.stdout.lower():
+            report_pass("dual-form doc containing forbidden final-release phrase fails")
+        else:
+            all_passed = report_fail("dual-form doc containing forbidden final-release phrase fails", "rc!=0, FAIL in stdout", result.returncode, result.stdout, result.stderr)
+
+    # Scenario DF5b: dual-form verification record containing forbidden final-release phrase fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        df_path = temp_dir / "uuidv8-fid-v2" / "release" / "dual-form-publication-verification-record.md"
+        with open(df_path, 'a', encoding='utf-8') as f:
+            f.write("\nThis is the final release.\n")
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "forbidden phrase" in result.stdout.lower():
+            report_pass("dual-form verification record containing forbidden final-release phrase fails")
+        else:
+            all_passed = report_fail("dual-form verification record containing forbidden final-release phrase fails", "rc!=0, FAIL in stdout", result.returncode, result.stdout, result.stderr)
 
     # Scenario DF6: committed single-file artifact missing generated-output notice fails.
     with tempfile.TemporaryDirectory() as td:

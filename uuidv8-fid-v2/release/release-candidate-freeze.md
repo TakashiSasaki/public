@@ -29,4 +29,5 @@ This document defines what the "release-candidate freeze" means for UUIDv8-FID-v
 | Publication candidate package documents | Yes | Package bounds | Ensuring exact file inclusion |
 | Release-readiness documents | Yes | Human checkpoints | Completing checklists and reviews |
 | Local tooling | Yes | Consistency enforcement | Execution yielding zero errors |
-| Excluded generated artifacts | No | Build products | Must remain completely absent |
+| Generated single-file artifact | Yes | Derived publication form at `uuidv8-fid-v2/publication/uuidv8-fid-v2-single-file.md` | Verification against canonical source |
+| Other generated/HTML artifacts | No | Build products or unauthorized generated outputs | Must remain completely absent |
