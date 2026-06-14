@@ -4,7 +4,7 @@ This document is strictly non-normative and does not declare a final release. Th
 
 ## Command Execution Results
 
-Execution context: local working tree on branch `uuidv8-fid-v2-warning-free-rc-hardening` after the warning-free hardening changes in this stride.
+Execution context: local working tree on branch `publication-candidate-package` after the publication candidate package boundary changes in this stride.
 
 | Command | Status | Exit code | Summary | Notes |
 |---------|--------|-----------|---------|-------|

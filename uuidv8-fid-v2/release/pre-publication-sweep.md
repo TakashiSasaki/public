@@ -23,6 +23,8 @@ Command execution results may be recorded in `release-candidate-execution-record
 - [ ] Confirm the checker harness exits with status code 0.
 - [ ] Confirm `uuidv8-fid-v2/README.md` remains non-normative.
 - [ ] Confirm public entry-point stubs point to the public landing page and canonical specification.
+- [ ] Confirm `publication-candidate-manifest.md` is reviewed.
+- [ ] Confirm `publication-package-verification.md` is reviewed.
 - [ ] Confirm the navigation smoke test is current.
 - [ ] Confirm publication-facing relative links resolve locally.
 - [ ] Confirm no new Format ID was assigned.

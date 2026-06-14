@@ -35,6 +35,8 @@ This document provides a checklist for preparing a release candidate without dec
 
 ## 4. Publication preparation
 
+- [ ] Review `publication-candidate-manifest.md`.
+- [ ] Review `publication-package-verification.md`.
 - [ ] Review `release-candidate-execution-record.md`.
 - [ ] Confirm `release-candidate-execution-record.md` does not declare a final release.
 - [ ] Confirm all local commands are recorded in `release-candidate-execution-record.md`.

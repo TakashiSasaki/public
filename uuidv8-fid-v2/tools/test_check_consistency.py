@@ -204,6 +204,96 @@ def main():
         else:
             all_passed = report_fail("execution record missing the strict warning-mode command fails", "rc!=0, FAIL in stdout, mentions missing command", result.returncode, result.stdout, result.stderr)
 
+    # Scenario P1: missing publication-candidate-manifest.md fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        (temp_dir / "uuidv8-fid-v2" / "publication" / "publication-candidate-manifest.md").unlink()
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "publication-candidate-manifest.md" in result.stdout:
+            report_pass("missing publication-candidate-manifest.md fails")
+        else:
+            all_passed = report_fail("missing publication-candidate-manifest.md fails", "rc!=0, FAIL in stdout, mentions manifest", result.returncode, result.stdout, result.stderr)
+
+    # Scenario P2: missing publication-package-verification.md fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        (temp_dir / "uuidv8-fid-v2" / "publication" / "publication-package-verification.md").unlink()
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "publication-package-verification.md" in result.stdout:
+            report_pass("missing publication-package-verification.md fails")
+        else:
+            all_passed = report_fail("missing publication-package-verification.md fails", "rc!=0, FAIL in stdout, mentions verification", result.returncode, result.stdout, result.stderr)
+
+    # Scenario P3: manifest missing non-normative wording fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        manifest_path = temp_dir / "uuidv8-fid-v2" / "publication" / "publication-candidate-manifest.md"
+        content = manifest_path.read_text(encoding='utf-8')
+        content = content.replace("non-normative", "MISSING_WORD")
+        manifest_path.write_text(content, encoding='utf-8')
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "non-normative" in result.stdout:
+            report_pass("manifest missing non-normative wording fails")
+        else:
+            all_passed = report_fail("manifest missing non-normative wording fails", "rc!=0, FAIL in stdout, mentions non-normative", result.returncode, result.stdout, result.stderr)
+
+    # Scenario P4: manifest containing forbidden final-release phrase fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        manifest_path = temp_dir / "uuidv8-fid-v2" / "publication" / "publication-candidate-manifest.md"
+        with open(manifest_path, 'a', encoding='utf-8') as f:
+            f.write("\n\nThis is the final release.\n")
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "forbidden phrase" in result.stdout.lower():
+            report_pass("manifest containing forbidden final-release phrase fails")
+        else:
+            all_passed = report_fail("manifest containing forbidden final-release phrase fails", "rc!=0, FAIL in stdout, mentions forbidden phrase", result.returncode, result.stdout, result.stderr)
+
+    # Scenario P5: manifest missing a required local checker command fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        manifest_path = temp_dir / "uuidv8-fid-v2" / "publication" / "publication-candidate-manifest.md"
+        content = manifest_path.read_text(encoding='utf-8')
+        content = content.replace("python uuidv8-fid-v2/tools/test_check_consistency.py", "python MISSING_CMD.py")
+        manifest_path.write_text(content, encoding='utf-8')
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "missing command" in result.stdout:
+            report_pass("manifest missing a required local checker command fails")
+        else:
+            all_passed = report_fail("manifest missing a required local checker command fails", "rc!=0, FAIL in stdout, mentions missing command", result.returncode, result.stdout, result.stderr)
+
+    # Scenario P6: source-map missing manifest or verification reference fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        source_map = temp_dir / "uuidv8-fid-v2" / "publication" / "source-map.md"
+        content = source_map.read_text(encoding='utf-8')
+        content = content.replace("publication-candidate-manifest.md", "MISSING_MANIFEST")
+        source_map.write_text(content, encoding='utf-8')
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "publication-candidate-manifest.md" in result.stdout:
+            report_pass("source-map missing manifest reference fails")
+        else:
+            all_passed = report_fail("source-map missing manifest reference fails", "rc!=0, FAIL in stdout, mentions manifest", result.returncode, result.stdout, result.stderr)
+
+    # Scenario P7: manifest references a non-existent local file and relative Markdown link check fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        manifest_path = temp_dir / "uuidv8-fid-v2" / "publication" / "publication-candidate-manifest.md"
+        with open(manifest_path, 'a', encoding='utf-8') as f:
+            f.write("\n\n[bad link](does-not-exist.md)\n")
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "does-not-exist.md" in result.stdout:
+            report_pass("manifest references a non-existent local file and relative Markdown link check fails")
+        else:
+            all_passed = report_fail("manifest references a non-existent local file and relative Markdown link check fails", "rc!=0, FAIL in stdout, mentions bad link", result.returncode, result.stdout, result.stderr)
+
     # Scenario W1: baseline real repository passes in default mode
     result = subprocess.run(
         [sys.executable, str(REPO_ROOT / "uuidv8-fid-v2" / "tools" / "check_consistency.py")],
