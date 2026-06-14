@@ -327,6 +327,123 @@ def main():
             all_passed = report_fail("UUIDv8-FID-v2 CI workflow fails while unrelated workflows pass", "rc=0 for unrelated, rc!=0 and FAIL in stdout for uuidv8", result_uuidv8.returncode, result_uuidv8.stdout, result_uuidv8.stderr)
 
 
+    # Scenario FZ1: missing release-candidate-freeze.md fails
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        (temp_dir / "uuidv8-fid-v2" / "release" / "release-candidate-freeze.md").unlink()
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "release-candidate-freeze.md" in result.stdout:
+            report_pass("missing release-candidate-freeze.md fails")
+        else:
+            all_passed = report_fail("missing release-candidate-freeze.md fails", "rc!=0, FAIL in stdout, mentions freeze.md", result.returncode, result.stdout, result.stderr)
+
+    # Scenario FZ2: missing human-review-record.md fails
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        (temp_dir / "uuidv8-fid-v2" / "release" / "human-review-record.md").unlink()
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "human-review-record.md" in result.stdout:
+            report_pass("missing human-review-record.md fails")
+        else:
+            all_passed = report_fail("missing human-review-record.md fails", "rc!=0, FAIL in stdout, mentions review-record.md", result.returncode, result.stdout, result.stderr)
+
+    # Scenario FZ3: missing release-decision-gate.md fails
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        (temp_dir / "uuidv8-fid-v2" / "release" / "release-decision-gate.md").unlink()
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "release-decision-gate.md" in result.stdout:
+            report_pass("missing release-decision-gate.md fails")
+        else:
+            all_passed = report_fail("missing release-decision-gate.md fails", "rc!=0, FAIL in stdout, mentions decision-gate.md", result.returncode, result.stdout, result.stderr)
+
+    # Scenario FZ4: freeze document missing non-normative wording fails
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        fz_path = temp_dir / "uuidv8-fid-v2" / "release" / "release-candidate-freeze.md"
+        content = fz_path.read_text(encoding='utf-8')
+        # Account for case variations in the markdown file
+        content = content.replace("non-normative", "MISSING_WORD").replace("Non-normative", "MISSING_WORD")
+        fz_path.write_text(content, encoding='utf-8')
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "non-normative" in result.stdout:
+            report_pass("freeze document missing non-normative wording fails")
+        else:
+            all_passed = report_fail("freeze document missing non-normative wording fails", "rc!=0, FAIL in stdout, mentions non-normative", result.returncode, result.stdout, result.stderr)
+
+    # Scenario FZ5: human review record containing forbidden final-release phrase fails
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        rev_path = temp_dir / "uuidv8-fid-v2" / "release" / "human-review-record.md"
+        with open(rev_path, 'a', encoding='utf-8') as f:
+            f.write("\n\nThis is the final release.\n")
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "forbidden phrase" in result.stdout.lower():
+            report_pass("human review record containing forbidden final-release phrase fails")
+        else:
+            all_passed = report_fail("human review record containing forbidden final-release phrase fails", "rc!=0, FAIL in stdout, mentions forbidden phrase", result.returncode, result.stdout, result.stderr)
+
+    # Scenario FZ6: release decision gate missing a required local command fails
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        gate_path = temp_dir / "uuidv8-fid-v2" / "release" / "release-decision-gate.md"
+        content = gate_path.read_text(encoding='utf-8')
+        content = content.replace("python uuidv8-fid-v2/tools/test_check_consistency.py", "python MISSING_CMD.py")
+        gate_path.write_text(content, encoding='utf-8')
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "missing test command" in result.stdout:
+            report_pass("release decision gate missing a required local command fails")
+        else:
+            all_passed = report_fail("release decision gate missing a required local command fails", "rc!=0, FAIL in stdout, mentions missing test command", result.returncode, result.stdout, result.stderr)
+
+    # Scenario FZ7: source-map missing freeze/gate/review reference fails
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        sm_path = temp_dir / "uuidv8-fid-v2" / "publication" / "source-map.md"
+        content = sm_path.read_text(encoding='utf-8')
+        content = content.replace("release-candidate-freeze.md", "MISSING_FREEZE")
+        sm_path.write_text(content, encoding='utf-8')
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "release-candidate-freeze.md" in result.stdout:
+            report_pass("source-map missing freeze/gate/review reference fails")
+        else:
+            all_passed = report_fail("source-map missing freeze/gate/review reference fails", "rc!=0, FAIL in stdout, mentions missing reference", result.returncode, result.stdout, result.stderr)
+
+    # Scenario FZ8: human review record missing 0x7a fails
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        rev_path = temp_dir / "uuidv8-fid-v2" / "release" / "human-review-record.md"
+        content = rev_path.read_text(encoding='utf-8')
+        content = content.replace("0x7a", "0xMISSING")
+        rev_path.write_text(content, encoding='utf-8')
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "0x7a" in result.stdout:
+            report_pass("human review record missing 0x7a fails")
+        else:
+            all_passed = report_fail("human review record missing 0x7a fails", "rc!=0, FAIL in stdout, mentions 0x7a", result.returncode, result.stdout, result.stderr)
+
+    # Scenario FZ9: release decision gate declaring a final release fails
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        gate_path = temp_dir / "uuidv8-fid-v2" / "release" / "release-decision-gate.md"
+        content = gate_path.read_text(encoding='utf-8')
+        content = content.replace("does not declare a final release", "MISSING_NON_DECLARATION")
+        gate_path.write_text(content, encoding='utf-8')
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "declaring a final release" in result.stdout:
+            report_pass("release decision gate declaring a final release fails")
+        else:
+            all_passed = report_fail("release decision gate declaring a final release fails", "rc!=0, FAIL in stdout, mentions declaring final release", result.returncode, result.stdout, result.stderr)
+
     # Scenario W1: baseline real repository passes in default mode
     result = subprocess.run(
         [sys.executable, str(REPO_ROOT / "uuidv8-fid-v2" / "tools" / "check_consistency.py")],

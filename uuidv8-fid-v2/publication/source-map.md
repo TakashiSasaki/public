@@ -43,6 +43,9 @@ This document records the role of each source file without duplicating normative
 | [uuidv8-fid-v2/release/release-candidate-notes.md](../release/release-candidate-notes.md) | Release candidate notes | `derived release-readiness material` | Release candidate readiness notes. |
 | [uuidv8-fid-v2/release/release-candidate-execution-record.md](../release/release-candidate-execution-record.md) | Release candidate execution record | `derived release-readiness material` | Release candidate execution record. |
 | [uuidv8-fid-v2/release/publication-readiness-summary.md](../release/publication-readiness-summary.md) | Publication readiness summary | `derived release-readiness material` | Summary table of release readiness. |
+| [uuidv8-fid-v2/release/release-candidate-freeze.md](../release/release-candidate-freeze.md) | Release candidate freeze | `derived release-readiness material` | Release candidate freeze boundary definition. |
+| [uuidv8-fid-v2/release/human-review-record.md](../release/human-review-record.md) | Human review record | `derived release-readiness material` | Template for manual review of invariants. |
+| [uuidv8-fid-v2/release/release-decision-gate.md](../release/release-decision-gate.md) | Release decision gate | `derived release-readiness material` | Conditions and allowed outcomes for release. |
 | [uuidv8-fid-v2/release/post-publication-work.md](../release/post-publication-work.md) | Post-publication work | `derived release-readiness material` | Potential future tasks post-publication. |
 | [uuidv8-fid-v2/release/pre-publication-sweep.md](../release/pre-publication-sweep.md) | Pre-publication sweep | `derived release-readiness material` | Final pre-publication check list and sweep notes. |
 | [uuidv8-fid-v2/tools/README.md](../tools/README.md) | Tooling README | `derived local tooling` | Instructions for local tools. |

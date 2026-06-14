@@ -57,6 +57,12 @@ This document provides a checklist for preparing a release candidate without dec
 - [ ] Verify post-publication work does not assign new Format IDs.
 - [ ] Verify no final release is declared unless explicitly intended.
 
+## 4.5. Release candidate freeze and human review gate
+
+- [ ] Verify `release-candidate-freeze.md` bounds the package review correctly.
+- [ ] Verify `human-review-record.md` captures all invariants accurately.
+- [ ] Verify `release-decision-gate.md` correctly defines the required inputs, review, and explicit non-outcomes.
+
 ## 5. Scope control
 
 - [ ] Verify no new Format ID was assigned accidentally.

@@ -80,6 +80,9 @@ This manifest defines the boundaries of the publication candidate package for pr
 | [../release/post-publication-work.md](../release/post-publication-work.md) | Post-publication work | `derived release-readiness material` | Potential future tasks post-publication. |
 | [../release/pre-publication-sweep.md](../release/pre-publication-sweep.md) | Pre-publication sweep | `derived release-readiness material` | Final pre-publication check list and sweep notes. |
 | [../release/release-candidate-execution-record.md](../release/release-candidate-execution-record.md) | Execution record | `derived release-readiness material` | Release candidate execution record. |
+| [../release/release-candidate-freeze.md](../release/release-candidate-freeze.md) | Release candidate freeze | `derived release-readiness material` | Release candidate freeze boundary definition. |
+| [../release/human-review-record.md](../release/human-review-record.md) | Human review record | `derived release-readiness material` | Template for manual review of invariants. |
+| [../release/release-decision-gate.md](../release/release-decision-gate.md) | Release decision gate | `derived release-readiness material` | Conditions and allowed outcomes for release. |
 
 ## 8. Local tooling
 

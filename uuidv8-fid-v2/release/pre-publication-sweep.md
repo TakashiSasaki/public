@@ -37,6 +37,12 @@ Command execution results may be recorded in `release-candidate-execution-record
 - [ ] Confirm no generated single-file specification was introduced.
 - [ ] Confirm no CI workflow was added for UUIDv8-FID-v2 in this stride.
 
+## 2.5 Release candidate freeze and human review gate
+
+- [ ] Confirm `release-candidate-freeze.md` has been established.
+- [ ] Confirm `human-review-record.md` checklists are complete and invariants are upheld.
+- [ ] Confirm `release-decision-gate.md` criteria are satisfied for this candidate package.
+
 ## 3. Acceptable remaining future work
 
 The following may remain future work after publication:
