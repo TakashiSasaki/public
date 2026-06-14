@@ -39,6 +39,7 @@ This document records the role of each source file without duplicating normative
 | [uuidv8-fid-v2/publication/release-candidate-checklist.md](release-candidate-checklist.md) | Release candidate checklist | `derived publication guidance` | Checklist for release candidates. |
 | [uuidv8-fid-v2/release/00-index.md](../release/00-index.md) | Release index | `derived release-readiness material` | Index of release readiness material. |
 | [uuidv8-fid-v2/release/release-candidate-notes.md](../release/release-candidate-notes.md) | Release candidate notes | `derived release-readiness material` | Release candidate readiness notes. |
+| [uuidv8-fid-v2/release/release-candidate-execution-record.md](../release/release-candidate-execution-record.md) | Release candidate execution record | `derived release-readiness material` | Release candidate execution record. |
 | [uuidv8-fid-v2/release/publication-readiness-summary.md](../release/publication-readiness-summary.md) | Publication readiness summary | `derived release-readiness material` | Summary table of release readiness. |
 | [uuidv8-fid-v2/release/post-publication-work.md](../release/post-publication-work.md) | Post-publication work | `derived release-readiness material` | Potential future tasks post-publication. |
 | [uuidv8-fid-v2/release/pre-publication-sweep.md](../release/pre-publication-sweep.md) | Pre-publication sweep | `derived release-readiness material` | Final pre-publication check list and sweep notes. |

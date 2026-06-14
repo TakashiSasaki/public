@@ -33,6 +33,10 @@ This document provides a checklist for preparing a release candidate without dec
 
 ## 4. Publication preparation
 
+- [ ] Review `release-candidate-execution-record.md`.
+- [ ] Confirm `release-candidate-execution-record.md` does not declare a final release.
+- [ ] Confirm both local commands are recorded in `release-candidate-execution-record.md`.
+- [ ] Confirm command outcomes in `release-candidate-execution-record.md` are not fabricated.
 - [ ] Verify `uuidv8-fid-v2/README.md` is current.
 - [ ] Verify top-level entry-point stubs point to the public landing page and canonical specification.
 - [ ] Verify public-facing entry points remain non-normative.

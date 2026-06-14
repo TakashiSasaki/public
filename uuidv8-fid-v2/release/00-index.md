@@ -8,3 +8,4 @@ These documents do not declare a final release and do not introduce new normativ
 2. publication-readiness-summary.md
 3. post-publication-work.md
 4. pre-publication-sweep.md
+5. release-candidate-execution-record.md

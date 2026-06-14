@@ -134,6 +134,60 @@ def main():
         else:
             all_passed = report_fail("final release phrase fails", "rc!=0, FAIL in stdout, mentions forbidden phrase/final release", result.returncode, result.stdout, result.stderr)
 
+    # Scenario RC1: missing release-candidate execution record fails
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        rc_record = temp_dir / "uuidv8-fid-v2" / "release" / "release-candidate-execution-record.md"
+        if rc_record.exists():
+            rc_record.unlink()
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "release-candidate-execution-record.md" in result.stdout:
+            report_pass("missing release-candidate execution record fails")
+        else:
+            all_passed = report_fail("missing release-candidate execution record fails", "rc!=0, FAIL in stdout, mentions execution record missing", result.returncode, result.stdout, result.stderr)
+
+    # Scenario RC2: execution record missing from source-map fails
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        source_map = temp_dir / "uuidv8-fid-v2" / "publication" / "source-map.md"
+        content = source_map.read_text(encoding='utf-8')
+        content = content.replace("release-candidate-execution-record.md", "MISSING_RECORD")
+        source_map.write_text(content, encoding='utf-8')
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "missing reference to release-candidate-execution-record.md" in result.stdout:
+            report_pass("execution record missing from source-map fails")
+        else:
+            all_passed = report_fail("execution record missing from source-map fails", "rc!=0, FAIL in stdout, mentions missing reference", result.returncode, result.stdout, result.stderr)
+
+    # Scenario RC3: execution record containing forbidden final-release phrase fails
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        rc_record = temp_dir / "uuidv8-fid-v2" / "release" / "release-candidate-execution-record.md"
+        with open(rc_record, 'a', encoding='utf-8') as f:
+            f.write("\n\nThis is the final release.\n")
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "forbidden phrase" in result.stdout:
+            report_pass("execution record containing a forbidden final-release phrase fails")
+        else:
+            all_passed = report_fail("execution record containing a forbidden final-release phrase fails", "rc!=0, FAIL in stdout, mentions forbidden phrase", result.returncode, result.stdout, result.stderr)
+
+    # Scenario RC4: execution record missing one of the required command names fails
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        rc_record = temp_dir / "uuidv8-fid-v2" / "release" / "release-candidate-execution-record.md"
+        content = rc_record.read_text(encoding='utf-8')
+        content = content.replace("python uuidv8-fid-v2/tools/test_check_consistency.py", "python MISSING_CMD.py")
+        rc_record.write_text(content, encoding='utf-8')
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "missing command" in result.stdout:
+            report_pass("execution record missing one of the required command names fails")
+        else:
+            all_passed = report_fail("execution record missing one of the required command names fails", "rc!=0, FAIL in stdout, mentions missing command", result.returncode, result.stdout, result.stderr)
+
     # Scenario H: fenced code block broken link is ignored
     with tempfile.TemporaryDirectory() as td:
         temp_dir = Path(td)

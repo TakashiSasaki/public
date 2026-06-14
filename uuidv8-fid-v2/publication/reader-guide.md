@@ -72,6 +72,7 @@ Maintainers managing the document set should point to:
 Reviewers preparing a release candidate should point to:
 
 - [release/release-candidate-notes.md](../release/release-candidate-notes.md)
+- [release/release-candidate-execution-record.md](../release/release-candidate-execution-record.md)
 - [release/publication-readiness-summary.md](../release/publication-readiness-summary.md)
 - [release/post-publication-work.md](../release/post-publication-work.md)
 - [release/pre-publication-sweep.md](../release/pre-publication-sweep.md)

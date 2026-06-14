@@ -22,4 +22,5 @@ Audit material | non-normative support | Audit checklists and release-readiness 
 Publication guidance | non-normative support | Reader guide, source map, assembly plan, and release-candidate checklist support publication preparation.
 Local tooling | ready with checks | Local consistency tooling exists and should pass before treating the document set as a release candidate.
 Release notes | non-normative support | Release-candidate notes describe readiness only and do not declare a final release.
+Execution record | non-normative support | Release-candidate execution results are tracked in `release-candidate-execution-record.md`.
 Pre-publication sweep | ready with checks | Final local and manual checks are recorded in `pre-publication-sweep.md`.
