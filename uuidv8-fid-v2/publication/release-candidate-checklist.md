@@ -52,6 +52,8 @@ This document provides a checklist for preparing a release candidate without dec
 - [ ] Verify the single-file assembly plan is current.
 - [ ] Verify the single-file assembly dry run executes successfully.
 - [ ] Verify `single-file-assembly-dry-run-record.md` is current.
+- [ ] Verify `dual-form-publication-verification-record.md` is current.
+- [ ] Verify the single-file artifact exactly matches regenerated output.
 - [ ] Verify no generated single-file artifact was manually edited as source of truth.
 - [ ] Verify release-candidate notes are current.
 - [ ] Verify publication-readiness summary is current.

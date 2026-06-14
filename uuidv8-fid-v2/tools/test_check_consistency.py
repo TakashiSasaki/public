@@ -469,12 +469,18 @@ def main():
         all_passed = report_fail("baseline real repository passes in --fail-on-warnings mode after stale phrase cleanup", "rc=0", result.returncode, result.stdout, result.stderr)
 
     # Scenario W3: injecting stale phrase into a temp copy produces a warning in default mode but still exits 0
+    # Note: Because the single-file artifact is now checked for staleness, we must also regenerate the artifact in the temp copy
+    # so that the checker does not fail on staleness instead of testing the warning.
     with tempfile.TemporaryDirectory() as td:
         temp_dir = Path(td)
         setup_temp_repo(temp_dir)
         registry_path = temp_dir / "uuidv8-fid-v2" / "20-registry.md"
         with open(registry_path, 'a', encoding='utf-8') as f:
             f.write("\nregistry scaffold\n")
+
+        # Regenerate the artifact so verification passes
+        subprocess.run([sys.executable, str(temp_dir / "uuidv8-fid-v2" / "tools" / "assemble_single_file.py"), "--repo-root", str(temp_dir), "--output", str(temp_dir / "uuidv8-fid-v2" / "publication" / "uuidv8-fid-v2-single-file.md"), "--force"], cwd=temp_dir, capture_output=True)
+
         result = run_checker(temp_dir)
         if result.returncode == 0 and "PASS with warnings" in result.stdout:
             report_pass("injecting stale phrase into a temp copy produces a warning in default mode but still exits 0")
@@ -488,6 +494,10 @@ def main():
         registry_path = temp_dir / "uuidv8-fid-v2" / "20-registry.md"
         with open(registry_path, 'a', encoding='utf-8') as f:
             f.write("\nregistry scaffold\n")
+
+        # Regenerate the artifact so verification passes
+        subprocess.run([sys.executable, str(temp_dir / "uuidv8-fid-v2" / "tools" / "assemble_single_file.py"), "--repo-root", str(temp_dir), "--output", str(temp_dir / "uuidv8-fid-v2" / "publication" / "uuidv8-fid-v2-single-file.md"), "--force"], cwd=temp_dir, capture_output=True)
+
         result = run_checker(temp_dir, "--fail-on-warnings")
         if result.returncode != 0 and "FAIL (warnings present in strict mode)" in result.stdout:
             report_pass("injecting the same stale phrase into a temp copy causes --fail-on-warnings mode to exit nonzero")
@@ -631,6 +641,123 @@ def main():
             report_pass("fenced code block broken link is ignored")
         else:
             all_passed = report_fail("fenced code block broken link is ignored", "rc=0, 'does-not-exist-inside-code.md' not in stdout", result.returncode, result.stdout, result.stderr)
+
+    # Scenario DF1: missing dual-form-publication-package.md fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        (temp_dir / "uuidv8-fid-v2" / "publication" / "dual-form-publication-package.md").unlink()
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "Dual-form file missing: publication/dual-form-publication-package.md" in result.stdout:
+            report_pass("missing dual-form-publication-package.md fails")
+        else:
+            all_passed = report_fail("missing dual-form-publication-package.md fails", "rc!=0", result.returncode, result.stdout, result.stderr)
+
+    # Scenario DF2: missing committed generated single-file artifact fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        (temp_dir / "uuidv8-fid-v2" / "publication" / "uuidv8-fid-v2-single-file.md").unlink()
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "Allowed generated single-file artifact missing:" in result.stdout:
+            report_pass("missing committed generated single-file artifact fails")
+        else:
+            all_passed = report_fail("missing committed generated single-file artifact fails", "rc!=0", result.returncode, result.stdout, result.stderr)
+
+    # Scenario DF3: missing dual-form-publication-verification-record.md fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        (temp_dir / "uuidv8-fid-v2" / "release" / "dual-form-publication-verification-record.md").unlink()
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "Dual-form file missing: release/dual-form-publication-verification-record.md" in result.stdout:
+            report_pass("missing dual-form-publication-verification-record.md fails")
+        else:
+            all_passed = report_fail("missing dual-form-publication-verification-record.md fails", "rc!=0", result.returncode, result.stdout, result.stderr)
+
+    # Scenario DF4: dual-form doc missing "non-normative" fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        df_path = temp_dir / "uuidv8-fid-v2" / "publication" / "dual-form-publication-package.md"
+        df_path.write_text(df_path.read_text().replace("non-normative", "some-other-word"))
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "missing required phrase: non-normative" in result.stdout:
+            report_pass("dual-form doc missing 'non-normative' fails")
+        else:
+            all_passed = report_fail("dual-form doc missing 'non-normative' fails", "rc!=0", result.returncode, result.stdout, result.stderr)
+
+    # Scenario DF5: dual-form doc missing forbidden final-release phrase fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        df_path = temp_dir / "uuidv8-fid-v2" / "publication" / "dual-form-publication-package.md"
+        df_path.write_text(df_path.read_text().replace("does not declare a final release", "some-other-phrase"))
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "missing required phrase: does not declare a final release" in result.stdout:
+            report_pass("dual-form doc missing final-release phrase fails")
+        else:
+            all_passed = report_fail("dual-form doc missing final-release phrase fails", "rc!=0", result.returncode, result.stdout, result.stderr)
+
+    # Scenario DF6: committed single-file artifact missing generated-output notice fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        df_path = temp_dir / "uuidv8-fid-v2" / "publication" / "uuidv8-fid-v2-single-file.md"
+        df_path.write_text(df_path.read_text().replace("This is generated dry-run output assembled from the split UUIDv8-FID-v2 source files", "Some other notice"))
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "Allowed generated artifact is missing generated-output notice" in result.stdout:
+            report_pass("committed single-file artifact missing generated-output notice fails")
+        else:
+            all_passed = report_fail("committed single-file artifact missing generated-output notice fails", "rc!=0", result.returncode, result.stdout, result.stderr)
+
+    # Scenario DF7: committed single-file artifact missing key invariant string fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        df_path = temp_dir / "uuidv8-fid-v2" / "publication" / "uuidv8-fid-v2-single-file.md"
+        df_path.write_text(df_path.read_text().replace("xxxxxxxx-xxxx-8T00-8S00-xxxxxxxxxxxx", "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"))
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "Allowed generated artifact is missing invariant string:" in result.stdout:
+            report_pass("committed single-file artifact missing key invariant string fails")
+        else:
+            all_passed = report_fail("committed single-file artifact missing key invariant string fails", "rc!=0", result.returncode, result.stdout, result.stderr)
+
+    # Scenario DF8: committed single-file artifact hand-edited or stale fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        df_path = temp_dir / "uuidv8-fid-v2" / "publication" / "uuidv8-fid-v2-single-file.md"
+        df_path.write_text(df_path.read_text() + "\nSome hand-edited content.")
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "Allowed generated artifact is stale or invalid" in result.stdout:
+            report_pass("committed single-file artifact hand-edited or stale fails")
+        else:
+            all_passed = report_fail("committed single-file artifact hand-edited or stale fails", "rc!=0", result.returncode, result.stdout, result.stderr)
+
+    # Scenario DF9: source-map missing generated artifact reference fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        sm_path = temp_dir / "uuidv8-fid-v2" / "publication" / "source-map.md"
+        sm_path.write_text(sm_path.read_text().replace("uuidv8-fid-v2-single-file.md", "some-other-file.md"))
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "missing reference to uuidv8-fid-v2-single-file.md" in result.stdout:
+            report_pass("source-map missing generated artifact reference fails")
+        else:
+            all_passed = report_fail("source-map missing generated artifact reference fails", "rc!=0", result.returncode, result.stdout, result.stderr)
+
+    # Scenario DF10: a second generated single-file artifact still fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        bad_artifact = temp_dir / "uuidv8-fid-v2" / "single-file.md"
+        bad_artifact.write_text("Should not be here.")
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "Found forbidden generated single-file artifacts:" in result.stdout:
+            report_pass("a second generated single-file artifact still fails")
+        else:
+            all_passed = report_fail("a second generated single-file artifact still fails", "rc!=0", result.returncode, result.stdout, result.stderr)
 
     print()
     if all_passed:

@@ -34,9 +34,11 @@ This document provides a structured manual review record template for the releas
 - [ ] Publication candidate manifest is current.
 - [ ] Publication package verification checklist is reviewed.
 
-### Generated artifact absence
+### Generated artifact invariants
 
-- [ ] No generated single-file specification artifact is committed.
+- [ ] Exactly one generated single-file specification artifact is committed at the allowed path.
+- [ ] The generated artifact exactly matches regenerated output.
+- [ ] No other generated single-file specification artifact is committed.
 - [ ] No rendered HTML package artifact is committed.
 
 ### CI workflow absence

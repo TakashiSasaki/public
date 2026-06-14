@@ -19,9 +19,9 @@ time48-rand format | ready with checks | The first concrete format is documented
 Conformance vectors | ready with checks | Markdown and JSON conformance vectors exist and should remain aligned.
 Implementation guidance | non-normative support | Pseudocode and checklist material support implementers but do not redefine the specification.
 Audit material | non-normative support | Audit checklists and release-readiness notes support review and do not introduce normative requirements.
-Publication guidance | non-normative support | Reader guide, source map, assembly plan, assembly dry-run, release-candidate checklist, manifest, and verification document support publication preparation.
+Publication guidance | non-normative support | Reader guide, source map, assembly plan, assembly dry-run, dual-form package details, generated derivative artifact, release-candidate checklist, manifest, and verification document support publication preparation.
 Local tooling | ready with checks | Local consistency tooling exists and should pass before treating the document set as a release candidate. Warning-free release-candidate readiness is checked with the strict warning mode.
 Release notes | non-normative support | Release-candidate notes describe readiness only and do not declare a final release.
-Execution record | non-normative support | Release-candidate execution results are tracked in `release-candidate-execution-record.md`, and assembly dry-run results are tracked in `single-file-assembly-dry-run-record.md`.
+Execution record | non-normative support | Release-candidate execution results are tracked in `release-candidate-execution-record.md`, assembly dry-run results are tracked in `single-file-assembly-dry-run-record.md`, and dual-form results are tracked in `dual-form-publication-verification-record.md`.
 Pre-publication sweep | ready with checks | Final local and manual checks are recorded in `pre-publication-sweep.md`.
 Release freeze gate | non-normative support | The freeze, gate, and review boundary documents define strict manual review conditions before any final-release decision.

@@ -37,6 +37,8 @@ This document records the role of each source file without duplicating normative
 | [uuidv8-fid-v2/publication/source-map.md](source-map.md) | Source map | `derived publication guidance` | The document you are reading. |
 | [uuidv8-fid-v2/publication/single-file-assembly-plan.md](single-file-assembly-plan.md) | Single-file assembly plan | `derived publication guidance` | Plan for assembling a single-file publication. |
 | [uuidv8-fid-v2/publication/single-file-assembly-dry-run.md](single-file-assembly-dry-run.md) | Single-file assembly dry run | `derived publication guidance` | Instructions for running the assembly dry-run tool. |
+| [uuidv8-fid-v2/publication/dual-form-publication-package.md](dual-form-publication-package.md) | Dual-form publication package | `derived publication guidance` | Details on the dual-form publication approach. |
+| [uuidv8-fid-v2/publication/uuidv8-fid-v2-single-file.md](uuidv8-fid-v2-single-file.md) | Generated single-file artifact | `generated derivative publication form` | The derived single-file document. |
 | [uuidv8-fid-v2/publication/release-candidate-checklist.md](release-candidate-checklist.md) | Release candidate checklist | `derived publication guidance` | Checklist for release candidates. |
 | [uuidv8-fid-v2/publication/publication-candidate-manifest.md](publication-candidate-manifest.md) | Publication candidate manifest | `derived publication guidance` | Defines the boundaries of the publication candidate package. |
 | [uuidv8-fid-v2/publication/publication-package-verification.md](publication-package-verification.md) | Publication package verification | `derived publication guidance` | Verification checklist for the publication package. |
@@ -44,6 +46,7 @@ This document records the role of each source file without duplicating normative
 | [uuidv8-fid-v2/release/release-candidate-notes.md](../release/release-candidate-notes.md) | Release candidate notes | `derived release-readiness material` | Release candidate readiness notes. |
 | [uuidv8-fid-v2/release/release-candidate-execution-record.md](../release/release-candidate-execution-record.md) | Release candidate execution record | `derived release-readiness material` | Release candidate execution record. |
 | [uuidv8-fid-v2/release/single-file-assembly-dry-run-record.md](../release/single-file-assembly-dry-run-record.md) | Single-file assembly dry run record | `derived release-readiness material` | Single-file assembly dry run execution record. |
+| [uuidv8-fid-v2/release/dual-form-publication-verification-record.md](../release/dual-form-publication-verification-record.md) | Dual-form publication verification record | `derived release-readiness material` | Dual-form publication verification record. |
 | [uuidv8-fid-v2/release/publication-readiness-summary.md](../release/publication-readiness-summary.md) | Publication readiness summary | `derived release-readiness material` | Summary table of release readiness. |
 | [uuidv8-fid-v2/release/release-candidate-freeze.md](../release/release-candidate-freeze.md) | Release candidate freeze | `derived release-readiness material` | Release candidate freeze boundary definition. |
 | [uuidv8-fid-v2/release/human-review-record.md](../release/human-review-record.md) | Human review record | `derived release-readiness material` | Template for manual review of invariants. |

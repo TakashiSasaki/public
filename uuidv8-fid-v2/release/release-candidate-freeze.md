@@ -14,7 +14,7 @@ This document defines what the "release-candidate freeze" means for UUIDv8-FID-v
 * **Package Verification**: The package verification checklist is defined by `publication/publication-package-verification.md`.
 * **Change Semantics**: After the freeze, any changes to canonical specification files should be treated as requiring a new review pass.
 * **Derived Material**: Changes to derived publication/release/tooling material may still occur, but must preserve the freeze boundary and must strictly not alter normative semantics.
-* **No Single-File Artifacts**: No generated single-file artifact is part of the freeze or committed to the repository.
+* **Dual-Form Publication**: Exactly one generated single-file artifact is committed, serving strictly as a generated derivative publication form. No other generated single-file artifact is allowed.
 * **No Rendered HTML**: No rendered HTML package artifact is part of the freeze or committed to the repository.
 * **No CI**: No CI workflow is introduced by this freeze.
 

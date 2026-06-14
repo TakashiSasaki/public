@@ -66,6 +66,7 @@ Maintainers managing the document set should point to:
 - [publication/navigation-smoke-test.md](navigation-smoke-test.md)
 - [publication/single-file-assembly-plan.md](single-file-assembly-plan.md)
 - [publication/single-file-assembly-dry-run.md](single-file-assembly-dry-run.md)
+- [publication/dual-form-publication-package.md](dual-form-publication-package.md)
 - [publication/release-candidate-checklist.md](release-candidate-checklist.md)
 - [publication/publication-candidate-manifest.md](publication-candidate-manifest.md)
 - [publication/publication-package-verification.md](publication-package-verification.md)

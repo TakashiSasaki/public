@@ -26,6 +26,7 @@ All local consistency checks and test harnesses must execute successfully with n
 
 A complete review must be recorded and passed, satisfying the constraints set out in:
 * `release/human-review-record.md`
+* `release/dual-form-publication-verification-record.md`
 
 ## Allowed outcomes
 

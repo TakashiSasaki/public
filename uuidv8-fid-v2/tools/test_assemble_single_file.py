@@ -68,5 +68,53 @@ class TestAssembleSingleFile(unittest.TestCase):
                 content = f.read()
             self.assertIn("This is generated dry-run output assembled from the split UUIDv8-FID-v2 source files.", content)
 
+    def test_verify_output_success(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_path = os.path.join(tmpdir, "generated.md")
+            # First generate it
+            self.run_tool(["--output", output_path])
+            # Then verify it matches
+            res = self.run_tool(["--verify-output", output_path])
+            self.assertEqual(res.returncode, 0)
+            self.assertIn("Verified: committed single-file artifact matches regenerated output.", res.stdout)
+
+    def test_verify_output_missing_file_fails(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_path = os.path.join(tmpdir, "missing.md")
+            res = self.run_tool(["--verify-output", output_path])
+            self.assertNotEqual(res.returncode, 0)
+            self.assertIn("Error: artifact file is missing:", res.stderr)
+
+    def test_verify_output_mismatch_fails(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_path = os.path.join(tmpdir, "generated.md")
+            # First generate it
+            self.run_tool(["--output", output_path])
+
+            # Tamper with it
+            with open(output_path, "a", encoding="utf-8") as f:
+                f.write("\nTampered content.")
+
+            # Verification should fail
+            res = self.run_tool(["--verify-output", output_path])
+            self.assertNotEqual(res.returncode, 0)
+            self.assertIn("Error: regenerated output does not match the committed artifact:", res.stderr)
+
+    def test_force_flag_inside_repo_succeeds(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # We mock the repo root by overriding where the tool is run
+            uuid_dir = os.path.join(tmpdir, "uuidv8-fid-v2")
+            os.makedirs(uuid_dir)
+            os.makedirs(os.path.join(uuid_dir, "formats"))
+            os.makedirs(os.path.join(uuid_dir, "tools"))
+            os.makedirs(os.path.join(uuid_dir, "publication"))
+
+            shutil.copytree(os.path.join(self.repo_root, "uuidv8-fid-v2"), uuid_dir, dirs_exist_ok=True)
+
+            cmd = [sys.executable, os.path.join(uuid_dir, "tools", "assemble_single_file.py"), "--output", os.path.join(uuid_dir, "publication", "generated.md"), "--force"]
+            res = subprocess.run(cmd, cwd=tmpdir, capture_output=True, text=True)
+            self.assertEqual(res.returncode, 0, f"Writing output with --force failed: {res.stderr}")
+            self.assertTrue(os.path.exists(os.path.join(uuid_dir, "publication", "generated.md")))
+
 if __name__ == "__main__":
     unittest.main()

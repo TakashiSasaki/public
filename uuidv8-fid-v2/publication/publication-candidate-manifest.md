@@ -66,6 +66,8 @@ This manifest defines the boundaries of the publication candidate package for pr
 | [source-map.md](source-map.md) | Source map | `derived publication guidance` | Records the role of each file. |
 | [single-file-assembly-plan.md](single-file-assembly-plan.md) | Single-file assembly plan | `derived publication guidance` | Plan for assembling a single-file publication. |
 | [single-file-assembly-dry-run.md](single-file-assembly-dry-run.md) | Single-file assembly dry run | `derived publication guidance` | Instructions for running the assembly dry-run tool. |
+| [dual-form-publication-package.md](dual-form-publication-package.md) | Dual-form publication package | `derived publication guidance` | Details on the dual-form publication approach. |
+| [uuidv8-fid-v2-single-file.md](uuidv8-fid-v2-single-file.md) | Generated single-file artifact | `generated derivative publication form` | The derived single-file document. |
 | [navigation-smoke-test.md](navigation-smoke-test.md) | Navigation smoke test | `derived publication guidance` | Manual navigation checks. |
 | [release-candidate-checklist.md](release-candidate-checklist.md) | Release candidate checklist | `derived publication guidance` | Checklist for release candidates. |
 | [publication-candidate-manifest.md](publication-candidate-manifest.md) | Publication candidate manifest | `derived publication guidance` | The document you are reading. |
@@ -82,6 +84,7 @@ This manifest defines the boundaries of the publication candidate package for pr
 | [../release/pre-publication-sweep.md](../release/pre-publication-sweep.md) | Pre-publication sweep | `derived release-readiness material` | Final pre-publication check list and sweep notes. |
 | [../release/release-candidate-execution-record.md](../release/release-candidate-execution-record.md) | Execution record | `derived release-readiness material` | Release candidate execution record. |
 | [../release/single-file-assembly-dry-run-record.md](../release/single-file-assembly-dry-run-record.md) | Single-file assembly dry run record | `derived release-readiness material` | Execution record for single-file assembly dry run. |
+| [../release/dual-form-publication-verification-record.md](../release/dual-form-publication-verification-record.md) | Dual-form publication verification record | `derived release-readiness material` | Dual-form publication verification record. |
 | [../release/release-candidate-freeze.md](../release/release-candidate-freeze.md) | Release candidate freeze | `derived release-readiness material` | Release candidate freeze boundary definition. |
 | [../release/human-review-record.md](../release/human-review-record.md) | Human review record | `derived release-readiness material` | Template for manual review of invariants. |
 | [../release/release-decision-gate.md](../release/release-decision-gate.md) | Release decision gate | `derived release-readiness material` | Conditions and allowed outcomes for release. |
@@ -107,7 +110,7 @@ This manifest defines the boundaries of the publication candidate package for pr
 
 | Artifact | Status | Notes |
 | --- | --- | --- |
-| generated single-file specification artifacts | `excluded generated artifact` | Must not be checked in during this stride. |
+| generated single-file specification artifacts (other than uuidv8-fid-v2-single-file.md) | `excluded generated artifact` | Must not be checked in during this stride. |
 | rendered HTML package artifacts | `excluded generated artifact` | Must not be checked in during this stride. |
 | CI workflow outputs | `excluded generated artifact` | Must not be added during this stride. |
 | historical drafts unless explicitly marked historical | `excluded generated artifact` | Not included. |

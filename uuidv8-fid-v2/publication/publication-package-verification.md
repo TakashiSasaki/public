@@ -12,8 +12,9 @@ This document provides a concise verification checklist for a reviewer preparing
 - [ ] Confirm all manifest paths exist.
 - [ ] Confirm canonical split files remain under `uuidv8-fid-v2/`.
 - [ ] Confirm top-level stubs remain non-normative.
-- [ ] Confirm no generated single-file specification artifact exists.
+- [ ] Confirm only the allowed generated single-file artifact exists at `uuidv8-fid-v2/publication/uuidv8-fid-v2-single-file.md`.
 - [ ] Review single-file-assembly-dry-run-record.md.
+- [ ] Review dual-form-publication-verification-record.md.
 - [ ] Confirm no rendered HTML package artifact is committed.
 - [ ] Confirm no CI workflow was added in this stride.
 - [ ] Run `python uuidv8-fid-v2/tools/check_consistency.py`.

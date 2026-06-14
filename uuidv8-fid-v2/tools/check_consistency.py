@@ -826,6 +826,10 @@ def check_index():
 
 def check_generated_single_file_guard():
     group = "12. Generated single-file guard"
+
+    allowed_artifact = "uuidv8-fid-v2/publication/uuidv8-fid-v2-single-file.md"
+    allowed_artifact_path = REPO_ROOT / allowed_artifact
+
     forbidden = [
         "uuidv8-fid-v2/generated-single-file.md",
         "uuidv8-fid-v2/single-file.md",
@@ -834,9 +838,58 @@ def check_generated_single_file_guard():
 
     found = [f for f in forbidden if (REPO_ROOT / f).exists()]
     if found:
-        report_fail(group, f"Found generated single-file artifacts: {', '.join(found)}")
+        report_fail(group, f"Found forbidden generated single-file artifacts: {', '.join(found)}")
     else:
         report_pass(group)
+
+    if not allowed_artifact_path.exists():
+        report_fail(group, f"Allowed generated single-file artifact missing: {allowed_artifact}")
+    else:
+        report_pass(f"Allowed generated single-file artifact exists: {allowed_artifact}")
+
+        try:
+            content = allowed_artifact_path.read_text(encoding='utf-8')
+            if "This is generated dry-run output assembled from the split UUIDv8-FID-v2 source files" not in content:
+                report_fail(group, f"Allowed generated artifact is missing generated-output notice: {allowed_artifact}")
+            else:
+                report_pass(f"Allowed generated artifact contains generated-output notice: {allowed_artifact}")
+
+            invariant_strings = [
+                "format_id = (format_type << 4) | format_subtype",
+                "xxxxxxxx-xxxx-8T00-8S00-xxxxxxxxxxxx",
+                "0x10",
+                "0x7a"
+            ]
+            for inv in invariant_strings:
+                if inv not in content:
+                    report_fail(group, f"Allowed generated artifact is missing invariant string: {inv}")
+                else:
+                    report_pass(f"Allowed generated artifact contains invariant string: {inv}")
+
+        except Exception as e:
+            report_fail(group, f"Could not read allowed generated artifact {allowed_artifact}: {e}")
+
+        try:
+            import subprocess
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(REPO_ROOT / "uuidv8-fid-v2" / "tools" / "assemble_single_file.py"),
+                    "--repo-root",
+                    str(REPO_ROOT),
+                    "--verify-output",
+                    allowed_artifact
+                ],
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True
+            )
+            if result.returncode != 0:
+                report_fail(group, f"Allowed generated artifact is stale or invalid: {allowed_artifact}\n{result.stderr.strip()}")
+            else:
+                report_pass(f"Allowed generated artifact matches regenerated output exactly: {allowed_artifact}")
+        except Exception as e:
+            report_fail(group, f"Could not run assemble_single_file.py --verify-output: {e}")
 
 def check_relative_markdown_links():
     group = "Relative Markdown link check"
@@ -1038,6 +1091,78 @@ def check_single_file_assembly_dry_run():
     check_ref("release/release-decision-gate.md", "python uuidv8-fid-v2/tools/test_assemble_single_file.py")
 
 
+def check_dual_form_publication_package():
+    group = "Dual-form publication package checks"
+
+    required_files = [
+        "publication/dual-form-publication-package.md",
+        "publication/uuidv8-fid-v2-single-file.md",
+        "release/dual-form-publication-verification-record.md"
+    ]
+    for rel in required_files:
+        if not os.path.isfile(os.path.join(REPO_ROOT, "uuidv8-fid-v2", rel)):
+            report_fail(group, f"Dual-form file missing: {rel}")
+        else:
+            report_pass(f"Dual-form file present: {rel}")
+
+    def require_phrases(rel_path, phrases):
+        path = os.path.join(REPO_ROOT, "uuidv8-fid-v2", rel_path)
+        if not os.path.isfile(path):
+            return
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                content = f.read().lower()
+            for phrase in phrases:
+                if phrase.lower() not in content:
+                    report_fail(group, f"{rel_path} missing required phrase: {phrase}")
+                else:
+                    report_pass(f"{rel_path} contains required phrase: {phrase}")
+        except Exception as e:
+            report_fail(group, f"Could not read {rel_path}: {e}")
+
+    require_phrases("publication/dual-form-publication-package.md", [
+        "non-normative",
+        "does not declare a final release",
+        "the split files remain the canonical source; the committed single-file document is a generated derivative publication form."
+    ])
+
+    require_phrases("release/dual-form-publication-verification-record.md", [
+        "non-normative",
+        "does not declare a final release"
+    ])
+
+    def check_ref(filepath, ref):
+        path = os.path.join(REPO_ROOT, "uuidv8-fid-v2", filepath)
+        if not os.path.isfile(path):
+            return
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                content = f.read()
+            if ref not in content:
+                report_fail(group, f"{filepath} missing reference to {ref}")
+            else:
+                report_pass(f"{filepath} references {ref}")
+        except Exception as e:
+            report_fail(group, f"Could not read {filepath}: {e}")
+
+    check_ref("publication/source-map.md", "dual-form-publication-package.md")
+    check_ref("publication/source-map.md", "uuidv8-fid-v2-single-file.md")
+    check_ref("publication/source-map.md", "dual-form-publication-verification-record.md")
+
+    check_ref("publication/reader-guide.md", "dual-form-publication-package.md")
+
+    check_ref("publication/publication-candidate-manifest.md", "dual-form-publication-package.md")
+    check_ref("publication/publication-candidate-manifest.md", "uuidv8-fid-v2-single-file.md")
+    check_ref("publication/publication-candidate-manifest.md", "dual-form-publication-verification-record.md")
+
+    check_ref("publication/publication-package-verification.md", "uuidv8-fid-v2-single-file.md")
+    check_ref("publication/publication-package-verification.md", "dual-form-publication-verification-record.md")
+
+    check_ref("release/release-decision-gate.md", "dual-form-publication-verification-record.md")
+
+    check_ref("tools/README.md", "python uuidv8-fid-v2/tools/assemble_single_file.py --output uuidv8-fid-v2/publication/uuidv8-fid-v2-single-file.md --force")
+    check_ref("tools/README.md", "python uuidv8-fid-v2/tools/assemble_single_file.py --verify-output uuidv8-fid-v2/publication/uuidv8-fid-v2-single-file.md")
+
 def main():
     parser = argparse.ArgumentParser(description="UUIDv8-FID-v2 local consistency checker.", allow_abbrev=False)
     parser.add_argument("--fail-on-warnings", action="store_true", help="Fail if any warnings are present.")
@@ -1072,6 +1197,7 @@ def main():
     check_relative_markdown_links()
     check_stale_phrase_warnings()
     check_single_file_assembly_dry_run()
+    check_dual_form_publication_package()
 
     print()
     if has_failures:
