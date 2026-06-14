@@ -65,6 +65,7 @@ This manifest defines the boundaries of the publication candidate package for pr
 | [reader-guide.md](reader-guide.md) | Reader guide | `derived publication guidance` | Guide on how to navigate the documents. |
 | [source-map.md](source-map.md) | Source map | `derived publication guidance` | Records the role of each file. |
 | [single-file-assembly-plan.md](single-file-assembly-plan.md) | Single-file assembly plan | `derived publication guidance` | Plan for assembling a single-file publication. |
+| [single-file-assembly-dry-run.md](single-file-assembly-dry-run.md) | Single-file assembly dry run | `derived publication guidance` | Instructions for running the assembly dry-run tool. |
 | [navigation-smoke-test.md](navigation-smoke-test.md) | Navigation smoke test | `derived publication guidance` | Manual navigation checks. |
 | [release-candidate-checklist.md](release-candidate-checklist.md) | Release candidate checklist | `derived publication guidance` | Checklist for release candidates. |
 | [publication-candidate-manifest.md](publication-candidate-manifest.md) | Publication candidate manifest | `derived publication guidance` | The document you are reading. |
@@ -80,6 +81,7 @@ This manifest defines the boundaries of the publication candidate package for pr
 | [../release/post-publication-work.md](../release/post-publication-work.md) | Post-publication work | `derived release-readiness material` | Potential future tasks post-publication. |
 | [../release/pre-publication-sweep.md](../release/pre-publication-sweep.md) | Pre-publication sweep | `derived release-readiness material` | Final pre-publication check list and sweep notes. |
 | [../release/release-candidate-execution-record.md](../release/release-candidate-execution-record.md) | Execution record | `derived release-readiness material` | Release candidate execution record. |
+| [../release/single-file-assembly-dry-run-record.md](../release/single-file-assembly-dry-run-record.md) | Single-file assembly dry run record | `derived release-readiness material` | Execution record for single-file assembly dry run. |
 | [../release/release-candidate-freeze.md](../release/release-candidate-freeze.md) | Release candidate freeze | `derived release-readiness material` | Release candidate freeze boundary definition. |
 | [../release/human-review-record.md](../release/human-review-record.md) | Human review record | `derived release-readiness material` | Template for manual review of invariants. |
 | [../release/release-decision-gate.md](../release/release-decision-gate.md) | Release decision gate | `derived release-readiness material` | Conditions and allowed outcomes for release. |
@@ -89,6 +91,8 @@ This manifest defines the boundaries of the publication candidate package for pr
 | Path | Role | Status | Notes |
 | --- | --- | --- | --- |
 | [../tools/README.md](../tools/README.md) | Tooling README | `local tooling` | Instructions for local tools. |
+| [../tools/assemble_single_file.py](../tools/assemble_single_file.py) | Assembly tool | `local tooling` | Python script for single-file assembly dry run. |
+| [../tools/test_assemble_single_file.py](../tools/test_assemble_single_file.py) | Assembly tool test harness | `local tooling` | Test harness for the assembly tool. |
 | [../tools/check_consistency.py](../tools/check_consistency.py) | Consistency checker | `local tooling` | Python script for checking local consistency. |
 | [../tools/test_check_consistency.py](../tools/test_check_consistency.py) | Checker harness | `local tooling` | Local self-test harness for the consistency checker. |
 

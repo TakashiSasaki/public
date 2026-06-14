@@ -494,6 +494,129 @@ def main():
         else:
             all_passed = report_fail("injecting the same stale phrase into a temp copy causes --fail-on-warnings mode to exit nonzero", "rc!=0, FAIL in strict mode stdout", result.returncode, result.stdout, result.stderr)
 
+    # Scenario SF1: missing assemble_single_file.py fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        target = temp_dir / "uuidv8-fid-v2" / "tools" / "assemble_single_file.py"
+        if target.exists():
+            target.unlink()
+        result = run_checker(temp_dir)
+        if result.returncode != 0:
+            report_pass("missing assemble_single_file.py fails")
+        else:
+            all_passed = report_fail("missing assemble_single_file.py fails", "rc!=0", result.returncode, result.stdout, result.stderr)
+
+    # Scenario SF2: missing test_assemble_single_file.py fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        target = temp_dir / "uuidv8-fid-v2" / "tools" / "test_assemble_single_file.py"
+        if target.exists():
+            target.unlink()
+        result = run_checker(temp_dir)
+        if result.returncode != 0:
+            report_pass("missing test_assemble_single_file.py fails")
+        else:
+            all_passed = report_fail("missing test_assemble_single_file.py fails", "rc!=0", result.returncode, result.stdout, result.stderr)
+
+    # Scenario SF3: missing single-file-assembly-dry-run.md fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        target = temp_dir / "uuidv8-fid-v2" / "publication" / "single-file-assembly-dry-run.md"
+        if target.exists():
+            target.unlink()
+        result = run_checker(temp_dir)
+        if result.returncode != 0:
+            report_pass("missing single-file-assembly-dry-run.md fails")
+        else:
+            all_passed = report_fail("missing single-file-assembly-dry-run.md fails", "rc!=0", result.returncode, result.stdout, result.stderr)
+
+    # Scenario SF4: missing single-file-assembly-dry-run-record.md fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        target = temp_dir / "uuidv8-fid-v2" / "release" / "single-file-assembly-dry-run-record.md"
+        if target.exists():
+            target.unlink()
+        result = run_checker(temp_dir)
+        if result.returncode != 0:
+            report_pass("missing single-file-assembly-dry-run-record.md fails")
+        else:
+            all_passed = report_fail("missing single-file-assembly-dry-run-record.md fails", "rc!=0", result.returncode, result.stdout, result.stderr)
+
+    # Scenario SF5: dry-run doc missing "non-normative" fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        target = temp_dir / "uuidv8-fid-v2" / "publication" / "single-file-assembly-dry-run.md"
+        if target.exists():
+            content = target.read_text(encoding="utf-8")
+            # Be careful: "Non-Normative Status" and "non-normative"
+            content = content.replace("non-normative", "omitted_word")
+            content = content.replace("Non-Normative", "omitted_word")
+            target.write_text(content, encoding="utf-8")
+        result = run_checker(temp_dir)
+        if result.returncode != 0:
+            report_pass("dry-run doc missing 'non-normative' fails")
+        else:
+            all_passed = report_fail("dry-run doc missing 'non-normative' fails", "rc!=0", result.returncode, result.stdout, result.stderr)
+
+    # Scenario SF6: dry-run record containing forbidden final-release phrase fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        target = temp_dir / "uuidv8-fid-v2" / "release" / "single-file-assembly-dry-run-record.md"
+        if target.exists():
+            content = target.read_text(encoding="utf-8")
+            target.write_text(content.replace("does not declare a final release", "omitted_word"), encoding="utf-8")
+        result = run_checker(temp_dir)
+        if result.returncode != 0:
+            report_pass("dry-run record containing forbidden final-release phrase fails")
+        else:
+            all_passed = report_fail("dry-run record containing forbidden final-release phrase fails", "rc!=0", result.returncode, result.stdout, result.stderr)
+
+    # Scenario SF7: dry-run doc missing one required assembly command fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        target = temp_dir / "uuidv8-fid-v2" / "publication" / "single-file-assembly-dry-run.md"
+        if target.exists():
+            content = target.read_text(encoding="utf-8")
+            target.write_text(content.replace("assemble_single_file.py --check", "omitted_word"), encoding="utf-8")
+        result = run_checker(temp_dir)
+        if result.returncode != 0:
+            report_pass("dry-run doc missing one required assembly command fails")
+        else:
+            all_passed = report_fail("dry-run doc missing one required assembly command fails", "rc!=0", result.returncode, result.stdout, result.stderr)
+
+    # Scenario SF8: source-map missing assembly tool reference fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        target = temp_dir / "uuidv8-fid-v2" / "publication" / "source-map.md"
+        if target.exists():
+            content = target.read_text(encoding="utf-8")
+            target.write_text(content.replace("assemble_single_file.py", "omitted_word"), encoding="utf-8")
+        result = run_checker(temp_dir)
+        if result.returncode != 0:
+            report_pass("source-map missing assembly tool reference fails")
+        else:
+            all_passed = report_fail("source-map missing assembly tool reference fails", "rc!=0", result.returncode, result.stdout, result.stderr)
+
+    # Scenario SF9: committing an obvious generated single-file artifact still fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        target = temp_dir / "uuidv8-fid-v2" / "generated-single-file.md"
+        target.write_text("This is a generated single-file artifact\n# UUIDv8-FID-v2\n", encoding="utf-8")
+        result = run_checker(temp_dir)
+        if result.returncode != 0:
+            report_pass("committing an obvious generated single-file artifact still fails")
+        else:
+            all_passed = report_fail("committing an obvious generated single-file artifact still fails", "rc!=0", result.returncode, result.stdout, result.stderr)
+
     # Scenario H: fenced code block broken link is ignored
     with tempfile.TemporaryDirectory() as td:
         temp_dir = Path(td)

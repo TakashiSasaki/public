@@ -13,6 +13,7 @@ This document provides a concise verification checklist for a reviewer preparing
 - [ ] Confirm canonical split files remain under `uuidv8-fid-v2/`.
 - [ ] Confirm top-level stubs remain non-normative.
 - [ ] Confirm no generated single-file specification artifact exists.
+- [ ] Review single-file-assembly-dry-run-record.md.
 - [ ] Confirm no rendered HTML package artifact is committed.
 - [ ] Confirm no CI workflow was added in this stride.
 - [ ] Run `python uuidv8-fid-v2/tools/check_consistency.py`.

@@ -36,12 +36,14 @@ This document records the role of each source file without duplicating normative
 | [uuidv8-fid-v2/publication/navigation-smoke-test.md](navigation-smoke-test.md) | Navigation smoke test | `derived publication guidance` | Manual navigation checks for publication readiness. |
 | [uuidv8-fid-v2/publication/source-map.md](source-map.md) | Source map | `derived publication guidance` | The document you are reading. |
 | [uuidv8-fid-v2/publication/single-file-assembly-plan.md](single-file-assembly-plan.md) | Single-file assembly plan | `derived publication guidance` | Plan for assembling a single-file publication. |
+| [uuidv8-fid-v2/publication/single-file-assembly-dry-run.md](single-file-assembly-dry-run.md) | Single-file assembly dry run | `derived publication guidance` | Instructions for running the assembly dry-run tool. |
 | [uuidv8-fid-v2/publication/release-candidate-checklist.md](release-candidate-checklist.md) | Release candidate checklist | `derived publication guidance` | Checklist for release candidates. |
 | [uuidv8-fid-v2/publication/publication-candidate-manifest.md](publication-candidate-manifest.md) | Publication candidate manifest | `derived publication guidance` | Defines the boundaries of the publication candidate package. |
 | [uuidv8-fid-v2/publication/publication-package-verification.md](publication-package-verification.md) | Publication package verification | `derived publication guidance` | Verification checklist for the publication package. |
 | [uuidv8-fid-v2/release/00-index.md](../release/00-index.md) | Release index | `derived release-readiness material` | Index of release readiness material. |
 | [uuidv8-fid-v2/release/release-candidate-notes.md](../release/release-candidate-notes.md) | Release candidate notes | `derived release-readiness material` | Release candidate readiness notes. |
 | [uuidv8-fid-v2/release/release-candidate-execution-record.md](../release/release-candidate-execution-record.md) | Release candidate execution record | `derived release-readiness material` | Release candidate execution record. |
+| [uuidv8-fid-v2/release/single-file-assembly-dry-run-record.md](../release/single-file-assembly-dry-run-record.md) | Single-file assembly dry run record | `derived release-readiness material` | Single-file assembly dry run execution record. |
 | [uuidv8-fid-v2/release/publication-readiness-summary.md](../release/publication-readiness-summary.md) | Publication readiness summary | `derived release-readiness material` | Summary table of release readiness. |
 | [uuidv8-fid-v2/release/release-candidate-freeze.md](../release/release-candidate-freeze.md) | Release candidate freeze | `derived release-readiness material` | Release candidate freeze boundary definition. |
 | [uuidv8-fid-v2/release/human-review-record.md](../release/human-review-record.md) | Human review record | `derived release-readiness material` | Template for manual review of invariants. |
@@ -49,6 +51,8 @@ This document records the role of each source file without duplicating normative
 | [uuidv8-fid-v2/release/post-publication-work.md](../release/post-publication-work.md) | Post-publication work | `derived release-readiness material` | Potential future tasks post-publication. |
 | [uuidv8-fid-v2/release/pre-publication-sweep.md](../release/pre-publication-sweep.md) | Pre-publication sweep | `derived release-readiness material` | Final pre-publication check list and sweep notes. |
 | [uuidv8-fid-v2/tools/README.md](../tools/README.md) | Tooling README | `derived local tooling` | Instructions for local tools. |
+| [uuidv8-fid-v2/tools/assemble_single_file.py](../tools/assemble_single_file.py) | Single-file assembly tool | `derived local tooling` | Python script for single-file assembly dry run. |
+| [uuidv8-fid-v2/tools/test_assemble_single_file.py](../tools/test_assemble_single_file.py) | Assembly tool test harness | `derived local tooling` | Test harness for the assembly tool. |
 | [uuidv8-fid-v2/tools/check_consistency.py](../tools/check_consistency.py) | Consistency checker | `derived local tooling` | Python script for checking local consistency. |
 | [uuidv8-fid-v2/tools/test_check_consistency.py](../tools/test_check_consistency.py) | Checker harness | `derived local tooling` | Local self-test harness for the consistency checker. |
 | [uuidv8-fid-v2/README.md](../README.md) | Public landing page | `non-normative public landing page` | Public entry point for readers. |

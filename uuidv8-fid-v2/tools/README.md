@@ -20,6 +20,20 @@ The checker validates selected file existence, registry invariants, conformance-
 python uuidv8-fid-v2/tools/test_check_consistency.py
 ```
 
+## Assembly Tooling
+
+The dry-run assembly tool tests the single-file assembly process.
+
+```text
+python uuidv8-fid-v2/tools/assemble_single_file.py --check
+```
+
+The assembly test harness ensures its functionality remains correct:
+
+```text
+python uuidv8-fid-v2/tools/test_assemble_single_file.py
+```
+
 * the harness tests the consistency checker against baseline and temporary mutated copies;
 * it writes only to temporary directories;
 * it uses only Python standard library;
