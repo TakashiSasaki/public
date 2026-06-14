@@ -6,7 +6,7 @@ This chapter defines the registry for **UUIDv8-FID-v2 Format Type and Subtype as
 
 The field-format sections define the bit-level structure of UUIDv8-FID-v2 values. This registry chapter defines concrete assignments for `format_type`, `format_subtype`, and the combined `format_id` value.
 
-This initial registry defines the registry scaffold and assigns the first concrete payload format, `format_id = 0x10`, while leaving `0x11..0xef` available for future assignment.
+This initial registry defines the initial registry structure and assigns the first concrete payload format, `format_id = 0x10`, while leaving `0x11..0xef` available for future assignment.
 
 UUIDv8-FID-v2 defines an 8-bit Format ID composed of two semantic nibbles:
 

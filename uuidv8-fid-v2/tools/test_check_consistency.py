@@ -15,11 +15,13 @@ def setup_temp_repo(temp_dir: Path):
     shutil.copy2(REPO_ROOT / "uuidv8-fid-v2-registry.md", temp_dir / "uuidv8-fid-v2-registry.md")
     shutil.copytree(REPO_ROOT / "uuidv8-fid-v2", temp_dir / "uuidv8-fid-v2", dirs_exist_ok=True)
 
-def run_checker(temp_dir: Path):
+def run_checker(temp_dir: Path, *args):
     """Runs the checker inside the temporary directory."""
     checker_path = temp_dir / "uuidv8-fid-v2" / "tools" / "check_consistency.py"
+    cmd = [sys.executable, str(checker_path)]
+    cmd.extend(args)
     result = subprocess.run(
-        [sys.executable, str(checker_path)],
+        cmd,
         cwd=temp_dir,
         capture_output=True,
         text=True
@@ -187,6 +189,70 @@ def main():
             report_pass("execution record missing one of the required command names fails")
         else:
             all_passed = report_fail("execution record missing one of the required command names fails", "rc!=0, FAIL in stdout, mentions missing command", result.returncode, result.stdout, result.stderr)
+
+    # Scenario RC5: execution record missing the strict warning-mode command fails
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        rc_record = temp_dir / "uuidv8-fid-v2" / "release" / "release-candidate-execution-record.md"
+        content = rc_record.read_text(encoding='utf-8')
+        content = content.replace("python uuidv8-fid-v2/tools/check_consistency.py --fail-on-warnings", "python MISSING_STRICT_CMD.py")
+        rc_record.write_text(content, encoding='utf-8')
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "missing command" in result.stdout:
+            report_pass("execution record missing the strict warning-mode command fails")
+        else:
+            all_passed = report_fail("execution record missing the strict warning-mode command fails", "rc!=0, FAIL in stdout, mentions missing command", result.returncode, result.stdout, result.stderr)
+
+    # Scenario W1: baseline real repository passes in default mode
+    result = subprocess.run(
+        [sys.executable, str(REPO_ROOT / "uuidv8-fid-v2" / "tools" / "check_consistency.py")],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True
+    )
+    if result.returncode == 0:
+        report_pass("baseline real repository passes in default mode")
+    else:
+        all_passed = report_fail("baseline real repository passes in default mode", "rc=0", result.returncode, result.stdout, result.stderr)
+
+    # Scenario W2: baseline real repository passes in --fail-on-warnings mode after stale phrase cleanup
+    result = subprocess.run(
+        [sys.executable, str(REPO_ROOT / "uuidv8-fid-v2" / "tools" / "check_consistency.py"), "--fail-on-warnings"],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True
+    )
+    if result.returncode == 0:
+        report_pass("baseline real repository passes in --fail-on-warnings mode after stale phrase cleanup")
+    else:
+        all_passed = report_fail("baseline real repository passes in --fail-on-warnings mode after stale phrase cleanup", "rc=0", result.returncode, result.stdout, result.stderr)
+
+    # Scenario W3: injecting stale phrase into a temp copy produces a warning in default mode but still exits 0
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        registry_path = temp_dir / "uuidv8-fid-v2" / "20-registry.md"
+        with open(registry_path, 'a', encoding='utf-8') as f:
+            f.write("\nregistry scaffold\n")
+        result = run_checker(temp_dir)
+        if result.returncode == 0 and "PASS with warnings" in result.stdout:
+            report_pass("injecting stale phrase into a temp copy produces a warning in default mode but still exits 0")
+        else:
+            all_passed = report_fail("injecting stale phrase into a temp copy produces a warning in default mode but still exits 0", "rc=0, PASS with warnings in stdout", result.returncode, result.stdout, result.stderr)
+
+    # Scenario W4: injecting the same stale phrase into a temp copy causes --fail-on-warnings mode to exit nonzero
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        registry_path = temp_dir / "uuidv8-fid-v2" / "20-registry.md"
+        with open(registry_path, 'a', encoding='utf-8') as f:
+            f.write("\nregistry scaffold\n")
+        result = run_checker(temp_dir, "--fail-on-warnings")
+        if result.returncode != 0 and "FAIL (warnings present in strict mode)" in result.stdout:
+            report_pass("injecting the same stale phrase into a temp copy causes --fail-on-warnings mode to exit nonzero")
+        else:
+            all_passed = report_fail("injecting the same stale phrase into a temp copy causes --fail-on-warnings mode to exit nonzero", "rc!=0, FAIL in strict mode stdout", result.returncode, result.stdout, result.stderr)
 
     # Scenario H: fenced code block broken link is ignored
     with tempfile.TemporaryDirectory() as td:
