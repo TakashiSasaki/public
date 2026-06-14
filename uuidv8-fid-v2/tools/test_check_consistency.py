@@ -116,7 +116,7 @@ def main():
     with tempfile.TemporaryDirectory() as td:
         temp_dir = Path(td)
         setup_temp_repo(temp_dir)
-        (temp_dir / "uuidv8-fid-v2" / "generated-single-file.md").touch()
+        (temp_dir / "uuidv8-fid-v2" / "generated-single-file.md").write_text("This is generated dry-run output assembled from the split UUIDv8-FID-v2 source files")
         result = run_checker(temp_dir)
         if result.returncode != 0 and "FAIL" in result.stdout and "generated-single-file.md" in result.stdout:
             report_pass("generated single-file artifact fails")
@@ -620,7 +620,7 @@ def main():
         temp_dir = Path(td)
         setup_temp_repo(temp_dir)
         target = temp_dir / "uuidv8-fid-v2" / "generated-single-file.md"
-        target.write_text("This is a generated single-file artifact\n# UUIDv8-FID-v2\n", encoding="utf-8")
+        target.write_text("This is generated dry-run output assembled from the split UUIDv8-FID-v2 source files", encoding="utf-8")
         result = run_checker(temp_dir)
         if result.returncode != 0:
             report_pass("committing an obvious generated single-file artifact still fails")
@@ -752,12 +752,36 @@ def main():
         temp_dir = Path(td)
         setup_temp_repo(temp_dir)
         bad_artifact = temp_dir / "uuidv8-fid-v2" / "single-file.md"
-        bad_artifact.write_text("Should not be here.")
+        bad_artifact.write_text("This is generated dry-run output assembled from the split UUIDv8-FID-v2 source files")
         result = run_checker(temp_dir)
-        if result.returncode != 0 and "Found forbidden generated single-file artifacts:" in result.stdout:
-            report_pass("a second generated single-file artifact still fails")
+        if result.returncode != 0 and "Found unauthorized generated single-file artifacts: uuidv8-fid-v2/single-file.md" in result.stdout:
+            report_pass("a second generated single-file artifact under uuidv8-fid-v2/ fails")
         else:
-            all_passed = report_fail("a second generated single-file artifact still fails", "rc!=0", result.returncode, result.stdout, result.stderr)
+            all_passed = report_fail("a second generated single-file artifact under uuidv8-fid-v2/ fails", "rc!=0", result.returncode, result.stdout, result.stderr)
+
+    # Scenario DF11: a second generated Markdown artifact under uuidv8-fid-v2/publication/ fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        bad_artifact = temp_dir / "uuidv8-fid-v2" / "publication" / "another-single-file.md"
+        bad_artifact.write_text("This is generated dry-run output assembled from the split UUIDv8-FID-v2 source files")
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "Found unauthorized generated single-file artifacts: uuidv8-fid-v2/publication/another-single-file.md" in result.stdout:
+            report_pass("a second generated single-file artifact under uuidv8-fid-v2/publication/ fails")
+        else:
+            all_passed = report_fail("a second generated single-file artifact under uuidv8-fid-v2/publication/ fails", "rc!=0", result.returncode, result.stdout, result.stderr)
+
+    # Scenario DF12: an arbitrary filename containing the generated-output notice fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        bad_artifact = temp_dir / "uuidv8-fid-v2" / "arbitrary.md"
+        bad_artifact.write_text("This is generated dry-run output assembled from the split UUIDv8-FID-v2 source files")
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "Found unauthorized generated single-file artifacts: uuidv8-fid-v2/arbitrary.md" in result.stdout:
+            report_pass("an arbitrary filename containing the generated-output notice fails")
+        else:
+            all_passed = report_fail("an arbitrary filename containing the generated-output notice fails", "rc!=0", result.returncode, result.stdout, result.stderr)
 
     print()
     if all_passed:

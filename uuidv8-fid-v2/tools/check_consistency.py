@@ -829,19 +829,43 @@ def check_generated_single_file_guard():
 
     allowed_artifact = "uuidv8-fid-v2/publication/uuidv8-fid-v2-single-file.md"
     allowed_artifact_path = REPO_ROOT / allowed_artifact
+    generated_notice = "This is generated dry-run output assembled from the split UUIDv8-FID-v2 source files"
 
+    # 1. Scan for any unauthorized generated markdown files
+    unauthorized_found = []
+    for filepath in BASE_DIR.rglob("*.md"):
+        rel_path = filepath.relative_to(REPO_ROOT).as_posix()
+        if rel_path == allowed_artifact:
+            continue
+
+        try:
+            content = filepath.read_text(encoding='utf-8')
+            if generated_notice in content:
+                unauthorized_found.append(rel_path)
+        except Exception:
+            pass
+
+    if unauthorized_found:
+        report_fail(group, f"Found unauthorized generated single-file artifacts: {', '.join(unauthorized_found)}")
+    else:
+        report_pass("No unauthorized generated markdown artifacts found")
+
+    # 2. Check for rendered HTML or explicit forbidden build artifacts
     forbidden = [
-        "uuidv8-fid-v2/generated-single-file.md",
-        "uuidv8-fid-v2/single-file.md",
-        "uuidv8-fid-v2/uuidv8-fid-v2-single-file.md"
+        "uuidv8-fid-v2.html",
+        "uuidv8-fid-v2/uuidv8-fid-v2.html",
+        "uuidv8-fid-v2/publication/uuidv8-fid-v2.html",
+        "dist/uuidv8-fid-v2.md",
+        "build/uuidv8-fid-v2.md"
     ]
 
-    found = [f for f in forbidden if (REPO_ROOT / f).exists()]
-    if found:
-        report_fail(group, f"Found forbidden generated single-file artifacts: {', '.join(found)}")
+    found_build_artifacts = [f for f in forbidden if (REPO_ROOT / f).exists()]
+    if found_build_artifacts:
+        report_fail(group, f"Found forbidden build/HTML artifacts: {', '.join(found_build_artifacts)}")
     else:
-        report_pass(group)
+        report_pass("No forbidden build/HTML artifacts found")
 
+    # 3. Check the explicitly allowed artifact
     if not allowed_artifact_path.exists():
         report_fail(group, f"Allowed generated single-file artifact missing: {allowed_artifact}")
     else:
@@ -849,7 +873,7 @@ def check_generated_single_file_guard():
 
         try:
             content = allowed_artifact_path.read_text(encoding='utf-8')
-            if "This is generated dry-run output assembled from the split UUIDv8-FID-v2 source files" not in content:
+            if generated_notice not in content:
                 report_fail(group, f"Allowed generated artifact is missing generated-output notice: {allowed_artifact}")
             else:
                 report_pass(f"Allowed generated artifact contains generated-output notice: {allowed_artifact}")
