@@ -31,10 +31,19 @@ python uuidv8-fid-v2/tools/test_check_consistency.py
 python uuidv8-fid-v2/tools/check_consistency.py
 ```
 
+This is the normal local consistency check.
+
+For a stricter release-candidate readiness check, you can optionally run:
+
+```text
+python uuidv8-fid-v2/tools/check_consistency.py --fail-on-warnings
+```
+
 ## Expected Behavior
 
 * exits with status code 0 if all checks pass;
 * exits with nonzero status code if any check fails;
 * prints a concise pass/fail summary.
+* if run with `--fail-on-warnings`, it will also exit with a nonzero status code if any warnings are present.
 
 Note: The script is intentionally local tooling and is not CI in this stride.

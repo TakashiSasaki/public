@@ -9,11 +9,12 @@ The canonical specification remains the split files under `uuidv8-fid-v2/`.
 
 ```text
 python uuidv8-fid-v2/tools/check_consistency.py
+python uuidv8-fid-v2/tools/check_consistency.py --fail-on-warnings
 python uuidv8-fid-v2/tools/test_check_consistency.py
 ```
 
-Both commands must exit with status code 0 before publication.
-Warnings, if any, must be reviewed.
+All commands must exit with status code 0 before publication.
+The strict warning-mode command should exit with status code 0 for warning-free release-candidate readiness.
 
 Command execution results may be recorded in `release-candidate-execution-record.md`.
 

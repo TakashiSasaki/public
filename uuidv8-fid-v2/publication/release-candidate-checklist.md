@@ -9,6 +9,8 @@ This document provides a checklist for preparing a release candidate without dec
 - [ ] Run the audit consistency checklist.
 - [ ] Run `python uuidv8-fid-v2/tools/check_consistency.py`.
 - [ ] Confirm the checker exits with status code 0.
+- [ ] Run `python uuidv8-fid-v2/tools/check_consistency.py --fail-on-warnings`.
+- [ ] Confirm the strict checker exits with status code 0.
 - [ ] Run `python uuidv8-fid-v2/tools/test_check_consistency.py`.
 - [ ] Confirm the checker harness exits with status code 0.
 - [ ] Review any checker warnings.
@@ -35,8 +37,10 @@ This document provides a checklist for preparing a release candidate without dec
 
 - [ ] Review `release-candidate-execution-record.md`.
 - [ ] Confirm `release-candidate-execution-record.md` does not declare a final release.
-- [ ] Confirm both local commands are recorded in `release-candidate-execution-record.md`.
+- [ ] Confirm all local commands are recorded in `release-candidate-execution-record.md`.
 - [ ] Confirm command outcomes in `release-candidate-execution-record.md` are not fabricated.
+- [ ] Confirm `--fail-on-warnings` mode was run when refreshing the release-candidate execution record.
+- [ ] Confirm no stale warnings remain, or any remaining warnings are explicitly explained.
 - [ ] Verify `uuidv8-fid-v2/README.md` is current.
 - [ ] Verify top-level entry-point stubs point to the public landing page and canonical specification.
 - [ ] Verify public-facing entry points remain non-normative.

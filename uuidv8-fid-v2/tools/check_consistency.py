@@ -3,6 +3,7 @@ import sys
 import json
 import re
 import urllib.parse
+import argparse
 from pathlib import Path
 
 # Determine repo root relative to the script location
@@ -347,12 +348,20 @@ def check_release_candidate_execution_record():
             if "does not declare a final release" not in content_lower:
                 errors.append(f"{record_file} missing 'does not declare a final release'")
 
-            # contains both command names
+            # contains all three command names
             cmd1 = "python uuidv8-fid-v2/tools/check_consistency.py"
+            cmd_strict = "python uuidv8-fid-v2/tools/check_consistency.py --fail-on-warnings"
             cmd2 = "python uuidv8-fid-v2/tools/test_check_consistency.py"
 
-            if cmd1 not in content:
+            # Check strict command first so it doesn't just match the prefix
+            if cmd_strict not in content:
+                errors.append(f"{record_file} missing command: {cmd_strict}")
+
+            # Remove cmd_strict from content so we can check if cmd1 exists separately
+            content_without_strict = content.replace(cmd_strict, "")
+            if cmd1 not in content_without_strict:
                 errors.append(f"{record_file} missing command: {cmd1}")
+
             if cmd2 not in content:
                 errors.append(f"{record_file} missing command: {cmd2}")
 
@@ -700,6 +709,16 @@ def check_stale_phrase_warnings():
         report_fail(group, f"Error processing warnings: {e}")
 
 def main():
+    parser = argparse.ArgumentParser(description="UUIDv8-FID-v2 local consistency checker.", allow_abbrev=False)
+    parser.add_argument("--fail-on-warnings", action="store_true", help="Fail if any warnings are present.")
+
+    try:
+        args = parser.parse_args()
+    except SystemExit as e:
+        sys.exit(1)
+
+    fail_on_warnings = args.fail_on_warnings
+
     print("Running UUIDv8-FID-v2 local consistency checks...\n")
 
     check_file_existence()
@@ -726,8 +745,12 @@ def main():
         print("UUIDv8-FID-v2 consistency checks: FAIL")
         sys.exit(1)
     elif has_warnings:
-        print("UUIDv8-FID-v2 consistency checks: PASS with warnings")
-        sys.exit(0)
+        if fail_on_warnings:
+            print("UUIDv8-FID-v2 consistency checks: FAIL (warnings present in strict mode)")
+            sys.exit(1)
+        else:
+            print("UUIDv8-FID-v2 consistency checks: PASS with warnings")
+            sys.exit(0)
     else:
         print("UUIDv8-FID-v2 consistency checks: PASS")
         sys.exit(0)

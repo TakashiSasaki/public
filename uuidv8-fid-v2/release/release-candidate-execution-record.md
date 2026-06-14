@@ -4,16 +4,13 @@ This document is strictly non-normative and does not declare a final release. Th
 
 ## Command Execution Results
 
-Commit SHA: `43b4aadc25a990fac5810d88aabe4328cdd0aa9a`
+Execution context: local working tree on branch `uuidv8-fid-v2-warning-free-rc-hardening` after the warning-free hardening changes in this stride.
 
 | Command | Status | Exit code | Summary | Notes |
 |---------|--------|-----------|---------|-------|
-| `python uuidv8-fid-v2/tools/check_consistency.py` | PASS | 0 | PASS with warnings | 1 warning regarding stale phrase |
+| `python uuidv8-fid-v2/tools/check_consistency.py` | PASS | 0 | PASS | no warnings |
+| `python uuidv8-fid-v2/tools/check_consistency.py --fail-on-warnings` | PASS | 0 | PASS | no warnings |
 | `python uuidv8-fid-v2/tools/test_check_consistency.py` | PASS | 0 | PASS | All mutations passed |
-
-```text
-WARN: uuidv8-fid-v2/20-registry.md:9 - Found stale phrase 'registry scaffold'
-```
 
 ## Manual Invariant Review
 
