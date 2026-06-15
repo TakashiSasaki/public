@@ -6,6 +6,19 @@ This document is explicitly non-normative. It does not declare a final release.
 
 This document provides a structured manual review record template for the release candidate. It verifies core specification invariants, bounds, and exclusions.
 
+## Status
+
+Current milestone: Dual-Form Publication Package Candidate.
+Next gate: Final Publication Decision Gate.
+This stride adds derived release-readiness material for making that future decision.
+Decision status: pending.
+
+See derived release-readiness material:
+* `final-publication-decision-gate.md`
+* `final-publication-decision-checklist.md`
+* `final-publication-preflight-record.md`
+* `final-publication-decision-summary.md`
+
 ## Review Checklists
 
 ### Specification invariants

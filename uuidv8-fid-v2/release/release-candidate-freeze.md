@@ -6,6 +6,19 @@ This document is explicitly non-normative. It does not declare a final release.
 
 This document defines what the "release-candidate freeze" means for UUIDv8-FID-v2. The freeze establishes a strict review boundary to allow humans to review the complete publication package before any future final-release decision is made.
 
+## Status
+
+Current milestone: Dual-Form Publication Package Candidate.
+Next gate: Final Publication Decision Gate.
+This stride adds derived release-readiness material for making that future decision.
+Decision status: pending.
+
+See derived release-readiness material:
+* `final-publication-decision-gate.md`
+* `final-publication-decision-checklist.md`
+* `final-publication-preflight-record.md`
+* `final-publication-decision-summary.md`
+
 ## Freeze Principles
 
 * **Canonical Specification**: The canonical specification remains the split files under the `uuidv8-fid-v2/` directory.

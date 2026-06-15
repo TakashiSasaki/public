@@ -5,6 +5,19 @@ This document does not declare a final release.
 This document records the final checks to perform before publication.
 The canonical specification remains the split files under `uuidv8-fid-v2/`.
 
+## Status
+
+Current milestone: Dual-Form Publication Package Candidate.
+Next gate: Final Publication Decision Gate.
+This stride adds derived release-readiness material for making that future decision.
+Decision status: pending.
+
+See derived release-readiness material:
+* `final-publication-decision-gate.md`
+* `final-publication-decision-checklist.md`
+* `final-publication-preflight-record.md`
+* `final-publication-decision-summary.md`
+
 ## 1. Required local command
 
 ```text

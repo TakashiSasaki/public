@@ -6,6 +6,19 @@ This document is non-normative. This document does not declare a final release.
 
 This manifest defines the boundaries of the publication candidate package for pre-publication review. The canonical specification remains the split files under `uuidv8-fid-v2/`.
 
+## Status
+
+Current milestone: Dual-Form Publication Package Candidate.
+Next gate: Final Publication Decision Gate.
+This stride adds derived release-readiness material for making that future decision.
+Decision status: pending.
+
+See derived release-readiness material:
+- [../release/final-publication-decision-gate.md](../release/final-publication-decision-gate.md)
+- [../release/final-publication-decision-checklist.md](../release/final-publication-decision-checklist.md)
+- [../release/final-publication-preflight-record.md](../release/final-publication-preflight-record.md)
+- [../release/final-publication-decision-summary.md](../release/final-publication-decision-summary.md)
+
 ## 1. Canonical split specification files
 
 | Path | Role | Status | Notes |
@@ -88,6 +101,10 @@ This manifest defines the boundaries of the publication candidate package for pr
 | [../release/release-candidate-freeze.md](../release/release-candidate-freeze.md) | Release candidate freeze | `derived release-readiness material` | Release candidate freeze boundary definition. |
 | [../release/human-review-record.md](../release/human-review-record.md) | Human review record | `derived release-readiness material` | Template for manual review of invariants. |
 | [../release/release-decision-gate.md](../release/release-decision-gate.md) | Release decision gate | `derived release-readiness material` | Conditions and allowed outcomes for release. |
+| [../release/final-publication-decision-gate.md](../release/final-publication-decision-gate.md) | Final publication decision gate | `derived release-readiness material` | Decision gate definitions for final publication. |
+| [../release/final-publication-decision-checklist.md](../release/final-publication-decision-checklist.md) | Final publication decision checklist | `derived release-readiness material` | Checklist for making the final publication decision. |
+| [../release/final-publication-preflight-record.md](../release/final-publication-preflight-record.md) | Final publication preflight record | `derived release-readiness material` | Preflight command execution record for the decision gate. |
+| [../release/final-publication-decision-summary.md](../release/final-publication-decision-summary.md) | Final publication decision summary | `derived release-readiness material` | Current readiness state summary for the decision gate. |
 
 ## 8. Local tooling
 

@@ -5,6 +5,19 @@ This document describes release-candidate readiness only.
 It does not declare a final release.
 The canonical specification remains under `uuidv8-fid-v2/`.
 
+## Status
+
+Current milestone: Dual-Form Publication Package Candidate.
+Next gate: Final Publication Decision Gate.
+This stride adds derived release-readiness material for making that future decision.
+Decision status: pending.
+
+See derived release-readiness material:
+* `final-publication-decision-gate.md`
+* `final-publication-decision-checklist.md`
+* `final-publication-preflight-record.md`
+* `final-publication-decision-summary.md`
+
 ## 1. Current release-candidate scope
 
 * UUIDv8-FID-v2 defines an 8-bit logical Format ID model.

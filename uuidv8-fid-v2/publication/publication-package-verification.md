@@ -6,6 +6,19 @@ This document is non-normative. This document does not declare a final release.
 
 This document provides a concise verification checklist for a reviewer preparing the publication candidate package.
 
+## Status
+
+Current milestone: Dual-Form Publication Package Candidate.
+Next gate: Final Publication Decision Gate.
+This stride adds derived release-readiness material for making that future decision.
+Decision status: pending.
+
+See derived release-readiness material:
+- [../release/final-publication-decision-gate.md](../release/final-publication-decision-gate.md)
+- [../release/final-publication-decision-checklist.md](../release/final-publication-decision-checklist.md)
+- [../release/final-publication-preflight-record.md](../release/final-publication-preflight-record.md)
+- [../release/final-publication-decision-summary.md](../release/final-publication-decision-summary.md)
+
 ## Verification Checklist
 
 - [ ] Review publication-candidate-manifest.md.

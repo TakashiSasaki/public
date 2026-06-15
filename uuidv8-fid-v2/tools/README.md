@@ -4,6 +4,19 @@ This directory contains local, manually runnable consistency checks for UUIDv8-F
 
 These tools do not define the specification and do not introduce new normative requirements.
 
+## Status
+
+Current milestone: Dual-Form Publication Package Candidate.
+Next gate: Final Publication Decision Gate.
+This stride adds derived release-readiness material for making that future decision.
+Decision status: pending.
+
+See derived release-readiness material:
+- `../release/final-publication-decision-gate.md`
+- `../release/final-publication-decision-checklist.md`
+- `../release/final-publication-preflight-record.md`
+- `../release/final-publication-decision-summary.md`
+
 ## Release-candidate use
 
 Run this checker before treating the document set as a release candidate.

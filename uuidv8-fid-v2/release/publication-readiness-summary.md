@@ -1,6 +1,20 @@
 # UUIDv8-FID-v2 Publication Readiness Summary
 
+This document is non-normative.
+This document does not declare a final release.
+
 The document set is considered close to public-ready when the following are true:
+
+Current milestone: Dual-Form Publication Package Candidate.
+Next gate: Final Publication Decision Gate.
+This stride adds derived release-readiness material for making that future decision.
+Decision status: pending.
+
+See derived release-readiness material:
+* `final-publication-decision-gate.md`
+* `final-publication-decision-checklist.md`
+* `final-publication-preflight-record.md`
+* `final-publication-decision-summary.md`
 
 * canonical specification sections are present;
 * registry is internally consistent;
