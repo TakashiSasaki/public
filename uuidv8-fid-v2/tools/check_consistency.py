@@ -1203,12 +1203,12 @@ def check_final_publication_decision_gate():
         "uuidv8-fid-v2/release/final-publication-decision-summary.md": ["decision status: pending."],
         "uuidv8-fid-v2/release/final-publication-decision-checklist.md": ["- [ ] decide whether to prepare a future final release pr."],
         "uuidv8-fid-v2/release/final-publication-preflight-record.md": [
-            "python uuidv8-fid-v2/tools/assemble_single_file.py --check",
-            "python uuidv8-fid-v2/tools/assemble_single_file.py --verify-output uuidv8-fid-v2/publication/uuidv8-fid-v2-single-file.md",
-            "python uuidv8-fid-v2/tools/test_assemble_single_file.py",
-            "python uuidv8-fid-v2/tools/check_consistency.py",
-            "python uuidv8-fid-v2/tools/check_consistency.py --fail-on-warnings",
-            "python uuidv8-fid-v2/tools/test_check_consistency.py"
+            "`python uuidv8-fid-v2/tools/assemble_single_file.py --check`",
+            "`python uuidv8-fid-v2/tools/assemble_single_file.py --verify-output uuidv8-fid-v2/publication/uuidv8-fid-v2-single-file.md`",
+            "`python uuidv8-fid-v2/tools/test_assemble_single_file.py`",
+            "`python uuidv8-fid-v2/tools/check_consistency.py`",
+            "`python uuidv8-fid-v2/tools/check_consistency.py --fail-on-warnings`",
+            "`python uuidv8-fid-v2/tools/test_check_consistency.py`"
         ]
     }
 

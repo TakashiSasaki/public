@@ -951,6 +951,22 @@ def main():
         else:
             all_passed = report_fail("preflight record missing command evidence fails", "rc!=0, FAIL in stdout", result.returncode, result.stdout, result.stderr)
 
+
+
+    # Scenario FG12: preflight record missing default checker command (but keeping strict) fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        fz_path = temp_dir / "uuidv8-fid-v2" / "release" / "final-publication-preflight-record.md"
+        content_txt = fz_path.read_text(encoding='utf-8')
+        # Remove the standalone checker command row exactly as formatted in the markdown table
+        fz_path.write_text(content_txt.replace("`python uuidv8-fid-v2/tools/check_consistency.py`", "MISSING_WORD"), encoding='utf-8')
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout:
+            report_pass("preflight record missing default checker command fails")
+        else:
+            all_passed = report_fail("preflight record missing default checker command fails", "rc!=0, FAIL in stdout", result.returncode, result.stdout, result.stderr)
+
     if all_passed:
         print("UUIDv8-FID-v2 checker harness: PASS")
         sys.exit(0)
