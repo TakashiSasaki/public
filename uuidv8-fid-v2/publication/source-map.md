@@ -4,6 +4,19 @@
 
 This document records the role of each source file without duplicating normative content.
 
+## Status
+
+Current milestone: Dual-Form Publication Package Candidate.
+Next gate: Final Publication Decision Gate.
+This stride adds derived release-readiness material for making that future decision.
+Decision status: pending.
+
+See derived release-readiness material:
+- [release/final-publication-decision-gate.md](../release/final-publication-decision-gate.md)
+- [release/final-publication-decision-checklist.md](../release/final-publication-decision-checklist.md)
+- [release/final-publication-preflight-record.md](../release/final-publication-preflight-record.md)
+- [release/final-publication-decision-summary.md](../release/final-publication-decision-summary.md)
+
 | Path | Role | Normative status | Notes |
 | --- | --- | --- | --- |
 | [uuidv8-fid-v2/00-index.md](../00-index.md) | Main index | `canonical specification` | Entry point for reading the specification. |
@@ -53,6 +66,10 @@ This document records the role of each source file without duplicating normative
 | [uuidv8-fid-v2/release/release-decision-gate.md](../release/release-decision-gate.md) | Release decision gate | `derived release-readiness material` | Conditions and allowed outcomes for release. |
 | [uuidv8-fid-v2/release/post-publication-work.md](../release/post-publication-work.md) | Post-publication work | `derived release-readiness material` | Potential future tasks post-publication. |
 | [uuidv8-fid-v2/release/pre-publication-sweep.md](../release/pre-publication-sweep.md) | Pre-publication sweep | `derived release-readiness material` | Final pre-publication check list and sweep notes. |
+| [uuidv8-fid-v2/release/final-publication-decision-gate.md](../release/final-publication-decision-gate.md) | Final publication decision gate | `derived release-readiness material` | Decision gate definitions for final publication. |
+| [uuidv8-fid-v2/release/final-publication-decision-checklist.md](../release/final-publication-decision-checklist.md) | Final publication decision checklist | `derived release-readiness material` | Checklist for making the final publication decision. |
+| [uuidv8-fid-v2/release/final-publication-preflight-record.md](../release/final-publication-preflight-record.md) | Final publication preflight record | `derived release-readiness material` | Preflight command execution record for the decision gate. |
+| [uuidv8-fid-v2/release/final-publication-decision-summary.md](../release/final-publication-decision-summary.md) | Final publication decision summary | `derived release-readiness material` | Current readiness state summary for the decision gate. |
 | [uuidv8-fid-v2/tools/README.md](../tools/README.md) | Tooling README | `derived local tooling` | Instructions for local tools. |
 | [uuidv8-fid-v2/tools/assemble_single_file.py](../tools/assemble_single_file.py) | Single-file assembly tool | `derived local tooling` | Python script for single-file assembly dry run. |
 | [uuidv8-fid-v2/tools/test_assemble_single_file.py](../tools/test_assemble_single_file.py) | Assembly tool test harness | `derived local tooling` | Test harness for the assembly tool. |

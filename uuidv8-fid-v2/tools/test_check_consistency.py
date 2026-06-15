@@ -41,6 +41,7 @@ def report_fail(scenario_name, expected, actual_rc, stdout, stderr):
     print("\n".join(f"  {line}" for line in stderr.splitlines()[-10:]))  # Last 10 lines
     return False
 
+
 def main():
     print("Running UUIDv8-FID-v2 checker harness...\n")
     all_passed = True
@@ -810,6 +811,130 @@ def main():
             all_passed = report_fail("an arbitrary filename containing the generated-output notice fails", "rc!=0", result.returncode, result.stdout, result.stderr)
 
     print()
+
+
+    # Scenario FG1: missing final-publication-decision-gate.md fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        (temp_dir / "uuidv8-fid-v2" / "release" / "final-publication-decision-gate.md").unlink()
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "missing" in result.stdout.lower():
+            report_pass("missing final-publication-decision-gate.md fails")
+        else:
+            all_passed = report_fail("missing final-publication-decision-gate.md fails", "rc!=0, FAIL in stdout", result.returncode, result.stdout, result.stderr)
+
+    # Scenario FG2: missing final-publication-decision-checklist.md fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        (temp_dir / "uuidv8-fid-v2" / "release" / "final-publication-decision-checklist.md").unlink()
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "missing" in result.stdout.lower():
+            report_pass("missing final-publication-decision-checklist.md fails")
+        else:
+            all_passed = report_fail("missing final-publication-decision-checklist.md fails", "rc!=0, FAIL in stdout", result.returncode, result.stdout, result.stderr)
+
+    # Scenario FG3: missing final-publication-preflight-record.md fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        (temp_dir / "uuidv8-fid-v2" / "release" / "final-publication-preflight-record.md").unlink()
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "missing" in result.stdout.lower():
+            report_pass("missing final-publication-preflight-record.md fails")
+        else:
+            all_passed = report_fail("missing final-publication-preflight-record.md fails", "rc!=0, FAIL in stdout", result.returncode, result.stdout, result.stderr)
+
+    # Scenario FG4: missing final-publication-decision-summary.md fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        (temp_dir / "uuidv8-fid-v2" / "release" / "final-publication-decision-summary.md").unlink()
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "missing" in result.stdout.lower():
+            report_pass("missing final-publication-decision-summary.md fails")
+        else:
+            all_passed = report_fail("missing final-publication-decision-summary.md fails", "rc!=0, FAIL in stdout", result.returncode, result.stdout, result.stderr)
+
+    # Scenario FG5: final decision gate doc missing "non-normative" fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        fz_path = temp_dir / "uuidv8-fid-v2" / "release" / "final-publication-decision-gate.md"
+        content_txt = fz_path.read_text(encoding='utf-8')
+        fz_path.write_text(content_txt.replace("non-normative", "MISSING_WORD"), encoding='utf-8')
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "non-normative" in result.stdout.lower():
+            report_pass("final decision gate doc missing 'non-normative' fails")
+        else:
+            all_passed = report_fail("final decision gate doc missing 'non-normative' fails", "rc!=0, FAIL in stdout", result.returncode, result.stdout, result.stderr)
+
+    # Scenario FG6: final decision gate doc missing "does not declare a final release" fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        fz_path = temp_dir / "uuidv8-fid-v2" / "release" / "final-publication-decision-gate.md"
+        content_txt = fz_path.read_text(encoding='utf-8')
+        fz_path.write_text(content_txt.replace("does not declare a final release", "MISSING_WORD"), encoding='utf-8')
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "does not declare a final release" in result.stdout.lower():
+            report_pass("final decision gate doc missing 'does not declare a final release' fails")
+        else:
+            all_passed = report_fail("final decision gate doc missing 'does not declare a final release' fails", "rc!=0, FAIL in stdout", result.returncode, result.stdout, result.stderr)
+
+    # Scenario FG7: final decision summary missing "Decision status: pending." fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        fz_path = temp_dir / "uuidv8-fid-v2" / "release" / "final-publication-decision-summary.md"
+        content_txt = fz_path.read_text(encoding='utf-8')
+        fz_path.write_text(content_txt.replace("Decision status: pending.", "MISSING_WORD"), encoding='utf-8')
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout:
+            report_pass("final decision summary missing 'Decision status: pending.' fails")
+        else:
+            all_passed = report_fail("final decision summary missing 'Decision status: pending.' fails", "rc!=0, FAIL in stdout", result.returncode, result.stdout, result.stderr)
+
+    # Scenario FG8: final decision checklist marks final decision as approved or checked off, and the checker fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        fz_path = temp_dir / "uuidv8-fid-v2" / "release" / "final-publication-decision-checklist.md"
+        content_txt = fz_path.read_text(encoding='utf-8')
+        fz_path.write_text(content_txt.replace("- [ ] Decide whether to prepare a future final release PR.", "- [x] Decide whether to prepare a future final release PR."), encoding='utf-8')
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout:
+            report_pass("final decision checklist marks final decision as checked off fails")
+        else:
+            all_passed = report_fail("final decision checklist marks final decision as checked off fails", "rc!=0, FAIL in stdout", result.returncode, result.stdout, result.stderr)
+
+    # Scenario FG9: any final decision document containing "This is the final release" fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        fz_path = temp_dir / "uuidv8-fid-v2" / "release" / "final-publication-decision-gate.md"
+        with open(fz_path, 'a', encoding='utf-8') as f:
+            f.write("\n\nThis is the final release.\n")
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "forbidden phrase" in result.stdout.lower():
+            report_pass("any final decision document containing 'This is the final release' fails")
+        else:
+            all_passed = report_fail("any final decision document containing 'This is the final release' fails", "rc!=0, FAIL in stdout", result.returncode, result.stdout, result.stderr)
+
+    # Scenario FG10: any final decision document containing "Decision status: approved" fails.
+    with tempfile.TemporaryDirectory() as td:
+        temp_dir = Path(td)
+        setup_temp_repo(temp_dir)
+        fz_path = temp_dir / "uuidv8-fid-v2" / "release" / "final-publication-decision-summary.md"
+        with open(fz_path, 'a', encoding='utf-8') as f:
+            f.write("\n\nDecision status: approved.\n")
+        result = run_checker(temp_dir)
+        if result.returncode != 0 and "FAIL" in result.stdout and "forbidden phrase" in result.stdout.lower():
+            report_pass("any final decision document containing 'Decision status: approved' fails")
+        else:
+            all_passed = report_fail("any final decision document containing 'Decision status: approved' fails", "rc!=0, FAIL in stdout", result.returncode, result.stdout, result.stderr)
+
     if all_passed:
         print("UUIDv8-FID-v2 checker harness: PASS")
         sys.exit(0)

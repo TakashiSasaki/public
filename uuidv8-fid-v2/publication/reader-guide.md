@@ -71,6 +71,19 @@ Maintainers managing the document set should point to:
 - [publication/publication-candidate-manifest.md](publication-candidate-manifest.md)
 - [publication/publication-package-verification.md](publication-package-verification.md)
 
+## Status
+
+Current milestone: Dual-Form Publication Package Candidate.
+Next gate: Final Publication Decision Gate.
+This stride adds derived release-readiness material for making that future decision.
+Decision status: pending.
+
+See derived release-readiness material:
+- [release/final-publication-decision-gate.md](../release/final-publication-decision-gate.md)
+- [release/final-publication-decision-checklist.md](../release/final-publication-decision-checklist.md)
+- [release/final-publication-preflight-record.md](../release/final-publication-preflight-record.md)
+- [release/final-publication-decision-summary.md](../release/final-publication-decision-summary.md)
+
 ## 7. For release reviewers
 
 Reviewers preparing a release candidate should point to:

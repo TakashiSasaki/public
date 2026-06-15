@@ -651,17 +651,23 @@ def check_release_non_final_guard():
         "uuidv8-fid-v2/publication/publication-package-verification.md",
         "uuidv8-fid-v2/publication/single-file-assembly-dry-run.md",
         "uuidv8-fid-v2/publication/dual-form-publication-package.md",
-        "uuidv8-fid-v2/release/dual-form-publication-verification-record.md"
+        "uuidv8-fid-v2/release/dual-form-publication-verification-record.md",
+        "uuidv8-fid-v2/release/final-publication-decision-gate.md",
+        "uuidv8-fid-v2/release/final-publication-decision-checklist.md",
+        "uuidv8-fid-v2/release/final-publication-preflight-record.md",
+        "uuidv8-fid-v2/release/final-publication-decision-summary.md"
     ]
 
     required_phrases = [
         "non-normative",
-        "does not declare a final release",
-        "release-candidate"
+        "does not declare a final release"
     ]
     forbidden_phrases = [
         "this is the final release",
-        "final release is declared"
+        "final release is declared",
+        "final release is approved",
+        "publication is approved",
+        "decision status: approved"
     ]
 
     errors = []
@@ -669,15 +675,10 @@ def check_release_non_final_guard():
         try:
             content = (REPO_ROOT / f).read_text(encoding='utf-8').lower()
 
-            # Check required phrase
-            found_req = False
+            # Check required phrases
             for req in required_phrases:
-                if req in content:
-                    found_req = True
-                    break
-
-            if not found_req:
-                errors.append(f"{f} missing non-final required phrasing")
+                if req not in content:
+                    errors.append(f"{f} missing required phrase: {req}")
 
             # Check forbidden phrase
             for forb in forbidden_phrases:
@@ -1194,6 +1195,30 @@ def check_dual_form_publication_package():
     check_ref("tools/README.md", "python uuidv8-fid-v2/tools/assemble_single_file.py --output uuidv8-fid-v2/publication/uuidv8-fid-v2-single-file.md --force")
     check_ref("tools/README.md", "python uuidv8-fid-v2/tools/assemble_single_file.py --verify-output uuidv8-fid-v2/publication/uuidv8-fid-v2-single-file.md")
 
+
+def check_final_publication_decision_gate():
+    group = "11. Final Publication Decision Gate"
+    gate_files = {
+        "uuidv8-fid-v2/release/final-publication-decision-gate.md": "this document prepares the final publication decision gate, but the final publication decision remains pending.",
+        "uuidv8-fid-v2/release/final-publication-decision-summary.md": "decision status: pending.",
+        "uuidv8-fid-v2/release/final-publication-decision-checklist.md": "- [ ] decide whether to prepare a future final release pr.",
+        "uuidv8-fid-v2/release/final-publication-preflight-record.md": None
+    }
+
+    errors = []
+    for f, required_content in gate_files.items():
+        try:
+            content = (REPO_ROOT / f).read_text(encoding='utf-8').lower()
+            if required_content and required_content not in content:
+                errors.append(f"{f} missing specific final decision gate phrasing")
+        except FileNotFoundError:
+            errors.append(f"Missing expected final decision gate file: {f}")
+
+    if errors:
+        report_fail(group, errors)
+    else:
+        report_pass(group)
+
 def main():
     parser = argparse.ArgumentParser(description="UUIDv8-FID-v2 local consistency checker.", allow_abbrev=False)
     parser.add_argument("--fail-on-warnings", action="store_true", help="Fail if any warnings are present.")
@@ -1221,6 +1246,7 @@ def main():
     check_release_candidate_execution_record()
     check_release_candidate_freeze_gate()
     check_release_non_final_guard()
+    check_final_publication_decision_gate()
     check_public_entry_points()
     check_public_entry_point_non_final_guard()
     check_index()

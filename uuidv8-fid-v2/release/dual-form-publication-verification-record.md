@@ -4,6 +4,19 @@ This document is non-normative and does not declare a final release.
 
 This checklist records the execution results for the dual-form publication package candidate milestone.
 
+## Status
+
+Current milestone: Dual-Form Publication Package Candidate.
+Next gate: Final Publication Decision Gate.
+This stride adds derived release-readiness material for making that future decision.
+Decision status: pending.
+
+See derived release-readiness material:
+- `final-publication-decision-gate.md`
+- `final-publication-decision-checklist.md`
+- `final-publication-preflight-record.md`
+- `final-publication-decision-summary.md`
+
 ## Execution Record
 
 | Command | Status | Exit code | Summary | Notes |

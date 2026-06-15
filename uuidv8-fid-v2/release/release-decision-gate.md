@@ -28,6 +28,19 @@ A complete review must be recorded and passed, satisfying the constraints set ou
 * `release/human-review-record.md`
 * `release/dual-form-publication-verification-record.md`
 
+## Status
+
+Current milestone: Dual-Form Publication Package Candidate.
+Next gate: Final Publication Decision Gate.
+This stride adds derived release-readiness material for making that future decision.
+Decision status: pending.
+
+See derived release-readiness material:
+* `final-publication-decision-gate.md`
+* `final-publication-decision-checklist.md`
+* `final-publication-preflight-record.md`
+* `final-publication-decision-summary.md`
+
 ## Allowed outcomes
 
 Following the completion of the required checks and review, the allowed outcomes are strictly limited to:
