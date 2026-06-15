@@ -1202,7 +1202,7 @@ def check_final_publication_decision_gate():
         "uuidv8-fid-v2/release/final-publication-decision-gate.md": "this document prepares the final publication decision gate, but the final publication decision remains pending.",
         "uuidv8-fid-v2/release/final-publication-decision-summary.md": "decision status: pending.",
         "uuidv8-fid-v2/release/final-publication-decision-checklist.md": "- [ ] decide whether to prepare a future final release pr.",
-        "uuidv8-fid-v2/release/final-publication-preflight-record.md": None
+        "uuidv8-fid-v2/release/final-publication-preflight-record.md": "python uuidv8-fid-v2/tools/check_consistency.py --fail-on-warnings"
     }
 
     errors = []
