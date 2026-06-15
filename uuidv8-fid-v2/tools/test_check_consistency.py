@@ -943,7 +943,8 @@ def main():
         setup_temp_repo(temp_dir)
         fz_path = temp_dir / "uuidv8-fid-v2" / "release" / "final-publication-preflight-record.md"
         content_txt = fz_path.read_text(encoding='utf-8')
-        fz_path.write_text(content_txt.replace("python uuidv8-fid-v2/tools/check_consistency.py --fail-on-warnings", "MISSING_WORD"), encoding='utf-8')
+        # Remove a command other than fail-on-warnings to ensure all of them are checked
+        fz_path.write_text(content_txt.replace("python uuidv8-fid-v2/tools/assemble_single_file.py --verify-output", "MISSING_WORD"), encoding='utf-8')
         result = run_checker(temp_dir)
         if result.returncode != 0 and "FAIL" in result.stdout:
             report_pass("preflight record missing command evidence fails")

@@ -1199,18 +1199,26 @@ def check_dual_form_publication_package():
 def check_final_publication_decision_gate():
     group = "11. Final Publication Decision Gate"
     gate_files = {
-        "uuidv8-fid-v2/release/final-publication-decision-gate.md": "this document prepares the final publication decision gate, but the final publication decision remains pending.",
-        "uuidv8-fid-v2/release/final-publication-decision-summary.md": "decision status: pending.",
-        "uuidv8-fid-v2/release/final-publication-decision-checklist.md": "- [ ] decide whether to prepare a future final release pr.",
-        "uuidv8-fid-v2/release/final-publication-preflight-record.md": "python uuidv8-fid-v2/tools/check_consistency.py --fail-on-warnings"
+        "uuidv8-fid-v2/release/final-publication-decision-gate.md": ["this document prepares the final publication decision gate, but the final publication decision remains pending."],
+        "uuidv8-fid-v2/release/final-publication-decision-summary.md": ["decision status: pending."],
+        "uuidv8-fid-v2/release/final-publication-decision-checklist.md": ["- [ ] decide whether to prepare a future final release pr."],
+        "uuidv8-fid-v2/release/final-publication-preflight-record.md": [
+            "python uuidv8-fid-v2/tools/assemble_single_file.py --check",
+            "python uuidv8-fid-v2/tools/assemble_single_file.py --verify-output uuidv8-fid-v2/publication/uuidv8-fid-v2-single-file.md",
+            "python uuidv8-fid-v2/tools/test_assemble_single_file.py",
+            "python uuidv8-fid-v2/tools/check_consistency.py",
+            "python uuidv8-fid-v2/tools/check_consistency.py --fail-on-warnings",
+            "python uuidv8-fid-v2/tools/test_check_consistency.py"
+        ]
     }
 
     errors = []
-    for f, required_content in gate_files.items():
+    for f, required_contents in gate_files.items():
         try:
             content = (REPO_ROOT / f).read_text(encoding='utf-8').lower()
-            if required_content and required_content not in content:
-                errors.append(f"{f} missing specific final decision gate phrasing")
+            for req in required_contents:
+                if req not in content:
+                    errors.append(f"{f} missing specific final decision gate phrasing: {req}")
         except FileNotFoundError:
             errors.append(f"Missing expected final decision gate file: {f}")
 
